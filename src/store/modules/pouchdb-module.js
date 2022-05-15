@@ -226,8 +226,11 @@ export default {
       }
     },
     SET_REMOTE_SYNC_URL(state, url) {
+      console.log(`REMOTE SYNC URL: ${url}`)
       this.state.pouchdb.remoteSyncURL = url
+      console.log('STATE UPDATED')
       localStorage.remoteSyncURL = url
+      console.log('LOCAL STORAGE UPDATED')
     },
     CLEAR_REMOTE_SYNC_URL(state) {
       localStorage.removeItem('remoteSyncURL')
