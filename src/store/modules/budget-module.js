@@ -9,14 +9,14 @@ export default {
     monthlyData: {}
   },
   getters: {
-    monthlyData: state => state.monthlyData,
+    monthlyData: (state) => state.monthlyData,
 
     /**
      * Array of all transactions 'On Budget'
      */
     transactionsOnBudget: (state, getters) => {
       //Get list of account _ids that are on budget
-      var accounts = getters.accountsOnBudget.map(acct => acct._id.slice(-36))
+      var accounts = getters.accountsOnBudget.map((acct) => acct._id.slice(-36))
       var transOnBudget = []
 
       //
@@ -35,7 +35,7 @@ export default {
     transaction_grouping: (state, getters) => {
       console.log('transaction_grouping re-run')
 
-      return getters.transactionsOnBudget.reduce(function(rv, item) {
+      return getters.transactionsOnBudget.reduce(function (rv, item) {
         var date_key = 'date' in item ? item.date.slice(0, 7) : 'noddd'
         ;(rv[date_key] = rv[date_key] || []).push(item)
 
@@ -62,12 +62,12 @@ export default {
         var sum = 0
 
         //For each transaction in the month. value is array of transactions
-        final[key] = value.reduce(function(rv, item) {
+        final[key] = value.reduce(function (rv, item) {
           var date_key = 'date' in item ? item.date.slice(0, 7) : 'noddd'
           var amount = 'value' in item ? item.value : 0
           var id = ''
 
-          getters.categories.forEach(category => {
+          getters.categories.forEach((category) => {
             if (category._id === 'income' || category._id === 'incomeNextMonth' || category._id === null) {
               id = category._id
             } else {
@@ -93,7 +93,7 @@ export default {
      */
     month_category_lookup: (state, getters) => {
       console.log('monthCategoryBudgets lookup re-run')
-      return getters.monthCategoryBudgets.reduce(function(map, obj) {
+      return getters.monthCategoryBudgets.reduce(function (map, obj) {
         if (!map[obj.date.slice(0, 7)]) {
           map[obj.date.slice(0, 7)] = {}
         }
@@ -108,14 +108,10 @@ export default {
      */
     all_months: (state, getters) => {
       const combined = getters.monthCategoryBudgets.concat(getters.transactions)
-      var months = [...new Set(combined.map(entry => entry.date.slice(0, 7)))].sort()
+      var months = [...new Set(combined.map((entry) => entry.date.slice(0, 7)))].sort()
       const [lastMonth] = months.slice(-1)
-      const lastMonthPlusOne = moment(lastMonth)
-        .add(1, 'M')
-        .format('YYYY-MM')
-      const lastMonthPlusTwo = moment(lastMonth)
-        .add(2, 'M')
-        .format('YYYY-MM')
+      const lastMonthPlusOne = moment(lastMonth).add(1, 'M').format('YYYY-MM')
+      const lastMonthPlusTwo = moment(lastMonth).add(2, 'M').format('YYYY-MM')
 
       return months.concat(lastMonthPlusOne).concat(lastMonthPlusTwo)
     }
@@ -123,6 +119,15 @@ export default {
   mutations: {
     GET_MONTHLY_DATA(state, payload) {
       state.monthlyData = payload
+    },
+    REORDER_MASTER_CATEGORIES(state, payload) {
+      payload.forEach((master, i) => {
+        master.sort = i
+        this.dispatch('commitDocToPouchAndVuex')
+      })
+    },
+    UPDATE_RECONCILED(state, transactionsToLock) {
+      transactionsToLock.map((transactionToLock) => transactionToLock.reconciled = true)      
     }
   },
   actions: {
@@ -145,7 +150,7 @@ export default {
         const t7 = performance.now()
 
         //Iterate each month
-        getters.all_months.forEach(month => {
+        getters.all_months.forEach((month) => {
           final_data[month] = {}
           final_data[month].categories = {}
           var summaryData = {
@@ -158,15 +163,12 @@ export default {
             available_to_budget_last_month: _.get(previous_month, `summaryData.available_to_budget_this_month`, 0)
           }
 
-          const previousMonth = moment(month)
-            .subtract(1, 'M')
-            .format('YYYY-MM')
+          const previousMonth = moment(month).subtract(1, 'M').format('YYYY-MM')
 
           //Iterate over each category
           _.forEach(
-            getters.categories.filter(cat => cat._id !== 'income').filter(cat => cat._id !== 'incomeNextMonth'),
-            function(category) {
-              const t0 = performance.now()
+            getters.categories.filter((cat) => cat._id !== 'income').filter((cat) => cat._id !== 'incomeNextMonth'),
+            function (category) {
 
               const cat_id = category._id ? category._id.slice(-36) : null
               const spent = _.get(getters.transaction_lookup, `${month}.${cat_id}`, 0)
@@ -174,12 +176,7 @@ export default {
               const activity = spent + budgeted
               const prev_month = _.get(previous_month, `categories.${cat_id}.overspending`, false)
 
-              // const category_balance =
-              //   prev_month && (prev_month.balance > 0 || prev_month.overspending)
-              //     ? activity + prev_month.balance
-              //     : activity;
               const isOverspending = _.get(getters.month_category_lookup, `${month}.${cat_id}.overspending`, false)
-              const t1 = performance.now()
 
               var category_balance
               var category_balance_raw = _.get(previous_month, `categories.${cat_id}.balance`, 0)
@@ -188,11 +185,6 @@ export default {
               } else {
                 category_balance = activity
               }
-
-              // const category_balance =
-              //   (previous_month.categories[cat_id] && previous_month.categories[cat_id] && previous_month.categories[cat_id].balance > 0) || prev_month
-              //     ? activity + previous_month.categories[cat_id].balance
-              //     : activity;
 
               if (isOverspending) {
                 //Need to carry over overspent balance to next month
@@ -208,7 +200,6 @@ export default {
               summaryData.overspent += category_balance < 0 && !isOverspending ? category_balance : 0
               summaryData.budgeted_this_month += budgeted
 
-              // console.log("Call to SECTION took " + (t1 - t0) + " milliseconds.");
             }
           )
 
@@ -252,10 +243,8 @@ export default {
         _id: `budget-opened_${budget_id}`
       }
 
-      context.dispatch('commitDocToPouchAndVuex', budget).then(result => {
-        context
-          .dispatch('setSelectedBudgetID', result.id.slice(-36))
-          .then(context.dispatch('initializeBudgetCategories'))
+      context.dispatch('commitDocToPouchAndVuex', budget).then((result) => {
+        context.dispatch('setSelectedBudgetID', result.id.slice(-36))
       })
       context.dispatch('commitDocToPouchAndVuex', budget_opened)
     },
@@ -268,10 +257,10 @@ export default {
           startkey: 'budget-opened_',
           endkey: 'budget-opened_\ufff0'
         })
-        .then(result => {
+        .then((result) => {
           context.commit('GET_BUDGET_OPENED', result.rows)
         })
-        .catch(err => {
+        .catch((err) => {
           console.log(err)
           context.commit('API_FAILURE', err)
         })
@@ -293,20 +282,20 @@ export default {
             startkey: `b_${budget_id}_`,
             endkey: `b_${budget_id}_\ufff0`
           })
-          .then(result => {
+          .then((result) => {
             //Add deleted key to each
             const rowsToDelete = {}
-            rowsToDelete.docs = result.rows.map(v => ({ ...v.doc, _deleted: true }))
+            rowsToDelete.docs = result.rows.map((v) => ({ ...v.doc, _deleted: true }))
             console.log('going to delete..', rowsToDelete)
             //Bulk delete
             context.dispatch('commitBulkDocsToPouchAndVuex', rowsToDelete).then(
-              response => {
+              (response) => {
                 this._vm.$pouch
                   .get(`budget-opened_${budget_id}`)
-                  .then(function(doc) {
+                  .then(function (doc) {
                     context.dispatch('deleteDocFromPouchAndVuex', doc)
                   })
-                  .catch(function(err) {
+                  .catch(function (err) {
                     console.log(err)
                   })
 
@@ -316,7 +305,7 @@ export default {
 
                 resolve(response)
               },
-              error => {
+              (error) => {
                 reject(error)
                 context.commit('API_FAILURE', error)
               }
@@ -371,7 +360,7 @@ export default {
     /// Budget
     ///
     updateBudgetAmount(context, payload) {
-      context.dispatch('commitDocToPouchAndVuex', payload).catch(error => {
+      context.dispatch('commitDocToPouchAndVuex', payload).catch((error) => {
         console.log('updateBudgetAmount error:', error)
       })
     },
@@ -401,7 +390,6 @@ export default {
 
         payload.overspending = !payload.overspending
       }
-      console.log(payload)
       context.dispatch('updateBudgetAmount', payload)
     },
 
@@ -409,7 +397,7 @@ export default {
     /// Account
     ///
     createUpdateAccount(context, payload) {
-      context.dispatch('commitDocToPouchAndVuex', payload.account).then(response => {
+      context.dispatch('commitDocToPouchAndVuex', payload.account).then((response) => {
         if (payload.initialBalance) {
           const initTransaction = {
             account: response.id.slice(-36),
@@ -440,7 +428,7 @@ export default {
               emit(doc)
             }
           })
-          .then(result2 => {
+          .then((result2) => {
             console.log('delete account', result2.total_rows)
             if (result2.total_rows > 0) {
               // Account still has transactions, so resolve with amount of transactions in account for error message.
@@ -451,7 +439,7 @@ export default {
               resolve('Success')
             }
           })
-          .catch(err => {
+          .catch((err) => {
             reject('Error')
             console.log(err)
           })
@@ -482,7 +470,9 @@ export default {
      */
     async getPayeeID(context, payload) {
       //First, check if this payee has already been created
-      const payeeLookup = Object.keys(context.getters.payee_map).find(key => context.getters.payee_map[key] === payload)
+      const payeeLookup = Object.keys(context.getters.payee_map).find(
+        (key) => context.getters.payee_map[key] === payload
+      )
 
       if (payeeLookup) {
         return payeeLookup
@@ -509,6 +499,7 @@ export default {
      */
     saveMirroredTransferTransaction(context, payload) {
       var mirroredTransferTransaction = Object.assign({}, payload)
+      var mirrorExists = false
 
       //Check if the mirrored transaction doesn't exist then we create
       if (payload.transfer) {
@@ -516,9 +507,13 @@ export default {
           context.getters.transactionsLookupByID[
             `b_${context.getters.selectedBudgetID}_transaction_${payload.transfer}`
           ]
-
-        mirroredTransferTransaction = Object.assign({}, context.getters.transactions[index])
-      } else {
+        if (index)
+        {
+          mirrorExists = true
+          mirroredTransferTransaction = Object.assign({}, context.getters.transactions[index])
+        }
+      }
+      if (!mirrorExists) {
         //Creating new transaction
         mirroredTransferTransaction._id = `b_${
           context.getters.selectedBudgetID
@@ -549,12 +544,10 @@ export default {
       //Check if this is a transfer transaction. if so, get the account ID
       //TODO: only let this be a transfer if the account actually exists?
       if (payload.payee && payload.payee.includes('Transfer: ')) {
-        //account_id is the account the original transfer is going to
-        const account_id = Object.keys(context.getters.account_map).find(
-          key => context.getters.account_map[key] === payload.payee.slice(10)
+        const destination_account_id = Object.keys(context.getters.account_map).find(
+          (key) => context.getters.account_map[key] === payload.payee.slice(10)
         )
-
-        payload.payee = account_id
+        payload.payee = destination_account_id
         const mirroredTransferID = await context.dispatch('saveMirroredTransferTransaction', payload)
         payload.transfer = mirroredTransferID
         payload.category = null
@@ -564,7 +557,7 @@ export default {
 
       payload.value = sanitizeValueInput(payload.value)
 
-      await context.dispatch('getPayeeID', payload.payee).then(response => {
+      await context.dispatch('getPayeeID', payload.payee).then((response) => {
         payload.payee = response
         return context.dispatch('commitDocToPouchAndVuex', payload)
       })
@@ -581,11 +574,12 @@ export default {
 
       //Search for transactions to lock
       const transactionsToLock = context.getters.transactions_by_account[payload.account]
-        .filter(trans => !trans.reconciled)
-        .filter(trans => trans.cleared)
+        .filter((trans) => !trans.reconciled)
+        .filter((trans) => trans.cleared)
 
       //Update reconciled field
-      transactionsToLock.map(x => (x.reconciled = true))
+      // transactionsToLock.map((x) => (x.reconciled = true))
+      context.commit("UPDATE_RECONCILED", transactionsToLock)
 
       //Commit to pouchdb
       context.dispatch('commitBulkDocsToPouchAndVuex', transactionsToLock)
@@ -611,7 +605,7 @@ export default {
       let categoriesGroupedByMaster = JSON.parse(JSON.stringify(context.getters.categoriesGroupedByMaster))
 
       //First, we update the subcategory to it's correct mastercategory
-      context.dispatch('commitDocToPouchAndVuex', item).then(result => {
+      context.dispatch('commitDocToPouchAndVuex', item).then((result) => {
         let categoriesGroupedByMaster = JSON.parse(JSON.stringify(context.getters.categoriesGroupedByMaster))
         // Then iterate through them and re-set all their sort values
         for (const [key, masterArray] of Object.entries(categoriesGroupedByMaster)) {
@@ -669,13 +663,12 @@ export default {
         ]
       }
       for (let [master, subCategories] of Object.entries(starterCategories)) {
-        context.dispatch('createMasterCategory', master).then(response => {
-          subCategories.forEach(sub => {
+        context.dispatch('createMasterCategory', master).then((response) => {
+          subCategories.forEach((sub) => {
             const payload = {
               category_name: sub,
               masterCategoryForModalForm: response.id.slice(-36)
             }
-            console.log('paylaod', payload)
             context.dispatch('createCategory', payload)
           })
         })
@@ -683,6 +676,14 @@ export default {
     },
 
     createMockTransactions(context) {
+      if (context.getters.accounts.length < 1) {
+        context.commit("SET_SNACKBAR_MESSAGE", {
+          snackbarMessage: 'At least one account required',
+          snackbarColor: 'error'
+        })
+        return
+      }
+
       var mockData = []
 
       //Create a bunch of transactions
@@ -691,7 +692,7 @@ export default {
           //Create budgeted amount
           const m1 = m.toString().padStart(2, '0')
 
-          context.getters.categories.forEach(cat => {
+          context.getters.categories.forEach((cat) => {
             const category_id = cat._id ? cat._id.slice(-36) : null
 
             if (category_id) {
@@ -712,12 +713,12 @@ export default {
 
             console.log(`${y}-${m1}-${d1}`)
             const item = {
-              account: context.getters.accounts[Math.floor(Math.random() * context.getters.accounts.length)]._id.slice(
-                -36
-              ),
-              category: context.getters.categories[
-                Math.max(Math.floor(Math.random() * context.getters.categories.length), 3)
-              ]._id.slice(-36),
+              account:
+                context.getters.accounts[Math.floor(Math.random() * context.getters.accounts.length)]._id.slice(-36),
+              category:
+                context.getters.categories[
+                  Math.max(Math.floor(Math.random() * context.getters.categories.length), 3)
+                ]._id.slice(-36),
               cleared: true,
               approved: true,
               value: Math.floor(Math.random() * Math.floor(50000) - 20000),
@@ -746,7 +747,7 @@ export default {
 function sortDict(obj) {
   return Object.keys(obj)
     .sort()
-    .reduce(function(result, key) {
+    .reduce(function (result, key) {
       result[key] = obj[key]
       return result
     }, {})

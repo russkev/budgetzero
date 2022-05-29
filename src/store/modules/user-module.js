@@ -19,8 +19,6 @@ export default {
   },
   mutations: {
     SET_USER(state, data) {
-      // console.log(data)
-
       if (data) {
         state.user.email = data.email
         state.user.uid = data.uid
@@ -112,7 +110,6 @@ export default {
           retry: true
         })
         .on('change', function(change) {
-          // yo, something changed!
           context.commit('SET_STATUS_MESSAGE', `Syncing ${moment().fromNow()}`)
           console.log('change detected')
           context.dispatch('getAllDocsFromPouchDB')

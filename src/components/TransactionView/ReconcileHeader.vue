@@ -81,7 +81,7 @@ export default {
     BaseDialogModalComponent
   },
   props: {
-    reconcileAmount: String
+    reconcileAmount: Number
   },
   data() {
     return {

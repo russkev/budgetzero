@@ -5,9 +5,7 @@
       <span class="subtitle pl-2">{{ packageVersion }}</span>
       <v-divider class="pb-4" />
 
-      <h3 class="mx-2 py-2">
-        Backup
-      </h3>
+      <h3 class="mx-2 py-2">Backup</h3>
 
       <v-btn color="grey darken-2" dark class="mb-2" small @click="$store.dispatch('exportBudgetAsJSON')">
         Backup Entire Database
@@ -22,26 +20,8 @@
 
       <span class="pl-2">Backup current budget: {{ this.$store.getters.selectedBudgetID }} </span>
 
-      <h3 class="mx-2 pt-2">
-        Restore
-      </h3>
+      <h3 class="mx-2 pt-2">Restore</h3>
 
-      <!-- <v-sheet
-        
-        class="ma-2 mr-4 pa-2"
-        color="grey lighten-2"
-        elevation="2"
-        outlined
-        rounded
-        shaped
-        justify="center"
-      >
-        <v-alert
-          dense
-          type="info"
-        >
-          Before restoring, delete your database or all documents
-        </v-alert> -->
       <v-file-input v-model="backupFile" label="Restore Backup File" @change="onFileChange" />
       <v-btn
         color="accent"
@@ -53,7 +33,6 @@
       >
         Restore From File
       </v-btn>
-      <!-- </v-sheet> -->
 
       <br />
       <v-btn
@@ -61,15 +40,15 @@
         color="primary"
         outlined
         dark
-        class="mb-3 "
+        class="mb-3"
         small
         @click="$store.dispatch('loadLocalBudgetRoot')"
       >
         Refresh Database
       </v-btn>
 
-      <v-expansion-panels class="mb-4">
-        <v-expansion-panel class="grey lighten-3">
+      <v-expansion-panels class="mb-4" v-model="panel">
+        <v-expansion-panel class="grey lighten-3" v-model="panel" expand>
           <v-expansion-panel-header>
             <h3>
               Advanced Sync <span class="subtitle-1 ml-3">{{ sync_state }}</span>
@@ -80,9 +59,7 @@
               >Sync to remote CouchDB server:
               <v-tooltip bottom>
                 <template #activator="{ on }">
-                  <v-icon color="grey" v-on="on">
-                    mdi-information
-                  </v-icon>
+                  <v-icon color="grey" v-on="on"> mdi-information </v-icon>
                 </template>
                 <span
                   >Examples: <code>http://localhost:5984/mybudget</code> or
@@ -95,12 +72,8 @@
                 <v-text-field v-model="remoteSyncURLInput" label="Remote CouchDB URL" required />
               </v-col>
               <v-col cols="5">
-                <v-btn color="primary" dark small @click="startRemoteSync()">
-                  Set Custom Sync URL
-                </v-btn>
-                <v-btn color="primary" outlined dark class="ml-2" small @click="clearRemoteSync()">
-                  Clear
-                </v-btn>
+                <v-btn color="primary" dark small @click="startRemoteSync()"> Set Custom Sync URL </v-btn>
+                <v-btn color="primary" outlined dark class="ml-2" small @click="clearRemoteSync()"> Clear </v-btn>
               </v-col>
             </v-row>
           </v-expansion-panel-content>
@@ -108,20 +81,13 @@
       </v-expansion-panels>
 
       <!-- v-if="!isProd" -->
-      <v-expansion-panels>
+      <v-expansion-panels class="mb-4">
         <v-expansion-panel class="grey lighten-3">
           <v-expansion-panel-header>
-            <h3>
-              Debugging
-            </h3>
+            <h3>Debugging</h3>
           </v-expansion-panel-header>
           <v-expansion-panel-content>
-            <tree-view :data="transactions" :options="{ maxDepth: 0 }" />
-            <tree-view :data="accounts" :options="{ maxDepth: 0 }" />
-            <tree-view :data="monthlyData" :options="{ maxDepth: 0 }" />
-            <v-alert type="warning">
-              Warning: Do not use these unless you know what you're doing.
-            </v-alert>
+            <v-alert type="warning"> Warning: Do not use these unless you know what you're doing. </v-alert>
             <v-btn color="red" dark class="mb-2" small data-cy="delete-local-db" @click="deleteLocalDatabase">
               Erase Local Database
             </v-btn>
@@ -135,14 +101,10 @@
             </v-btn>
 
             <br />
-            <v-btn color="red" dark class="mb-2" small @click="deleteAllDocs">
-              Delete All Docs from db
-            </v-btn>
+            <v-btn color="red" dark class="mb-2" small @click="deleteAllDocs"> Delete All Docs from db </v-btn>
 
             <br />
-            <v-btn color="red" dark class="mb-2" small @click="deleteAllDocs">
-              Delete All Docs from db
-            </v-btn>
+            <v-btn color="red" dark class="mb-2" small @click="deleteAllDocs"> Delete All Docs from db </v-btn>
             <span class="pl-2"
               >Deletes all docs (transactions, accounts, budget amounts, etc). This will replicate deletion to remote
               databases.</span
@@ -161,19 +123,38 @@
             <br />
 
             <v-btn color="purple" dark class="mb-2" small @click="$store.dispatch('createMockTransactions')">
-              createMockTransactions
+              Create Mock Transactions
             </v-btn>
             <span class="pl-2">Loads fake data for testing purposes.</span>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
 
+      <v-expansion-panels>
+        <v-expansion-panel class="grey lighten-3">
+          <v-expansion-panel-header>
+            <h3>Raw Database Data</h3>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>
+            <p>
+              Transactions:
+              <tree-view :data="transactions" :options="{ maxDepth: 0 }" />
+            </p>
+            <p>
+              Accounts:
+              <tree-view :data="accounts" :options="{ maxDepth: 0 }" />
+            </p>
+            <p>
+              Monthly Data:
+              <tree-view :data="monthlyData" :options="{ maxDepth: 0 }" />
+            </p>
+          </v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </v-col>
 
     <v-col cols="12">
-      <h3 class="mx-2 py-2">
-        Payees
-      </h3>
+      <h3 class="mx-2 py-2">Payees</h3>
       <v-data-table :headers="headers" :items="payees.sort((a, b) => (a.name > b.name ? 1 : -1))" class="elevation-1" />
     </v-col>
   </v-row>
@@ -197,7 +178,8 @@ export default {
         { text: 'Name', value: 'name' },
         { text: 'id', value: '_id' }
       ],
-      isProd: process.env.NODE_ENV === 'production'
+      isProd: process.env.NODE_ENV === 'production',
+      panel: 0
     }
   },
   computed: {
@@ -216,7 +198,7 @@ export default {
   },
   watch: {
     // whenever question changes, this function will run
-    remoteSyncURL: function(newQuestion, oldQuestion) {
+    remoteSyncURL: function (newQuestion, oldQuestion) {
       this.remoteSyncURLInput = newQuestion
     }
   },
@@ -239,7 +221,7 @@ export default {
       this.accountsForImport = []
       this.selectedAccount = {}
 
-      reader.onload = e => {
+      reader.onload = (e) => {
         const vm = this
         let data = JSON.parse(e.target.result)
 

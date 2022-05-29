@@ -1,3 +1,4 @@
+@use "sass:math";
 $data-table-regular-row-height: 40px;
 $data-table-regular-header-height: 28px;
 $data-table-regular-header-font-size: 14px;
@@ -178,7 +179,7 @@ $checkbox-left-px: -2;
       }
 
       &::after {
-        transform: translate($checkbox-left-px * 2px, ($checkbox-size-px/6) * 1px);
+        transform: translate($checkbox-left-px * 2px, math.div($checkbox-size-px, 6) * 1px);
         border-left: 0;
         border-color: $material-ui-blue;
       }
@@ -234,7 +235,7 @@ $checkbox-left-px: -2;
       width: 10px;
       height: -$checkbox-left-px * 2px;
       float: left;
-      transform: translate(($checkbox-size-px/6) * 1px, -$checkbox-left-px * 2px) rotate(-45deg);
+      transform: translate(math.div($checkbox-size-px, 6) * 1px, -$checkbox-left-px * 2px) rotate(-45deg);
       border: solid 2px transparent;
       border-top: 0;
       border-right: 0;
@@ -261,7 +262,7 @@ $checkbox-left-px: -2;
 @mixin slider-thumb {
   width: $material-ui-slider-thumb-size;
   height: $material-ui-slider-thumb-size;
-  margin-top: -1 * ($material-ui-slider-thumb-size / 2) + 1;
+  margin-top: -1 * ($material-ui-slider-thumb-size * 0.5) + 1;
   border: 0;
   border-radius: 50%;
   background: $material-ui-blue;

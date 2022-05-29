@@ -163,7 +163,7 @@
 
     <draggable
       v-model="masterCategories"
-      tag="v-row"
+      tag="div"
       class="pt-0"
       handle=".handle"
       :group="{ name: 'people', pull: 'false', put: false }"
@@ -351,7 +351,7 @@ export default {
   components: {
     draggable,
     BaseDialogModalComponent,
-    BudgetHeader
+    BudgetHeader,
   },
   data() {
     return {
@@ -384,7 +384,8 @@ export default {
         return this.$store.getters.masterCategories
       },
       set(value) {
-        this.$store.dispatch('reorderMasterCategories', value)
+
+        this.$store.commit('REORDER_MASTER_CATEGORIES', value)
       }
     },
     categoriesGroupedByMaster: {
@@ -392,7 +393,7 @@ export default {
         return this.$store.getters.categoriesGroupedByMaster
       },
       set(value) {
-        this.$store.dispatch('reorderMasterCategories', value)
+        return
       }
     },
     categories: {
@@ -421,12 +422,6 @@ export default {
       this.$store.dispatch('flipCategoryHidden', cat)
     },
     subCategoryMoveEnd(event) {
-      // console.log(event.to.className.slice(-36)); //ID of new master category
-      // console.log(event.newIndex); //Sort index of sub category
-
-      // console.log(event.from.className.slice(-36)); //ID of old master category
-      // console.log(event.oldIndex); //Sort index of sub category
-      // console.log(event);
       this.$store.dispatch('reorderSubCategory', event)
     },
     editCategory(category) {

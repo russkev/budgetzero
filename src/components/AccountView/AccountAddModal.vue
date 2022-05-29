@@ -1,8 +1,8 @@
 <template>
   <v-dialog v-model="show" max-width="500px">
-    <BaseModalComponent :item="item" @confirm="deleteItem(item)">
+    <BaseModalComponent :item="editeditem" @confirm="deleteItem(editeditem)">
       <template #title>
-        <span v-if="editedIndex === -1">Add Account</span>
+        <span v-if="!editeditem._id">Add Account</span>
         <span v-else>Edit Account</span>
       </template>
       <template #body>

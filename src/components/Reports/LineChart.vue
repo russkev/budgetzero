@@ -20,7 +20,6 @@ export default {
   computed: {},
   watch: {
     chartData: function() {
-      console.log('changed')
       this.chart.destroy()
       this.renderLineChart()
     }

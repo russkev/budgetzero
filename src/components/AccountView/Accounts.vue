@@ -16,7 +16,9 @@
 
           <AccountAddModal v-model="showModal" :editeditem="editedItem" @save="save()" />
 
-          <v-btn id="addAccountBtn" color="accent" dark class="mb-2" @click="create()"> Add Account </v-btn>
+          <v-btn id="addAccountBtn" color="accent" :dark="budgetExists" :disabled="!budgetExists" class="mb-2" @click="create()" >
+            Add Account
+          </v-btn>
         </v-toolbar>
         <v-divider class="pb-4" />
       </template>
@@ -95,11 +97,17 @@ export default {
         initialBalance: 0
       },
       showModal: false,
-      nameRules: [v => !!v || 'Name is required', v => (v && v.length <= 10) || 'Name must be less than 10 characters']
+      nameRules: [
+        (v) => !!v || 'Name is required',
+        (v) => (v && v.length <= 10) || 'Name must be less than 10 characters'
+      ]
     }
   },
   computed: {
-    ...mapGetters(['accounts', 'selectedBudgetID'])
+    ...mapGetters(['accounts', 'selectedBudgetID']),
+    budgetExists() {
+      return this.selectedBudgetID != "null"
+    }
   },
   mounted() {},
   created() {},
@@ -123,19 +131,23 @@ export default {
           agreeBtnText: 'Delete Account',
           cancelBtnColor: 'grey'
         })
-        .then(confirm => {
+        .then((confirm) => {
           this.$store
             .dispatch('deleteAccount', this.accounts[index])
-            .then(response => {
+            .then((response) => {
               console.log('Got some data, now lets show something in this component', response)
             })
-            .catch(error => {
-              // Action failed     
-              this.$root.$confirm('Deletion Failed', `This account still has ${error} transaction(s). You must delete those transactions to delete the account.`, {
-                onlyShowAgreeBtn: true,
-                agreeBtnColor: 'accent',
-                agreeBtnText: 'Ok',
-              })
+            .catch((error) => {
+              // Action failed
+              this.$root.$confirm(
+                'Deletion Failed',
+                `This account still has ${error} transaction(s). You must delete those transactions to delete the account.`,
+                {
+                  onlyShowAgreeBtn: true,
+                  agreeBtnColor: 'accent',
+                  agreeBtnText: 'Ok'
+                }
+              )
             })
         })
     },

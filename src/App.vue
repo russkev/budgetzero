@@ -56,8 +56,13 @@ export default {
     }
   },
   computed: {
-    isModalVisibleCreateBudget() {
-      return !this.$store.getters.budgetExists
+    isModalVisibleCreateBudget: {
+      get() {
+        return !this.$store.getters.budgetExists
+      },
+      set() {
+        return
+      }
     },
     snackbarMessage() {
       return this.$store.getters.snackbarMessage

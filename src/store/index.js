@@ -34,7 +34,6 @@ export default new Vuex.Store({
   },
   mutations: {
     SET_STATUS_MESSAGE(state, message) {
-      // console.log('failure');
       state.sync_state = `${message}`
     },
     SET_SNACKBAR_MESSAGE(state, payload) {

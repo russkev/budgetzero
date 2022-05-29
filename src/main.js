@@ -33,6 +33,8 @@ import CreateBudget from './components/CreateBudget.vue'
 import Manage from './components/Manage.vue'
 import Reports from './components/Reports.vue'
 
+import 'firebaseui/dist/firebaseui.css'
+
 /**
  * Sweet Alert
  */

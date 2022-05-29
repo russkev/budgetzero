@@ -244,11 +244,7 @@
 
                 <!-- Date input -->
 
-                <td
-                  v-if="item._id === editedItem._id"
-                  id="edit-date-input"
-                  class="pr-0 pl-1 editing-cell-container"
-                >
+                <td v-if="item._id === editedItem._id" id="edit-date-input" class="pr-0 pl-1 editing-cell-container">
                   <div class="editing-cell-container">
                     <v-menu
                       v-model="dateMenu"
@@ -357,24 +353,15 @@
                       data-cy="category-input"
                     >
                       <template #item="{ item }">
-                        <v-list-tile-content>
-                          <v-list-tile-title>{{ item.name }}</v-list-tile-title>
-                        </v-list-tile-content>
-                        <v-spacer />
+                        <v-list-item-content>
+                          <v-list-item-title v-text="item.name"></v-list-item-title>
+                        </v-list-item-content>
                         <v-list-item-action>
-                          <!-- TODO: 'month_selected' should probably be the transaction month -->
                           <v-list-item-action-text>
                             {{ (getBalance(item) / 100) | currency }}
                           </v-list-item-action-text>
                         </v-list-item-action>
                       </template>
-                      <!--                     
-                    <template slot="item" slot-scope="data">
-                      <v-list-tile-content>
-                        <v-list-tile-title v-html="data.item.name" />
-                        <v-list-tile-subtitle>test</v-list-tile-subtitle>
-                      </v-list-tile-content>
-                    </template> -->
                     </v-select>
                   </div>
                 </td>
@@ -664,13 +651,13 @@ export default {
       isReconciling: false,
       isModalVisibleForReconcile: false,
       currencyRule: [
-        v => {
+        (v) => {
           if (isNaN(parseFloat(v)) && v.length > 0) return 'Numbers only'
           return true
         }
       ],
       rules: {
-        date: value => {
+        date: (value) => {
           const pattern = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/
           return pattern.test(value) || 'Invalid date.'
         }
@@ -707,17 +694,22 @@ export default {
         this.editedItem.value = -Math.round(this.parseInflowOutflow(newValue) * 100)
       }
     },
-    payee() {
-      if (this.editedItem.payee in this.payee_map) {
-        return this.payee_map[this.editedItem.payee]
-      } else if (this.editedItem.payee in this.account_map) {
-        return 'Transfer: ' + this.account_map[this.editedItem.payee]
-      } else {
-        return 'Error'
+    payee: {
+      get() {
+        if (this.editedItem.payee in this.payee_map) {
+          return this.payee_map[this.editedItem.payee]
+        } else if (this.editedItem.payee in this.account_map) {
+          return 'Transfer: ' + this.account_map[this.editedItem.payee]
+        } else {
+          return 'Error'
+        }
+      },
+      set(newValue) {
+        return
       }
     },
     accountNames() {
-      return this.accounts.map(acc => 'Transfer: ' + acc.name)
+      return this.accounts.map((acc) => 'Transfer: ' + acc.name)
     },
     payeesForDropdown() {
       return this.payees.concat(this.accountNames)
@@ -729,7 +721,7 @@ export default {
     headersForSingleAccount() {
       // Only need the Account column if viewing all accounts.
       if (this.isSingleAccount) {
-        return this.headers.filter(col => col.text !== 'Account')
+        return this.headers.filter((col) => col.text !== 'Account')
       } else {
         return this.headers
       }
@@ -738,7 +730,7 @@ export default {
       // All categories for transaction editing dropdown.
       // TODO: Sort by order...and group by master category?
       return this.categories
-        .map(cat => {
+        .map((cat) => {
           cat.truncated_id = cat._id && cat._id.length >= 36 ? cat._id.slice(-36) : cat._id
           return cat
         })
@@ -761,13 +753,11 @@ export default {
       if (!this.search) return trans
 
       console.log('payee is', trans)
-      return trans.filter(row => {
+      return trans.filter((row) => {
         if (this.payee_map[row.payee] !== undefined) {
           return (
             this.payee_map[row.payee].toUpperCase().includes(this.search.toUpperCase()) ||
-            JSON.stringify(row)
-              .toUpperCase()
-              .includes(this.search.toUpperCase())
+            JSON.stringify(row).toUpperCase().includes(this.search.toUpperCase())
           )
         } else {
           return false
@@ -776,7 +766,8 @@ export default {
     },
     selected_account() {
       if (this.isSingleAccount) {
-        const find = this.accounts.find(({ _id }) => _id.slice(-36) === this.$route.params.account_id)
+        const find =
+          this.accounts.find(({ _id }) => _id.slice(-36) === this.$route.params.account_id) || this.defaultItem
         return find
       }
       return { _id: null, name: 'All Accounts', type: '' }
@@ -826,7 +817,7 @@ export default {
           cancelButtonText: 'Cancel',
           confirmButtonText: 'Edit Anyway',
           confirmButtonColor: '#990000'
-        }).then(continueEdit => {
+        }).then((continueEdit) => {
           if (continueEdit.value) {
             this.creatingNewTransaction = false
             this.editedIndex = this.transactions.indexOf(item)
@@ -855,7 +846,7 @@ export default {
         confirmButtonText: 'Delete',
         confirmButtonColor: '#990000',
         cancelButtonColor: '#263238'
-      }).then(continueDelete => {
+      }).then((continueDelete) => {
         if (continueDelete.value) {
           this.$store.dispatch('deleteDocFromPouchAndVuex', JSON.parse(JSON.stringify(item)))
           this.expanded = []
@@ -913,15 +904,15 @@ export default {
     },
     approveSelectedTransactions() {
       var payload = JSON.parse(JSON.stringify(this.selected))
-      payload.map(trans => (trans.approved = true))
+      payload.map((trans) => (trans.approved = true))
 
       this.$store.dispatch('commitBulkDocsToPouchAndVuex', payload)
       this.selected = []
     },
     clearSelectedTransactions() {
       var payload = JSON.parse(JSON.stringify(this.selected))
-      payload.map(trans => (trans.cleared = true))
-      payload.map(trans => (trans.approved = true))
+      payload.map((trans) => (trans.cleared = true))
+      payload.map((trans) => (trans.approved = true))
 
       this.$store.dispatch('commitBulkDocsToPouchAndVuex', payload)
       this.selected = []
@@ -936,7 +927,7 @@ export default {
       console.log(category)
       var payload = JSON.parse(JSON.stringify(this.selected))
       const id = category._id ? category._id.slice(-36) : null
-      payload.map(trans => (trans.category = id))
+      payload.map((trans) => (trans.category = id))
 
       this.$store.dispatch('commitBulkDocsToPouchAndVuex', payload)
       this.selected = []

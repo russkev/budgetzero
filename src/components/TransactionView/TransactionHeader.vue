@@ -1,12 +1,12 @@
 <template>
   <v-row class="ma-0 header_background">
-    <v-col sm="auto" class="pa-0 ">
+    <v-col sm="auto" class="pa-0">
       <v-card flat class="header_background">
         <v-card-title class="headline font-weight-bold primary--text">
           {{ selected_account.name }}
         </v-card-title>
         <v-card-subtitle>
-          <span class="subtitle-2 grey--text text--darken-2">{{ selected_account.type }} ACCOUNT</span>
+          <span class="subtitle-2 grey--text text--darken-2"> ACCOUNT</span>
         </v-card-subtitle>
       </v-card>
     </v-col>
@@ -22,7 +22,7 @@
       </v-card>
     </v-col>
 
-    <v-col sm="auto" style="display: inline-flex; align-items: center;" class="pa-0 header_background">
+    <v-col sm="auto" style="display: inline-flex; align-items: center" class="pa-0 header_background">
       <span class="headline pa-0 grey--text">+</span>
     </v-col>
 
@@ -37,7 +37,7 @@
       </v-card>
     </v-col>
 
-    <v-col sm="auto" style="display: inline-flex; align-items: center;" class="pa-0 header_background">
+    <v-col sm="auto" style="display: inline-flex; align-items: center" class="pa-0 header_background">
       <span class="headline pa-0 grey--text">=</span>
     </v-col>
 
@@ -63,9 +63,7 @@
             tile
             @click="$emit('showReconcileModal')"
           >
-            <v-icon large color="primary lighten-1" v-on="on">
-              mdi-lock
-            </v-icon>
+            <v-icon large color="primary lighten-1" v-on="on"> mdi-lock </v-icon>
           </v-btn>
         </template>
         <span>Reconcile</span>
@@ -80,11 +78,17 @@ import Vue from 'vue'
 export default {
   props: ['selected_account'],
   data() {
-    return {}
+    return {
+      defaultBalance: {
+        cleared: 0,
+        uncleared: 0,
+        working: 0
+      }
+    }
   },
   computed: {
     selected_account_balance() {
-      return this.$store.getters.account_balances[this.$store.state.route.params.account_id]
+      return this.$store.getters.account_balances[this.$store.state.route.params.account_id] || this.defaultBalance
     }
   },
   methods: {}

@@ -205,7 +205,7 @@
               </v-btn>
             </v-list-item>
             <v-list-item v-if="!mini">
-              <v-btn block text outline v-on="on">
+              <v-btn block text outlined v-on="on">
                 <v-icon left color="white"> mdi-help-circle-outline </v-icon>
                 <span>Help</span>
               </v-btn>
@@ -222,18 +222,6 @@
           </v-list>
         </v-menu>
 
-        <!-- Login Button -->
-        <!-- <v-list-item v-if="mini && !user.loggedIn" class="pl-2">
-          <v-btn icon class="accent" :to="{ path: '/login' }">
-            <v-icon color="white"> mdi-login </v-icon>
-          </v-btn>
-        </v-list-item>
-        <v-list-item v-if="!mini && !user.loggedIn">
-          <v-btn block class="accent" :to="{ path: '/login' }">
-            <v-icon left color="white"> mdi-login </v-icon>
-            <span>Login</span>
-          </v-btn>
-        </v-list-item> -->
       </v-list>
 
       <!-- Logged-in Menu -->

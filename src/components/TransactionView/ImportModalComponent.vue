@@ -65,10 +65,10 @@
 
           <v-card-actions>
             <v-spacer />
-            <v-btn color="error" flat @click.stop="show = false">
+            <v-btn color="error" @click.stop="show = false">
               Cancel
             </v-btn>
-            <v-btn color="primary" flat @click="pushTransactionsToBackend">
+            <v-btn color="primary" :disabled="!chosenFile" @click="pushTransactionsToBackend">
               Import Transactions
             </v-btn>
           </v-card-actions>
@@ -149,10 +149,10 @@
 
             <v-card-actions>
               <v-spacer />
-              <v-btn color="error" flat @click.stop="show = false">
+              <v-btn color="error" @click.stop="show = false">
                 Cancel
               </v-btn>
-              <v-btn color="primary" flat :disabled="!parseCsv" @click="importCSVTransactions">
+              <v-btn color="primary" :disabled="!parseCsv" @click="importCSVTransactions">
                 Import Transactions
               </v-btn>
             </v-card-actions>
@@ -169,6 +169,10 @@ import { mapGetters } from 'vuex'
 import _ from 'lodash'
 import { VueCsvImport } from 'vue-csv-import'
 import moment from 'moment'
+import {parse as parseOFX} from 'ofx-js'
+// import ofx from 'ofx'
+// import { ofx } from 'ofx'
+// const ofx = require('ofx')
 
 export default {
   name: 'ImportFile',
@@ -288,19 +292,6 @@ export default {
         }
       })
 
-      // this.$swal({
-      //   title: "Auto close alert!",
-      //   html: "I will close in <b></b> milliseconds.",
-      //   preConfirm: login => {
-      //   }
-      // }).then(result => {
-      //   /* Read more about handling dismissals below */
-      //   // if (result.dismiss === Swal.DismissReason.timer) {
-      //   //   console.log("I was closed by the timer");
-      //   // }
-      // });
-
-      // this.$swal.showLoading();
       this.$swal({
         title: 'Loading...',
         html: 'Importing transactions. Please wait...',
