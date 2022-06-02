@@ -185,8 +185,10 @@
             :sort-desc="true"
             class="elevation-1 transaction-table"
             :height="windowHeight"
-            :items-per-page="items_per_page"
             fixed-header
+            :footer-props="{
+              'items-per-page-options': [10, 20, 50, 100, 200]
+            }"
           >
             <!-- <template v-slot:header="{ props: { headers } }">
             <thead>
@@ -494,6 +496,11 @@
             <template #no-data>
               <span>No transactions in this account.</span>
             </template>
+            <!-- <v-data-footer
+              items-per-page-options=[10,20,50,100,200]
+            >
+
+            </v-data-footer> -->
           </v-data-table>
         </v-form>
       </v-col>
@@ -646,7 +653,6 @@ export default {
       importModalVisible: false,
       reconcileModal: false,
       windowHeight: 0,
-      items_per_page: 0,
       reconcileAmount: null,
       isReconciling: false,
       isModalVisibleForReconcile: false,
@@ -943,7 +949,6 @@ export default {
     },
     onResize() {
       this.windowHeight = window.innerHeight - 195
-      this.items_per_page = parseInt(this.windowHeight / 40) - 1
     },
     reconcileAccount() {
       this.isReconciling = true

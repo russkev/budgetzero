@@ -2,18 +2,12 @@
   <v-dialog v-model="show" max-width="500px">
     <v-card>
       <v-card-title class="primary">
-        <v-toolbar-title class="white--text">
-          Import Transactions
-        </v-toolbar-title>
+        <v-toolbar-title class="white--text"> Import Transactions </v-toolbar-title>
       </v-card-title>
 
       <v-tabs v-model="tab" grow>
-        <v-tab>
-          OFX
-        </v-tab>
-        <v-tab>
-          CSV
-        </v-tab>
+        <v-tab> OFX </v-tab>
+        <v-tab> CSV </v-tab>
       </v-tabs>
 
       <v-tabs-items v-model="tab">
@@ -22,9 +16,7 @@
             <v-file-input v-model="chosenFile" label="Upload OFX file" @change="onFileChange" />
 
             <div v-if="selectedAccount">
-              <span>
-                Select Account to Import:
-              </span>
+              <span> Select Account to Import: </span>
               <v-select v-model="selectedAccount" :items="accountsForImport" item-text="id" item-value="transactions" />
 
               <span class="heading"
@@ -37,21 +29,17 @@
                 <template #default>
                   <thead>
                     <tr>
-                      <th class="text-left">
-                        Date
-                      </th>
-                      <th class="text-left">
-                        Payee
-                      </th>
-                      <th class="text-left">
-                        Amount
-                      </th>
+                      <th class="text-left">Date</th>
+                      <th class="text-left">Payee</th>
+                      <th class="text-left">Memo</th>
+                      <th class="text-left">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="item in selectedAccount" :key="item.date">
-                      <td>{{ item.DTPOSTED }}</td>
+                    <tr v-for="item in selectedAccount" :key="item.FITID">
+                      <td>{{ transactionDate(item.DTPOSTED) }}</td>
                       <td>{{ item.NAME }}</td>
+                      <td>{{ item.MEMO}}
                       <td>{{ item.TRNAMT }}</td>
                     </tr>
                   </tbody>
@@ -65,9 +53,7 @@
 
           <v-card-actions>
             <v-spacer />
-            <v-btn color="error" @click.stop="show = false">
-              Cancel
-            </v-btn>
+            <v-btn color="error" @click.stop="show = false"> Cancel </v-btn>
             <v-btn color="primary" :disabled="!chosenFile" @click="pushTransactionsToBackend">
               Import Transactions
             </v-btn>
@@ -90,9 +76,7 @@
                 /></label>
               </template>
 
-              <template slot="error">
-                File type is invalid
-              </template>
+              <template slot="error"> File type is invalid </template>
 
               <template slot="thead">
                 <tr>
@@ -102,38 +86,24 @@
               </template>
 
               <template slot="next" slot-scope="{ load }">
-                <v-btn class="my-3" @click.prevent="load">
-                  parse csv file
-                </v-btn>
-              </template>
-
-              <template slot="submit" slot-scope="{ submit }">
-                <v-btn @click.prevent="submitCSVImport">
-                  send!
-                </v-btn>
+                <v-btn class="my-3" @click.prevent="load"> parse csv file </v-btn>
               </template>
             </vue-csv-import>
 
             <v-divider />
-            <span class="heading pt-3"
-              >Preview
+            <span class="heading pt-3">
+              Preview
               <strong>{{ parseCsv ? parseCsv.length : 0 }}</strong>
-              transactions for import:</span
-            >
+              transactions for import:
+            </span>
 
             <v-simple-table v-if="parseCsv" height="300px">
               <template #default>
                 <thead>
                   <tr>
-                    <th class="text-left">
-                      Date
-                    </th>
-                    <th class="text-left">
-                      Payee
-                    </th>
-                    <th class="text-left">
-                      Amount
-                    </th>
+                    <th class="text-left">Date</th>
+                    <th class="text-left">Payee</th>
+                    <th class="text-left">Amount</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -149,12 +119,8 @@
 
             <v-card-actions>
               <v-spacer />
-              <v-btn color="error" @click.stop="show = false">
-                Cancel
-              </v-btn>
-              <v-btn color="primary" :disabled="!parseCsv" @click="importCSVTransactions">
-                Import Transactions
-              </v-btn>
+              <v-btn color="error" @click.stop="show = false"> Cancel </v-btn>
+              <v-btn color="primary" :disabled="!parseCsv" @click="importCSVTransactions"> Import Transactions </v-btn>
             </v-card-actions>
           </v-card-text>
         </v-tab-item>
@@ -164,15 +130,13 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import Banking from 'banking'
 import { mapGetters } from 'vuex'
 import _ from 'lodash'
 import { VueCsvImport } from 'vue-csv-import'
 import moment from 'moment'
-import {parse as parseOFX} from 'ofx-js'
-// import ofx from 'ofx'
-// import { ofx } from 'ofx'
-// const ofx = require('ofx')
+import {getAccountId, getAccountType, getAccountBankId, getAccountTransactions, getDate, cyrb53Hash } from '../../ofxParse'
 
 export default {
   name: 'ImportFile',
@@ -188,7 +152,7 @@ export default {
         imported: 0,
         skipped: 0
       },
-      chosenFile: null
+      chosenFile: null,
     }
   },
   computed: {
@@ -215,9 +179,8 @@ export default {
       this.accountsForImport = []
       this.selectedAccount = {}
 
-      reader.onload = e => {
-        const vm = this
-        Banking.parse(e.target.result, res => {
+      reader.onload = (e) => {
+        Banking.parse(e.target.result, (res) => {
           const potentialBankAccounts = _.get(res, 'body.OFX.BANKMSGSRSV1.STMTTRNRS', [])
           const potentialCreditAccounts = _.get(res, 'body.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS', [])
           var creditAccountsForImport = []
@@ -229,12 +192,12 @@ export default {
             bankAccountsForImport.push(potentialBankAccounts)
           }
 
-          bankAccountsForImport = bankAccountsForImport.map(acct => {
+          bankAccountsForImport = bankAccountsForImport.map((acct) => {
             let standardAcct = {}
-            standardAcct.id = acct.STMTRS.BANKACCTFROM.ACCTID
-            standardAcct.type = acct.STMTRS.BANKACCTFROM.ACCTTYPE
-            standardAcct.bankid = acct.STMTRS.BANKACCTFROM.BANKID
-            standardAcct.transactions = acct.STMTRS.BANKTRANLIST.STMTTRN
+            standardAcct.id = getAccountId(acct)
+            standardAcct.type = getAccountType(acct)
+            standardAcct.bankid = getAccountBankId(acct)
+            standardAcct.transactions = getAccountTransactions(acct)
             return standardAcct
           })
 
@@ -244,7 +207,7 @@ export default {
             creditAccountsForImport.push(potentialCreditAccounts)
           }
 
-          creditAccountsForImport = creditAccountsForImport.map(acct => {
+          creditAccountsForImport = creditAccountsForImport.map((acct) => {
             let standardAcct = {}
             standardAcct.id = acct.CCSTMTRS.CCACCTFROM.ACCTID
             standardAcct.type = 'CREDIT'
@@ -253,17 +216,24 @@ export default {
             return standardAcct
           })
 
-          console.log(bankAccountsForImport, creditAccountsForImport)
-          vm.accountsForImport = vm.accountsForImport.concat(bankAccountsForImport, creditAccountsForImport)
+          this.accountsForImport = this.accountsForImport.concat(bankAccountsForImport, creditAccountsForImport)
+          if (this.accountsForImport.length > 0 && this.accountsForImport[0]) {
+            this.selectedAccount = this.accountsForImport[0].transactions
+          }
 
           // TODO: Make import button enabled here
         })
       }
-      reader.readAsText(file)
+      if (file) {
+        reader.readAsText(file)
+      }
+    },
+    transactionDate(value) {
+      return getDate(value)
     },
     async pushTransactionsToBackend() {
       const transactionListToImport = []
-      this.selectedAccount.forEach(trn => {
+      this.selectedAccount.forEach((trn) => {
         //Create a custom importID that appends account to the FITID
         const importID = `${this.account}_${trn.FITID}`
         if (this.$store.getters.listOfImportIDs.includes(importID) && trn.FITID !== '' && trn.FITID !== null) {
@@ -276,8 +246,8 @@ export default {
             cleared: false,
             approved: false,
             value: Math.round(trn.TRNAMT * 100),
-            date: `${trn.DTPOSTED.substring(0, 4)}-${trn.DTPOSTED.substring(4, 6)}-${trn.DTPOSTED.substring(6, 8)}`,
-            memo: null,
+            date: getDate(trn.DTPOSTED),
+            memo: trn.MEMO,
             reconciled: false,
             flag: '#ffffff',
             payee: trn.NAME ? trn.NAME : null,
@@ -310,7 +280,7 @@ export default {
     async importCSVTransactions() {
       const transactionListToImport = []
 
-      this.parseCsv.forEach(trn => {
+      this.parseCsv.forEach((trn) => {
         //This should probably go somewhere else.
         //Necessary to ensure we strip commas from soon-to-be imported transactions
         const val = trn.amount.toString().replace(/[^0-9.-]/g, '')
@@ -367,9 +337,6 @@ export default {
       this.$swal('Import Complete', msg, 'success')
 
       this.resetData()
-    },
-    submitCSVImport() {
-      console.log('csv import')
     },
     resetData() {
       this.selectedAccount = []
