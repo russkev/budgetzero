@@ -10,6 +10,7 @@
       </template>
       <template #body>
         <v-text-field v-model="budgetName" id="budgetNameField" label="Enter a name for your budget" required />
+        <v-checkbox v-model="useDefaultCategories" id="budgetUseDefaultCategories" label="Use default categories?" />
       </template>
       <template #actions>
         <v-spacer />
@@ -52,7 +53,8 @@ export default {
     return {
       drawer: null,
       mini: false,
-      budgetName: null
+      budgetName: null,
+      useDefaultCategories: false,
     }
   },
   computed: {
@@ -86,7 +88,7 @@ export default {
   methods: {
     async createBudget() {
       this.$store.dispatch('loadLocalBudgetRoot')
-      this.$store.dispatch('createBudget', this.budgetName)
+      this.$store.dispatch('createBudget', {name: this.budgetName, use_default: this.useDefaultCategories})
 
       if (
         await this.$root.$confirm('Budget Created!', `A budget named ${this.budgetName} has been created!`, {

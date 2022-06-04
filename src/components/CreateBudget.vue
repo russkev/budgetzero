@@ -10,6 +10,7 @@
       <v-card-text class="pb-0">
         <slot name="body">
           <v-text-field v-model="budgetName" id="budgetName" label="Name" required />
+          <v-checkbox v-model="use_default_budget" id="useDefaultBudget" label="Use default budget categories?" />
         </slot>
       </v-card-text>
 
@@ -31,12 +32,13 @@
 export default {
   data() {
     return {
-      budgetName: null
+      budgetName: null,
+      use_default_budget: false,
     }
   },
   methods: {
     async createBudget() {
-      this.$store.dispatch('createBudget', this.budgetName)
+      this.$store.dispatch('createBudget', {name: this.budgetName, use_default: this.use_default_budget})
 
       if (
         await this.$root.$confirm('Budget Created!', `A budget named ${this.budgetName} has been created!`, {

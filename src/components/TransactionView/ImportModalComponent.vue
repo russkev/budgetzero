@@ -164,6 +164,7 @@ export default {
       set(value) {
         if (!value) {
           this.$emit('close')
+          this.resetData()
         }
       }
     }
@@ -339,8 +340,8 @@ export default {
       this.resetData()
     },
     resetData() {
-      this.selectedAccount = []
-      this.accountsForImport = []
+      this.selectedAccount = null
+      this.accountsForImport = null
       ;(this.importCount = {
         imported: 0,
         skipped: 0

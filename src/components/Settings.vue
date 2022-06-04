@@ -102,13 +102,13 @@
 
             <br />
             <v-btn color="red" dark class="mb-2" small @click="deleteAllDocs"> Delete All Docs from db </v-btn>
-
-            <br />
-            <v-btn color="red" dark class="mb-2" small @click="deleteAllDocs"> Delete All Docs from db </v-btn>
             <span class="pl-2"
               >Deletes all docs (transactions, accounts, budget amounts, etc). This will replicate deletion to remote
               databases.</span
             >
+            <br />
+            <v-btn color="red" dark class="mb-2" small @click="deleteTransactions">Delete Transactions</v-btn>
+
             <br />
             <v-btn color="grey darken-2" dark class="mb-2" small @click="$store.dispatch('loadLocalBudgetRoot')">
               Reload Budget
@@ -206,7 +206,7 @@ export default {
     this.remoteSyncURLInput = this.remoteSyncURL
   },
   methods: {
-    ...mapActions(['deleteAllDocs', 'eraseAllDocs', 'deleteLocalDatabase', 'loadMockData']),
+    ...mapActions(['deleteTransactions', 'deleteAllDocs', 'eraseAllDocs', 'deleteLocalDatabase', 'loadMockData']),
     startRemoteSync() {
       this.$store.dispatch('startRemoteSyncToCustomURL', this.remoteSyncURLInput)
     },
@@ -222,17 +222,20 @@ export default {
       this.selectedAccount = {}
 
       reader.onload = (e) => {
-        const vm = this
-        let data = JSON.parse(e.target.result)
-
-        vm.backupFileParsed = data
+        try {
+          const vm = this
+          let data = JSON.parse(e.target.result)
+          vm.backupFileParsed = data
+        } catch(error) {
+          this.$store.commit('SET_SNACKBAR_MESSAGE', {
+            snackbarMessage: `Invalid file selected`,
+            snackbarColor: `error`
+          })
+          console.log(error.message)
+        }
       }
       reader.readAsText(this.backupFile)
     },
-    createBudget(budgetName) {
-      console.log('create called', budgetName)
-      this.$store.dispatch('createBudget', budgetName)
-    }
   }
 }
 </script>

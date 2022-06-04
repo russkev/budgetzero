@@ -127,7 +127,7 @@ export default {
       })
     },
     UPDATE_RECONCILED(state, transactionsToLock) {
-      transactionsToLock.map((transactionToLock) => transactionToLock.reconciled = true)      
+      transactionsToLock.map((transactionToLock) => (transactionToLock.reconciled = true))
     }
   },
   actions: {
@@ -169,7 +169,6 @@ export default {
           _.forEach(
             getters.categories.filter((cat) => cat._id !== 'income').filter((cat) => cat._id !== 'incomeNextMonth'),
             function (category) {
-
               const cat_id = category._id ? category._id.slice(-36) : null
               const spent = _.get(getters.transaction_lookup, `${month}.${cat_id}`, 0)
               const budgeted = _.get(getters.month_category_lookup, `${month}.${cat_id}.budget`, 0)
@@ -199,7 +198,6 @@ export default {
 
               summaryData.overspent += category_balance < 0 && !isOverspending ? category_balance : 0
               summaryData.budgeted_this_month += budgeted
-
             }
           )
 
@@ -228,10 +226,10 @@ export default {
      * @param {*} context
      * @param {string} budgetName The name of the budget to be created
      */
-    createBudget(context, payload) {
+    createBudget(context, { name, use_default }) {
       const budget_id = Vue.prototype.$vm.$uuid.v4()
       const budget = {
-        name: payload,
+        name: name,
         currency: 'USD',
         created: new Date().toISOString(),
         checkNumber: false,
@@ -244,7 +242,11 @@ export default {
       }
 
       context.dispatch('commitDocToPouchAndVuex', budget).then((result) => {
-        context.dispatch('setSelectedBudgetID', result.id.slice(-36))
+        context.dispatch('setSelectedBudgetID', result.id.slice(-36)).then(() => {
+          if (use_default) {
+            context.dispatch('initializeBudgetCategories')
+          }
+        })
       })
       context.dispatch('commitDocToPouchAndVuex', budget_opened)
     },
@@ -507,8 +509,7 @@ export default {
           context.getters.transactionsLookupByID[
             `b_${context.getters.selectedBudgetID}_transaction_${payload.transfer}`
           ]
-        if (index)
-        {
+        if (index) {
           mirrorExists = true
           mirroredTransferTransaction = Object.assign({}, context.getters.transactions[index])
         }
@@ -579,7 +580,7 @@ export default {
 
       //Update reconciled field
       // transactionsToLock.map((x) => (x.reconciled = true))
-      context.commit("UPDATE_RECONCILED", transactionsToLock)
+      context.commit('UPDATE_RECONCILED', transactionsToLock)
 
       //Commit to pouchdb
       context.dispatch('commitBulkDocsToPouchAndVuex', transactionsToLock)
@@ -677,7 +678,7 @@ export default {
 
     createMockTransactions(context) {
       if (context.getters.accounts.length < 1) {
-        context.commit("SET_SNACKBAR_MESSAGE", {
+        context.commit('SET_SNACKBAR_MESSAGE', {
           snackbarMessage: 'At least one account required',
           snackbarColor: 'error'
         })

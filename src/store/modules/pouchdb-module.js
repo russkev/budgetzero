@@ -428,8 +428,7 @@ export default {
       var index = null
 
       //Validation
-      if (payload && payload._id)
-      {
+      if (payload && payload._id) {
         if (payload._id.startsWith('budget_')) {
           docType = 'budget'
           _id = payload._id.substring(7)
@@ -439,7 +438,6 @@ export default {
           docType = payload._id.substring(payload._id.indexOf('_', 5) + 1, payload._id.lastIndexOf('_', 55))
         }
       }
-
 
       var validationResult = {
         errors: 'Validation schema not found.'
@@ -573,16 +571,41 @@ export default {
       })
     },
 
+    deleteTransactions({ getters, dispatch }) {
+      var db = this._vm.$pouch
+      console.log('ACCOUNTS')
+      let accounts = getters.transactions_by_account
+      let account_ids = Object.keys(accounts)
+
+      account_ids.forEach(account_id => {
+        let account_transactions = accounts[account_id]
+        account_transactions.map(function (transaction) {
+          return db.remove(transaction._id, transaction._rev)
+        })
+      });
+
+      console.log('deleting complete')
+      dispatch('getAllDocsFromPouchDB')
+      db.compact()
+        .then(function (info) {
+          // compaction complete
+          console.log('compact complete')
+        })
+        .catch(function (err) {
+          console.log(`compact failed: ${err}`)
+          // handle errors
+        })
+    },
+
     /**
      * Deletes all docs (transactions, accounts, budget amounts, etc). This will replicate deletion to remote databases.
      *
      */
     deleteAllDocs(context) {
       var db = this._vm.$pouch
-      db
-        .allDocs()
+
+      db.allDocs()
         .then(function (result) {
-          
           // Promise isn't supported by all browsers; you may want to use bluebird
           return Promise.all(
             result.rows.map(function (row) {
@@ -590,17 +613,17 @@ export default {
             })
           )
         })
-        .then(function () {
+        .then(function (result) {
           console.log('all docs deleted')
           context.dispatch('getAllDocsFromPouchDB')
 
-          this._vm.$pouch
-            .compact()
+          db.compact()
             .then(function (info) {
               // compaction complete
               console.log('compact complete')
             })
             .catch(function (err) {
+              console.log(`compact failed: ${err}`)
               // handle errors
             })
           // done!
@@ -670,7 +693,7 @@ export default {
               return row
             })
 
-            reformattedExport.push(b_object)
+          reformattedExport.push(b_object)
           reformattedExport.push(b_opened_object)
 
           var blob = new Blob([JSON.stringify(reformattedExport)], {
@@ -684,11 +707,9 @@ export default {
     },
 
     deleteLocalDatabase(context) {
-      this._vm.$pouch
-        .destroy()
-        .catch(function (err) {
-          console.log('error deleting database')
-        })
+      this._vm.$pouch.destroy().catch(function (err) {
+        console.log('error deleting database')
+      })
       context.commit('DELETE_LOCAL_DB')
       context.commit('UPDATE_SELECTED_BUDGET', null)
     },
