@@ -5,6 +5,7 @@ node_modules
 /cloud_functions
 docs/
 /docs
+/budgetzero_local_db
 
 # local env files
 .env.local

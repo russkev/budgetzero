@@ -14,117 +14,117 @@ exports[`transaction table renders correct snapshot 1`] = `
       </v-btn-stub>
     </v-col-stub>
     <v-col-stub tag="div" class="py-1 body-1 font-weight-bold">
-      <v-menu-stub opendelay="0" closedelay="0" bottom="true" contentclass="" maxwidth="auto" nudgebottom="0" nudgeleft="0" nudgeright="0" nudgetop="0" nudgewidth="0" openonclick="true" closeonclick="true" closeoncontentclick="true" maxheight="auto" offsetx="true" origin="top left" transition="v-menu-transition">
+      <v-menu-stub opendelay="0" closedelay="0" bottom="true" openonclick="true" contentclass="" maxwidth="auto" nudgebottom="0" nudgeleft="0" nudgeright="0" nudgetop="0" nudgewidth="0" closeonclick="true" closeoncontentclick="true" maxheight="auto" offsetx="true" origin="top left" transition="v-menu-transition">
         <v-list-stub tag="div">
           <v-list-item-stub activeclass="" tag="div">
             <v-icon-stub dark="" color="primary" left=""> mdi-check-circle </v-icon-stub>
-            <v-list-item-title-stub>Approve</v-list-item-title-stub>
+            <v-list-item-title-stub tag="div">Approve</v-list-item-title-stub>
           </v-list-item-stub>
           <v-list-item-stub activeclass="" tag="div">
             <v-icon-stub dark="" color="primary" left=""> mdi-alpha-c-circle </v-icon-stub>
-            <v-list-item-title-stub>Clear</v-list-item-title-stub>
+            <v-list-item-title-stub tag="div">Clear</v-list-item-title-stub>
           </v-list-item-stub>
           <v-list-item-stub activeclass="" tag="div">
             <v-icon-stub dark="" color="red" left=""> mdi-delete </v-icon-stub>
-            <v-list-item-title-stub>Delete</v-list-item-title-stub>
+            <v-list-item-title-stub tag="div">Delete</v-list-item-title-stub>
           </v-list-item-stub>
-          <v-menu-stub opendelay="0" closedelay="0" bottom="true" openonhover="true" contentclass="" maxwidth="auto" nudgebottom="0" nudgeleft="0" nudgeright="0" nudgetop="0" nudgewidth="0" openonclick="true" closeonclick="true" closeoncontentclick="true" maxheight="auto" offsetx="true" origin="top left" transition="v-menu-transition">
+          <v-menu-stub opendelay="0" closedelay="0" bottom="true" openonclick="true" openonhover="true" contentclass="" maxwidth="auto" nudgebottom="0" nudgeleft="0" nudgeright="0" nudgetop="0" nudgewidth="0" closeonclick="true" closeoncontentclick="true" maxheight="auto" offsetx="true" origin="top left" transition="v-menu-transition">
             <v-list-stub tag="div">
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Birthdays </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Birthdays </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Cable TV </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Cable TV </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Car Insurance </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Car Insurance </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Car Maintenance </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Car Maintenance </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Car Payment </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Car Payment </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Car Replacement </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Car Replacement </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Charitable </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Charitable </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Christmas </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Christmas </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Clothing </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Clothing </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Electricity </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Electricity </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Emergency Fund </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Emergency Fund </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Fuel </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Fuel </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Groceries </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Groceries </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Household Goods </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Household Goods </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Income Next Month </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Income Next Month </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Income This Month </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Income This Month </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Internet </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Internet </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Medical/Dental </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Medical/Dental </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Phone </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Phone </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Rainy Day Funds </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Rainy Day Funds </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Rent/Mortgage </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Rent/Mortgage </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Renters Insurance </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Renters Insurance </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Restaurants </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Restaurants </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Retirement </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Retirement </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Spending Money </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Spending Money </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Student Loan Payment </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Student Loan Payment </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Tithing </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Tithing </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Uncategorized </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Uncategorized </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Vacation </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Vacation </v-list-item-title-stub>
               </v-list-item-stub>
               <v-list-item-stub activeclass="" tag="div">
-                <v-list-item-title-stub> Water </v-list-item-title-stub>
+                <v-list-item-title-stub tag="div"> Water </v-list-item-title-stub>
               </v-list-item-stub>
             </v-list-stub>
           </v-menu-stub>
         </v-list-stub>
       </v-menu-stub>
-      <v-tooltip-stub opendelay="0" closedelay="0" bottom="true" openonhover="true" contentclass="" maxwidth="auto" nudgebottom="0" nudgeleft="0" nudgeright="0" nudgetop="0" nudgewidth="0" tag="span"> <span>Delete</span></v-tooltip-stub>
+      <v-tooltip-stub opendelay="0" closedelay="0" bottom="true" openonclick="true" openonhover="true" openonfocus="true" contentclass="" maxwidth="auto" nudgebottom="0" nudgeleft="0" nudgeright="0" nudgetop="0" nudgewidth="0" tag="span"> <span>Delete</span></v-tooltip-stub>
       <v-btn-stub color="grey darken-1" tag="button" activeclass="" icon="true" type="button" class="white--text">
         <v-icon-stub> mdi-refresh </v-icon-stub>
       </v-btn-stub>
@@ -143,7 +143,7 @@ exports[`transaction table renders correct snapshot 1`] = `
     <v-col-stub tag="div" class="pa-0 ma-0">
       <importmodalcomponent-stub account="38e690f8-198f-4735-96fb-3a2ab15081c2"></importmodalcomponent-stub>
       <v-form-stub>
-        <v-data-table-stub mobilebreakpoint="600" items="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" options="[object Object]" sortby="date" sortdesc="true" customsort="[Function]" page="1" itemsperpage="13" groupby="" groupdesc="" customgroup="[Function]" locale="en-US" customfilter="[Function]" serveritemslength="-1" itemkey="_id" value="" expanded="" singleexpand="true" noresultstext="$vuetify.dataIterator.noResultsText" nodatatext="$vuetify.noDataText" loadingtext="$vuetify.dataIterator.loadingText" selectablekey="isSelectable" loaderheight="4" headers="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" showselect="true" height="573" fixedheader="true" expandicon="$expand" itemclass="" class="elevation-1 transaction-table"></v-data-table-stub>
+        <v-data-table-stub mobilebreakpoint="600" items="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" options="[object Object]" sortby="date" sortdesc="true" customsort="[Function]" page="1" itemsperpage="10" groupby="" groupdesc="" customgroup="[Function]" locale="en-US" customfilter="[Function]" serveritemslength="-1" itemkey="_id" value="" expanded="" singleexpand="true" noresultstext="$vuetify.dataIterator.noResultsText" nodatatext="$vuetify.noDataText" loadingtext="$vuetify.dataIterator.loadingText" footerprops="[object Object]" selectablekey="isSelectable" loaderheight="4" headers="[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object],[object Object]" showselect="true" height="573" fixedheader="true" expandicon="$expand" itemclass="" class="elevation-1 transaction-table"></v-data-table-stub>
       </v-form-stub>
     </v-col-stub>
   </v-row-stub>

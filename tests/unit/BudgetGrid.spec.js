@@ -154,6 +154,7 @@ describe("Modify button", () => {
 
     // Verify category name is prepopulated
     var input = wrapper.find("#txt-categoryName");
+    
     expect(input.element.value).toEqual(store.state.pouchdb.masterCategories[0].name);
   });
 

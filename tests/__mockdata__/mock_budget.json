@@ -434,7 +434,7 @@
       "value": { "rev": "1-73b38ddc7802b2b7e7f9e06247796b96" },
       "doc": {
         "name": "Debt",
-        "sort": 1,
+        "sort": 2,
         "collapsed": false,
         "_id": "b_5a98dc44-7982-4ecc-aa50-146fc4dc4e16_master-category_28cb60fc-f8c7-4201-9f46-7377f60dfdc4",
         "_rev": "1-73b38ddc7802b2b7e7f9e06247796b96"
@@ -446,7 +446,7 @@
       "value": { "rev": "1-7418966aa19c433a718fdcfaa4c65abd" },
       "doc": {
         "name": "Savings Goals",
-        "sort": 1,
+        "sort": 3,
         "collapsed": false,
         "_id": "b_5a98dc44-7982-4ecc-aa50-146fc4dc4e16_master-category_2b8b142a-588f-407d-a54d-88d7d30e3564",
         "_rev": "1-7418966aa19c433a718fdcfaa4c65abd"
@@ -458,7 +458,7 @@
       "value": { "rev": "1-0d649c4695909db0c98e34a735f43c94" },
       "doc": {
         "name": "Monthly Bills",
-        "sort": 1,
+        "sort": 4,
         "collapsed": false,
         "_id": "b_5a98dc44-7982-4ecc-aa50-146fc4dc4e16_master-category_aca2bd8b-476c-44f3-8ce6-d76c6eb90901",
         "_rev": "1-0d649c4695909db0c98e34a735f43c94"
@@ -470,7 +470,7 @@
       "value": { "rev": "1-1bdd1d600d4607e5cbe0b1747c28833c" },
       "doc": {
         "name": "Giving",
-        "sort": 1,
+        "sort": 5,
         "collapsed": false,
         "_id": "b_5a98dc44-7982-4ecc-aa50-146fc4dc4e16_master-category_fe1be5ed-b4f6-4d9c-9a49-9a7a44f9339b",
         "_rev": "1-1bdd1d600d4607e5cbe0b1747c28833c"

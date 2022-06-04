@@ -4,7 +4,6 @@ import Accounts from "@/components/AccountView/Accounts.vue";
 import Vuetify from "vuetify";
 import mock_budget from "@/../tests/__mockdata__/mock_budget.json";
 import store from "@/store";
-import uuid from "uuid";
 import Vue from "vue";
 Vue.use(Vuetify);
 
@@ -18,7 +17,11 @@ const $route = {
   }
 };
 
-const $uuid = uuid;
+const $uuid = {
+  v4() {
+    return '3528ac0b-19fe-4735-a2e7-9bb91d54b6ba'
+  }
+}
 
 const data = mock_budget.rows.map(row => row.doc);
 let numberOfAccounts = null;
@@ -55,7 +58,7 @@ describe("accounts table", () => {
       vuetify,
       mocks: {
         $route,
-        $uuid
+        $uuid,
       },
       stubs: {
         ImportModalComponent: true
@@ -80,7 +83,7 @@ describe("accounts table", () => {
     await wrapper.find("#addAccountBtn").trigger("click");
 
     // Verify modal is open
-    expect(wrapper.find(".v-dialog .title").text()).toEqual("Edit Account");
+    expect(wrapper.find(".v-dialog .title").text()).toEqual("Add Account");
   });
 
   it("create new account", async () => {
@@ -89,7 +92,6 @@ describe("accounts table", () => {
 
     //Mocks & setup
     wrapper.vm.$store.dispatch = jest.fn();
-    jest.spyOn(wrapper.vm.$uuid, "v4").mockReturnValueOnce("3528ac0b-19fe-4735-a2e7-9bb91d54b6ba");
 
     await wrapper.find("#nameField").setValue("nameofnewAccount");
     await wrapper.find("#typeField").setValue("CHECKING");
@@ -97,6 +99,7 @@ describe("accounts table", () => {
 
     await wrapper.find("#saveAccountBtn").trigger("click");
 
+    expect(wrapper.vm.$store.dispatch).toBeCalled()
     expect(wrapper.vm.$store.dispatch).toBeCalledWith("createUpdateAccount", {
       account: {
         _id: "b_cc28ac0b-19fe-4735-a2e7-9bb91d54b6cc_account_3528ac0b-19fe-4735-a2e7-9bb91d54b6ba",
