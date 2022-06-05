@@ -316,7 +316,10 @@ export default {
       } else {
         state.budgetExists = true
       }
-      state.budgetRoots = payload.map((budget) => budget.doc)
+      // Get budget ids
+      state.budgetRoots = payload.map((budget) => {
+        return budget.doc
+      })
     },
     SET_BUDGET_OPENED(state, payload) {
       state.budgetOpened = payload
@@ -402,14 +405,23 @@ export default {
       context.commit('CLEAR_REMOTE_SYNC_URL')
     },
     getAllDocsFromPouchDB(context) {
+      console.log('getAllDocsFromPouchDB')
+      const t1 = performance.now()
       return this._vm.$pouch
         .allDocs({
           include_docs: true,
-          attachments: true,
-          startkey: `b_${context.rootState.selectedBudgetID}`,
-          endkey: `b_${context.rootState.selectedBudgetID}\ufff0`
+          attachments: true
+          // startkey: `b_${context.rootState.selectedBudgetID}`,
+          // endkey: `b_${context.rootState.selectedBudgetID}\ufff0`
         })
         .then((result) => {
+          const t2 = performance.now()
+          console.log(
+            `DB PERFORMANCE: getAllDocsFromPouchDB TIME: ${t2 - t1} milliseconds, (${((t2 - t1) / 1000.0)
+              .toFixed(4)
+              .toString()}) seconds)`
+          )
+          console.log(result)
           context.commit('SET_POUCHDB_DOCS', result.rows)
           context.dispatch('calculateMonthlyData')
         })
@@ -572,29 +584,31 @@ export default {
     },
 
     deleteTransactions({ getters, dispatch }) {
-      var db = this._vm.$pouch
-      console.log('ACCOUNTS')
-      let accounts = getters.transactions_by_account
-      let account_ids = Object.keys(accounts)
+      return new Promise((resolve, reject) => {
+        var db = this._vm.$pouch
+        let accounts = getters.transactions_by_account
+        let account_ids = Object.keys(accounts)
 
-      account_ids.forEach(account_id => {
-        let account_transactions = accounts[account_id]
-        account_transactions.map(function (transaction) {
-          return db.remove(transaction._id, transaction._rev)
+        account_ids.forEach((account_id) => {
+          let account_transactions = accounts[account_id]
+          account_transactions.map(function (transaction) {
+            return db.remove(transaction._id, transaction._rev)
+          })
         })
-      });
 
-      console.log('deleting complete')
-      dispatch('getAllDocsFromPouchDB')
-      db.compact()
-        .then(function (info) {
-          // compaction complete
-          console.log('compact complete')
-        })
-        .catch(function (err) {
-          console.log(`compact failed: ${err}`)
-          // handle errors
-        })
+        dispatch('getAllDocsFromPouchDB')
+        db.compact()
+          .then(function (info) {
+            // compaction complete
+            console.log('compact complete')
+            resolve(info)
+          })
+          .catch(function (err) {
+            // handle errors
+            console.log(`compact failed: ${err}`)
+            reject(err)
+          })
+      })
     },
 
     /**
@@ -715,6 +729,8 @@ export default {
     },
 
     loadLocalBudgetRoot(context) {
+      console.log('loadLocalBudgetRoot')
+      const t1 = performance.now()
       return this._vm.$pouch
         .allDocs({
           include_docs: true,
@@ -723,6 +739,13 @@ export default {
           endkey: 'budget_\ufff0'
         })
         .then((result) => {
+          const t2 = performance.now()
+          console.log(
+            `DB PERFORMANCE: loadLocalBudgetRoot TIME: ${t2 - t1} milliseconds, (${((t2 - t1) / 1000.0)
+              .toFixed(4)
+              .toString()}) seconds)`
+          )
+          console.log(result)
           context.commit('GET_BUDGET_ROOTS', result.rows)
 
           if (localStorage.remoteSyncURL) {
@@ -745,14 +768,25 @@ export default {
     },
 
     loadBudgetOpened(context) {
+      console.log('loadBudgetOpened')
+      const t1 = performance.now()
       return this._vm.$pouch
         .allDocs({
+          // limit: 100,
           include_docs: true,
           attachments: true,
           startkey: 'budget-opened_',
           endkey: 'budget-opened_\ufff0'
+          // descending: true
         })
         .then((result) => {
+          const t2 = performance.now()
+          console.log(
+            `DB PERFORMANCE: loadBudgetOpened TIME: ${t2 - t1} milliseconds, (${((t2 - t1) / 1000.0)
+              .toFixed(4)
+              .toString()}) seconds)`
+          )
+          console.log(result)
           context.commit('SET_BUDGET_OPENED', result.rows)
         })
         .catch((err) => {

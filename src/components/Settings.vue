@@ -124,7 +124,9 @@
               databases.</span
             >
             <br />
-            <v-btn color="red" dark class="mb-2" small @click="deleteTransactions">Delete Transactions</v-btn>
+            <v-btn color="red" dark class="mb-2" small @click="onDeleteTransactions" :loading="deleteTransactionsIsLoading">
+              Delete Transactions
+            </v-btn>
 
             <br />
             <v-btn color="grey darken-2" dark class="mb-2" small @click="$store.dispatch('loadLocalBudgetRoot')">
@@ -201,6 +203,7 @@ export default {
       mockTransactionsModalIsVisible: false,
       mockTransactionsAmount: 1000,
       mockTransactionsCreateIsLoading: false,
+      deleteTransactionsIsLoading: false,
       panel: 0
     }
   },
@@ -273,9 +276,29 @@ export default {
             snackbarMessage: error,
             snackbarColor: 'error',
           })
+          console.log(error)
         })
         .finally(() => {
           this.mockTransactionsCreateIsLoading = false
+        })
+    },
+    onDeleteTransactions() {
+      this.deleteTransactionsIsLoading = true
+      this.$store.dispatch('deleteTransactions')
+        .then(() => {
+          this.$store.commit('SET_SNACKBAR_MESSAGE', {
+            snackbarMessage: `Successfully deleted transactions`,
+            color: 'success'
+          })
+        })
+        .catch((err) => {
+          this.$store.commit('SET_SNACKBAR_MESSAGE', {
+            snackbarMessage: err,
+            color: `error`
+          })
+        })
+        .finally(() => {
+          this.deleteTransactionsIsLoading = false
         })
     }
   }

@@ -2,7 +2,7 @@ import moment from 'moment'
 import Vue from 'vue'
 import validator from 'validator'
 import _ from 'lodash'
-import { sanitizeValueInput } from '../../helper.js'
+import { sanitizeValueInput, randomInt, randomString, generateId } from '../../helper.js'
 
 export default {
   state: {
@@ -278,7 +278,7 @@ export default {
           include_docs: true,
           attachments: true,
           startkey: 'budget-opened_',
-          endkey: 'budget-opened_\ufff0'
+          endkey: 'budget-opened_\ufff0',
         })
         .then((result) => {
           context.commit('GET_BUDGET_OPENED', result.rows)
@@ -303,7 +303,7 @@ export default {
             include_docs: true,
             attachments: true,
             startkey: `b_${budget_id}_`,
-            endkey: `b_${budget_id}_\ufff0`
+            endkey: `b_${budget_id}_\ufff0`,
           })
           .then((result) => {
             //Add deleted key to each
@@ -721,7 +721,7 @@ export default {
           const category = categories[randomInt(3, categories.length - 1)]
           const category_id = category._id ? category._id.slice(-36) : null
           const account_id = accounts[randomInt(0, accounts.length - 1)]._id.slice(-36)
-
+          console.log(generateId(date))
           return {
             account: account_id,
             category: category_id,
@@ -777,24 +777,4 @@ function sortDict(obj) {
       result[key] = obj[key]
       return result
     }, {})
-}
-
-function randomInt(min=0, max=100) {
-  let difference = max + 1 - min
-  let rand = Math.random();
-  rand = Math.floor(rand * difference)
-  return rand + min
-}
-
-function randomString(length = 100) {
-  const characters = '!@#$%^&*()_+~`|}{[]\:;?><,./-=0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-  let result = ''
-  for (var i = 0; i < length; i++) {
-    let character = ' '
-    if (randomInt(0, 10) != 0) {
-      character = characters[randomInt(0, characters.length - 1)]
-    }
-    result += character
-  }
-  return result
 }
