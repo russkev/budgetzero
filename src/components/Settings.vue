@@ -1,5 +1,22 @@
 <template>
   <v-row class="px-3 pt-2">
+    <BaseDialogModalComponent v-model="mockTransactionsModalIsVisible">
+      <template #title>
+        Create mock transactions
+      </template>
+      <template #body>
+        <span>Number of transactions to create:</span>
+        <v-text-field v-model="mockTransactionsAmount" type="number" />
+      </template>
+      <template #actions>
+        <v-btn color='grey' @click.stop="mockTransactionsModalIsVisible = false">
+          Cancel
+        </v-btn>
+        <v-btn color="accent" @click="onMockTransactionCreate()" :loading="mockTransactionsCreateIsLoading">
+          Create
+        </v-btn>
+      </template>
+    </BaseDialogModalComponent>
     <v-col>
       <span class="text-h3 pt-4">Settings</span>
       <span class="subtitle pl-2">{{ packageVersion }}</span>
@@ -122,10 +139,11 @@
             <span class="pl-2">Loads fake data for testing purposes.</span>
             <br />
 
-            <v-btn color="purple" dark class="mb-2" small @click="$store.dispatch('createMockTransactions')">
-              Create Mock Transactions
+            <v-btn color="purple" dark class="mb-2" small @click="mockTransactionsModalIsVisible = true">
+              Generate Mock Transactions
             </v-btn>
             <span class="pl-2">Loads fake data for testing purposes.</span>
+
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -162,10 +180,11 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import BaseDialogModalComponent from './Modals/BaseDialogModalComponent.vue'
 
 export default {
   name: 'Settings',
-  components: {},
+  components: {BaseDialogModalComponent},
   data() {
     return {
       remoteSyncURLInput: null,
@@ -179,6 +198,9 @@ export default {
         { text: 'id', value: '_id' }
       ],
       isProd: process.env.NODE_ENV === 'production',
+      mockTransactionsModalIsVisible: false,
+      mockTransactionsAmount: 1000,
+      mockTransactionsCreateIsLoading: false,
       panel: 0
     }
   },
@@ -236,6 +258,26 @@ export default {
       }
       reader.readAsText(this.backupFile)
     },
+    onMockTransactionCreate() {
+      this.mockTransactionsCreateIsLoading = true
+      this.$store.dispatch('createMockTransactions', this.mockTransactionsAmount)
+        .then((result) => {
+          this.$store.commit('SET_SNACKBAR_MESSAGE', {
+            snackbarMessage: `Created ${result} mock transactions`,
+            color: 'success'
+          })
+          this.mockTransactionsModalIsVisible = false
+        })
+        .catch((error) => {
+          this.$store.commit('SET_SNACKBAR_MESSAGE', {
+            snackbarMessage: error,
+            snackbarColor: 'error',
+          })
+        })
+        .finally(() => {
+          this.mockTransactionsCreateIsLoading = false
+        })
+    }
   }
 }
 </script>

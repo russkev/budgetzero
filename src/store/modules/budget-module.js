@@ -227,28 +227,49 @@ export default {
      * @param {string} budgetName The name of the budget to be created
      */
     createBudget(context, { name, use_default }) {
-      const budget_id = Vue.prototype.$vm.$uuid.v4()
-      const budget = {
-        name: name,
-        currency: 'USD',
-        created: new Date().toISOString(),
-        checkNumber: false,
-        _id: `budget_${budget_id}`
-      }
+      return new Promise((resolve, reject) => {
+        if (!name) {
+          context.commit('SET_SNACKBAR_MESSAGE', {
+            snackbarMessage: 'Invalid budget name',
+            snackbarColor: 'error'
+          })
+          reject(`Invalid budget name: ${name}`)
+        }
+        const budget_id = Vue.prototype.$vm.$uuid.v4()
+        const budget = {
+          name: name,
+          currency: 'USD',
+          created: new Date().toISOString(),
+          checkNumber: false,
+          _id: `budget_${budget_id}`
+        }
 
-      var budget_opened = {
-        opened: new Date().toISOString(),
-        _id: `budget-opened_${budget_id}`
-      }
+        var budget_opened = {
+          opened: new Date().toISOString(),
+          _id: `budget-opened_${budget_id}`
+        }
 
-      context.dispatch('commitDocToPouchAndVuex', budget).then((result) => {
-        context.dispatch('setSelectedBudgetID', result.id.slice(-36)).then(() => {
-          if (use_default) {
-            context.dispatch('initializeBudgetCategories')
-          }
-        })
+        context
+          .dispatch('commitDocToPouchAndVuex', budget)
+          .then((result) => {
+            context.dispatch('setSelectedBudgetID', result.id.slice(-36)).then(() => {
+              if (use_default) {
+                context.dispatch('initializeBudgetCategories')
+              }
+            }).catch((error) => {
+              reject(error)
+            })
+          })
+          .then(() => {
+            context.dispatch('commitDocToPouchAndVuex', budget_opened)
+          })
+          .then(() => {
+            resolve('Successfully created new budget')
+          })
+          .catch((error) => {
+            reject(error.message)
+          })
       })
-      context.dispatch('commitDocToPouchAndVuex', budget_opened)
     },
 
     getBudgetOpened(context) {
@@ -676,68 +697,72 @@ export default {
       }
     },
 
-    createMockTransactions(context) {
-      if (context.getters.accounts.length < 1) {
-        context.commit('SET_SNACKBAR_MESSAGE', {
-          snackbarMessage: 'At least one account required',
-          snackbarColor: 'error'
+    createMockTransactions(context, amount) {
+      return new Promise((resolve, reject) => {
+        const num_transactions = parseInt(amount)
+        if (!num_transactions) {
+          reject('Invalid amount')
+        }
+        if (context.getters.accounts.length < 1) {
+          reject("At least one account is required")
+        }
+        const year_start = 2017
+        const year_end = 2021
+
+        const categories = context.getters.categories
+        const accounts = context.getters.accounts
+
+        const mock_transactions = Array(num_transactions).fill(0).map(() => {
+          const year = randomInt(year_start, year_end)
+          const month = randomInt(1, 12).toString().padStart(2, '0')
+          const day = randomInt(1, 28).toString().padStart(2, '0')
+          const date = `${year}-${month}-${day}`
+
+          const category = categories[randomInt(3, categories.length - 1)]
+          const category_id = category._id ? category._id.slice(-36) : null
+          const account_id = accounts[randomInt(0, accounts.length - 1)]._id.slice(-36)
+
+          return {
+            account: account_id,
+            category: category_id,
+            cleared: true,
+            approved: true,
+            value: randomInt(-20000, 30000),
+            date: date,
+            memo: randomString(randomInt(0, 250)),
+            reconciled: false,
+            flag: '#ffffff',
+            payee: null,
+            transfer: null,
+            splits: [],
+            _id: `b_${context.getters.selectedBudgetID}_transaction_${Vue.prototype.$vm.$uuid.v4()}`,
+            _rev: ''
+          }
         })
-        return
-      }
 
-      var mockData = []
-
-      //Create a bunch of transactions
-      for (let y = 2017; y <= 2020; y++) {
-        for (let m = 1; m <= 12; m++) {
-          //Create budgeted amount
-          const m1 = m.toString().padStart(2, '0')
-
-          context.getters.categories.forEach((cat) => {
-            const category_id = cat._id ? cat._id.slice(-36) : null
-
-            if (category_id) {
-              const budgetamt_item = {
-                budget: Math.floor(Math.random() * Math.floor(50000) - 20000),
-                overspending: null,
-                note: '',
-                _id: `b_${context.getters.selectedBudgetID}_m_category_${y}-${m1}-01_${category_id}`
+        let mock_budget_data = []
+        for(let year = year_start; year <= year_end; year++) {
+          for(let month = 1; month <= 12; month++) {
+            const date = `${year}-${month.toString().padStart(2, '0')}-01`
+            categories.forEach((category) => {
+              const category_id = category._id ? category._id.slice(-36) : null
+              if (category_id) {
+                const budget_amount_item = {
+                  budget: randomInt(-20000, 30000),
+                  overspending: null,
+                  note: randomString(randomInt(0, 100)),
+                  _id: `b_${context.getters.selectedBudgetID}_m_category_${date}_${category_id}`,
+                }
+                mock_budget_data.push(budget_amount_item)
               }
-
-              mockData.push(budgetamt_item)
-              console.log(budgetamt_item)
-            }
-          })
-
-          for (let d = 1; d <= 28; d++) {
-            const d1 = d.toString().padStart(2, '0')
-
-            console.log(`${y}-${m1}-${d1}`)
-            const item = {
-              account:
-                context.getters.accounts[Math.floor(Math.random() * context.getters.accounts.length)]._id.slice(-36),
-              category:
-                context.getters.categories[
-                  Math.max(Math.floor(Math.random() * context.getters.categories.length), 3)
-                ]._id.slice(-36),
-              cleared: true,
-              approved: true,
-              value: Math.floor(Math.random() * Math.floor(50000) - 20000),
-              date: `${y}-${m1}-${d1}`,
-              memo: '',
-              reconciled: false,
-              flag: '#ffffff',
-              payee: null,
-              transfer: null,
-              splits: [],
-              _id: `b_${context.getters.selectedBudgetID}_transaction_${Vue.prototype.$vm.$uuid.v4()}`,
-              _rev: ''
-            }
-            mockData.push(item)
+            })
           }
         }
-      }
-      context.dispatch('commitBulkDocsToPouchAndVuex', mockData)
+
+        context.dispatch('commitBulkDocsToPouchAndVuex', mock_budget_data.concat(mock_transactions)).then(() => {
+          resolve(mock_transactions.length)
+        })
+      })
     }
   }
 }
@@ -752,4 +777,24 @@ function sortDict(obj) {
       result[key] = obj[key]
       return result
     }, {})
+}
+
+function randomInt(min=0, max=100) {
+  let difference = max + 1 - min
+  let rand = Math.random();
+  rand = Math.floor(rand * difference)
+  return rand + min
+}
+
+function randomString(length = 100) {
+  const characters = '!@#$%^&*()_+~`|}{[]\:;?><,./-=0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  let result = ''
+  for (var i = 0; i < length; i++) {
+    let character = ' '
+    if (randomInt(0, 10) != 0) {
+      character = characters[randomInt(0, characters.length - 1)]
+    }
+    result += character
+  }
+  return result
 }

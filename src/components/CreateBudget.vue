@@ -39,16 +39,19 @@ export default {
   methods: {
     async createBudget() {
       this.$store.dispatch('createBudget', {name: this.budgetName, use_default: this.use_default_budget})
-
-      if (
-        await this.$root.$confirm('Budget Created!', `A budget named ${this.budgetName} has been created!`, {
-          onlyShowAgreeBtn: true,
-          agreeBtnColor: 'accent',
-          agreeBtnText: 'Ok'
+        .then(() => {
+          this.$root.$confirm('Budget Created!', `A budget named ${this.budgetName} has been created!`, {
+            onlyShowAgreeBtn: true,
+            agreeBtnColor: 'accent',
+            agreeBtnText: 'Ok'
+          })
         })
-      ) {
-        this.$router.push({ path: `/budget` })
-      }
+        .then(() => {
+          this.$router.push({path: `/budget`})
+        })
+        .catch((error) => {
+          console.log(error.message)
+        })
     }
   }
 }
