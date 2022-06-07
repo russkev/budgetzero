@@ -509,15 +509,14 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import { mapGetters } from 'vuex'
-import validator from 'validator'
 import BaseDialogModalComponent from '../Modals/BaseDialogModalComponent.vue'
 import ImportModalComponent from './ImportModalComponent.vue'
 import ReconcileHeader from './ReconcileHeader'
 import TransactionHeader from './TransactionHeader'
 import _ from 'lodash'
-import { sanitizeValueInput } from '../../helper.js'
+import { sanitizeValueInput, generateId } from '../../helper.js'
+import { ID_LENGTH } from '../../constants'
 
 export default {
   name: 'Transactions',
@@ -529,6 +528,7 @@ export default {
   },
   data() {
     return {
+      ID_LENGTH,
       editMenuOpen: false,
       pagination: {
         sortBy: 'name'
@@ -737,7 +737,7 @@ export default {
       // TODO: Sort by order...and group by master category?
       return this.categories
         .map((cat) => {
-          cat.truncated_id = cat._id && cat._id.length >= 36 ? cat._id.slice(-36) : cat._id
+          cat.truncated_id = cat._id && cat._id.length >= ID_LENGTH.category ? cat._id.slice(-ID_LENGTH.category) : cat._id
           return cat
         })
         .sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0))
@@ -773,7 +773,7 @@ export default {
     selected_account() {
       if (this.isSingleAccount) {
         const find =
-          this.accounts.find(({ _id }) => _id.slice(-36) === this.$route.params.account_id) || this.defaultItem
+          this.accounts.find(({ _id }) => _id.slice(-ID_LENGTH.account) === this.$route.params.account_id) || this.defaultItem
         return find
       }
       return { _id: null, name: 'All Accounts', type: '' }
@@ -809,9 +809,6 @@ export default {
     addTransaction() {
       this.creatingNewTransaction = true
       this.expanded.push(this.defaultItem)
-    },
-    isUUID(text) {
-      return validator.isUUID(text)
     },
     editItem(item) {
       if (item.reconciled) {
@@ -874,7 +871,7 @@ export default {
         }
 
         if (this.creatingNewTransaction) {
-          this.editedItem._id = `b_${this.selectedBudgetID}_transaction_${Vue.prototype.$vm.$uuid.v4()}`
+          this.editedItem._id = `b_${this.selectedBudgetID}_transaction_${generateId(this.editItem.date)}`
         }
         this.editedItem.approved = true
 
@@ -932,7 +929,7 @@ export default {
     categorizeSelectedTransactions(category) {
       console.log(category)
       var payload = JSON.parse(JSON.stringify(this.selected))
-      const id = category._id ? category._id.slice(-36) : null
+      const id = category._id ? category._id.slice(-ID_LENGTH.category) : null
       payload.map((trans) => (trans.category = id))
 
       this.$store.dispatch('commitBulkDocsToPouchAndVuex', payload)

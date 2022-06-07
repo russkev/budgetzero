@@ -14,7 +14,7 @@ import _ from 'lodash'
 import moment from 'moment'
 import PouchDB from 'pouchdb'
 import mock_budget from '@/../tests/__mockdata__/mock_budget2.json'
-import { db } from '../../firebaseConfig'
+import { ID_LENGTH } from '../../constants'
 
 var FileSaver = require('file-saver')
 
@@ -45,8 +45,15 @@ export default {
     masterCategories: (state) => [...state.masterCategories].sort((a, b) => (a.sort > b.sort ? 1 : -1)),
     monthCategoryBudgets: (state) =>
       state.monthCategoryBudgets.map((row) => {
+
         // Extract date from the id and add it as a separate property
-        row.date = row._id.slice(50, 60)
+        const date_regex = /(?<=\_)[0-9]{4}\-[0-9]{2}\-[0-9]{2}(?=\_)/
+        const date = row._id.match(date_regex)
+        if (date.length > 0) {
+          row.date = date[0] 
+        } else {
+          row.date = ''
+        }
         return row
       }),
     payees: (state) => {
@@ -122,20 +129,20 @@ export default {
     budgetRoots: (state) => state.budgetRoots,
     budgetRootsMap: (state, getters) =>
       getters.budgetRoots.reduce((map, obj) => {
-        const id = obj._id ? obj._id.slice(-36) : null
-        obj.short_id = obj._id.slice(-36)
+        const id = obj._id ? obj._id.slice(-ID_LENGTH.budget) : null
+        obj.short_id = obj._id.slice(-ID_LENGTH.budget)
         map[id] = obj
         return map
       }, {}),
     budgetOpened: (state) =>
       state.budgetOpened.map((row) => {
         var obj = row.doc
-        obj.short_id = obj._id.slice(-36)
+        obj.short_id = obj._id.slice(-ID_LENGTH.budget)
         return obj
       }),
     budgetOpenedMap: (state, getters) =>
       getters.budgetOpened.reduce((map, obj) => {
-        const id = obj._id ? obj._id.slice(-36) : null
+        const id = obj._id ? obj._id.slice(-ID_LENGTH.budget) : null
         map[id] = obj
         return map
       }, {}),
@@ -144,7 +151,7 @@ export default {
     transactions_by_account: (state, getters) => _.groupBy(getters.transactions, 'account'),
     category_map: (state, getters) =>
       getters.categories.reduce((map, obj) => {
-        const id = obj._id ? obj._id.slice(-36) : null
+        const id = obj._id ? obj._id.slice(-ID_LENGTH.category) : null
         map[id] = obj.name
         return map
       }, {}),
@@ -152,7 +159,7 @@ export default {
 
     account_map: (getters) =>
       getters.accounts.reduce((map, obj) => {
-        map[obj._id.slice(-36)] = obj.name
+        map[obj._id.slice(-ID_LENGTH.account)] = obj.name
         return map
       }, {}),
 
@@ -185,15 +192,15 @@ export default {
 
       getters.accounts.forEach((account) => {
         // Add in missing account keys
-        if (!(account._id.slice(-36) in accountBalances)) {
-          accountBalances[account._id.slice(-36)] = { cleared: 0, uncleared: 0 }
+        if (!(account._id.slice(-ID_LENGTH.account) in accountBalances)) {
+          accountBalances[account._id.slice(-ID_LENGTH.account)] = { cleared: 0, uncleared: 0 }
         }
       })
       return accountBalances
     },
     payee_map: (state, getters) => {
       let payees = getters.payees.reduce((map, obj) => {
-        const id = obj._id ? obj._id.slice(-36) : null
+        const id = obj._id ? obj._id.slice(-ID_LENGTH.payee) : null
         map[id] = obj.name
         return map
       }, {})
@@ -203,7 +210,7 @@ export default {
     payee_array: (state, getters) =>
       getters.payees.map((obj) => {
         const rObj = {}
-        rObj.id = obj.id ? obj.id.slice(-36) : null
+        rObj.id = obj.id ? obj.id.slice(-ID_LENGTH.payee) : null
         rObj.name = obj.name
         return rObj
       }),
@@ -401,7 +408,7 @@ export default {
       context.commit('SET_STATUS_MESSAGE', 'Sync disabled')
     },
     clearRemoteSync(context) {
-      context.commit('cancelRemoteSync')
+      context.dispatch('cancelRemoteSync')
       context.commit('CLEAR_REMOTE_SYNC_URL')
     },
     getAllDocsFromPouchDB(context) {
@@ -447,7 +454,9 @@ export default {
         } else if (payload._id.startsWith('budget-opened_')) {
           docType = 'budget-opened'
         } else {
-          docType = payload._id.substring(payload._id.indexOf('_', 5) + 1, payload._id.lastIndexOf('_', 55))
+          const type_regex = /(?<=b\_[A-Za-z0-9\-\.\_]{3}\_)[a-z\-]+(?=\_[A-Za-z0-9\-\.\_]+)/
+          const regex_result = payload._id.match(type_regex)
+          docType = regex_result.length > 0 ? regex_result[0] : null
         }
       }
 
@@ -489,7 +498,7 @@ export default {
           validationResult = validateSchema.validate(payload, schema_budget_opened)
           break
         default:
-          console.error('doesnt recognize doc type ', docType)
+          console.error('doesn\'t recognize doc type ', docType)
       }
 
       if (validationResult.errors.length > 0) {
@@ -722,7 +731,7 @@ export default {
 
     deleteLocalDatabase(context) {
       this._vm.$pouch.destroy().catch(function (err) {
-        console.log('error deleting database')
+        console.log(`Error deleting database: ${err}`)
       })
       context.commit('DELETE_LOCAL_DB')
       context.commit('UPDATE_SELECTED_BUDGET', null)
@@ -756,7 +765,7 @@ export default {
             context.commit('UPDATE_SELECTED_BUDGET', localStorage.budgetID)
           } else if (result.rows.length > 0) {
             // Select first budget ID on initial load if nothing found in localstorage
-            context.commit('UPDATE_SELECTED_BUDGET', result.rows[0].id.slice(-36))
+            context.commit('UPDATE_SELECTED_BUDGET', result.rows[0].id.slice(-ID_LENGTH.budget))
           }
           context.dispatch('getAllDocsFromPouchDB')
           context.dispatch('loadBudgetOpened')

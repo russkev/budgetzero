@@ -72,9 +72,9 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import BaseDialogModalComponent from '../Modals/BaseDialogModalComponent.vue'
+import { generateId } from '../../helper'
 
 export default {
   components: {
@@ -115,21 +115,21 @@ export default {
         adjustmentTransaction: null,
         account: this.$route.params.account_id
       }
-
+      const date = new Date().toISOString().substr(0, 10)
       payload.adjustmentTransaction = {
         account: this.$route.params.account_id,
         category: 'income',
         cleared: true,
         approved: true,
         value: -parseInt(this.differenceAmount * 100),
-        date: new Date().toISOString().substr(0, 10),
+        date: date,
         memo: '',
         reconciled: true,
         flag: '#ffffff',
         payee: 'Reconcile adjustment',
         transfer: null,
         splits: [],
-        _id: `b_${this.selectedBudgetID}_transaction_${Vue.prototype.$vm.$uuid.v4()}`,
+        _id: `b_${this.selectedBudgetID}_transaction_${generateId(date)}`,
         _rev: ''
       }
 

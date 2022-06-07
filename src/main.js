@@ -1,11 +1,7 @@
 import Vue from 'vue'
 import App from './App.vue'
 
-import UUID from 'vue-uuid'
-
 import PouchDB from 'pouchdb-browser'
-import PouchLiveFind from 'pouchdb-live-find'
-import PouchFind from 'pouchdb-find'
 
 import Vue2Filters from 'vue2-filters'
 
@@ -13,7 +9,6 @@ import Vue2Filters from 'vue2-filters'
 import 'vue-select/dist/vue-select.css'
 import vSelect from 'vue-select'
 
-import colors from 'vuetify/lib/util/colors'
 import vuetify from './plugins/vuetify'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
@@ -58,11 +53,9 @@ Vue.use(TreeView)
 
 Vue.use(require('vue-moment'))
 
-Vue.use(UUID)
 PouchDB.plugin(require('pouchdb-find'))
 PouchDB.plugin(require('pouchdb-live-find'))
 PouchDB.plugin(require('pouchdb-authentication'))
-// PouchDB.plugin(require('pouchdb-load'));
 PouchDB.plugin(require('pouchdb-erase'))
 
 Vue.use(Vue2Filters)

@@ -36,8 +36,9 @@
   </v-card>
 </template>
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 import AccountAddModal from './AccountAddModal'
+import { generateShortId } from '../../helper'
 
 /*
 Account view
@@ -190,7 +191,7 @@ export default {
           sort: this.editedItem.sort,
           onBudget: this.editedItem.onBudget,
           balanceIsNegative: this.editedItem.balanceIsNegative,
-          _id: `b_${this.selectedBudgetID}_account_${this.$uuid.v4()}`
+          _id: `b_${this.selectedBudgetID}_account_${generateShortId()}`
         }
         console.log('new acct', newPayload, this.editedItem.initialBalance)
         this.$store.dispatch('createUpdateAccount', {

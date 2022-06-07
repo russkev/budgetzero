@@ -1,8 +1,7 @@
 import moment from 'moment'
-import Vue from 'vue'
-import validator from 'validator'
 import _ from 'lodash'
-import { sanitizeValueInput, randomInt, randomString, generateId } from '../../helper.js'
+import { sanitizeValueInput, randomInt, randomString, generateId, generateShortId, validateId } from '../../helper.js'
+import { ID_LENGTH } from '../../constants.js'
 
 export default {
   state: {
@@ -16,7 +15,7 @@ export default {
      */
     transactionsOnBudget: (state, getters) => {
       //Get list of account _ids that are on budget
-      var accounts = getters.accountsOnBudget.map((acct) => acct._id.slice(-36))
+      var accounts = getters.accountsOnBudget.map((acct) => acct._id.slice(-ID_LENGTH.account))
       var transOnBudget = []
 
       //
@@ -71,7 +70,7 @@ export default {
             if (category._id === 'income' || category._id === 'incomeNextMonth' || category._id === null) {
               id = category._id
             } else {
-              id = category._id.slice(-36)
+              id = category._id.slice(-ID_LENGTH.category)
             }
             if (item.category == id) {
               rv[id] = rv[id] ? rv[id] + item.value : item.value
@@ -87,6 +86,7 @@ export default {
       return sortDict(final)
     },
 
+
     /**
      * Dict of YYYY-MM:
      *   Dict of category names: m_category object (budget values)
@@ -97,7 +97,7 @@ export default {
         if (!map[obj.date.slice(0, 7)]) {
           map[obj.date.slice(0, 7)] = {}
         }
-        map[obj.date.slice(0, 7)][obj._id.slice(-36)] = obj
+        map[obj.date.slice(0, 7)][obj._id.slice(-ID_LENGTH.category)] = obj
 
         return map
       }, {})
@@ -142,7 +142,7 @@ export default {
                 spent:0
     * @returns 
     */
-    calculateMonthlyData({ state, getters, dispatch, commit }) {
+    calculateMonthlyData({ getters, commit }) {
       var final_data = {}
       var previous_month = {}
 
@@ -169,7 +169,7 @@ export default {
           _.forEach(
             getters.categories.filter((cat) => cat._id !== 'income').filter((cat) => cat._id !== 'incomeNextMonth'),
             function (category) {
-              const cat_id = category._id ? category._id.slice(-36) : null
+              const cat_id = category._id ? category._id.slice(-ID_LENGTH.category) : null
               const spent = _.get(getters.transaction_lookup, `${month}.${cat_id}`, 0)
               const budgeted = _.get(getters.month_category_lookup, `${month}.${cat_id}.budget`, 0)
               const activity = spent + budgeted
@@ -221,55 +221,57 @@ export default {
       })
     },
 
+
     /**
      * Creates new budget and commits to pouchdb
      * @param {*} context
      * @param {string} budgetName The name of the budget to be created
      */
-    createBudget(context, { name, use_default }) {
-      return new Promise((resolve, reject) => {
-        if (!name) {
-          context.commit('SET_SNACKBAR_MESSAGE', {
-            snackbarMessage: 'Invalid budget name',
-            snackbarColor: 'error'
-          })
-          reject(`Invalid budget name: ${name}`)
-        }
-        const budget_id = Vue.prototype.$vm.$uuid.v4()
-        const budget = {
-          name: name,
-          currency: 'USD',
-          created: new Date().toISOString(),
-          checkNumber: false,
-          _id: `budget_${budget_id}`
-        }
+    createBudget: async (context, { name, use_default }) => {
+      if (!name) {
+        context.commit('SET_SNACKBAR_MESSAGE', {
+          snackbarMessage: 'Invalid budget name',
+          snackbarColor: 'error'
+        })
+        Promise.reject(`Invalid budget name: ${name}`)
+      }
+      const budget_id = await context.dispatch('generateUniqueShortId', { prefix: 'budget_' })
 
-        var budget_opened = {
-          opened: new Date().toISOString(),
-          _id: `budget-opened_${budget_id}`
-        }
+      const budget = {
+        name: name,
+        currency: 'USD',
+        created: new Date().toISOString(),
+        checkNumber: false,
+        _id: `budget_${budget_id}`
+      }
 
-        context
-          .dispatch('commitDocToPouchAndVuex', budget)
-          .then((result) => {
-            context.dispatch('setSelectedBudgetID', result.id.slice(-36)).then(() => {
-              if (use_default) {
-                context.dispatch('initializeBudgetCategories')
-              }
-            }).catch((error) => {
-              reject(error)
-            })
-          })
-          .then(() => {
-            context.dispatch('commitDocToPouchAndVuex', budget_opened)
-          })
-          .then(() => {
-            resolve('Successfully created new budget')
-          })
-          .catch((error) => {
-            reject(error.message)
-          })
-      })
+      var budget_opened = {
+        opened: new Date().toISOString(),
+        _id: `budget-opened_${budget_id}`
+      }
+
+      return context
+        .dispatch('commitDocToPouchAndVuex', budget)
+        .then((result) => {
+          return context.dispatch('setSelectedBudgetID', result.id.slice(-ID_LENGTH.budget))
+        })
+        .then(() => {
+          if (use_default) {
+            return context.dispatch('initializeBudgetCategories')
+          } else {
+            return null
+          }
+        })
+        .then(() => {
+          return context.dispatch('commitDocToPouchAndVuex', budget_opened)
+        })
+        .then(() => {
+          console.log("Created new budget")
+          return
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
 
     getBudgetOpened(context) {
@@ -295,7 +297,7 @@ export default {
      * @param {*} payload budget_ document
      */
     deleteEntireBudget(context, payload) {
-      const budget_id = payload._id.slice(-36)
+      const budget_id = payload._id.slice(-ID_LENGTH.budget)
 
       return new Promise((resolve, reject) => {
         this._vm.$pouch
@@ -340,30 +342,34 @@ export default {
     ///
     /// Categories
     ///
-    createMasterCategory(context, category_name) {
+    createMasterCategory: async (context, category_name) => {
+      const prefix = `b_${context.rootState.selectedBudgetID}_master-category_`
+      const id = await context.dispatch('generateUniqueShortId', { prefix: prefix })
       const payload = {
-        _id: `b_${context.rootState.selectedBudgetID}_master-category_${Vue.prototype.$vm.$uuid.v4()}`,
+        _id: prefix + id,
         name: category_name,
         sort: 1,
         collapsed: false
       }
-
+      
       return context.dispatch('commitDocToPouchAndVuex', payload)
     },
 
-    createCategory(context, payload) {
+    
+    createCategory: async (context, payload) => {
       const sort_length = context.getters.categoriesGroupedByMaster[payload.masterCategoryForModalForm]
         ? context.getters.categoriesGroupedByMaster[payload.masterCategoryForModalForm].length
         : 0
 
-      var category = {
+      const prefix = `b_${context.rootState.selectedBudgetID}_category_`
+      const id = await context.dispatch('generateUniqueShortId', { prefix: prefix })
+      const category = {
         name: payload.category_name,
         hidden: false,
         masterCategory: payload.masterCategoryForModalForm,
         sort: sort_length,
-        _id: `b_${context.rootState.selectedBudgetID}_category_${Vue.prototype.$vm.$uuid.v4()}`
+        _id: `b_${context.rootState.selectedBudgetID}_category_${id}`
       }
-
       return context.dispatch('commitDocToPouchAndVuex', category)
     },
     updateCategory(context, payload) {
@@ -397,7 +403,7 @@ export default {
         overspending: true,
         note: '',
         _id: `b_${context.getters.selectedBudgetID}_m_category_${context.getters.month_selected}-01_${item._id.slice(
-          -36
+          -ID_LENGTH.category
         )}`,
         date: context.getters.month_selected + '-01'
       }
@@ -405,10 +411,10 @@ export default {
       //Check if already exists
       if (
         context.getters.month_category_lookup[context.getters.month_selected] &&
-        context.getters.month_category_lookup[context.getters.month_selected][item._id.slice(-36)]
+        context.getters.month_category_lookup[context.getters.month_selected][item._id.slice(-ID_LENGTH.category)]
       ) {
         payload = JSON.parse(
-          JSON.stringify(context.getters.month_category_lookup[context.getters.month_selected][item._id.slice(-36)])
+          JSON.stringify(context.getters.month_category_lookup[context.getters.month_selected][item._id.slice(-ID_LENGTH.category)])
         )
 
         payload.overspending = !payload.overspending
@@ -421,21 +427,22 @@ export default {
     ///
     createUpdateAccount(context, payload) {
       context.dispatch('commitDocToPouchAndVuex', payload.account).then((response) => {
+        const date = new Date().toISOString().split('T')[0]
         if (payload.initialBalance) {
           const initTransaction = {
-            account: response.id.slice(-36),
+            account: response.id.slice(-ID_LENGTH.account),
             category: null,
             cleared: true,
             approved: true,
             value: sanitizeValueInput(payload.initialBalance) * 100,
-            date: '2011-11-11', //TODO: current date
+            date: date,
             memo: null,
             reconciled: true,
             flag: '#ffffff',
             payee: `---------------------initial-balance`,
             transfer: null,
             splits: [],
-            _id: `b_${context.getters.selectedBudgetID}_transaction_${Vue.prototype.$vm.$uuid.v4()}`
+            _id: `b_${context.getters.selectedBudgetID}_transaction_${generateId(date)}`
           }
           console.log('initTransaction', initTransaction)
           context.dispatch('createOrUpdateTransaction', initTransaction)
@@ -444,7 +451,7 @@ export default {
     },
     deleteAccount(context, payload) {
       return new Promise((resolve, reject) => {
-        const myId = payload._id.slice(-36)
+        const myId = payload._id.slice(-ID_LENGTH.account)
         this._vm.$pouch
           .query((doc, emit) => {
             if (doc.account === myId) {
@@ -470,6 +477,49 @@ export default {
     },
 
     /**
+     * Generate a short ID and unsure it doesn't already exist in the database
+     * @param {*} context 
+     * @returns 
+     */
+    generateUniqueShortId: async(context, {prefix}) => {
+      let unique_id = false
+      let num_tries = 0
+      const max_tries = 10
+      while(!unique_id && num_tries < max_tries) {
+        num_tries += 1
+        const id = generateShortId()
+        // id_exists = await this.idExists(prefix + id)
+        const id_exists = await context.dispatch('idExists', prefix + id)
+        if (!id_exists) {
+          unique_id = id
+        }
+      }
+      if (unique_id) {
+        return unique_id
+      } else {
+        context.commit('SET_SNACKBAR_MESSAGE', {
+          snackbarMessage: 'Unable to create unique ID',
+          snackbarColor: 'error'
+        })
+        Promise.reject(`Unable to create unique ID, tried ${max_tries} times`)
+      }
+    },
+
+    /**
+     * Return true if id already exists in database, false otherwise
+     * @param {*} context 
+     * @param {String} id 
+     * @returns 
+     */
+    idExists(context, id) {
+      return this._vm.$pouch.get(id).then(() => {
+        return true
+      }).catch(() => {
+        return false
+      })
+    },
+
+    /**
      * Create payee doc.
      * This should only be called from getPayeeID() action.
      * @param {*} context
@@ -477,8 +527,9 @@ export default {
      * @returns
      */
     createPayee(context, payload) {
+
       var payee = {
-        _id: `b_${context.rootState.selectedBudgetID}_payee_${Vue.prototype.$vm.$uuid.v4()}`,
+        _id: `b_${context.rootState.selectedBudgetID}_payee_${generateId()}`,
         name: payload
       }
 
@@ -499,7 +550,7 @@ export default {
 
       if (payeeLookup) {
         return payeeLookup
-      } else if (validator.isUUID(`${payload}`)) {
+      } else if (validateId(`${payload}`)) {
         // If the payload is already UUID then return.
         return payload
       } else if (payload === '---------------------initial-balance') {
@@ -513,7 +564,7 @@ export default {
       } else {
         // Payload is a string. Need to create payee to get an uuid
         let payee = await context.dispatch('createPayee', payload)
-        return payee.id.slice(-36)
+        return payee.id.slice(-ID_LENGTH.payee)
       }
     },
 
@@ -539,13 +590,13 @@ export default {
         //Creating new transaction
         mirroredTransferTransaction._id = `b_${
           context.getters.selectedBudgetID
-        }_transaction_${Vue.prototype.$vm.$uuid.v4()}`
+        }_transaction_${generateId(payload.date)}`
 
         delete mirroredTransferTransaction._rev
       }
       //Create the mirrored transaction
       mirroredTransferTransaction.value = -payload.value
-      mirroredTransferTransaction.transfer = payload._id.slice(-36)
+      mirroredTransferTransaction.transfer = payload._id.slice(-ID_LENGTH.transaction)
       mirroredTransferTransaction.account = payload.payee
       mirroredTransferTransaction.payee = payload.account //The payee is the _id of the other account
       mirroredTransferTransaction.memo = payload.memo
@@ -555,7 +606,7 @@ export default {
 
       context.dispatch('commitDocToPouchAndVuex', mirroredTransferTransaction)
 
-      return mirroredTransferTransaction._id.slice(-36)
+      return mirroredTransferTransaction._id.slice(-ID_LENGTH.transaction)
     },
 
     /**
@@ -655,8 +706,8 @@ export default {
      * Initialize categories in a new budget
      */
     initializeBudgetCategories(context) {
-      console.log('init budget categories')
-      const starterCategories = {
+      console.log('Init default budget categories')
+      const starter_categories = {
         Giving: ['Tithing', 'Charitable'],
         'Everyday Expenses': ['Restaurants', 'Groceries', 'Household Goods', 'Spending Money'],
         'Monthly Bills': [
@@ -684,18 +735,20 @@ export default {
           'Vacation'
         ]
       }
-      for (let [master, subCategories] of Object.entries(starterCategories)) {
-        context.dispatch('createMasterCategory', master).then((response) => {
-          subCategories.forEach((sub) => {
-            const payload = {
-              category_name: sub,
-              masterCategoryForModalForm: response.id.slice(-36)
-            }
-            context.dispatch('createCategory', payload)
+      return Promise.all(Object.keys(starter_categories).map((master_category) => {
+        return context.dispatch('createMasterCategory', master_category)
+          .then((response) => {
+            return Promise.all(starter_categories[master_category].map((subcategory) => {
+              const payload = {
+                category_name: subcategory,
+                masterCategoryForModalForm: response.id.slice(-ID_LENGTH.category)
+              }
+              return context.dispatch('createCategory', payload)
+            }))
           })
-        })
-      }
+      }))
     },
+
 
     createMockTransactions(context, amount) {
       return new Promise((resolve, reject) => {
@@ -719,9 +772,8 @@ export default {
           const date = `${year}-${month}-${day}`
 
           const category = categories[randomInt(3, categories.length - 1)]
-          const category_id = category._id ? category._id.slice(-36) : null
-          const account_id = accounts[randomInt(0, accounts.length - 1)]._id.slice(-36)
-          console.log(generateId(date))
+          const category_id = category._id ? category._id.slice(-ID_LENGTH.category) : null
+          const account_id = accounts[randomInt(0, accounts.length - 1)]._id.slice(-ID_LENGTH.account)
           return {
             account: account_id,
             category: category_id,
@@ -735,7 +787,7 @@ export default {
             payee: null,
             transfer: null,
             splits: [],
-            _id: `b_${context.getters.selectedBudgetID}_transaction_${Vue.prototype.$vm.$uuid.v4()}`,
+            _id: `b_${context.getters.selectedBudgetID}_transaction_${generateId(date)}`,
             _rev: ''
           }
         })
@@ -745,7 +797,7 @@ export default {
           for(let month = 1; month <= 12; month++) {
             const date = `${year}-${month.toString().padStart(2, '0')}-01`
             categories.forEach((category) => {
-              const category_id = category._id ? category._id.slice(-36) : null
+              const category_id = category._id ? category._id.slice(-ID_LENGTH.category) : null
               if (category_id) {
                 const budget_amount_item = {
                   budget: randomInt(-20000, 30000),

@@ -97,7 +97,7 @@
           </thead>
           <tbody>
             <tr v-for="budget in budgetRoots" :key="budget._id">
-              <td v-if="budget._id.slice(-36) == selectedBudgetID">
+              <td v-if="budget._id.slice(-ID_LENGTH.budget) == selectedBudgetID">
                 <v-icon color="accent">
                   mdi-check-bold
                 </v-icon>
@@ -123,8 +123,9 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from 'vuex'
+import { mapGetters } from 'vuex'
 import BaseDialogModalComponent from './Modals/BaseDialogModalComponent.vue'
+import { ID_LENGTH } from '../constants'
 
 export default {
   name: 'Settings',
@@ -133,6 +134,7 @@ export default {
   },
   data() {
     return {
+      ID_LENGTH,
       selectedBudget: null,
       manageBudgetsModalVisible: false,
       dialog: false,

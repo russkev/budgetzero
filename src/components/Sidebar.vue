@@ -148,7 +148,7 @@
       <v-list-item
         v-for="item in accountsOnBudget"
         :key="item._id"
-        :to="{ path: '/transactions/' + item._id.slice(-36) }"
+        :to="{ path: '/transactions/' + item._id.slice(-ID_LENGTH.account) }"
         active-class="primary white--text"
         class="primary darken-1"
         v-bind:id="item.name"
@@ -159,7 +159,7 @@
           </v-list-item-title>
         </v-list-item-content>
         <v-list-item-icon class="subtitle-2">
-          {{ (account_balances[item._id.slice(-36)].working / 100) | currency }}
+          {{ (account_balances[item._id.slice(-ID_LENGTH.account)].working / 100) | currency }}
         </v-list-item-icon>
       </v-list-item>
 
@@ -175,7 +175,7 @@
       <v-list-item
         v-for="item in accountsOffBudget"
         :key="item._id"
-        :to="{ path: '/transactions/' + item._id.slice(-36) }"
+        :to="{ path: '/transactions/' + item._id.slice(-ID_LENGTH.account) }"
         active-class="primary white--text"
         class="primary darken-1"
       >
@@ -185,7 +185,7 @@
           </v-list-item-title>
         </v-list-item-content>
         <v-list-item-icon class="subtitle-2">
-          {{ (account_balances[item._id.slice(-36)].working / 100) | currency }}
+          {{ (account_balances[item._id.slice(-ID_LENGTH.account)].working / 100) | currency }}
         </v-list-item-icon>
       </v-list-item>
 
@@ -268,6 +268,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import BaseDialogModalComponent from './Modals/BaseDialogModalComponent'
+import { ID_LENGTH } from '../constants'
 
 export default {
   name: 'Sidebar',
@@ -276,6 +277,7 @@ export default {
   },
   data() {
     return {
+      ID_LENGTH,
       selectedBudget: null,
       links: '',
       drawer: null,
@@ -304,13 +306,13 @@ export default {
     },
     sumOfOnBudgetAccounts() {
       return this.accountsOnBudget.reduce(
-        (acct_sum, b) => acct_sum + this.account_balances[b._id.slice(-36)].working / 100,
+        (acct_sum, b) => acct_sum + this.account_balances[b._id.slice(-ID_LENGTH.account)].working / 100,
         0
       )
     },
     sumOfOffBudgetAccounts() {
       return this.accountsOffBudget.reduce(
-        (acct_sum, b) => acct_sum + this.account_balances[b._id.slice(-36)].working / 100,
+        (acct_sum, b) => acct_sum + this.account_balances[b._id.slice(-ID_LENGTH.account)].working / 100,
         0
       )
     }

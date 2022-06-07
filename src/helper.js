@@ -29,13 +29,13 @@ function randomString(length = 100) {
 
 function daySeconds() {
   const date = new Date()
-  return date.getSeconds() + (60 * date.getMinutes()) + (60 * 60 * date.getHours())
+  return date.getSeconds() + 60 * date.getMinutes() + 60 * 60 * date.getHours()
 }
 
 function daySecondsBase64() {
   let day_seconds_64 = urlSafeBase64(daySeconds())
   while (day_seconds_64.length < 4) {
-    day_seconds_64 += urlSafeCharacter()    
+    day_seconds_64 += urlSafeCharacter()
   }
   return day_seconds_64
 }
@@ -56,7 +56,7 @@ function urlSafeBase64(decimal_number, length = null) {
 }
 
 function urlSafeCharacter() {
-  const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+  const characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ-_.'
   return characters[randomInt(0, characters.length - 1)]
 }
 
@@ -82,13 +82,13 @@ function isValidDate(date_string) {
  *   9 - 12: Random string / transaction ID
  *   Note: A base 64 character string of length 4 has over
  *   16 million combinations.
- * 
+ *
  * @param {string} date In YYYY-MM-DD
  * @returns 12 Character string
  */
-function generateId(date = null, transaction_id = null) { 
+function generateId(date = null, transaction_id = null) {
   if (!date || !isValidDate(date)) {
-    date = new Date().toISOString().split('T')[0];
+    date = new Date().toISOString().split('T')[0]
   }
   const date_number = parseInt(date.split('-').join(''), 10)
   const date_encoded = urlSafeBase64(date_number, 4)
@@ -106,4 +106,12 @@ function generateId(date = null, transaction_id = null) {
   return date_encoded + seconds_encoded + id_encoded
 }
 
-export { sanitizeValueInput, randomInt, randomString, generateId, urlSafeString }
+function generateShortId() {
+  return urlSafeString(3)
+}
+
+function validateId(id) {
+  return id.length == 3 || id.length == 12
+}
+
+export { sanitizeValueInput, randomInt, randomString, generateId, generateShortId, validateId }

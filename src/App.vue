@@ -14,7 +14,7 @@
       </template>
       <template #actions>
         <v-spacer />
-        <v-btn id="createBudgetBtn" color="accent" @click="createBudget()">
+        <v-btn id="createBudgetBtn" color="accent" @click="createBudget()" :loading="createBudgetIsLoading">
           Create Budget
         </v-btn>
       </template>
@@ -55,12 +55,13 @@ export default {
       mini: false,
       budgetName: null,
       useDefaultCategories: false,
+      createBudgetIsLoading: false,
     }
   },
   computed: {
     isModalVisibleCreateBudget: {
       get() {
-        return !this.$store.getters.budgetExists
+        return !this.$store.getters.budgetExists || this.createBudgetIsLoading
       },
       set() {
         return
@@ -87,9 +88,10 @@ export default {
   },
   methods: {
     async createBudget() {
-      this.$store.dispatch('loadLocalBudgetRoot')
-      this.$store.dispatch('createBudget', {name: this.budgetName, use_default: this.useDefaultCategories})
-
+      this.createBudgetIsLoading = true
+      await this.$store.dispatch('loadLocalBudgetRoot')
+      await this.$store.dispatch('createBudget', {name: this.budgetName, use_default: this.useDefaultCategories})
+      this.createBudgetIsLoading = false
       if (
         await this.$root.$confirm('Budget Created!', `A budget named ${this.budgetName} has been created!`, {
           onlyShowAgreeBtn: true,
@@ -97,7 +99,9 @@ export default {
           agreeBtnText: 'Ok'
         })
       ) {
-        this.$router.push({ path: `/budget` })
+        if(this.$router.history.current.path != '/budget') {
+          this.$router.push({ path: `/budget` })
+        }
       }
     }
   }

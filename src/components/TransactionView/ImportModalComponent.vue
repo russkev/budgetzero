@@ -137,6 +137,7 @@ import _ from 'lodash'
 import { VueCsvImport } from 'vue-csv-import'
 import moment from 'moment'
 import {getAccountId, getAccountType, getAccountBankId, getAccountTransactions, getDate, cyrb53Hash } from '../../ofxParse'
+import { generateId } from '../../helper'
 
 export default {
   name: 'ImportFile',
@@ -241,13 +242,14 @@ export default {
           console.log('import skipped')
           this.importCount.skipped++
         } else {
+          const date = getDate(trn.DTPOSTED)
           const jsonData = {
             account: this.account,
             category: null,
             cleared: false,
             approved: false,
             value: Math.round(trn.TRNAMT * 100),
-            date: getDate(trn.DTPOSTED),
+            date: date,
             memo: trn.MEMO,
             reconciled: false,
             flag: '#ffffff',
@@ -255,7 +257,7 @@ export default {
             importID: importID,
             transfer: null,
             splits: [],
-            _id: `b_${this.selectedBudgetID}_transaction_${this.$uuid.v4()}`
+            _id: `b_${this.selectedBudgetID}_transaction_${generateId(date, trn.FITID)}`
           }
 
           this.importCount.imported++
@@ -286,6 +288,7 @@ export default {
         //Necessary to ensure we strip commas from soon-to-be imported transactions
         const val = trn.amount.toString().replace(/[^0-9.-]/g, '')
 
+        const date = moment(trn.date).format('YYYY-MM-DD')
         //Create a custom importID that appends account to the FITID
         const jsonData = {
           account: this.account,
@@ -293,14 +296,14 @@ export default {
           cleared: false,
           approved: false,
           value: Math.round(val * 100),
-          date: moment(trn.date).format('YYYY-MM-DD'),
+          date: date,
           memo: trn.memo,
           reconciled: false,
           flag: '#ffffff',
           payee: trn.payee,
           transfer: null,
           splits: [],
-          _id: `b_${this.selectedBudgetID}_transaction_${this.$uuid.v4()}`
+          _id: `b_${this.selectedBudgetID}_transaction_${generateId(date)}`
         }
         this.importCount.imported++
         transactionListToImport.push(jsonData)

@@ -227,16 +227,16 @@
 
         <!-- Container under each master category containing all individual categories -->
         <draggable
-          v-if="categoriesGroupedByMaster[cat._id.slice(-36)] && !cat.collapsed"
+          v-if="categoriesGroupedByMaster[cat._id.slice(-ID_LENGTH.category)] && !cat.collapsed"
           tag="div"
-          :class="cat._id.slice(-36)"
-          :group="{ name: cat._id.slice(-36), put: true }"
+          :class="cat._id.slice(-ID_LENGTH.category)"
+          :group="{ name: cat._id.slice(-ID_LENGTH.category), put: true }"
           handle=".handle"
           @end="subCategoryMoveEnd"
         >
           <!-- Each individual category row -->
           <v-row
-            v-for="item in categoriesGroupedByMaster[cat._id.slice(-36)]
+            v-for="item in categoriesGroupedByMaster[cat._id.slice(-ID_LENGTH.category)]
               .sort((a, b) => (a.sort > b.sort ? 1 : -1))
               .filter(cat => !cat.hidden || isReorderingCategories)"
             :key="item._id"
@@ -344,7 +344,7 @@ import BaseDialogModalComponent from '../Modals/BaseDialogModalComponent.vue'
 import BudgetHeader from './BudgetHeader.vue'
 import _ from 'lodash'
 import draggable from 'vuedraggable'
-import Sortable from 'sortablejs'
+import { ID_LENGTH } from '../../constants'
 
 export default {
   name: 'BudgetGrid',
@@ -355,6 +355,7 @@ export default {
   },
   data() {
     return {
+      ID_LENGTH,
       isReorderingCategories: false,
       category_name: '',
       isModalVisibleMasterCat: false,
@@ -447,16 +448,16 @@ export default {
         budget: Math.round(event * 100),
         overspending: null,
         note: '',
-        _id: `b_${this.selectedBudgetID}_m_category_${this.month_selected}-01_${item._id.slice(-36)}`
+        _id: `b_${this.selectedBudgetID}_m_category_${this.month_selected}-01_${item._id.slice(-ID_LENGTH.category)}`
       }
 
       //Check if already exists
       if (
         this.month_category_lookup[this.month_selected] &&
-        this.month_category_lookup[this.month_selected][item._id.slice(-36)]
+        this.month_category_lookup[this.month_selected][item._id.slice(-ID_LENGTH.category)]
       ) {
-        payload.doc._id = this.month_category_lookup[this.month_selected][item._id.slice(-36)]._id
-        payload.doc._rev = this.month_category_lookup[this.month_selected][item._id.slice(-36)]._rev
+        payload.doc._id = this.month_category_lookup[this.month_selected][item._id.slice(-ID_LENGTH.category)]._id
+        payload.doc._rev = this.month_category_lookup[this.month_selected][item._id.slice(-ID_LENGTH.category)]._rev
       }
 
       console.log('payload for budget', payload.doc)
@@ -465,22 +466,22 @@ export default {
       }
     },
     getBudgetedValue(full_id) {
-      const id = full_id ? full_id.slice(-36) : null
+      const id = full_id ? full_id.slice(-ID_LENGTH.category) : null
 
       return (_.get(this.monthlyData, `${this.month_selected}.categories.${id}.budgeted`, 0) / 100).toFixed(2)
     },
     getSpentValue(full_id) {
-      const id = full_id ? full_id.slice(-36) : null
+      const id = full_id ? full_id.slice(-ID_LENGTH.category) : null
 
       return _.get(this.monthlyData, `${this.month_selected}.categories.${id}.spent`, 0) / 100
     },
     getBalanceValue(full_id) {
-      const id = full_id ? full_id.slice(-36) : null
+      const id = full_id ? full_id.slice(-ID_LENGTH.category) : null
 
       return _.get(this.monthlyData, `${this.month_selected}.categories.${id}.balance`, 0) / 100
     },
     getOverspendingProperty(item) {
-      const id = item._id ? item._id.slice(-36) : null
+      const id = item._id ? item._id.slice(-ID_LENGTH.category) : null
 
       return _.get(this.month_category_lookup, `${this.month_selected}.${id}.overspending`, false)
     },
@@ -495,7 +496,7 @@ export default {
     },
     createCategory() {
       const payload = {
-        masterCategoryForModalForm: this.editedCategory._id.slice(-36),
+        masterCategoryForModalForm: this.editedCategory._id.slice(-ID_LENGTH.category),
         category_name: this.category_name
       }
       this.$store.dispatch('createCategory', payload)
