@@ -111,14 +111,14 @@ const schema_category = {
   required: ['_id', 'sort', 'masterCategory', 'name']
 }
 
-const m_category_id_length = 'b_'.length + ID_LENGTH.budget + '_m_category_'.length + ID_LENGTH.category
-const schema_m_category = {
+const monthCategory_id_length = 'b_'.length + ID_LENGTH.budget + '_monthCategory_2000-01-01_'.length + ID_LENGTH.category
+const schema_monthCategory = {
   type: 'object',
   properties: {
     _id: {
       type: 'string',
-      minLength: m_category_id_length,
-      maxLength: m_category_id_length
+      minLength: monthCategory_id_length,
+      maxLength: monthCategory_id_length
     },
     budget: {
       type: ['null', 'integer']
@@ -199,14 +199,14 @@ const schema_budget = {
   required: ['_id', 'name', 'created', 'currency', 'checkNumber']
 }
 
-const budget_opened_id_length = 'budget_opened_'.length + ID_LENGTH.budget
-const schema_budget_opened = {
+const budgetOpened_id_length = 'budgetOpened_'.length + ID_LENGTH.budget
+const schema_budgetOpened = {
   type: 'object',
   properties: {
     _id: {
       type: 'string',
-      minLength: budget_opened_id_length,
-      maxLength: budget_opened_id_length
+      minLength: budgetOpened_id_length,
+      maxLength: budgetOpened_id_length
     },
     opened: {
       type: 'string'
@@ -217,11 +217,11 @@ const schema_budget_opened = {
 
 export {
   schema_budget,
-  schema_budget_opened,
+  schema_budgetOpened,
   schema_account,
   schema_transaction,
   schema_category,
-  schema_m_category,
+  schema_monthCategory,
   schema_masterCategory,
   schema_payee,
   validateSchema

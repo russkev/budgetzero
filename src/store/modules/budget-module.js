@@ -89,7 +89,7 @@ export default {
 
     /**
      * Dict of YYYY-MM:
-     *   Dict of category names: m_category object (budget values)
+     *   Dict of category names: monthCategory object (budget values)
      */
     month_category_lookup: (state, getters) => {
       console.log('monthCategoryBudgets lookup re-run')
@@ -245,7 +245,7 @@ export default {
         _id: `budget_${budget_id}`
       }
 
-      var budget_opened = {
+      var budgetOpened = {
         opened: new Date().toISOString(),
         _id: `budget-opened_${budget_id}`
       }
@@ -263,7 +263,7 @@ export default {
           }
         })
         .then(() => {
-          return context.dispatch('commitDocToPouchAndVuex', budget_opened)
+          return context.dispatch('commitDocToPouchAndVuex', budgetOpened)
         })
         .then(() => {
           console.log("Created new budget")
@@ -402,7 +402,7 @@ export default {
         budget: 0,
         overspending: true,
         note: '',
-        _id: `b_${context.getters.selectedBudgetID}_m_category_${context.getters.month_selected}-01_${item._id.slice(
+        _id: `b_${context.getters.selectedBudgetID}_monthCategory_${context.getters.month_selected}-01_${item._id.slice(
           -ID_LENGTH.category
         )}`,
         date: context.getters.month_selected + '-01'
@@ -803,7 +803,7 @@ export default {
                   budget: randomInt(-20000, 30000),
                   overspending: null,
                   note: randomString(randomInt(0, 100)),
-                  _id: `b_${context.getters.selectedBudgetID}_m_category_${date}_${category_id}`,
+                  _id: `b_${context.getters.selectedBudgetID}_monthCategory_${date}_${category_id}`,
                 }
                 mock_budget_data.push(budget_amount_item)
               }

@@ -1,11 +1,11 @@
 import Vue from 'vue'
 import {
   schema_budget,
-  schema_budget_opened,
+  schema_budgetOpened,
   schema_account,
   schema_transaction,
   schema_category,
-  schema_m_category,
+  schema_monthCategory,
   schema_masterCategory,
   schema_payee,
   validateSchema
@@ -14,7 +14,7 @@ import _ from 'lodash'
 import moment from 'moment'
 import PouchDB from 'pouchdb'
 import mock_budget from '@/../tests/__mockdata__/mock_budget2.json'
-import { ID_LENGTH } from '../../constants'
+import { ID_LENGTH, DEFAULT_STATE } from '../../constants'
 
 var FileSaver = require('file-saver')
 
@@ -23,19 +23,7 @@ var FileSaver = require('file-saver')
  */
 
 export default {
-  state: {
-    transactions: [],
-    monthCategoryBudgets: [],
-    masterCategories: [],
-    categories: [],
-    payees: [],
-    accounts: [],
-    budgetRoots: [],
-    budgetOpened: null,
-    budgetExists: true, // This opens the create budget modal when 'false'
-    remoteSyncURL: null,
-    syncHandle: null
-  },
+  state: JSON.parse(JSON.stringify(DEFAULT_STATE)),
   getters: {
     remoteSyncURL: (state) => state.remoteSyncURL,
     //Plain getters for main doc types
@@ -220,13 +208,13 @@ export default {
     SET_POUCHDB_DOCS(state, response) {
       const data = response.map((row) => row.doc)
       state.transactions = data.filter((row) => row._id.includes('_transaction_'))
-      state.monthCategoryBudgets = data.filter((row) => row._id.includes('_m_category_'))
+      state.monthCategoryBudgets = data.filter((row) => row._id.includes('_monthCategory_'))
       state.payees = data.filter((row) => row._id.includes('_payee_'))
       state.masterCategories = data.filter((row) => row._id.includes('_master-category_'))
       state.accounts = data.filter((row) => row._id.includes('_account_'))
       state.categories = data
         .filter((row) => row._id.includes('_category_'))
-        .filter((row) => !row._id.includes('m_category')) //Don't include budget docs
+        .filter((row) => !row._id.includes('monthCategory')) //Don't include budget docs
     },
     GET_REMOTE_SYNC_URL(state) {
       if (localStorage.remoteSyncURL) {
@@ -277,7 +265,7 @@ export default {
             Object.assign(state.accounts[index], payload)
           }
           break
-        case 'm_category':
+        case 'monthCategory':
           if (isNaN(index)) {
             state.monthCategoryBudgets.push(payload)
           } else {
@@ -315,7 +303,10 @@ export default {
       state.transactions.splice(index, 1)
     },
     DELETE_LOCAL_DB(state) {
-      state.pouch_db_rows = []
+      const default_state = JSON.parse(JSON.stringify(DEFAULT_STATE))
+      Object.keys(default_state).forEach((key) => {
+        state[key] = default_state[key]
+      })
     },
     GET_BUDGET_ROOTS(state, payload) {
       if (payload.length == 0) {
@@ -454,9 +445,9 @@ export default {
         } else if (payload._id.startsWith('budget-opened_')) {
           docType = 'budget-opened'
         } else {
-          const type_regex = /(?<=b\_[A-Za-z0-9\-\.\_]{3}\_)[a-z\-]+(?=\_[A-Za-z0-9\-\.\_]+)/
+          const type_regex = /(?<=b_[0-9a-zA-Z_\-\.]{3}_)[0-9a-zA-Z\-]+(?=_[0-9a-zA-Z_\-\.]+)/
           const regex_result = payload._id.match(type_regex)
-          docType = regex_result.length > 0 ? regex_result[0] : null
+          docType = regex_result ? regex_result[0] : null
         }
       }
 
@@ -481,8 +472,8 @@ export default {
           validationResult = validateSchema.validate(payload, schema_account)
           index = context.getters.accountsLookupByID[payload._id]
           break
-        case 'm_category':
-          validationResult = validateSchema.validate(payload, schema_m_category)
+        case 'monthCategory':
+          validationResult = validateSchema.validate(payload, schema_monthCategory)
           index = context.getters.monthCategoryBudgetLookupByID[payload._id]
           break
         case 'payee':
@@ -495,7 +486,7 @@ export default {
           break
         case 'budget-opened':
           //TODO: validate
-          validationResult = validateSchema.validate(payload, schema_budget_opened)
+          validationResult = validateSchema.validate(payload, schema_budgetOpened)
           break
         default:
           console.error('doesn\'t recognize doc type ', docType)
@@ -531,28 +522,41 @@ export default {
       })
     },
 
+    databaseExists(context) {
+      return this._vm.$pouch.info()
+        .then(() => {
+          return true
+        })
+        .catch(() => {
+          return false
+        })
+    },
+
     /**
      * Bulk commits list of documents to pouchdb.
      * The calling component is responsible for updating current list to be in sync with store.
      * @param {array} payload The documents to commit to pouchdb
      */
     commitBulkDocsToPouchAndVuex(context, payload) {
-      return new Promise((resolve, reject) => {
-        this._vm.$pouch.bulkDocs(payload).then(
-          (response) => {
-            resolve(response)
-            // payload._rev = response.rev; //Response is an array for bulk updates
-            console.log('ACTION: commitBulkDocsToPouchAndVuex succeeded', response)
-            context.dispatch('loadLocalBudgetRoot')
-            // context.dispatch("getAllDocsFromPouchDB"); //Refresh all data so we don't have to manually update vuex store with what was changed.
-          },
-          (error) => {
-            reject(error)
-            console.log('ACTION: commitBulkDocsToPouchAndVuex failed')
-            context.commit('API_FAILURE', error)
+      context.dispatch('databaseExists', context)
+        .then((database_exists) => {
+          if (database_exists) {
+            return
+          } else {
+            return context.dispatch('createLocalPouchDB', context)
           }
-        )
-      })
+        })
+        .then(() => {
+          return this._vm.$pouch.bulkDocs(payload)
+        })
+        .then((response) => {
+          console.log('ACTION: commitBulkDocsToPouchAndVuex succeeded', response)
+          return context.dispatch('loadLocalBudgetRoot')
+        })
+        .catch((err) => {
+          console.log('ACTION: commitBulkDocsToPouchAndVuex failed')
+          return context.commit('API_FAILURE', err)
+        })
     },
 
     /**
@@ -699,7 +703,7 @@ export default {
           endkey: `b_${context.rootState.selectedBudgetID}\ufff0`
         })
         .then((result) => {
-          //Add in the budget object. TODO: add in budget_opened object?
+          //Add in the budget object. TODO: add in budgetOpened object?
           var b_object = context.rootGetters.budgetRootsMap[context.rootState.selectedBudgetID]
           delete b_object['_rev']
 

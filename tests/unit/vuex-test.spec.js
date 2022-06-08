@@ -17,7 +17,7 @@ describe("vuex budget module", () => {
     Vue.prototype.$pouch = pouch;
 
     const data = mock_budget.rows.map(row => row.doc);
-    store.state.monthCategoryBudgets = data.filter(row => row._id.includes("_m_category_"));
+    store.state.monthCategoryBudgets = data.filter(row => row._id.includes("_monthCategory_"));
     store.state.payees = data.filter(row => row._id.includes("_payee_"));
     store.state.pouchdb.accounts = data.filter(row => row._id.includes("_account_"));
     store.state.pouchdb.transactions = data.filter(row => row._id.includes("_transaction_"));
@@ -26,7 +26,7 @@ describe("vuex budget module", () => {
     );
     store.state.pouchdb.categories = data
       .filter(row => row._id.includes("_category_"))
-      .filter(row => !row._id.includes("m_category"));
+      .filter(row => !row._id.includes("monthCategory"));
     store.state.pouchdb.budgetRoots = data.filter(row => row._id.includes("budget_"));
     
   });

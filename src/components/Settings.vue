@@ -259,7 +259,9 @@ export default {
           console.log(error.message)
         }
       }
-      reader.readAsText(this.backupFile)
+      if (this.backupFile) {
+        reader.readAsText(this.backupFile)
+      }
     },
     onMockTransactionCreate() {
       this.mockTransactionsCreateIsLoading = true

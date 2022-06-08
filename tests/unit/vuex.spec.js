@@ -11,7 +11,7 @@ describe("vuex budget module", () => {
   beforeAll(() => {
     // Load mock budget file and parse into vuex state
     const data = mock_budget.rows.map(row => row.doc);
-    // state.monthCategoryBudgets = data.filter(row => row._id.includes("_m_category_"));
+    // state.monthCategoryBudgets = data.filter(row => row._id.includes("_monthCategory_"));
     // state.payees = data.filter(row => row._id.includes("_payee_"));
     store.state.pouchdb.accounts = data.filter(row => row._id.includes("_account_"));
     store.state.pouchdb.transactions = data.filter(row => row._id.includes("_transaction_"));
@@ -20,7 +20,7 @@ describe("vuex budget module", () => {
     );
     store.state.pouchdb.categories = data
       .filter(row => row._id.includes("_category_"))
-      .filter(row => !row._id.includes("m_category"));
+      .filter(row => !row._id.includes("monthCategory"));
     // store.state.pouchdb.month_selected = "2020-12",
     // store.state.pouchdb.selectedBudgetID = "79de488f-448e-4b4d-97ad-61e5e4f5df31",
   });
