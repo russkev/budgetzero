@@ -47,7 +47,8 @@ export default {
           })
         })
         .then(() => {
-          this.$router.push({path: `/budget`})
+          const year_month = new Date().toISOString().substring(0, 7)
+          this.$router.push({path: `/budget/${year_month}`})
         })
         .catch((error) => {
           console.log(error.message)

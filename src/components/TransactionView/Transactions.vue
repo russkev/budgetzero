@@ -83,7 +83,8 @@
           <span>Delete</span>
         </v-tooltip>
 
-        <v-btn icon class="white--text" color="grey darken-1" @click="$store.dispatch('getAllDocsFromPouchDB')">
+        <!-- <v-btn icon class="white--text" color="grey darken-1" @click="$store.dispatch('getAllDocsFromPouchDB')"> -->
+        <v-btn icon class="white--text" color="grey darken-1">
           <v-icon> mdi-refresh </v-icon>
         </v-btn>
 
@@ -218,7 +219,7 @@
             <v-simple-checkbox :ripple="false" color="black" v-bind="props" v-on="on" />
           </template> -->
 
-            <template #item="{ item, expand, isExpanded, index, isSelected, select }">
+            <template #item="{ item, expand, isSelected, select }">
               <tr
                 :key="item._id"
                 :class="{ selectedRow: item._id === editedItem._id, 'un-approved': !item.approved }"
@@ -478,7 +479,7 @@
               </tr>
             </template>
 
-            <template #expanded-item="{ headers, item, expand, isExpanded }">
+            <template #expanded-item="{ headers, item }">
               <td :colspan="headers.length" class="mr-0 pr-0 grey lighten-2">
                 <div class="actions">
                   <v-btn small class="my-2" rounded color="green" id="save-btn" @click="save(item)">
@@ -516,7 +517,7 @@ import ReconcileHeader from './ReconcileHeader'
 import TransactionHeader from './TransactionHeader'
 import _ from 'lodash'
 import { sanitizeValueInput, generateId } from '../../helper.js'
-import { ID_LENGTH } from '../../constants'
+import { ID_LENGTH, ID_NAME, RESERVED_IDs } from '../../constants'
 
 export default {
   name: 'Transactions',
@@ -743,22 +744,26 @@ export default {
         .sort((a, b) => (a.name > b.name ? 1 : b.name > a.name ? -1 : 0))
     },
     transactionListForTable() {
-      var trans = []
+      var transactions = []
       if (this.isSingleAccount) {
-        trans = _.get(this.transactions_by_account, this.$route.params.account_id, [])
+        transactions = _.get(this.transactions_by_account, this.$route.params.account_id, [])
       } else {
-        trans = this.transactions
+        transactions = this.transactions
       }
 
+      // console.log('transactionListForTable')
+      // console.log(RESERVED_IDs)
+      // // console.log(this.category_map)
+
       if (this.creatingNewTransaction) {
-        const tpo = [...trans]
+        const tpo = [...transactions]
         tpo.unshift(this.defaultItem)
         return tpo
       }
 
-      if (!this.search) return trans
+      if (!this.search) return transactions
 
-      console.log('payee is', trans)
+      console.log('payee is', transactions)
       return trans.filter((row) => {
         if (this.payee_map[row.payee] !== undefined) {
           return (
@@ -871,7 +876,7 @@ export default {
         }
 
         if (this.creatingNewTransaction) {
-          this.editedItem._id = `b_${this.selectedBudgetID}_transaction_${generateId(this.editItem.date)}`
+          this.editedItem._id = `b_${this.selectedBudgetID}${ID_NAME.transaction}${generateId(this.editItem.date)}`
         }
         this.editedItem.approved = true
 

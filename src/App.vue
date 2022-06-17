@@ -99,8 +99,9 @@ export default {
           agreeBtnText: 'Ok'
         })
       ) {
-        if(this.$router.history.current.path != '/budget') {
-          this.$router.push({ path: `/budget` })
+        if(!this.$router.history.current.path.startsWith('/budget')) {
+          const year_month =  new Date().toISOString().substring(0, 7)
+          this.$router.push({ path: `/budget/${year_month}` })
         }
       }
     }

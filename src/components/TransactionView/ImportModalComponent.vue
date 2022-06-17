@@ -138,6 +138,7 @@ import { VueCsvImport } from 'vue-csv-import'
 import moment from 'moment'
 import {getAccountId, getAccountType, getAccountBankId, getAccountTransactions, getDate, cyrb53Hash } from '../../ofxParse'
 import { generateId } from '../../helper'
+import { ID_NAME } from '../../constants'
 
 export default {
   name: 'ImportFile',
@@ -238,7 +239,7 @@ export default {
       this.selectedAccount.forEach((trn) => {
         //Create a custom importID that appends account to the FITID
         const importID = `${this.account}_${trn.FITID}`
-        if (this.$store.getters.listOfImportIDs.includes(importID) && trn.FITID !== '' && trn.FITID !== null) {
+        if (this.$store.getters.listOfImportIds.includes(importID) && trn.FITID !== '' && trn.FITID !== null) {
           console.log('import skipped')
           this.importCount.skipped++
         } else {
@@ -257,7 +258,7 @@ export default {
             importID: importID,
             transfer: null,
             splits: [],
-            _id: `b_${this.selectedBudgetID}_transaction_${generateId(date, trn.FITID)}`
+            _id: `b_${this.selectedBudgetID}${ID_NAME.transaction}${generateId(date, trn.FITID)}`
           }
 
           this.importCount.imported++
@@ -303,7 +304,7 @@ export default {
           payee: trn.payee,
           transfer: null,
           splits: [],
-          _id: `b_${this.selectedBudgetID}_transaction_${generateId(date)}`
+          _id: `b_${this.selectedBudgetID}${ID_NAME.transaction}${generateId(date)}`
         }
         this.importCount.imported++
         transactionListToImport.push(jsonData)

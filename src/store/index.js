@@ -22,7 +22,7 @@ export default new Vuex.Store({
     snackbar: false,
     sync_state: '',
     selectedBudgetID: null,
-    month_selected: moment(new Date()).format('YYYY-MM')
+    selected_month: moment(new Date()).format('YYYY-MM')
   },
   getters: {
     snackbarMessage: state => state.snackbarMessage,
@@ -30,7 +30,7 @@ export default new Vuex.Store({
     sync_state: state => state.sync_state,
     snackbar: state => state.snackbar,
     selectedBudgetID: state => state.selectedBudgetID,
-    month_selected: state => state.month_selected
+    selectedMonth: state => state.selected_month
   },
   mutations: {
     SET_STATUS_MESSAGE(state, message) {
@@ -45,23 +45,28 @@ export default new Vuex.Store({
     SET_SNACKBAR(state, snackbar) {
       state.snackbar = snackbar
     },
-    ADD_MONTH(state) {
-      state.month_selected = moment(state.month_selected)
-        .add(1, 'M')
-        .format('YYYY-MM')
+    // ADD_MONTH(state) {
+    //   state.selected_month = moment(state.selected_month)
+    //     .add(1, 'M')
+    //     .format('YYYY-MM')
+    // },
+    // PREVIOUS_MONTH(state) {
+    //   state.selected_month = moment(state.selected_month)
+    //     .subtract(1, 'M')
+    //     .format('YYYY-MM')
+    // },
+    // GO_TO_CURRENT_MONTH(state) {
+    //   state.selected_month = moment(new Date()).format('YYYY-MM')
+    // },
+    UPDATE_SELECTED_BUDGET(state, selectedBudgetID) {
+      state.selectedBudgetID = selectedBudgetID
+      localStorage.budgetID = selectedBudgetID
     },
-    PREVIOUS_MONTH(state) {
-      state.month_selected = moment(state.month_selected)
-        .subtract(1, 'M')
-        .format('YYYY-MM')
+    UPDATE_SELECTED_MONTH(state, year_month) {
+      console.log('UPDATE_SELECTED_MONTH')
+      console.log(year_month)
+      state.selected_month = year_month
     },
-    GO_TO_CURRENT_MONTH(state) {
-      state.month_selected = moment(new Date()).format('YYYY-MM')
-    },
-    UPDATE_SELECTED_BUDGET(state, payload) {
-      state.selectedBudgetID = payload
-      localStorage.budgetID = payload
-    }
   },
   actions: {
     setSnackBarBoolean(context, snackbar) {

@@ -1,6 +1,3 @@
-import moment from 'moment'
-import Vue from 'vue'
-import validator from 'validator'
 import _ from 'lodash'
 
 export default {
@@ -10,26 +7,38 @@ export default {
      * Used to graph net worth report
      */
     incomeAndSpentByMonth: (state, getters) => {
-      var incomeAndSpentByMonth = []
-      var incomeNextMonth = 0
-      var netWorth = 0
+      var income_and_spend_by_month = []
+      var net_worth = 0
+      
+      Object.entries(getters.budgetBalances).forEach((entry) => {
+        const [month, month_data] = entry
+        var month_item = {}
 
-      Object.entries(getters.transaction_lookup).forEach(entry => {
-        const [key, month] = entry
-        var monthItem = {}
+        month_item.month = month
+        const amount_data = Object.entries(month_data).reduce((partial, [id, value]) => {
+          if (_.get(getters.categoriesByTruncatedId, [id, "isIncome"], false)) {
+            partial.income += value
+          }
+          partial.value += value
+          return partial
+        }, {spent: 0, income: 0, value: 0})
 
-        monthItem.month = key
-        monthItem.income = (month.income + incomeNextMonth) / 100
-        monthItem.spent = monthItem.income - month.value / 100
-        incomeAndSpentByMonth.push(monthItem)
+        month_item = {
+          ... month_item,
+          income: amount_data.income / 100,
+          value: amount_data.value / 100,
+          spent: (amount_data.income - amount_data.value) / 100,
+          net_worth: (net_worth + amount_data.value) / 100
+        }
 
-        netWorth = netWorth + month.value / 100
-        monthItem.netWorth = netWorth
+        net_worth += month_item.net_worth
+        income_and_spend_by_month.push(month_item)
 
-        incomeNextMonth = month.incomeNextMonth
+        net_worth = net_worth + month_data.value / 100
+        month_item.net_worth = net_worth
       })
 
-      return incomeAndSpentByMonth
+      return income_and_spend_by_month
     }
   },
   mutations: {},

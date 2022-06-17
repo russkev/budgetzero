@@ -1,13 +1,17 @@
 var Validator = require('jsonschema').Validator
 var validateSchema = new Validator()
 var ID_LENGTH = require('../constants').ID_LENGTH
+var ID_NAME = require('../constants').ID_NAME
 
+const account_id_length = 'b_'.length + ID_LENGTH.budget + ID_NAME.account.length + ID_LENGTH.account
 const schema_account = {
   type: 'object',
   properties: {
     _id: {
       type: 'string',
-      description: 'user name'
+      // description: 'user name'
+      minimum: account_id_length,
+      maximum: account_id_length
     },
     onBudget: {
       type: 'boolean'
@@ -28,7 +32,7 @@ const schema_account = {
   required: ['_id', 'onBudget', 'name', 'sort', 'closed', 'type']
 }
 
-const transaction_id_length = 'b_'.length + ID_LENGTH.budget + '_transaction_'.length + ID_LENGTH.transaction
+const transaction_id_length = 'b_'.length + ID_LENGTH.budget + ID_NAME.transaction.length + ID_LENGTH.transaction
 const schema_transaction = {
   type: 'object',
   properties: {
@@ -87,7 +91,7 @@ const schema_transaction = {
   ]
 }
 
-const category_id_length = 'b_'.length + ID_LENGTH.budget + '_category_'.length + ID_LENGTH.category
+const category_id_length = 'b_'.length + ID_LENGTH.budget + ID_NAME.category.length + ID_LENGTH.category
 const schema_category = {
   type: 'object',
   properties: {
@@ -111,7 +115,8 @@ const schema_category = {
   required: ['_id', 'sort', 'masterCategory', 'name']
 }
 
-const monthCategory_id_length = 'b_'.length + ID_LENGTH.budget + '_monthCategory_2000-01-01_'.length + ID_LENGTH.category
+const monthCategory_id_length =
+  'b_'.length + ID_LENGTH.budget + `${ID_NAME.monthCategory}2000-01_`.length + ID_LENGTH.category
 const schema_monthCategory = {
   type: 'object',
   properties: {
@@ -133,7 +138,7 @@ const schema_monthCategory = {
   required: ['_id', 'budget', 'overspending']
 }
 
-const masterCategory_id_length = 'b_'.length + ID_LENGTH.budget + '_master-category_'.length + ID_LENGTH.category
+const masterCategory_id_length = 'b_'.length + ID_LENGTH.budget + ID_NAME.masterCategory.length + ID_LENGTH.category
 const schema_masterCategory = {
   type: 'object',
   properties: {
@@ -158,7 +163,7 @@ const schema_masterCategory = {
   required: ['_id', 'name', 'sort', 'collapsed']
 }
 
-const payee_id_length = 'b_'.length + ID_LENGTH.budget + '_payee_'.length + ID_LENGTH.payee
+const payee_id_length = 'b_'.length + ID_LENGTH.budget + ID_NAME.payee.length + ID_LENGTH.payee
 const schema_payee = {
   type: 'object',
   properties: {
@@ -174,7 +179,7 @@ const schema_payee = {
   required: ['_id', 'name']
 }
 
-const budget_id_length = 'budget_'.length + ID_LENGTH.budget
+const budget_id_length = ID_NAME.budget.length + ID_LENGTH.budget
 const schema_budget = {
   type: 'object',
   properties: {
@@ -199,7 +204,7 @@ const schema_budget = {
   required: ['_id', 'name', 'created', 'currency', 'checkNumber']
 }
 
-const budgetOpened_id_length = 'budgetOpened_'.length + ID_LENGTH.budget
+const budgetOpened_id_length = ID_NAME.budgetOpened.length + ID_LENGTH.budget
 const schema_budgetOpened = {
   type: 'object',
   properties: {

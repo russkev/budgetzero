@@ -1,5 +1,6 @@
 import { result } from 'lodash'
 import { ntob } from 'number-to-base64'
+import { ID_NAME } from './constants'
 
 // Clean/sanitize amount input
 function sanitizeValueInput(value) {
@@ -40,11 +41,22 @@ function daySecondsBase64() {
   return day_seconds_64
 }
 
+const original_encoding = 'ABCDEFGHIJKLMNOPQRSTUVWQYZabcdefghijklmnopqrstuvwxyz0123456789+/='
+const new_encoding = '-.0123456789ABCDEFGHIJKLMNOPQRSTUVWQYZ_abcdefghijklmnopqrstuvwxyz'
+const encode_mapping = original_encoding.split('').reduce((partial, letter, i) => {
+  partial[letter] = new_encoding[i]
+  return partial
+}, {})
+
 function urlSafeBase64(decimal_number, length = null) {
   let result = ntob(decimal_number)
-  result = result.replaceAll('+', '_')
-  result = result.replaceAll('/', '-')
-  result = result.replaceAll('=', '.')
+
+  result = result
+    .split('')
+    .map((character) => {
+      return encode_mapping[character]
+    })
+    .join('')
 
   if (length) {
     while (result.length < length) {
@@ -75,6 +87,45 @@ function isValidDate(date_string) {
   return /^[0-9]{4}\-[0-9]{2}\-[0-9]{2}$/.test(date_string)
 }
 
+function nextMonth(month_input) {
+  const year_month = month_input.split('-')
+  let year = parseInt(year_month[0])
+  let month = parseInt(year_month[1]) + 1
+  if (month > 12) {
+    year = year + 1
+    month = 1
+  }
+  return `${year.toString()}-${month.toString().padStart(2, '0')}`
+}
+
+function prevMonth(month_input) {
+  const year_month = month_input.split('-')
+  let year = parseInt(year_month[0])
+  let month = parseInt(year_month[1]) - 1
+  if (month < 1) {
+    year = year - 1
+    month = 12
+  }
+  return `${year.toString()}-${month.toString().padStart(2, '0')}`
+}
+
+function getMonthCategoryDate(month_category_id) {
+  const date_regex = /(?<=\_)[0-9]{4}\-[0-9]{2}(?=\_)/
+  const match = month_category_id.match(date_regex)
+  if (match) {
+    return match[0]
+  } else {
+    return '0000-00'
+  }
+}
+
+function base64Date(date) {
+  if (!date || !isValidDate(date)) {
+    date = new Date().toISOString().split('T')[0]
+  }
+  const date_number = parseInt(date.split('-').join(''), 10)
+  return urlSafeBase64(date_number).padStart(4, '-')
+}
 /**
  * Creates a ID of 12 characters encoded in base 64:
  *   1 -  4: Year month day
@@ -87,12 +138,7 @@ function isValidDate(date_string) {
  * @returns 12 Character string
  */
 function generateId(date = null, transaction_id = null) {
-  if (!date || !isValidDate(date)) {
-    date = new Date().toISOString().split('T')[0]
-  }
-  const date_number = parseInt(date.split('-').join(''), 10)
-  const date_encoded = urlSafeBase64(date_number, 4)
-
+  const date_encoded = base64Date(date)
   const seconds_encoded = daySecondsBase64()
 
   let id_encoded = ''
@@ -114,4 +160,60 @@ function validateId(id) {
   return id.length == 3 || id.length == 12
 }
 
-export { sanitizeValueInput, randomInt, randomString, generateId, generateShortId, validateId }
+function logPerformanceTime(name, t1) {
+  const t2 = performance.now()
+  const seconds = ((t2 - t1) / 1000.0).toFixed(4).toString()
+  console.log(`PERFORMANCE OF: ${name} | TIME: ${seconds} seconds`)
+}
+
+function docTypeFromId(id) {
+  // const docType = null
+  if (id.startsWith(ID_NAME.budget)) {
+    return ID_NAME.budget
+  } else if (id.startsWith(ID_NAME.budgetOpened)) {
+    return ID_NAME.budgetOpened
+  } else {
+    const type_regex = /(?<=b_[0-9a-zA-Z_\-\.]{3})_[0-9a-zA-Z\-]+_(?=[0-9a-zA-Z_\-\.]+)/
+    const regex_result = id.match(type_regex)
+    return regex_result ? regex_result[0] : null
+  }
+}
+
+function databaseExists(db) {
+  return db
+    .info()
+    .then(() => {
+      return true
+    })
+    .catch(() => {
+      return false
+    })
+}
+
+function documentExists(db, id) {
+  return db
+    .get(id)
+    .then(() => {
+      return true
+    })
+    .catch(() => {
+      return false
+    })
+}
+
+export {
+  sanitizeValueInput,
+  randomInt,
+  randomString,
+  generateId,
+  generateShortId,
+  validateId,
+  logPerformanceTime,
+  docTypeFromId,
+  nextMonth,
+  prevMonth,
+  getMonthCategoryDate,
+  databaseExists,
+  documentExists,
+  base64Date,
+}

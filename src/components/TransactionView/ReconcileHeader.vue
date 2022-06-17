@@ -75,6 +75,7 @@
 import { mapGetters } from 'vuex'
 import BaseDialogModalComponent from '../Modals/BaseDialogModalComponent.vue'
 import { generateId } from '../../helper'
+import { ID_NAME, DEFAULT_BALANCE } from '../../constants'
 
 export default {
   components: {
@@ -89,9 +90,26 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['selectedBudgetID']),
+    ...mapGetters(['selectedBudgetID', 'accountBalances']),
     selected_account_balance() {
-      return this.$store.getters.account_balances[this.$route.params.account_id]
+      // // return this.$store.getters.accountBalances[this.$route.params.account_id]
+      // const balance = this.$store.state.accountBalances[this.$route.params.account_id]
+
+      // if (balance !== undefined) {
+      //   return balance
+      // } else {
+      //   return 0
+      // }
+      // return this.$store.state.accountBalances[this.$route.params.account_id] || DEFAULT_BALANCE
+      // if (this.$store.getters.accountBalances !== undefined 
+      //   && this.$route.params.account_id !== undefined
+      // ) {
+      //   return this.$store.getters.accountBalances[this.$route.params.account_id]
+      // } else {
+      //   return DEFAULT_BALANCE
+      // }
+      const accountBalance = this.$store.getters.accountBalances[this.$route.params.account_id]
+      return accountBalance ? accountBalance : DEFAULT_BALANCE
     },
     differenceAmount() {
       return this.selected_account_balance.cleared / 100 - this.reconcileAmount
@@ -129,7 +147,7 @@ export default {
         payee: 'Reconcile adjustment',
         transfer: null,
         splits: [],
-        _id: `b_${this.selectedBudgetID}_transaction_${generateId(date)}`,
+        _id: `b_${this.selectedBudgetID}${ID_NAME.transaction}${generateId(date)}`,
         _rev: ''
       }
 

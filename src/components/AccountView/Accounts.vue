@@ -39,6 +39,7 @@
 import { mapGetters } from 'vuex'
 import AccountAddModal from './AccountAddModal'
 import { generateShortId } from '../../helper'
+import { ID_NAME } from '../../constants'
 
 /*
 Account view
@@ -175,7 +176,14 @@ export default {
           _id: this.editedItem._id,
           _rev: this.editedItem._rev
         }
-        Object.assign(this.accounts[this.editedIndex], this.editedItem)
+        // Object.assign(this.accounts[this.editedIndex], this.editedItem)
+        const payload =  {
+          "index": this.editedIndex, 
+          "value": this.editedItem 
+        }
+        // console.log("EDITED")
+        // console.log(this.editedIndex)
+        this.$store.commit('UPDATE_ACCOUNT', {"index": this.editedIndex, "value": this.editedItem})
         this.$store.dispatch('createUpdateAccount', {
           account: editPayload,
           initialBalance: false
@@ -191,9 +199,9 @@ export default {
           sort: this.editedItem.sort,
           onBudget: this.editedItem.onBudget,
           balanceIsNegative: this.editedItem.balanceIsNegative,
-          _id: `b_${this.selectedBudgetID}_account_${generateShortId()}`
+          _id: `b_${this.selectedBudgetID}${ID_NAME.account}${generateShortId()}`
         }
-        console.log('new acct', newPayload, this.editedItem.initialBalance)
+        console.log('new account', newPayload, this.editedItem.initialBalance)
         this.$store.dispatch('createUpdateAccount', {
           account: newPayload,
           initialBalance: this.editedItem.initialBalance

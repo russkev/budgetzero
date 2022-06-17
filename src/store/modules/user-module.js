@@ -112,7 +112,8 @@ export default {
         .on('change', function(change) {
           context.commit('SET_STATUS_MESSAGE', `Syncing ${moment().fromNow()}`)
           console.log('change detected')
-          context.dispatch('getAllDocsFromPouchDB')
+          console.log('!!! NOT GETING NEW CHANGES FROM LOCAL DB !!!')
+          // context.dispatch('getAllDocsFromPouchDB')
         })
         .on('complete', change => {
           // This will only fire when cancelling the replication

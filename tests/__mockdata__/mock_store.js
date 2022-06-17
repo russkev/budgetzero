@@ -21,8 +21,8 @@ const mock_store = {
     // masterCategories: state => state.masterCategories,
     // categories: state => state.categories,
     // month_selected: state => state.month_selected,
-    // account_balances: () => {
-    //   return account_balances;
+    // accountBalances: () => {
+    //   return accountBalances;
     // },
     // transactions_by_account: () => {
     //   return transactions_by_account;

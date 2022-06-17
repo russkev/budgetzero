@@ -79,13 +79,15 @@ const ifAnyBudgetExists = (to, from, next) => {
   next('/create')
 }
 
+
+
 // eslint-disable-next-line vars-on-top
 export var router = new VueRouter({
   mode: process.env.IS_ELECTRON ? 'hash' : 'history',
   routes: [
     {
       path: '*',
-      redirect: '/budget'
+      redirect: `/budget/${new Date().toISOString().substring(0, 7)}`
     },
     {
       path: '/settings',
@@ -120,7 +122,7 @@ export var router = new VueRouter({
       // beforeEnter: ifAnyBudgetExists,
     },
     {
-      path: '/budget',
+      path: '/budget/:month',
       component: BudgetGrid
       // redirect: '/budget',
       // beforeEnter: ifAnyBudgetExists,
@@ -146,7 +148,7 @@ import { sync } from 'vuex-router-sync'
 sync(store, router)
 
 const vm = new Vue({
-  store,
+  store: store,
   created() {},
   methods: {},
   vuetify,

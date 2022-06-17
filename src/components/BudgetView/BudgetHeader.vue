@@ -3,7 +3,7 @@
     <v-row cols="12" class="pr-4">
       <v-card style="width: 300px" outlined>
         <v-card-title id="selected-month" class="headline grey lighten-4 py-2">
-          {{ month_selected | moment('MMMM YYYY') }}
+          {{ selectedMonth | moment('MMMM YYYY') }}
         </v-card-title>
         <v-card-subtitle v-if="!doesMonthDataExist" id="data-doesnt-exist-msg" class="grey lighten-4 pt-2 pb-1">
           <span>Data does not exist for this month</span>
@@ -15,8 +15,8 @@
               Leftover Last Month
               <span id="leftover-amount" style="float:right;">
                 {{
-                  monthlyData[month_selected]
-                    ? monthlyData[month_selected].summaryData.available_to_budget_last_month / 100
+                  monthlyData[selectedMonth]
+                    ? monthlyData[selectedMonth].summaryData.available_to_budget_last_month / 100
                     : 0 | currency
                 }}
               </span>
@@ -25,8 +25,8 @@
               Income This Month
               <span id="income-amount" style="float:right;">
                 {{
-                  monthlyData[month_selected]
-                    ? monthlyData[month_selected].summaryData.income_this_month / 100
+                  monthlyData[selectedMonth]
+                    ? monthlyData[selectedMonth].summaryData.income_this_month / 100
                     : 0 | currency
                 }}
               </span>
@@ -35,8 +35,8 @@
               Overspent Last Month
               <span id="overspent-amount" style="float:right;">
                 {{
-                  monthlyData[month_selected]
-                    ? monthlyData[month_selected].summaryData.last_month_overspent / 100
+                  monthlyData[selectedMonth]
+                    ? monthlyData[selectedMonth].summaryData.last_month_overspent / 100
                     : 0 | currency
                 }}
               </span>
@@ -45,8 +45,8 @@
               Budgeted This Month
               <span id="budgeted-amount" style="float:right;">
                 {{
-                  monthlyData[month_selected]
-                    ? monthlyData[month_selected].summaryData.budgeted_this_month / 100
+                  monthlyData[selectedMonth]
+                    ? monthlyData[selectedMonth].summaryData.budgeted_this_month / 100
                     : 0 | currency
                 }}
               </span>
@@ -60,8 +60,8 @@
 
           <div id="available-to-budget-amount" class="title text-center mb-0">
             {{
-              monthlyData[month_selected]
-                ? monthlyData[month_selected].summaryData.available_to_budget_this_month / 100
+              monthlyData[selectedMonth]
+                ? monthlyData[selectedMonth].summaryData.available_to_budget_this_month / 100
                 : 0 | currency
             }}
           </div>
@@ -80,14 +80,14 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['monthlyData', 'month_selected']),
+    ...mapGetters(['monthlyData', 'selectedMonth' ]),
     doesMonthDataExist() {
-      if (this.monthlyData.hasOwnProperty(`${this.month_selected}`)) {
+      if (this.monthlyData.hasOwnProperty(`${this.selectedMonth}`)) {
         return true
       } else {
         return false
       }
-    }
+    },
   },
   methods: {}
 }

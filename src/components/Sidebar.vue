@@ -97,7 +97,7 @@
     <v-divider />
 
     <v-list dark dense class="text-left pt-0 sidebar">
-      <v-list-item :to="{ path: '/budget' }">
+      <v-list-item :to="{ path: `/budget/${year_month}` }">
         <v-list-item-icon>
           <v-icon> mdi-cash-multiple </v-icon>
         </v-list-item-icon>
@@ -159,7 +159,7 @@
           </v-list-item-title>
         </v-list-item-content>
         <v-list-item-icon class="subtitle-2">
-          {{ (account_balances[item._id.slice(-ID_LENGTH.account)].working / 100) | currency }}
+          {{ (accountBalances[item._id.slice(-ID_LENGTH.account)].working / 100) | currency }}
         </v-list-item-icon>
       </v-list-item>
 
@@ -185,7 +185,7 @@
           </v-list-item-title>
         </v-list-item-content>
         <v-list-item-icon class="subtitle-2">
-          {{ (account_balances[item._id.slice(-ID_LENGTH.account)].working / 100) | currency }}
+          {{ (accountBalances[item._id.slice(-ID_LENGTH.account)].working / 100) | currency }}
         </v-list-item-icon>
       </v-list-item>
 
@@ -266,7 +266,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import BaseDialogModalComponent from './Modals/BaseDialogModalComponent'
 import { ID_LENGTH } from '../constants'
 
@@ -282,13 +282,15 @@ export default {
       links: '',
       drawer: null,
       mini: false,
-      manageBudgetsModalVisible: false
+      manageBudgetsModalVisible: false,
+      year_month: new Date().toISOString().substring(0, 7)
+      // accounts: [],
     }
   },
   computed: {
     ...mapGetters([
-      'account_balances',
       'accounts',
+      'accountBalances',
       'sync_state',
       'accountsOnBudget',
       'accountsOffBudget',
@@ -305,17 +307,25 @@ export default {
       }
     },
     sumOfOnBudgetAccounts() {
-      return this.accountsOnBudget.reduce(
-        (acct_sum, b) => acct_sum + this.account_balances[b._id.slice(-ID_LENGTH.account)].working / 100,
-        0
-      )
+      return this.accounts.reduce((account_sum, account) => {
+        const accountBalance = this.accountBalances[account._id.slice(-ID_LENGTH.account)]
+        if(account.onBudget && accountBalance !== undefined) {
+          return account_sum + accountBalance.working / 100
+        } else {
+          return account_sum
+        }  
+      }, 0)
     },
     sumOfOffBudgetAccounts() {
-      return this.accountsOffBudget.reduce(
-        (acct_sum, b) => acct_sum + this.account_balances[b._id.slice(-ID_LENGTH.account)].working / 100,
-        0
-      )
-    }
+      return this.accounts.reduce((account_sum, account) => {
+        const accountBalance = this.accountBalances[account._id.slice(-ID_LENGTH.account)]
+        if(!account.onBudget && accountBalance !== undefined) {
+          return account_sum + accountBalance.working / 100
+        } else {
+          return account_sum
+        }  
+      }, 0)
+    },
   },
   watch: {
     selectedBudgetID: function(newBudget, oldBudget) {
@@ -326,64 +336,6 @@ export default {
     createBudget() {
       this.$router.push({ path: `/create` })
     },
-    plaid_link() {
-      const linkHandler = Plaid.create({
-        env: 'sandbox',
-        clientName: 'Plaid Sandbox',
-        // Replace '<PUBLIC_KEY>' with your own `public_key`
-        key: '1313814b396f2092dfda37b0697f4f',
-        product: ['auth'],
-        apiVersion: 'v2',
-        onSuccess(public_token, metadata) {
-          // Send the public_token to your app server here.
-          // The metadata object contains info about the
-          // institution the user selected and the
-          // account_id, if selectAccount is enabled.
-          console.log(public_token)
-          this.public_token = public_token
-
-          const dicttosend2 = {
-            name: 'Account name - autoadded',
-            type: 'Plaid',
-            public_token
-          }
-
-          fetch('http://192.168.1.4:8000/accounts/', {
-            method: 'POST',
-            body: JSON.stringify(dicttosend2),
-            headers: {
-              'Content-Type': 'application/json',
-              Accept: 'application/json'
-            }
-          }).then(
-            response => {
-              response.status //= > number 100–599
-              response.statusText //= > String
-              response.headers //= > Headers
-              response.url //= > String
-              return response.text()
-            },
-            error => {
-              error.message //= > String
-              console.log('Put failed')
-            }
-          )
-        },
-        onExit(err, metadata) {
-          // The user exited the Link flow.
-          if (err != null) {
-            // The user encountered a Plaid API error
-            // prior to exiting.
-          }
-          // metadata contains information about the
-          // institution that the user selected and the
-          // most recent API request IDs. Storing this
-          // information can be helpful for support.
-        }
-      })
-
-      linkHandler.open()
-    }
   }
 }
 </script>
