@@ -34,19 +34,6 @@
             <v-col cols="12">
               <v-text-field v-model="item.name" label="Budget name" />
             </v-col>
-            <!-- <v-col cols="12">
-                <v-text-field
-                  label="Email*"
-                  required
-                />
-              </v-col>
-              <v-col cols="12">
-                <v-text-field
-                  label="Password*"
-                  type="password"
-                  required
-                />
-              </v-col> -->
             <v-col cols="12" sm="6">
               <v-select v-model="item.currency" :items="currencies" label="Currency" required />
             </v-col>
@@ -140,8 +127,10 @@ export default {
       dialog: false,
       item: {},
       currencies: [
-        { value: 'USD', text: '$' }
-        // { value: "USD2", text: "$2" }
+        { value: 'AUD', text: '$' },
+        { value: 'EUR', text: '€' },
+        { value: 'GBP', text: "£" },
+        { value: 'USD', text: '$' },
       ]
     }
   },

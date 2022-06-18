@@ -38,7 +38,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import AccountAddModal from './AccountAddModal'
-import { generateShortId } from '../../helper'
 import { ID_NAME } from '../../constants'
 
 /*
@@ -199,7 +198,7 @@ export default {
           sort: this.editedItem.sort,
           onBudget: this.editedItem.onBudget,
           balanceIsNegative: this.editedItem.balanceIsNegative,
-          _id: `b_${this.selectedBudgetID}${ID_NAME.account}${generateShortId()}`
+          _id: `b_${this.selectedBudgetID}${ID_NAME.account}${this.generateShortId()}`
         }
         console.log('new account', newPayload, this.editedItem.initialBalance)
         this.$store.dispatch('createUpdateAccount', {

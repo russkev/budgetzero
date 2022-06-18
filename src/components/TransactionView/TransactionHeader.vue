@@ -73,33 +73,16 @@
 </template>
 
 <script>
-import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import { DEFAULT_BALANCE } from '../../constants'
 
 export default {
   props: ['selected_account'],
-  // data() {},
   computed: {
     ...mapGetters(['selectedBudgetID', 'accountBalances']),
     selected_account_balance() {
-      // console.log(this.$store.state.accountBalances)
-      // const accountBalance = this.$store.getters.accountBalances[this.$route.params.account_id]
       const accountBalance = this.accountBalances[this.$route.params.account_id]
       return accountBalance ? accountBalance : DEFAULT_BALANCE
-
-      // return this.$store.getters.accountBalances[this.$route.params.account_id]
-
-      // console.log('selected_account_balance')
-      // if (this.$store.getters.accountBalances !== undefined 
-      //   && this.$route.params.account_id !== undefined
-      // ) {
-      //   console.log(this.$store.getters.accountBalances)
-      //   console.log(this.$route.params.account_id)
-      //   return this.$store.getters.accountBalances[this.$route.params.account_id]
-      // } else {
-      //   return DEFAULT_BALANCE
-      // }
     }
   },
   methods: {}

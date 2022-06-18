@@ -34,8 +34,6 @@ export const DEFAULT_STATE = {
   budgetBalances: {},
   budgetOpened: null,
   budgetExists: true, // This opens the create budget modal when 'false'
-  remoteSyncURL: null,
-  syncHandle: null
 }
 
 export const DEFAULT_BALANCE = {

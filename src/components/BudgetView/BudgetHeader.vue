@@ -15,8 +15,8 @@
               Leftover Last Month
               <span id="leftover-amount" style="float:right;">
                 {{
-                  monthlyData[selectedMonth]
-                    ? monthlyData[selectedMonth].summaryData.available_to_budget_last_month / 100
+                  monthlyCategoryData[selectedMonth]
+                    ? monthlyCategoryData[selectedMonth].summaryData.available_to_budget_last_month / 100
                     : 0 | currency
                 }}
               </span>
@@ -25,8 +25,8 @@
               Income This Month
               <span id="income-amount" style="float:right;">
                 {{
-                  monthlyData[selectedMonth]
-                    ? monthlyData[selectedMonth].summaryData.income_this_month / 100
+                  monthlyCategoryData[selectedMonth]
+                    ? monthlyCategoryData[selectedMonth].summaryData.income_this_month / 100
                     : 0 | currency
                 }}
               </span>
@@ -35,8 +35,8 @@
               Overspent Last Month
               <span id="overspent-amount" style="float:right;">
                 {{
-                  monthlyData[selectedMonth]
-                    ? monthlyData[selectedMonth].summaryData.last_month_overspent / 100
+                  monthlyCategoryData[selectedMonth]
+                    ? monthlyCategoryData[selectedMonth].summaryData.last_month_overspent / 100
                     : 0 | currency
                 }}
               </span>
@@ -45,8 +45,8 @@
               Budgeted This Month
               <span id="budgeted-amount" style="float:right;">
                 {{
-                  monthlyData[selectedMonth]
-                    ? monthlyData[selectedMonth].summaryData.budgeted_this_month / 100
+                  monthlyCategoryData[selectedMonth]
+                    ? monthlyCategoryData[selectedMonth].summaryData.budgeted_this_month / 100
                     : 0 | currency
                 }}
               </span>
@@ -60,8 +60,8 @@
 
           <div id="available-to-budget-amount" class="title text-center mb-0">
             {{
-              monthlyData[selectedMonth]
-                ? monthlyData[selectedMonth].summaryData.available_to_budget_this_month / 100
+              monthlyCategoryData[selectedMonth]
+                ? monthlyCategoryData[selectedMonth].summaryData.available_to_budget_this_month / 100
                 : 0 | currency
             }}
           </div>
@@ -80,9 +80,9 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['monthlyData', 'selectedMonth' ]),
+    ...mapGetters(['monthlyCategoryData', 'selectedMonth' ]),
     doesMonthDataExist() {
-      if (this.monthlyData.hasOwnProperty(`${this.selectedMonth}`)) {
+      if (this.monthlyCategoryData.hasOwnProperty(`${this.selectedMonth}`)) {
         return true
       } else {
         return false

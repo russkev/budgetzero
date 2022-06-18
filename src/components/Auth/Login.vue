@@ -40,10 +40,6 @@
     <v-row align="center" justify="center">
       <v-col align="center" justify="center" cols="6" class="pt-5">
         <v-divider class="mb-5" />
-        <!-- <div v-if="env == 'development'"> -->
-        <!-- <div id="firebaseui-auth-container" /> -->
-        <!-- </div> -->
-
         <span class="heading-6"
           >BudgetZero cloud sync is not currently open for sign-up. Provide your email below request an early access
           account!</span

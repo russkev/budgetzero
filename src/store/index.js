@@ -1,20 +1,49 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import user from './modules/user-module'
+import account from './modules/account-module'
 import budget from './modules/budget-module'
-import reports from './modules/reports-module'
+import category from './modules/category-module'
+import id from './modules/id-module'
+import payee from './modules/payee-module'
 import pouchdb from './modules/pouchdb-module'
+import reports from './modules/reports-module'
+import transaction from './modules/transaction-module'
+import user from './modules/user-module'
+import pouchdbDelete from './pouchdb/pouchdb-delete'
+import pouchdbExport from './pouchdb/pouchdb-export'
+import pouchdbFetch from './pouchdb/pouchdb-fetch'
+import pouchdbInit from './pouchdb/pouchdb-init'
+import pouchdbRemote from './pouchdb/pouchdb-remote'
+import { generateId, generateShortId, validateId, } from './modules/id-module'
 import moment from 'moment'
+
+Vue.mixin({
+  methods: {
+    generateId,
+    generateShortId,
+    validateId,
+  }
+})
 
 Vue.use(Vuex)
 
 export default new Vuex.Store({
   strict: process.env.NODE_ENV !== 'production',
   modules: {
-    user,
+    account,
     budget,
+    category,
+    id,
+    payee,
     pouchdb,
-    reports
+    reports,
+    transaction,
+    user,
+    pouchdbDelete,
+    pouchdbExport,
+    pouchdbFetch,
+    pouchdbInit,
+    pouchdbRemote,
   },
   state: {
     snackbarMessage: '',
@@ -22,15 +51,15 @@ export default new Vuex.Store({
     snackbar: false,
     sync_state: '',
     selectedBudgetID: null,
-    selected_month: moment(new Date()).format('YYYY-MM')
+    selectedMonth: moment(new Date()).format('YYYY-MM')
   },
   getters: {
-    snackbarMessage: state => state.snackbarMessage,
-    snackbarColor: state => state.snackbarColor,
-    sync_state: state => state.sync_state,
-    snackbar: state => state.snackbar,
-    selectedBudgetID: state => state.selectedBudgetID,
-    selectedMonth: state => state.selected_month
+    snackbarMessage: (state) => state.snackbarMessage,
+    snackbarColor: (state) => state.snackbarColor,
+    sync_state: (state) => state.sync_state,
+    snackbar: (state) => state.snackbar,
+    selectedBudgetID: (state) => state.selectedBudgetID,
+    selectedMonth: (state) => state.selectedMonth
   },
   mutations: {
     SET_STATUS_MESSAGE(state, message) {
@@ -63,10 +92,8 @@ export default new Vuex.Store({
       localStorage.budgetID = selectedBudgetID
     },
     UPDATE_SELECTED_MONTH(state, year_month) {
-      console.log('UPDATE_SELECTED_MONTH')
-      console.log(year_month)
-      state.selected_month = year_month
-    },
+      state.selectedMonth = year_month
+    }
   },
   actions: {
     setSnackBarBoolean(context, snackbar) {

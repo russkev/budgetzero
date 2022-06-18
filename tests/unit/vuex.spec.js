@@ -25,9 +25,9 @@ describe("vuex budget module", () => {
     // store.state.pouchdb.selectedBudgetID = "79de488f-448e-4b4d-97ad-61e5e4f5df31",
   });
 
-  it("monthlyData getter matches snapshot", async () => {
-    store.dispatch("calculateMonthlyData");
-    expect(store.getters.monthlyData).toMatchSnapshot();
+  it("monthlyCategoryData getter matches snapshot", async () => {
+    store.dispatch("calculateMonthlyCategoryData");
+    expect(store.getters.monthlyCategoryData).toMatchSnapshot();
   });
 
   it("transactions_by_account getter matches snapshot", async () => {

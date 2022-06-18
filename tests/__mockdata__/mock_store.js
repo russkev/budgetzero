@@ -17,7 +17,7 @@ const mock_store = {
   getters: {
     // accounts: state => state.accounts,
     // transactions: state => state.transactions,
-    // monthlyData: state => state.monthlyData,
+    // monthlyCategoryData: state => state.monthlyCategoryData,
     // masterCategories: state => state.masterCategories,
     // categories: state => state.categories,
     // month_selected: state => state.month_selected,

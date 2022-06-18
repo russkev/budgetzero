@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`vuex budget module monthlyData getter matches snapshot 1`] = `
+exports[`vuex budget module monthlyCategoryData getter matches snapshot 1`] = `
 Object {
   "2019-09": Object {
     "categories": Object {

@@ -516,8 +516,8 @@ import ImportModalComponent from './ImportModalComponent.vue'
 import ReconcileHeader from './ReconcileHeader'
 import TransactionHeader from './TransactionHeader'
 import _ from 'lodash'
-import { sanitizeValueInput, generateId } from '../../helper.js'
-import { ID_LENGTH, ID_NAME, RESERVED_IDs } from '../../constants'
+import { sanitizeValueInput } from '../../helper.js'
+import { ID_LENGTH, ID_NAME } from '../../constants'
 
 export default {
   name: 'Transactions',
@@ -682,7 +682,7 @@ export default {
       'transactions_by_account',
       'selectedBudgetID',
       'transactions',
-      'monthlyData',
+      'monthlyCategoryData',
       'month_selected'
     ]),
     inflowAmount: {
@@ -808,7 +808,7 @@ export default {
       const id = item.truncated_id
       const transaction_month = this.editedItem.date.substring(0, 7)
 
-      const balance = _.get(this.monthlyData, `${transaction_month}.categories.${id}.balance`, 0)
+      const balance = _.get(this.monthlyCategoryData, `${transaction_month}.categories.${id}.balance`, 0)
       return balance
     },
     addTransaction() {
@@ -876,7 +876,7 @@ export default {
         }
 
         if (this.creatingNewTransaction) {
-          this.editedItem._id = `b_${this.selectedBudgetID}${ID_NAME.transaction}${generateId(this.editItem.date)}`
+          this.editedItem._id = `b_${this.selectedBudgetID}${ID_NAME.transaction}${this.generateId(this.editItem.date)}`
         }
         this.editedItem.approved = true
 

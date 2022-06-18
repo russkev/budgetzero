@@ -137,7 +137,6 @@ import _ from 'lodash'
 import { VueCsvImport } from 'vue-csv-import'
 import moment from 'moment'
 import {getAccountId, getAccountType, getAccountBankId, getAccountTransactions, getDate, cyrb53Hash } from '../../ofxParse'
-import { generateId } from '../../helper'
 import { ID_NAME } from '../../constants'
 
 export default {
@@ -258,7 +257,7 @@ export default {
             importID: importID,
             transfer: null,
             splits: [],
-            _id: `b_${this.selectedBudgetID}${ID_NAME.transaction}${generateId(date, trn.FITID)}`
+            _id: `b_${this.selectedBudgetID}${ID_NAME.transaction}${this.generateId(date, trn.FITID)}`
           }
 
           this.importCount.imported++
@@ -304,7 +303,7 @@ export default {
           payee: trn.payee,
           transfer: null,
           splits: [],
-          _id: `b_${this.selectedBudgetID}${ID_NAME.transaction}${generateId(date)}`
+          _id: `b_${this.selectedBudgetID}${ID_NAME.transaction}${this.generateId(date)}`
         }
         this.importCount.imported++
         transactionListToImport.push(jsonData)

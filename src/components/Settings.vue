@@ -7,6 +7,18 @@
       <template #body>
         <span>Number of transactions to create:</span>
         <v-text-field v-model="mockTransactionsAmount" type="number" />
+        <v-row justify="space-around">
+          <v-date-picker
+            v-model="mockTransactionsStartMonth"
+            :show-current="true"
+            type="month"
+          />
+          <v-date-picker
+            v-model="mockTransactionsEndMonth"
+            :show-current="true"
+            type="month"
+          />
+        </v-row>
       </template>
       <template #actions>
         <v-btn color='grey' @click.stop="mockTransactionsModalIsVisible = false">
@@ -166,7 +178,7 @@
             </p>
             <p>
               Monthly Data:
-              <tree-view :data="monthlyData" :options="{ maxDepth: 0 }" />
+              <tree-view :data="monthlyCategoryData" :options="{ maxDepth: 0 }" />
             </p>
           </v-expansion-panel-content>
         </v-expansion-panel>
@@ -202,6 +214,8 @@ export default {
       isProd: process.env.NODE_ENV === 'production',
       mockTransactionsModalIsVisible: false,
       mockTransactionsAmount: 1000,
+      mockTransactionsStartMonth: "2020-01",
+      mockTransactionsEndMonth: "2021-12",
       mockTransactionsCreateIsLoading: false,
       deleteTransactionsIsLoading: false,
       panel: 0
@@ -211,7 +225,7 @@ export default {
     ...mapGetters([
       'transactions',
       'accounts',
-      'monthlyData',
+      'monthlyCategoryData',
       'payees',
       'selectedBudgetID',
       'remoteSyncURL',
@@ -264,6 +278,7 @@ export default {
       }
     },
     onMockTransactionCreate() {
+      console.log(this.mockTransactionsStartMonth)
       this.mockTransactionsCreateIsLoading = true
       this.$store.dispatch('createMockTransactions', this.mockTransactionsAmount)
         .then((result) => {

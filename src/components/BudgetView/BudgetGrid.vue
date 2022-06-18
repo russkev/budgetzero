@@ -269,11 +269,6 @@
                 </v-icon>
               </v-btn>
             </v-col>
-            <!-- <v-col>{{ item.name }}</v-col> -->
-            <!-- <v-col>{{ item.masterCategory }}</v-col> -->
-            <!-- <v-col class="px-0 py-1">
-              {{ item.sort }}
-            </v-col> -->
 
             <v-col sm="auto" class="pa-0 black--text budget-input-col" align="top">
               <v-text-field
@@ -290,12 +285,6 @@
                 @change="budgetValueChanged(item, $event)"
                 @focus="onFocus"
               />
-              <!-- <input
-                data-cy="budget-input"
-                class="money-amount budget-input-textfield subtitle-2"
-                :value="getBudgetedValue(item._id)"
-                @input="budgetValueChanged(item, $event)"
-              > -->
             </v-col>
 
             <v-col sm="auto" class="px-0 py-1">
@@ -381,7 +370,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['selectedBudgetID', 'monthlyData', 'monthCategoryBudgets', 'selectedMonth']),
+    ...mapGetters(['selectedBudgetID', 'monthlyCategoryData', 'monthCategoryBudgets', 'selectedMonth']),
     masterCategories: {
       get() {
         return this.$store.getters.masterCategories
@@ -419,7 +408,7 @@ export default {
     },
     selectedMonthCategoryBudgets() {
       console.log("MONTHLY DATA")
-      console.log(this.monthlyData)
+      console.log(this.monthlyCategoryData)
 
       const existingValues = this.monthCategoryBudgets[this.selectedMonth]
       const skip_ids = new Set(INITIAL_MONTH_CATEGORIES.map((initial_category) => {
@@ -455,7 +444,7 @@ export default {
     next()
   },
   methods: {
-    ...mapActions(['updateBudgetAmount', 'deleteDocFromPouchAndVuex']),
+    ...mapActions(['updateCategoryAmount', 'deleteDocFromPouchAndVuex']),
     // ...mapMutations(['PREVIOUS_MONTH', 'ADD_MONTH', 'GO_TO_CURRENT_MONTH']),
     onFocus(param) {
       this.$nextTick(() => {
@@ -515,26 +504,26 @@ export default {
 
       console.log('payload for budget', changed_data.doc)
       if (!isNaN(changed_data.doc.budget)) {
-        this.$store.dispatch('updateBudgetAmount', changed_data.doc)
+        this.$store.dispatch('updateCategoryAmount', changed_data.doc)
       }
     },
     getBudgetedValue(full_id) {
       console.log("MONTHLY DATA")
-      console.log(this.monthlyData)
+      console.log(this.monthlyCategoryData)
       const id = full_id ? full_id.slice(-ID_LENGTH.category) : null
 
 
-      return (_.get(this.monthlyData, `${this.selectedMonth}.categories.${id}.budgeted`, 0) / 100).toFixed(2)
+      return (_.get(this.monthlyCategoryData, `${this.selectedMonth}.categories.${id}.budgeted`, 0) / 100).toFixed(2)
     },
     getSpentValue(full_id) {
       const id = full_id ? full_id.slice(-ID_LENGTH.category) : null
 
-      return _.get(this.monthlyData, `${this.selectedMonth}.categories.${id}.spent`, 0) / 100
+      return _.get(this.monthlyCategoryData, `${this.selectedMonth}.categories.${id}.spent`, 0) / 100
     },
     getBalanceValue(full_id) {
       const id = full_id ? full_id.slice(-ID_LENGTH.category) : null
 
-      return _.get(this.monthlyData, [this.selectedMonth, 'categories', id, 'balance'], 0) / 100
+      return _.get(this.monthlyCategoryData, [this.selectedMonth, 'categories', id, 'balance'], 0) / 100
     },
     getOverspendingProperty(item) {
       const id = item._id ? item._id.slice(-ID_LENGTH.category) : null
@@ -663,10 +652,4 @@ tr:hover .crud-actions {
   margin-top: -1px;
   height: 30px;
 }
-</style>
-
-<style lang="scss">
-// .v-row-group__header {
-//   height: 10px;
-// }
 </style>
