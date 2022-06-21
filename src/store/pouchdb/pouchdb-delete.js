@@ -105,9 +105,9 @@ export default {
       const db = Vue.prototype.$pouch
       console.log('deleteDocFromPouchAndVuex', document)
       db.remove(document)
-        .then((result) => {
-          context.commit('DELETE_DOCUMENT', result)
-        })
+        // .then((result) => {
+        //   context.commit('DELETE_DOCUMENT', result)
+        // })
         .catch((err) => {
           context.commit('API_FAILURE', err)
         })
@@ -118,10 +118,17 @@ export default {
      * @param {array} documents The documents to delete.
      */
     deleteBulkDocumentsFromPouchAndVuex: (context, {documents}) => {
-      documents.map((transaction) => (transaction._deleted = true))
-      context.dispatch('commitBulkDocsToPouchAndVuex', documents).then((response) => {
-        context.dispatch('getAllDocsFromPouchDB') //TODO: reloads everything after bulk delete...not that efficient?
+      const payload = documents.map((transaction) => {
+        return {
+          ...transaction,
+          _deleted: true,
+        }
       })
+      // documents.map((transaction) => (transaction._deleted = true))
+      return context.dispatch('commitBulkDocsToPouchAndVuex', payload)
+        // .then((response) => {
+        //   context.dispatch('getAllDocsFromPouchDB') //TODO: reloads everything after bulk delete...not that efficient?
+        // })
     }
   }
 }

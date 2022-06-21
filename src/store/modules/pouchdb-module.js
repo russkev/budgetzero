@@ -9,7 +9,7 @@ import {
   schema_payee,
   validateSchema
 } from '../validation'
-import _ from 'lodash'
+import _, { reject } from 'lodash'
 import { ID_LENGTH, ID_NAME, DEFAULT_STATE, DEFAULT_BALANCE, INITIAL_MONTH_CATEGORIES } from '../../constants'
 import { databaseExists, docTypeFromId, getMonthCategoryDate } from '../../helper'
 
@@ -57,6 +57,12 @@ export default {
     categoriesByTruncatedId: (state) => {
       return state.categories.reduce((partial, category) => {
         partial[category._id.slice(-ID_LENGTH.category)] = category
+        return partial
+      }, {})
+    },
+    masterCategoriesByTruncatedId: (state, getters) => {
+      return getters.masterCategories.reduce((partial, masterCategory) => {
+        partial[masterCategory._id.slice(-ID_LENGTH.category)] = masterCategory
         return partial
       }, {})
     },
@@ -232,11 +238,11 @@ export default {
         return partial
       }, {})
     },
-    DELETE_DOCUMENT(state, payload) {
-      // Only works for deleting transactions. In the future may need to delete other types of docs.
-      const index = state.transactions.findIndex((row) => row._id == payload.id)
-      state.transactions.splice(index, 1)
-    },
+    // DELETE_DOCUMENT(state, payload) {
+    //   // Only works for deleting transactions. In the future may need to delete other types of docs.
+    //   const index = state.transactions.findIndex((row) => row._id == payload.id)
+    //   state.transactions.splice(index, 1)
+    // },
     DELETE_LOCAL_DB(state) {
       const default_state = JSON.parse(JSON.stringify(DEFAULT_STATE))
       Object.keys(default_state).forEach((key) => {
@@ -330,6 +336,7 @@ export default {
      */
     commitDocToPouchAndVuex(context, document) {
       console.log('commitDocToPouchAndVuex')
+      console.log(document)
       var docType = null
       var index = null
 
@@ -389,26 +396,47 @@ export default {
 
       //Commit to Pouchdb
       const db = this._vm.$pouch
-      return new Promise((resolve, reject) => {
-        db.put(document)
-          .then((response) => {
-            // document._rev = response.rev
-            context.commit('UPDATE_VUE_DOCUMENT', {
-              payload: { ...document, _rev: response.rev },
-              index,
-              docType
-            })
-            return Promise.all([context.dispatch('fetchAccountBalances'), context.dispatch('fetchBudgetBalances')])
-          })
-          .then((response) => {
-            context.dispatch('calculateMonthlyCategoryData')
-            resolve(response)
-          })
-          .catch((error) => {
-            reject(error)
-            context.commit('API_FAILURE', error)
-          })
+      return db.put(document).then((result) => {
+        console.log('PUT RESULT')
+        console.log(result)
+        return result
       })
+
+      // return new Promise((resolve, reject) => {
+      //   db.put(document)
+      //     .then((response) => {
+      //       // document._rev = response.rev
+      //       context.commit('UPDATE_VUE_DOCUMENT', {
+      //         payload: { ...document, _rev: response.rev },
+      //         index,
+      //         docType
+      //       })
+      //       return Promise.all([context.dispatch('fetchAccountBalances'), context.dispatch('fetchBudgetBalances')])
+      //     })
+      //     .then((response) => {
+      //       context.dispatch('calculateMonthlyCategoryData')
+      //       resolve(response)
+      //     })
+      //     .catch((error) => {
+      //       reject(error)
+      //       context.commit('API_FAILURE', error)
+      //     })
+      // })
+    },
+
+
+    updateBalances(context) {
+      return Promise
+        .all([
+          context.dispatch('fetchAccountBalances'),
+          context.dispatch('fetchBudgetBalances')
+        ])
+        .then((response) => {
+          return context.dispatch('calculateMonthlyCategoryData')
+        })
+        .catch((error) => {
+          context.commit('API_FAILURE', error)
+        })
     },
 
     /**
@@ -428,10 +456,10 @@ export default {
         .then(() => {
           return this._vm.$pouch.bulkDocs(payload)
         })
-        .then((response) => {
-          console.log('ACTION: commitBulkDocsToPouchAndVuex succeeded', response)
-          return context.dispatch('loadLocalBudgetRoot')
-        })
+        // .then((response) => {
+        //   console.log('ACTION: commitBulkDocsToPouchAndVuex succeeded', response)
+        //   return context.dispatch('loadLocalBudgetRoot')
+        // })
         .catch((err) => {
           console.log('ACTION: commitBulkDocsToPouchAndVuex failed')
           return context.commit('API_FAILURE', err)
@@ -439,19 +467,21 @@ export default {
     },
 
     getAllDocsFromPouchDB(context) {
-      return Promise
-        .all([
-          context.dispatch('fetchAccounts'),
-          context.dispatch('fetchPayees'),
-          context.dispatch('fetchMasterCategories'),
-          context.dispatch('fetchCategories'),
-          context.dispatch('fetchMonthCategories'),
-          context.dispatch('fetchAccountBalances'),
-          context.dispatch('fetchTransactionsForAccount'),
-          context.dispatch('fetchBudgetBalances')
-        ])
+      return Promise.all([
+        context.dispatch('fetchAccounts'),
+        context.dispatch('fetchPayees'),
+        context.dispatch('fetchMasterCategories'),
+        context.dispatch('fetchCategories'),
+        context.dispatch('fetchMonthCategories'),
+        context.dispatch('fetchBudgetBalances')
+        // TODO: Use web worker to do the expensive lookups
+        // Maybe this: https://github.com/pouchdb-community/worker-pouch
+      ])
         .then(() => {
           context.dispatch('calculateMonthlyCategoryData')
+        })
+        .then(() => {
+          context.dispatch('fetchAccountBalances')
         })
         .catch((err) => {
           console.log(err)

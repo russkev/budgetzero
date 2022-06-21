@@ -280,7 +280,12 @@ export default {
     onMockTransactionCreate() {
       console.log(this.mockTransactionsStartMonth)
       this.mockTransactionsCreateIsLoading = true
-      this.$store.dispatch('createMockTransactions', this.mockTransactionsAmount)
+      this.$store
+        .dispatch('createMockTransactions', {
+          amount: this.mockTransactionsAmount, 
+          start: this.mockTransactionsStartMonth, 
+          end: this.mockTransactionsEndMonth
+        })
         .then((result) => {
           this.$store.commit('SET_SNACKBAR_MESSAGE', {
             snackbarMessage: `Created ${result} mock transactions`,

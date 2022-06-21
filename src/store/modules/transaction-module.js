@@ -1,8 +1,10 @@
 import { sanitizeValueInput, randomInt, randomString} from '../../helper'
+import { ID_LENGTH, ID_NAME } from '../../constants'
 
 export default {
   state: {},
   getters: {
+    dataTableHeaders: () => dataTableHeaders,
     transactionsOnBudget: (state, getters) => {
       //Get list of account _ids that are on budget
       var accounts = getters.accountsOnBudget.map((account) => account._id.slice(-ID_LENGTH.account))
@@ -113,7 +115,7 @@ export default {
       context.dispatch('commitBulkDocsToPouchAndVuex', transactionsToLock)
     },
 
-    createMockTransactions(context, amount) {
+    createMockTransactions(context, {amount, start, end}) {
       return new Promise((resolve, reject) => {
         const num_transactions = parseInt(amount)
         if (!num_transactions) {
@@ -122,19 +124,17 @@ export default {
         if (context.getters.accounts.length < 1) {
           reject('At least one account is required')
         }
-        const year_start = 2017
-        const year_end = 2021
 
+        const month_array = monthArray(start, end)
         const categories = context.getters.categories
         const accounts = context.getters.accounts
 
         const mock_transactions = Array(num_transactions)
           .fill(0)
           .map(() => {
-            const year = randomInt(year_start, year_end)
-            const month = randomInt(1, 12).toString().padStart(2, '0')
+            const year_month = month_array[randomInt(0, month_array.length - 1)]
             const day = randomInt(1, 28).toString().padStart(2, '0')
-            const date = `${year}-${month}-${day}`
+            const date = `${year_month}-${day}`
             const transaction_id = this._vm.generateId(date)
 
             const category = categories[randomInt(3, categories.length - 1)]
@@ -157,32 +157,91 @@ export default {
               _rev: ''
             }
           })
-        console.log('MOCK TRANSACTIONS')
-        console.log(mock_transactions)
 
         let mock_budget_data = []
-        for (let year = year_start; year <= year_end; year++) {
-          for (let month = 1; month <= 12; month++) {
-            const date = `${year}-${month.toString().padStart(2, '0')}`
-            categories.forEach((category) => {
-              const category_id = category._id ? category._id.slice(-ID_LENGTH.category) : null
+        month_array.forEach((year_month) => {
+          categories.forEach((category) => {
+            const category_id = category._id ? category._id.slice(-ID_LENGTH.category) : null
               if (category_id) {
                 const budget_amount_item = {
                   budget: randomInt(-20000, 30000),
                   overspending: null,
                   note: randomString(randomInt(0, 100)),
-                  _id: `b_${context.getters.selectedBudgetID}${ID_NAME.monthCategory}${date}_${category_id}`
+                  _id: `b_${context.getters.selectedBudgetID}${ID_NAME.monthCategory}${year_month}_${category_id}`
                 }
                 mock_budget_data.push(budget_amount_item)
               }
-            })
-          }
-        }
+          })
+        })
 
-        // context.dispatch('commitBulkDocsToPouchAndVuex', mock_budget_data.concat(mock_transactions)).then(() => {
-        //   resolve(mock_transactions.length)
-        // })
+
+        context.dispatch('commitBulkDocsToPouchAndVuex', mock_budget_data.concat(mock_transactions)).then(() => {
+          resolve(mock_transactions.length)
+        })
       })
     }
   }
 }
+
+function monthArray(start, end) {
+  const start_array = start.split('-')
+  const end_array = end.split('-')
+  const year_start = parseInt(start_array[0])
+  const month_start = parseInt(start_array[1])
+  const year_end = parseInt(end_array[0])
+  const month_end = parseInt(end_array[1])
+
+  const month_array = []
+
+  for (let current_year = year_start; current_year <= year_end; current_year++) {
+    const m_start = current_year === year_start ? month_start : 1
+    const m_end = current_year === year_end ? month_end : 12
+    for (let current_m = m_start; current_m <= m_end; current_m++) {
+      month_array.push(`${current_year.toString()}-${current_m.toString().padStart(2, '0')}`)
+    }
+  }
+  return month_array
+}
+
+const dataTableHeaders = [
+  {
+    text: '',
+    class: 'transaction-table-header',
+    value: 'data-table-select',
+  },
+  {
+    text: '',
+    class: 'transaction-table-header',
+    value: 'cleared',
+  },
+  {
+    text: 'Date',
+    class: 'transaction-table-header',
+    value: 'date',
+    align: 'left'
+  },
+  {
+    text: 'Category',
+    class: 'transaction-table-header',
+    value: 'category',
+    align: 'left'
+  },
+  {
+    text: 'Memo',
+    class: 'transaction-table-header',
+    value: 'memo',
+    align: 'left'
+  },
+  {
+    text: 'Outflow',
+    class: 'transaction-table-header',
+    value: 'outflow',
+    align: 'left',
+  },
+  {
+    text: 'Inflow',
+    class: 'transaction-table-header',
+    value: 'inflow',
+    align: 'left',
+  }
+]

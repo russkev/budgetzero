@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import PouchDB  from 'pouchdb'
+import PouchDB from 'pouchdb'
 import { documentExists } from '../../helper'
 import { ID_LENGTH, ID_NAME } from '../../constants'
 
@@ -41,23 +41,35 @@ export default {
                   )
                 }
               }`,
-                reduce: '_sum'
+              reduce: '_sum'
               },
               sum_transaction_by_budget: {
                 map: `function (doc) {
-              const id = doc._id
-              if (${is_transaction}) {
-                emit(
-                  [
-                    id.slice(${budget_id_start}, ${budget_id_end}), 
-                    doc.date.slice(0, 7),
-                    doc.category
-                  ], 
-                  doc.value
-                )
-              }
-            }`,
-                reduce: '_sum'
+                const id = doc._id
+                if (${is_transaction}) {
+                  emit(
+                    [
+                      id.slice(${budget_id_start}, ${budget_id_end}), 
+                      doc.date.slice(0, 7),
+                      doc.category
+                    ], 
+                    doc.value
+                  )
+                }
+              }`,
+              reduce: '_sum'
+              },
+              transactions_by_account: {
+                map: `function (doc) {
+                  const id = doc._id
+                  if (${is_transaction}) {
+                    emit([
+                      id.slice(${budget_id_start}, ${budget_id_end}), 
+                      doc.account,
+                      id.slice(-${ID_LENGTH.transaction})
+                    ]) 
+                  }
+                }`
               }
             }
           }
@@ -71,7 +83,8 @@ export default {
           console.log(`Design document failure: ${err.message}`)
         })
     },
-    createLocalPouchDB(context) {
+    createLocalPouchDB(context) {    
+      PouchDB.adapter('worker', require('worker-pouch'))
       const db = new PouchDB('budgetzero_local_db')
       Vue.prototype.$pouch = db
 
@@ -79,9 +92,10 @@ export default {
         .dispatch('initializeDesignDocs')
         .then(() => {
           return context.dispatch('loadLocalBudgetRoot')
-        }).catch((err) => {
+        })
+        .catch((err) => {
           console.log(err)
         })
-    },
+    }
   }
 }

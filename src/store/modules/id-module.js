@@ -81,8 +81,8 @@ function isValidDate(date_string) {
   return /^[0-9]{4}\-[0-9]{2}\-[0-9]{2}$/.test(date_string)
 }
 
-const original_encoding = 'ABCDEFGHIJKLMNOPQRSTUVWQYZabcdefghijklmnopqrstuvwxyz0123456789+/='
-const new_encoding = '-.0123456789ABCDEFGHIJKLMNOPQRSTUVWQYZ_abcdefghijklmnopqrstuvwxyz'
+const original_encoding = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
+const new_encoding      = '-.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz'
 const encode_mapping = original_encoding.split('').reduce((partial, letter, i) => {
   partial[letter] = new_encoding[i]
   return partial
@@ -90,7 +90,8 @@ const encode_mapping = original_encoding.split('').reduce((partial, letter, i) =
 
 function urlSafeBase64(decimal_number, length = null) {
   let result = ntob(decimal_number)
-
+  // console.log(`NTOB RESULT: ${result}`)
+  // console.log(encode_mapping)
   result = result
     .split('')
     .map((character) => {
@@ -157,4 +158,4 @@ function generateShortId() {
   return urlSafeString(3)
 }
 
-export { generateId, generateShortId, validateId }
+export { generateId, generateShortId, validateId, base64Date }

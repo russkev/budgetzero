@@ -6,28 +6,31 @@ export default {
   mutations: {},
   actions: {
     createUpdateAccount(context, payload) {
-      context.dispatch('commitDocToPouchAndVuex', payload.account).then((response) => {
-        const date = new Date().toISOString().split('T')[0]
-        if (payload.initialBalance) {
-          const initTransaction = {
-            account: response.id.slice(-ID_LENGTH.account),
-            category: null,
-            cleared: true,
-            approved: true,
-            value: sanitizeValueInput(payload.initialBalance) * 100,
-            date: date,
-            memo: null,
-            reconciled: true,
-            flag: '#ffffff',
-            payee: `---------------------initial-balance`,
-            transfer: null,
-            splits: [],
-            _id: `b_${context.getters.selectedBudgetID}${ID_NAME.transaction}${this._vm.generateId(date)}`
+      context
+        .dispatch('commitDocToPouchAndVuex', payload.account)
+        .then((response) => {
+          const date = new Date().toISOString().split('T')[0]
+          if (payload.initialBalance) {
+            const initTransaction = {
+              account: response.id.slice(-ID_LENGTH.account),
+              category: null,
+              cleared: true,
+              approved: true,
+              value: sanitizeValueInput(payload.initialBalance) * 100,
+              date: date,
+              memo: null,
+              reconciled: true,
+              flag: '#ffffff',
+              payee: `---------------------initial-balance`,
+              transfer: null,
+              splits: [],
+              _id: `b_${context.getters.selectedBudgetID}${ID_NAME.transaction}${this._vm.generateId(date)}`
+            }
+            console.log('initTransaction', initTransaction)
+            return context.dispatch('createOrUpdateTransaction', initTransaction)
           }
-          console.log('initTransaction', initTransaction)
-          return context.dispatch('createOrUpdateTransaction', initTransaction)
-        }
-        return
+          
+          return
       })
     },
     deleteAccount(context, payload) {

@@ -64,3 +64,20 @@ export const RESERVED_IDs =
       return partial
     }
   }, [])
+
+export const DEFAULT_TRANSACTION = {
+  account: '',
+  category: null,
+  cleared: true,
+  approved: true,
+  value: 0,
+  date: '2000-01-01',
+  memo: '',
+  reconciled: false,
+  flag: '#ffffff',
+  payee: null,
+  transfer: null,
+  splits: [],
+  _id: '',
+  _rev: ''
+}

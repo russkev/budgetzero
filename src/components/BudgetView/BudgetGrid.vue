@@ -354,6 +354,7 @@ export default {
       isModalVisibleCreateSubCategory: false,
       master_category_id: '',
       editedCategory: {},
+      // selectedMonth: this.$store.selectedMonth,
 
       headers: [
         {
@@ -443,9 +444,26 @@ export default {
     this.$store.commit('UPDATE_SELECTED_MONTH', to.params.month)
     next()
   },
+  watch: {
+    selectedMonth: {
+      handler() {
+        console.log("INSIDE WATCH")
+        this.updateMonthCategoryData()
+      }
+    }
+  },
   methods: {
-    ...mapActions(['updateCategoryAmount', 'deleteDocFromPouchAndVuex']),
+    ...mapActions(['updateCategoryAmount', 'deleteDocFromPouchAndVuex', 'calculateMonthlyCategoryData']),
     // ...mapMutations(['PREVIOUS_MONTH', 'ADD_MONTH', 'GO_TO_CURRENT_MONTH']),
+    updateMonthCategoryData () {
+      console.log("updateMonthCategoryData")
+      this.$store.dispatch('fetchBudgetBalances').then(() => {
+        this.$store.dispatch('calculateMonthlyCategoryData')
+      })
+      .catch((err) => {
+        console.log(err)
+      })
+    },
     onFocus(param) {
       this.$nextTick(() => {
         param.target.select()

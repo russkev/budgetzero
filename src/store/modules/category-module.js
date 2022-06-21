@@ -36,6 +36,7 @@ export default {
 
       const selected_month = getters.selectedMonth
       const prev_month = prevMonth(selected_month)
+      console.log(`Selected month: ${selected_month}, prev month: ${prev_month}`)
       const t1 = performance.now()
 
       return new Promise((resolve, reject) => {
