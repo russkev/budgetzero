@@ -1,4 +1,5 @@
 import { sanitizeValueInput } from "../../helper"
+import moment from 'moment'
 
 export default {
   state: {},
@@ -9,7 +10,7 @@ export default {
       context
         .dispatch('commitDocToPouchAndVuex', payload.account)
         .then((response) => {
-          const date = new Date().toISOString().split('T')[0]
+          const date =  moment(new Date()).format('YYYY-MM-DD')
           if (payload.initialBalance) {
             const initTransaction = {
               account: response.id.slice(-ID_LENGTH.account),

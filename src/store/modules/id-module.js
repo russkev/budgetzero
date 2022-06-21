@@ -123,7 +123,7 @@ function urlSafeString(length) {
 
 function base64Date(date) {
   if (!date || !isValidDate(date)) {
-    date = new Date().toISOString().split('T')[0]
+    date = moment(new Date()).format('YYYY-MM-DD')
   }
   const date_number = parseInt(date.split('-').join(''), 10)
   return urlSafeBase64(date_number).padStart(4, '-')

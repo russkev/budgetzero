@@ -41,6 +41,7 @@
 import Sidebar from './components/Sidebar.vue'
 import BaseDialogModalComponent from './components/Modals/BaseDialogModalComponent.vue'
 import ConfirmDialog from './components/Modals/ConfirmDialog.vue'
+import moment from 'moment'
 
 export default {
   name: 'App',
@@ -100,7 +101,7 @@ export default {
         })
       ) {
         if(!this.$router.history.current.path.startsWith('/budget')) {
-          const year_month =  new Date().toISOString().substring(0, 7)
+          const year_month =  moment(new Date()).format('YYYY-MM')
           this.$router.push({ path: `/budget/${year_month}` })
         }
       }

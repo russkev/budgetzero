@@ -75,6 +75,7 @@
 import { mapGetters } from 'vuex'
 import BaseDialogModalComponent from '../Modals/BaseDialogModalComponent.vue'
 import { ID_NAME, DEFAULT_BALANCE } from '../../constants'
+import moment from 'moment'
 
 export default {
   components: {
@@ -116,7 +117,7 @@ export default {
         adjustmentTransaction: null,
         account: this.$route.params.account_id
       }
-      const date = new Date().toISOString().substr(0, 10)
+      const date = moment(new Date()).format('YYYY-MM-DD')
       payload.adjustmentTransaction = {
         account: this.$route.params.account_id,
         category: 'income',

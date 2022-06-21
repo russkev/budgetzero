@@ -1,5 +1,6 @@
 import Vue from 'vue'
 var FileSaver = require('file-saver')
+import moment from 'moment'
 
 export default {
   state: {},
@@ -26,7 +27,7 @@ export default {
           delete b_opened_object['_rev']
 
           console.log('exportBudgetAsJSON', b_object.name)
-          const export_date = new Date()
+          const export_date = moment(new Date()).format('YYYY-MM-DD_hh-mm')
 
           const reformattedExport = result.rows
             .map((row) => row.doc)
@@ -41,7 +42,7 @@ export default {
           var blob = new Blob([JSON.stringify(reformattedExport)], {
             type: 'text/plain;charset=utf-8'
           })
-          FileSaver.saveAs(blob, `BudgetZero_Export_${export_date.toISOString()}.txt`)
+          FileSaver.saveAs(blob, `BudgetZero_Export_${export_date}.txt`)
         })
         .catch((err) => {
           console.log(err)
@@ -56,7 +57,7 @@ export default {
         })
         .then((result) => {
           console.log('exportBudgetAsJSON', JSON.stringify(result))
-          const export_date = new Date()
+          const export_date = moment(new Date()).format('YYYY-MM-DD_hh-mm')
 
           const reformattedExport = result.rows
             .map((row) => row.doc)
@@ -68,7 +69,7 @@ export default {
           var blob = new Blob([JSON.stringify(reformattedExport)], {
             type: 'text/plain;charset=utf-8'
           })
-          FileSaver.saveAs(blob, `BudgetZero_Export_${export_date.toISOString()}.txt`)
+          FileSaver.saveAs(blob, `BudgetZero_Export_${export_date}.txt`)
         })
         .catch((err) => {
           console.log(err)

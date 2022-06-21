@@ -27,6 +27,7 @@ import Profile from './components/Auth/Profile.vue'
 import CreateBudget from './components/CreateBudget.vue'
 import Manage from './components/Manage.vue'
 import Reports from './components/Reports.vue'
+import moment from 'moment'
 
 import 'firebaseui/dist/firebaseui.css'
 
@@ -87,7 +88,7 @@ export var router = new VueRouter({
   routes: [
     {
       path: '*',
-      redirect: `/budget/${new Date().toISOString().substring(0, 7)}`
+      redirect: `/budget/${moment(new Date()).format('YYYY-MM')}`
     },
     {
       path: '/settings',

@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import moment from 'moment'
 
 import { ID_LENGTH, ID_NAME } from '../../constants.js'
 
@@ -25,13 +26,13 @@ export default {
       const budget = {
         name: name,
         currency: 'USD',
-        created: new Date().toISOString(),
+        created: moment(new Date()).format('YYYY-MM-DD'),
         checkNumber: false,
         _id: `${ID_NAME.budget}${budget_id}`
       }
 
       var budgetOpened = {
-        opened: new Date().toISOString(),
+        opened: moment(new Date()).format('YYYY-MM-DD'),
         _id: ID_NAME.budgetOpened + budget_id
       }
 

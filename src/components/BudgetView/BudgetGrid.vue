@@ -335,6 +335,7 @@ import _ from 'lodash'
 import draggable from 'vuedraggable'
 import { DEFAULT_MONTH_CATEGORY, ID_LENGTH, ID_NAME, INITIAL_MONTH_CATEGORIES } from '../../constants'
 import { prevMonth, nextMonth } from '../../helper'
+import moment from 'moment'
 
 export default {
   name: 'BudgetGrid',
@@ -405,7 +406,7 @@ export default {
       return nextMonth(this.selectedMonth)
     },
     this_month() {
-      return new Date().toISOString().substring(0, 7)
+      return moment(new Date()).format('YYYY-MM')
     },
     selectedMonthCategoryBudgets() {
       console.log("MONTHLY DATA")

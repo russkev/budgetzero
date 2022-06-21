@@ -29,6 +29,8 @@
 </template>
 
 <script>
+import moment from 'moment'
+
 export default {
   data() {
     return {
@@ -47,7 +49,7 @@ export default {
           })
         })
         .then(() => {
-          const year_month = new Date().toISOString().substring(0, 7)
+          const year_month = moment(new Date()).format('YYYY-MM')
           this.$router.push({path: `/budget/${year_month}`})
         })
         .catch((error) => {

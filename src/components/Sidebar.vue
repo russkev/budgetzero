@@ -269,6 +269,7 @@
 import { mapGetters, mapState } from 'vuex'
 import BaseDialogModalComponent from './Modals/BaseDialogModalComponent'
 import { ID_LENGTH } from '../constants'
+import moment from 'moment'
 
 export default {
   name: 'Sidebar',
@@ -283,7 +284,7 @@ export default {
       drawer: null,
       mini: false,
       manageBudgetsModalVisible: false,
-      year_month: new Date().toISOString().substring(0, 7)
+      year_month: moment(new Date()).format('YYYY-MM')
       // accounts: [],
     }
   },
