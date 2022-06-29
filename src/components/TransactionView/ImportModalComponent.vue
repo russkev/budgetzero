@@ -331,7 +331,7 @@ export default {
       for (const transaction of transactionListToImport) {
         console.log('import transaction', transaction)
 
-        await this.$store.dispatch('createOrUpdateTransaction', transaction)
+        await this.$store.dispatch('createOrUpdateTransaction', {current: transaction, previous: null})
       }
 
       return Promise.resolve()

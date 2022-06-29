@@ -36,7 +36,7 @@ export const DEFAULT_STATE = {
   budgetExists: true, // This opens the create budget modal when 'false'
 }
 
-export const DEFAULT_BALANCE = {
+export const DEFAULT_ACCOUNT_BALANCE = {
   cleared: 0,
   uncleared: 0,
   working: 0
@@ -49,21 +49,11 @@ export const DEFAULT_MONTH_CATEGORY = {
   note: ''
 }
 
-export const INITIAL_MONTH_CATEGORIES = [
-  {
-    _id: null,
-    name: 'Uncategorized'
-  },
-]
-
-export const RESERVED_IDs = 
-  INITIAL_MONTH_CATEGORIES.reduce((partial, category) => {
-    if (category._id) {
-      return partial.concat(category._id.slice(-ID_LENGTH.category))
-    } else {
-      return partial
-    }
-  }, [])
+export const UNCATEGORIZED = {
+  _id: '~~~', // '~' Is never used in an id and is URL safe
+  name: 'Uncategorized',
+  masterCategory: '~~~',
+}
 
 export const DEFAULT_TRANSACTION = {
   account: '',

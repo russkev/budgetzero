@@ -1,37 +1,50 @@
-import { sanitizeValueInput } from "../../helper"
+import { sanitizeValueInput } from '../../helper'
 import moment from 'moment'
+import { ID_LENGTH, ID_NAME } from '../../constants'
 
 export default {
-  state: {},
-  getters: {},
-  mutations: {},
+  state: {
+    allAccountBalances: {}
+    // allMonths: []
+  },
+  getters: {
+    allAccountBalances: (state) => state.allAccountBalances
+  },
+  mutations: {
+    SET_ALL_ACCOUNT_BALANCES(state, payload) {
+      state.allAccountBalances = payload
+    },
+
+    UPDATE_ACCOUNT_BALANCES(state, { account_id, cleared, uncleared, working }) {
+      _.defaultsDeep(state.allAccountBalances, defaultAccountBalance(account_id))
+      updateAccountBalances(state.allAccountBalances, account_id, cleared, uncleared, working)
+    }
+  },
   actions: {
     createUpdateAccount(context, payload) {
-      context
-        .dispatch('commitDocToPouchAndVuex', payload.account)
-        .then((response) => {
-          const date =  moment(new Date()).format('YYYY-MM-DD')
-          if (payload.initialBalance) {
-            const initTransaction = {
-              account: response.id.slice(-ID_LENGTH.account),
-              category: null,
-              cleared: true,
-              approved: true,
-              value: sanitizeValueInput(payload.initialBalance) * 100,
-              date: date,
-              memo: null,
-              reconciled: true,
-              flag: '#ffffff',
-              payee: `---------------------initial-balance`,
-              transfer: null,
-              splits: [],
-              _id: `b_${context.getters.selectedBudgetID}${ID_NAME.transaction}${this._vm.generateId(date)}`
-            }
-            console.log('initTransaction', initTransaction)
-            return context.dispatch('createOrUpdateTransaction', initTransaction)
+      context.dispatch('commitDocToPouchAndVuex', { current: payload.account, previous: null }).then((response) => {
+        const date = moment(new Date()).format('YYYY-MM-DD')
+        if (payload.initialBalance) {
+          const initTransaction = {
+            account: response.id.slice(-ID_LENGTH.account),
+            category: null,
+            cleared: true,
+            approved: true,
+            value: sanitizeValueInput(payload.initialBalance) * 100,
+            date: date,
+            memo: null,
+            reconciled: true,
+            flag: '#ffffff',
+            payee: `---------------------initial-balance`,
+            transfer: null,
+            splits: [],
+            _id: `b_${context.getters.selectedBudgetID}${ID_NAME.transaction}${this._vm.generateId(date)}`
           }
-          
-          return
+          console.log('initTransaction', initTransaction)
+          return context.dispatch('createOrUpdateTransaction', { current: initTransaction, previous: null })
+        }
+
+        return
       })
     },
     deleteAccount(context, payload) {
@@ -62,3 +75,20 @@ export default {
     }
   }
 }
+
+const updateAccountBalances = (current_balances, account_id, cleared, uncleared, working) => {
+  current_balances[account_id].cleared += cleared
+  current_balances[account_id].uncleared += uncleared
+  current_balances[account_id].working += working
+}
+
+const defaultAccountBalance = (account_id) => {
+  return {
+    [account_id]: {
+      cleared: 0,
+      uncleared: 0,
+      working: 0
+    }
+  }
+}
+export { updateAccountBalances, defaultAccountBalance }

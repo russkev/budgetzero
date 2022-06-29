@@ -3,7 +3,7 @@
     <v-col sm="auto" class="pa-0">
       <v-card flat class="header_background">
         <v-card-title class="headline font-weight-bold primary--text">
-          {{ selected_account.name }}
+          {{ accountName }}
         </v-card-title>
         <v-card-subtitle>
           <span class="subtitle-2 grey--text text--darken-2"> ACCOUNT</span>
@@ -14,7 +14,7 @@
     <v-col sm="auto" class="pa-0">
       <v-card flat class="header_background">
         <v-card-title class="title font-weight-bold primary--text">
-          {{ (selected_account_balance.cleared / 100) | currency }}<br />
+          {{ (accountBalance.cleared / 100) | currency }}<br />
         </v-card-title>
         <v-card-subtitle>
           <span class="subtitle-2 grey--text text--darken-2">CLEARED</span>
@@ -29,7 +29,7 @@
     <v-col sm="auto" class="pa-0">
       <v-card flat class="header_background">
         <v-card-title class="title font-weight-bold primary--text">
-          {{ (selected_account_balance.uncleared / 100) | currency }}<br />
+          {{ (accountBalance.uncleared / 100) | currency }}<br />
         </v-card-title>
         <v-card-subtitle>
           <span class="subtitle-2">UNCLEARED</span>
@@ -44,7 +44,7 @@
     <v-col sm="auto" class="pa-0">
       <v-card flat class="header_background">
         <v-card-title class="headline-5 font-weight-bold primary--text">
-          {{ (selected_account_balance.cleared / 100 + selected_account_balance.uncleared / 100) | currency }}<br />
+          {{ (accountBalance.cleared / 100 + accountBalance.uncleared / 100) | currency }}<br />
         </v-card-title>
         <v-card-subtitle>
           <span class="subtitle-2 grey--text text--darken-2">WORKING BALANCE</span>
@@ -74,15 +74,23 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { DEFAULT_BALANCE } from '../../constants'
+import { DEFAULT_ACCOUNT_BALANCE } from '../../constants'
+import _ from 'lodash'
 
 export default {
-  props: ['selected_account'],
+  props: ['selected_account_id'],
   computed: {
-    ...mapGetters(['selectedBudgetID', 'accountBalances']),
-    selected_account_balance() {
-      const accountBalance = this.accountBalances[this.$route.params.account_id]
-      return accountBalance ? accountBalance : DEFAULT_BALANCE
+    ...mapGetters(['allAccountBalances', 'accountsByTruncatedId']),
+    accountBalance() {
+      const accountBalance = this.allAccountBalances[this.selected_account_id]
+      return accountBalance ? accountBalance : DEFAULT_ACCOUNT_BALANCE
+    },
+    accountName() {
+      console.log("selectedAccount")
+      console.log(this.accountsByTruncatedId)
+
+      // return this.accountsByTruncatedId[this.selected_account_id].name || ''
+      return _.get(this.accountsByTruncatedId, [this.selected_account_id, 'name'], '')
     }
   },
   methods: {}

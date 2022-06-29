@@ -1,6 +1,7 @@
 import { ntob } from 'number-to-base64'
 import Vue from 'vue'
 import { randomInt } from '../../helper'
+import moment from 'moment'
 
 
 export default {
@@ -19,7 +20,7 @@ export default {
       const max_tries = 10
       while (!unique_id && num_tries < max_tries) {
         num_tries += 1
-        const id = this.generateShortId()
+        const id = generateShortId()
         const id_exists = await idExists(prefix + id)
         if (!id_exists) {
           unique_id = id
@@ -61,17 +62,12 @@ function validateId(id) {
 }
 
 function daySeconds() {
-  const date = new Date()
-  return date.getSeconds() + 60 * date.getMinutes() + 60 * 60 * date.getHours()
+  return moment().second() + 60 * moment().minute() + 60 * 60 * moment().hour()
+
 }
 
 function daySecondsBase64() {
-  let day_seconds_64 = urlSafeBase64(daySeconds())
-  // while (day_seconds_64.length < 4) {
-  //   // day_seconds_64 += urlSafeCharacter()
-  //   day_seconds_64 
-  // }
-  return day_seconds_64.padStart(4, '-')
+  return urlSafeBase64(daySeconds(), 4)
 }
 
 function isValidDate(date_string) {
@@ -88,10 +84,8 @@ const encode_mapping = original_encoding.split('').reduce((partial, letter, i) =
   return partial
 }, {})
 
-function urlSafeBase64(decimal_number, length = null) {
+function urlSafeBase64(decimal_number, length) {
   let result = ntob(decimal_number)
-  // console.log(`NTOB RESULT: ${result}`)
-  // console.log(encode_mapping)
   result = result
     .split('')
     .map((character) => {
@@ -99,13 +93,7 @@ function urlSafeBase64(decimal_number, length = null) {
     })
     .join('')
 
-  if (length) {
-    while (result.length < length) {
-      result += urlSafeCharacter()
-    }
-    return result.slice(0, length)
-  }
-  return result
+  return result.padStart(length, '-')
 }
 
 function urlSafeCharacter() {
@@ -126,7 +114,7 @@ function base64Date(date) {
     date = moment(new Date()).format('YYYY-MM-DD')
   }
   const date_number = parseInt(date.split('-').join(''), 10)
-  return urlSafeBase64(date_number).padStart(4, '-')
+  return urlSafeBase64(date_number, 5)
 }
 /**
  * Creates a ID of 12 characters encoded in base 64:
@@ -146,7 +134,7 @@ function generateId(date = null, transaction_id = null) {
   let id_encoded = ''
   try {
     id_int = parseInt(transaction_id)
-    id_encoded = urlSafeBase64(id_int)
+    id_encoded = urlSafeBase64(id_int, 4)
   } catch {
     id_encoded = urlSafeString(4)
   }
@@ -158,4 +146,25 @@ function generateShortId() {
   return urlSafeString(3)
 }
 
-export { generateId, generateShortId, validateId, base64Date }
+/**
+ * 
+ * @param {string} a first item to compare
+ * @param {string} b second item to compare
+ * @returns 
+ *  -1 if a <  b
+ *   0 if a == b
+ *   1 if 1 >  b 
+ */
+function compareAscii(a, b) {
+  const length = Math.min(a.length, b.length)
+  for(let i = 0; i < length; i++) {
+    if (a.charCodeAt(i) < b.charCodeAt(i)) {
+      return -1
+    } else if (a.charCodeAt(i) > b.charCodeAt(i)) {
+      return 1
+    }
+  }
+  return a.length - b.length
+}
+
+export { generateId, generateShortId, validateId, base64Date, compareAscii }

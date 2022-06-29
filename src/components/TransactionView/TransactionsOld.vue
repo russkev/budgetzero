@@ -751,10 +751,6 @@ export default {
         transactions = this.transactions
       }
 
-      // console.log('transactionListForTable')
-      // console.log(RESERVED_IDs)
-      // // console.log(this.category_map)
-
       if (this.creatingNewTransaction) {
         const tpo = [...transactions]
         tpo.unshift(this.defaultItem)
@@ -880,7 +876,7 @@ export default {
         }
         this.editedItem.approved = true
 
-        this.$store.dispatch('createOrUpdateTransaction', this.editedItem)
+        this.$store.dispatch('createOrUpdateTransaction', {current: this.editedItem, previous: null})
         this.cancel()
       } else {
         this.$store.commit('SET_SNACKBAR_MESSAGE', {
@@ -900,7 +896,7 @@ export default {
       item.cleared = !item.cleared
       item.approved = true
 
-      this.$store.dispatch('commitDocToPouchAndVuex', item)
+      this.$store.dispatch('commitDocToPouchAndVuex', {current: item, previous: null})
     },
     clearTransaction(item) {
       var item = JSON.parse(JSON.stringify(item))
@@ -908,7 +904,7 @@ export default {
       item.cleared = true
       item.approved = true
 
-      this.$store.dispatch('commitDocToPouchAndVuex', item)
+      this.$store.dispatch('commitDocToPouchAndVuex', {current: item, previous: null})
     },
     approveSelectedTransactions() {
       var payload = JSON.parse(JSON.stringify(this.selected))

@@ -9,9 +9,9 @@ import {
   schema_payee,
   validateSchema
 } from '../validation'
-import _, { reject } from 'lodash'
-import { ID_LENGTH, ID_NAME, DEFAULT_STATE, DEFAULT_BALANCE, INITIAL_MONTH_CATEGORIES } from '../../constants'
-import { databaseExists, docTypeFromId, getMonthCategoryDate } from '../../helper'
+import _ from 'lodash'
+import { ID_LENGTH, ID_NAME, DEFAULT_STATE, DEFAULT_ACCOUNT_BALANCE, UNCATEGORIZED } from '../../constants'
+import { databaseExists, docTypeFromId, getMonthCategoryMonth } from '../../helper'
 
 /**
  * This pouchdb vuex module contains code that interacts with the pouchdb database.
@@ -25,19 +25,25 @@ export default {
     //Plain getters for main doc types
     transactions: (state) => state.transactions,
     accounts: (state) => state.accounts,
+    accountsByTruncatedId: (state) => {
+      return state.accounts.reduce((partial, account) => {
+        partial[account._id.slice(-ID_LENGTH.account)] = account
+        return partial
+      }, {})
+    },
     // masterCategories: (state) => state.masterCategories,
     masterCategories: (state) => [...state.masterCategories].sort((a, b) => (a.sort > b.sort ? 1 : -1)),
     monthCategoryBudgets: (state) => {
       const result = state.monthCategoryBudgets.reduce((partial, row) => {
         // Extract date from the id and add it as a separate property
         const row_id = row._id
-        const month_category_id = row_id.slice(-ID_LENGTH.monthCategory)
-        const date = getMonthCategoryDate(row_id)
+        const category_id = row_id.slice(-ID_LENGTH.category)
+        const month = getMonthCategoryMonth(row_id)
         return {
           ...partial,
-          [date]: {
-            ...partial[date],
-            [month_category_id]: row
+          [month]: {
+            ...partial[month],
+            [category_id]: row
           }
         }
       }, {})
@@ -52,7 +58,7 @@ export default {
       ].concat(state.payees)
     },
     categories: (state) => {
-      return [...INITIAL_MONTH_CATEGORIES, ...state.categories]
+      return [UNCATEGORIZED, ...state.categories]
     },
     categoriesByTruncatedId: (state) => {
       return state.categories.reduce((partial, category) => {
@@ -176,7 +182,7 @@ export default {
         rObj.name = obj.name
         return rObj
       }),
-    payee_names: (state, getters) => getters.payees.map((obj) => obj.name)
+    payee_names: (state, getters) => getters.payees.map((obj) => obj.name),
   },
   mutations: {
     SET_TRANSACTIONS(state, transactions) {
@@ -198,7 +204,7 @@ export default {
       state.accounts = accounts
 
       const initial_account_balances = accounts.reduce((balances, account) => {
-        balances[account._id.slice(-ID_LENGTH.account)] = DEFAULT_BALANCE
+        balances[account._id.slice(-ID_LENGTH.account)] = DEFAULT_ACCOUNT_BALANCE
         return balances
       }, {})
 
@@ -212,7 +218,7 @@ export default {
         const key = account_data.key
         const value = account_data.value
         if (partial[key[1]] === undefined) {
-          partial[key[1]] = { ...DEFAULT_BALANCE }
+          partial[key[1]] = { ...DEFAULT_ACCOUNT_BALANCE }
         }
         if (key[2]) {
           partial[key[1]].cleared = value
@@ -327,21 +333,38 @@ export default {
         default:
           console.error("doesn't recognize doc type ", docType)
       }
-    }
+    },
+    // SET_ALL_MONTHS_FROM_OBJECT(state, object) {
+    //   state.allMonths = Object.keys(object)
+    //     // .sort((a, b) => ('' + a).localeCompare(b))
+    //     .sort((a, b) => this._vm.compareAscii(a, b))
+    //     .filter((month) => this._vm.validateMonth(month))
+    // },
+    // UPDATE_ALL_MONTHS(state, month) {
+    //   if (!this._vm.validateMonth(month)) {
+    //     console.warn(`Trying to update allMonths with invalid month: ${month}`)
+    //     return
+    //   }
+
+    //   if (!state.allMonths.includes(month)) {
+    //     state.allMonths.push(month)
+    //     // state.allMonths.sort((a, b) => ('' + a).localeCompare(b))
+    //     state.allMonths.sort((a, b) => this._vm.compareAscii(a, b))
+    //   }
+    // }
   },
   actions: {
     /**
      * Commits single document to pouchdb and then calls UPDATE_VUE_DOCUMENT to update current document list.
      * @param {doc} document The document to commit to pouchdb
      */
-    commitDocToPouchAndVuex(context, document) {
+    commitDocToPouchAndVuex(context, { current, previous }) {
       console.log('commitDocToPouchAndVuex')
-      console.log(document)
       var docType = null
       var index = null
 
-      if (document && document._id) {
-        docType = docTypeFromId(document._id)
+      if (current && current._id) {
+        docType = docTypeFromId(current._id)
       }
 
       var validationResult = {
@@ -350,36 +373,35 @@ export default {
 
       switch (docType) {
         case ID_NAME.transaction:
-          validationResult = validateSchema.validate(document, schema_transaction)
-          index = context.getters.transactionsIndexById[document._id]
-          break
+          validationResult = validateSchema.validate(current, schema_transaction)
+          return context.dispatch('commitTransaction', { current, previous })
         case ID_NAME.category:
-          validationResult = validateSchema.validate(document, schema_category)
-          index = context.getters.categoriesIndexById[document._id]
+          validationResult = validateSchema.validate(current, schema_category)
+          // index = context.getters.categoriesIndexById[document._id]
           break
         case ID_NAME.masterCategory:
-          validationResult = validateSchema.validate(document, schema_masterCategory)
-          index = context.getters.masterCategoriesIndexById[document._id]
+          validationResult = validateSchema.validate(current, schema_masterCategory)
+          // index = context.getters.masterCategoriesIndexById[document._id]
           break
         case ID_NAME.account:
-          validationResult = validateSchema.validate(document, schema_account)
-          index = context.getters.accountsIndexById[document._id]
+          validationResult = validateSchema.validate(current, schema_account)
+          // index = context.getters.accountsIndexById[document._id]
           break
         case ID_NAME.monthCategory:
-          validationResult = validateSchema.validate(document, schema_monthCategory)
-          index = context.getters.monthCategoryBudgetIndexById[document._id]
+          validationResult = validateSchema.validate(current, schema_monthCategory)
+          // index = context.getters.monthCategoryBudgetIndexById[document._id]
           break
         case ID_NAME.payee:
-          validationResult = validateSchema.validate(document, schema_payee)
-          index = context.getters.payeesIndexById[document._id]
+          validationResult = validateSchema.validate(current, schema_payee)
+          // index = context.getters.payeesIndexById[document._id]
           break
         case ID_NAME.budget:
-          validationResult = validateSchema.validate(document, schema_budget)
-          index = context.getters.budgetRootIndexById[document._id]
+          validationResult = validateSchema.validate(current, schema_budget)
+          // index = context.getters.budgetRootIndexById[document._id]
           break
         case ID_NAME.budgetOpened:
           //TODO: validate
-          validationResult = validateSchema.validate(document, schema_budgetOpened)
+          validationResult = validateSchema.validate(current, schema_budgetOpened)
           break
         default:
           console.error("doesn't recognize doc type ", docType)
@@ -390,47 +412,42 @@ export default {
           snackbarMessage: 'Validation failed: ' + validationResult.errors.toString(),
           snackbarColor: 'error'
         })
-        console.log('failed validation:', document)
+        console.log('failed validation:', current)
         return
       }
 
       //Commit to Pouchdb
       const db = this._vm.$pouch
-      return db.put(document).then((result) => {
-        console.log('PUT RESULT')
-        console.log(result)
-        return result
-      })
-
-      // return new Promise((resolve, reject) => {
-      //   db.put(document)
-      //     .then((response) => {
-      //       // document._rev = response.rev
-      //       context.commit('UPDATE_VUE_DOCUMENT', {
-      //         payload: { ...document, _rev: response.rev },
-      //         index,
-      //         docType
-      //       })
-      //       return Promise.all([context.dispatch('fetchAccountBalances'), context.dispatch('fetchBudgetBalances')])
-      //     })
-      //     .then((response) => {
-      //       context.dispatch('calculateMonthlyCategoryData')
-      //       resolve(response)
-      //     })
-      //     .catch((error) => {
-      //       reject(error)
-      //       context.commit('API_FAILURE', error)
-      //     })
-      // })
+      return db.put(current)
     },
 
+    commitTransaction(context, { current, previous }) {
+      const db = this._vm.$pouch
+      return db.put(current).then((result) => {
+        if (result.ok) {
+          context
+            .dispatch('calculateTransactionBalanceUpdate', { current, previous })
+            .then((result) => {
+              return this.commit('UPDATE_ACCOUNT_BALANCES', result)
+            })
+          context
+            .dispatch('calculateCategoryBalanceUpdate', { current, previous })
+            .then((results) => {
+              results.map((result) => {
+                return this.commit('UPDATE_CATEGORY_BALANCES', result)
+              })
+            })
+          // context
+          //   .dispatch('calculateTransactionBalanceUpdate', { current, previous })
+          //   .then((result) => {
+          //     return this.commit('UPDATE_CATEGORY_BALANCES', result)
+          //   })
+        }
+      })
+    },
 
     updateBalances(context) {
-      return Promise
-        .all([
-          context.dispatch('fetchAccountBalances'),
-          context.dispatch('fetchBudgetBalances')
-        ])
+      return Promise.all([context.dispatch('fetchAccountBalances'), context.dispatch('fetchBudgetBalances')])
         .then((response) => {
           return context.dispatch('calculateMonthlyCategoryData')
         })
@@ -467,25 +484,27 @@ export default {
     },
 
     getAllDocsFromPouchDB(context) {
-      return Promise.all([
-        context.dispatch('fetchAccounts'),
-        context.dispatch('fetchPayees'),
-        context.dispatch('fetchMasterCategories'),
-        context.dispatch('fetchCategories'),
-        context.dispatch('fetchMonthCategories'),
-        context.dispatch('fetchBudgetBalances')
-        // TODO: Use web worker to do the expensive lookups
-        // Maybe this: https://github.com/pouchdb-community/worker-pouch
-      ])
-        .then(() => {
-          context.dispatch('calculateMonthlyCategoryData')
-        })
-        .then(() => {
-          context.dispatch('fetchAccountBalances')
-        })
-        .catch((err) => {
-          console.log(err)
-        })
+      return (
+        Promise.all([
+          context.dispatch('fetchAccounts'),
+          context.dispatch('fetchPayees')
+          // context.dispatch('fetchMasterCategories'),
+          // context.dispatch('fetchCategories'),
+          // context.dispatch('fetchMonthCategories'),
+          // context.dispatch('fetchBudgetBalances')
+          // TODO: Use web worker to do the expensive lookups
+          // Maybe this: https://github.com/pouchdb-community/worker-pouch
+        ])
+          // .then(() => {
+          //   context.dispatch('calculateMonthlyCategoryData')
+          // })
+          .then(() => {
+            return context.dispatch('calculateAllValues')
+          })
+          .catch((err) => {
+            console.log(err)
+          })
+      )
     },
 
     loadLocalBudgetRoot(context) {
@@ -496,6 +515,6 @@ export default {
         context.dispatch('fetchBudgetOpened')
         return
       })
-    },
+    }
   }
 }

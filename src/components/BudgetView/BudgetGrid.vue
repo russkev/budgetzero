@@ -2,9 +2,7 @@
   <v-container fluid class="pa-0">
     <!-- Modal to create category group  -->
     <BaseDialogModalComponent v-model="isModalVisibleMasterCat">
-      <template #title>
-        Create a Category Group:
-      </template>
+      <template #title> Create a Category Group: </template>
       <template #body>
         <v-text-field
           id="txt_field_category_name"
@@ -17,9 +15,7 @@
       </template>
       <template #actions>
         <v-spacer />
-        <v-btn color="grey" text @click.stop="isModalVisibleMasterCat = false">
-          Cancel
-        </v-btn>
+        <v-btn color="grey" text @click.stop="isModalVisibleMasterCat = false"> Cancel </v-btn>
         <v-btn id="btn-createMasterCategory" color="accent" text @click="createMasterCategory(category_name)">
           Create
         </v-btn>
@@ -28,9 +24,7 @@
 
     <!-- Modal to edit category group  -->
     <BaseDialogModalComponent v-model="isModalVisibleEditCategory">
-      <template #title>
-        Edit Category Name:
-      </template>
+      <template #title> Edit Category Name: </template>
       <template #body>
         <v-text-field
           id="txt-categoryName"
@@ -43,12 +37,8 @@
       </template>
       <template #actions>
         <v-spacer />
-        <v-btn color="grey" text @click.stop="isModalVisibleEditCategory = false">
-          Cancel
-        </v-btn>
-        <v-btn id="btn-save" color="accent" text @click="saveCategory()">
-          Save
-        </v-btn>
+        <v-btn color="grey" text @click.stop="isModalVisibleEditCategory = false"> Cancel </v-btn>
+        <v-btn id="btn-save" color="accent" text @click="saveCategory()"> Save </v-btn>
       </template>
     </BaseDialogModalComponent>
 
@@ -66,28 +56,22 @@
       </template>
       <template #actions>
         <v-spacer />
-        <v-btn color="grey" text @click.stop="isModalVisibleCreateSubCategory = false">
-          Cancel
-        </v-btn>
-        <v-btn color="accent" text @click="createCategory(category_name)">
-          Create
-        </v-btn>
+        <v-btn color="grey" text @click.stop="isModalVisibleCreateSubCategory = false"> Cancel </v-btn>
+        <v-btn color="accent" text @click="createCategory(category_name)"> Create </v-btn>
       </template>
     </BaseDialogModalComponent>
 
     <v-row elevation="4" class="grey lighten-4 ma-0">
       <v-col align="center" justify="center">
-        <v-btn small elevation="0" class="grey lighten-2" :to="{ path: `/budget/${prev_month}`}">
+        <v-btn small elevation="0" class="grey lighten-2" :to="{ path: `/budget/${prevMonth}` }">
           <v-icon medium> mdi-chevron-left </v-icon>Previous month
         </v-btn>
-        <v-btn id="btn-today" medium elevation="0" class="grey lighten-2 ml-4" :to="{ path: `/budget/${this_month}`}">
+        <v-btn id="btn-today" medium elevation="0" class="grey lighten-2 ml-4" :to="{ path: `/budget/${thisMonth}` }">
           Today
         </v-btn>
-        <v-btn small elevation="0" class="grey lighten-2 ml-4" :to="{ path: `/budget/${next_month}`}">
+        <v-btn small elevation="0" class="grey lighten-2 ml-4" :to="{ path: `/budget/${nextMonth}` }">
           Next month
-          <v-icon medium>
-            mdi-chevron-right
-          </v-icon>
+          <v-icon medium> mdi-chevron-right </v-icon>
         </v-btn>
       </v-col>
     </v-row>
@@ -121,29 +105,21 @@
           class="mb-2"
           @click.stop="isReorderingCategories = !isReorderingCategories"
         >
-          <v-icon left>
-            mdi-drag-horizontal-variant
-          </v-icon>
+          <v-icon left> mdi-drag-horizontal-variant </v-icon>
           <span v-if="!isReorderingCategories"> Modify </span>
           <span v-else> Done </span>
         </v-btn>
       </v-col>
-      <v-col id="budgeted-header" class="money-amount subtitle font-weight-medium">
-        Budgeted
-      </v-col>
-      <v-col id="spent-header" class="money-amount subtitle font-weight-medium">
-        Spent
-      </v-col>
-      <v-col id="balance-header" class="money-amount subtitle font-weight-medium">
-        Balance
-      </v-col>
+      <v-col id="budgeted-header" class="money-amount subtitle font-weight-medium"> Budgeted </v-col>
+      <v-col id="spent-header" class="money-amount subtitle font-weight-medium"> Spent </v-col>
+      <v-col id="balance-header" class="money-amount subtitle font-weight-medium"> Balance </v-col>
     </v-row>
 
     <!-- 
       Display row for uncategorized if they exist for this month
      -->
-    <v-row v-if="getBalanceValue(null) !== 0" class="elevation-0 ma-0 pa-0 yellow lighten-2">
-      <v-col class="masterCategory-row ">
+    <!-- <v-row v-if="categoryBalance(null) !== 0" class="elevation-0 ma-0 pa-0 yellow lighten-2">
+      <v-col class="masterCategory-row">
         <v-chip class="py-0">
           <span class="subtitle font-weight-medium primary--text">Uncategorized</span>
         </v-chip>
@@ -151,15 +127,15 @@
       <v-col sm="auto" class="px-0 py-1" />
       <v-col sm="auto" class="px-0 py-1">
         <div class="money-amount subtitle-2 pt-1">
-          {{ getSpentValue(null) | currency }}
+          {{ categorySpent(null) | currency }}
         </div>
       </v-col>
       <v-col sm="auto" class="px-0 py-1">
         <div class="money-amount subtitle-2 red--text pt-1">
-          {{ getBalanceValue(null) | currency }}
+          {{ categoryBalance(null) | currency }}
         </div>
       </v-col>
-    </v-row>
+    </v-row> -->
 
     <draggable
       v-model="masterCategories"
@@ -169,7 +145,7 @@
       :group="{ name: 'people', pull: 'false', put: false }"
     >
       <v-col
-        v-for="category in masterCategories.filter(category => !category.hidden || isReorderingCategories)"
+        v-for="category in masterCategories.filter((category) => !category.hidden || isReorderingCategories)"
         :key="category._id"
         class="pa-0"
       >
@@ -215,12 +191,8 @@
               <v-icon>mdi-plus</v-icon>
             </v-btn>
             <v-btn v-if="isReorderingCategories" icon small dark color="white" @click="hideCategory(category)">
-              <v-icon v-if="!category.hidden">
-                mdi-eye
-              </v-icon>
-              <v-icon v-if="category.hidden">
-                mdi-eye-off
-              </v-icon>
+              <v-icon v-if="!category.hidden"> mdi-eye </v-icon>
+              <v-icon v-if="category.hidden"> mdi-eye-off </v-icon>
             </v-btn>
           </v-col>
         </v-row>
@@ -238,15 +210,13 @@
           <v-row
             v-for="item in categoriesGroupedByMaster[category._id.slice(-ID_LENGTH.category)]
               .sort((a, b) => (a.sort > b.sort ? 1 : -1))
-              .filter(category => !category.hidden || isReorderingCategories)"
+              .filter((category) => !category.hidden || isReorderingCategories)"
             :key="item._id"
             class="category-row ma-0"
             align="center"
           >
             <v-col class="py-0 pt-0">
-              <v-icon v-if="isReorderingCategories" class="handle pr-1">
-                mdi-drag-horizontal-variant
-              </v-icon>
+              <v-icon v-if="isReorderingCategories" class="handle pr-1"> mdi-drag-horizontal-variant </v-icon>
               <span :class="{ 'text-decoration-line-through': item.hidden }">{{ item.name }}</span>
               <v-btn
                 v-if="isReorderingCategories"
@@ -261,12 +231,8 @@
                 <v-icon>mdi-pencil</v-icon>
               </v-btn>
               <v-btn v-if="isReorderingCategories" icon small dark color="grey darken-4" @click="hideCategory(item)">
-                <v-icon v-if="!item.hidden">
-                  mdi-eye
-                </v-icon>
-                <v-icon v-if="item.hidden">
-                  mdi-eye-off
-                </v-icon>
+                <v-icon v-if="!item.hidden"> mdi-eye </v-icon>
+                <v-icon v-if="item.hidden"> mdi-eye-off </v-icon>
               </v-btn>
             </v-col>
 
@@ -276,13 +242,13 @@
                 dense
                 class="budgeted-amount subtitle-2 grey--text"
                 :class="{
-                  'budgeted-amount-neg': selectedMonthCategoryBudgets[item._id.slice(-ID_LENGTH.monthCategory)].budget < 0,
-                  'budgeted-amount-zero': selectedMonthCategoryBudgets[item._id.slice(-ID_LENGTH.monthCategory)].budget == 0
+                  'budgeted-amount-neg': categoryBudgets[item._id] < 0,
+                  'budgeted-amount-zero': categoryBudgets[item._id] == 0
                 }"
-                :value="selectedMonthCategoryBudgets[item._id.slice(-ID_LENGTH.monthCategory)].budget"
+                :value="categoryBudgets[item._id] / 100"
                 prefix="$"
                 hide-details
-                @change="budgetValueChanged(item, $event)"
+                @change="onCategoryBudgetChanged(item, $event)"
                 @focus="onFocus"
               />
             </v-col>
@@ -291,11 +257,11 @@
               <div
                 class="spent-amount subtitle-2"
                 :class="{
-                  'primary--text': selectedMonthCategoryBudgets[item._id.slice(-ID_LENGTH.monthCategory)].budget < 0,
-                  'grey--text': selectedMonthCategoryBudgets[item._id.slice(-ID_LENGTH.monthCategory)].budget == 0
+                  'primary--text': categoryBudgets[item._id] < 0,
+                  'grey--text': categoryBudgets[item._id] == 0
                 }"
               >
-                {{ getSpentValue(item._id) | currency }}
+                {{ (categorySpent[item._id] / 100) | currency }}
               </div>
             </v-col>
 
@@ -303,19 +269,15 @@
               <div
                 class="balance-amount subtitle-2"
                 :class="{
-                  'red--text': getBalanceValue(item._id) < 0,
-                  'grey--text': getBalanceValue(item._id) == 0
+                  'red--text': categoryBalances[item._id] < 0,
+                  'grey--text': categoryBalances[item._id] == 0
                 }"
                 :category_uid="item._id"
               >
-                {{ getBalanceValue(item._id) | currency }}
+                {{ (categoryBalances[item._id] / 100) | currency }}
                 <v-btn icon x-small tabindex="-1" @click.stop="flipOverspending(item)">
-                  <v-icon v-if="getOverspendingProperty(item)" color="red" tabindex="-1">
-                    mdi-arrow-right
-                  </v-icon>
-                  <v-icon v-else tabindex="-1">
-                    mdi-arrow-right
-                  </v-icon>
+                  <v-icon v-if="getOverspendingProperty(item)" color="red" tabindex="-1"> mdi-arrow-right </v-icon>
+                  <v-icon v-else tabindex="-1"> mdi-arrow-right </v-icon>
                 </v-btn>
               </div>
             </v-col>
@@ -333,7 +295,7 @@ import BaseDialogModalComponent from '../Modals/BaseDialogModalComponent.vue'
 import BudgetHeader from './BudgetHeader.vue'
 import _ from 'lodash'
 import draggable from 'vuedraggable'
-import { DEFAULT_MONTH_CATEGORY, ID_LENGTH, ID_NAME, INITIAL_MONTH_CATEGORIES } from '../../constants'
+import { DEFAULT_MONTH_CATEGORY, ID_LENGTH, ID_NAME, UNCATEGORIZED } from '../../constants'
 import { prevMonth, nextMonth } from '../../helper'
 import moment from 'moment'
 
@@ -342,7 +304,7 @@ export default {
   components: {
     draggable,
     BaseDialogModalComponent,
-    BudgetHeader,
+    BudgetHeader
   },
   data() {
     return {
@@ -372,13 +334,19 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['selectedBudgetID', 'monthlyCategoryData', 'monthCategoryBudgets', 'selectedMonth']),
+    ...mapGetters([
+      'selectedBudgetID',
+      'allCategoryBalances',
+      'monthlyCategoryData',
+      'monthCategoryBudgets',
+      'selectedMonth',
+      'monthsInUse'
+    ]),
     masterCategories: {
       get() {
         return this.$store.getters.masterCategories
       },
       set(value) {
-
         this.$store.commit('REORDER_MASTER_CATEGORIES', value)
       }
     },
@@ -392,63 +360,62 @@ export default {
     },
     categories: {
       get() {
-
         return this.$store.getters.categories
       },
       set(value) {
         this.$store.commit('setPages', value)
       }
     },
-    prev_month() {
+    prevMonth() {
       return prevMonth(this.selectedMonth)
     },
-    next_month() {
+    nextMonth() {
       return nextMonth(this.selectedMonth)
     },
-    this_month() {
+    thisMonth() {
       return moment(new Date()).format('YYYY-MM')
     },
-    selectedMonthCategoryBudgets() {
-      console.log("MONTHLY DATA")
-      console.log(this.monthlyCategoryData)
-
-      const existingValues = this.monthCategoryBudgets[this.selectedMonth]
-      const skip_ids = new Set(INITIAL_MONTH_CATEGORIES.map((initial_category) => {
-        return initial_category._id
-      }))
-      const result = this.$store.getters.categories.reduce((partial, category) => {
-        if (skip_ids.has(category._id)) {
-          return partial
-        }
-        const category_id = category._id.slice(-ID_LENGTH.category) 
-        let monthCategory = {}
-        if (existingValues === undefined || existingValues[category_id] === undefined) {
-          monthCategory = {
-            ... DEFAULT_MONTH_CATEGORY,
-            _id: `b_${this.selectedBudgetID}${this.selectedMonth}_${category_id}`
-          }
-        } else {
-          monthCategory = {
-            ...existingValues[category_id],
-            budget: existingValues[category_id].budget / 100
-          }
-        }
-        return {...partial, [category_id]: monthCategory}
+    categoryCarryovers() {
+      const result = this.categories.reduce((partial, category) => {
+        partial[category._id] = this.categoryCarryover(category)
+        return partial
       }, {})
       return result
+    },
+    categorySpent() {
+      return this.categories.reduce((partial, category) => {
+        partial[category._id] = _.get(this.categoryValue(category), ['spent'], 0)
+        return partial
+      }, {})
+    },
+    categoryBudgets() {
+      return this.categories.reduce((partial, category) => {
+        partial[category._id] = _.get(this.categoryValue(category), ['budgeted'], 0)
+        return partial
+      }, {})
+    },
+    categoryBalances() {
+      return this.categories.reduce((partial, category) => {
+        partial[category._id] 
+          = this.categoryBudgets[category._id] 
+          + this.categorySpent[category._id]
+          + this.categoryCarryovers[category._id]
+        return partial
+      }, {})
     }
+
   },
-  
-  mounted() {},
+  mounted() {
+    this.$store.commit('UPDATE_SELECTED_MONTH', this.$route.params.month)
+  },
   created() {},
-  beforeRouteUpdate (to, from, next) {
+  beforeRouteUpdate(to, from, next) {
     this.$store.commit('UPDATE_SELECTED_MONTH', to.params.month)
     next()
   },
   watch: {
     selectedMonth: {
       handler() {
-        console.log("INSIDE WATCH")
         this.updateMonthCategoryData()
       }
     }
@@ -456,14 +423,16 @@ export default {
   methods: {
     ...mapActions(['updateCategoryAmount', 'deleteDocFromPouchAndVuex', 'calculateMonthlyCategoryData']),
     // ...mapMutations(['PREVIOUS_MONTH', 'ADD_MONTH', 'GO_TO_CURRENT_MONTH']),
-    updateMonthCategoryData () {
-      console.log("updateMonthCategoryData")
-      this.$store.dispatch('fetchBudgetBalances').then(() => {
-        this.$store.dispatch('calculateMonthlyCategoryData')
-      })
-      .catch((err) => {
-        console.log(err)
-      })
+    updateMonthCategoryData() {
+      console.log('updateMonthCategoryData')
+      this.$store
+        .dispatch('fetchBudgetBalances')
+        .then(() => {
+          this.$store.dispatch('calculateMonthlyCategoryData')
+        })
+        .catch((err) => {
+          console.log(err)
+        })
     },
     onFocus(param) {
       this.$nextTick(() => {
@@ -471,7 +440,7 @@ export default {
       })
     },
     log(value) {
-      console.log("LOGGING")
+      console.log('LOGGING')
       console.log(value)
     },
     collapseMasterCategory(category) {
@@ -499,7 +468,7 @@ export default {
       this.editedCategory = {}
       this.isModalVisibleEditCategory = false
     },
-    budgetValueChanged(item, event) {
+    onCategoryBudgetChanged(item, event) {
       const month = this.selectedMonth
       const category_id = item._id.slice(-ID_LENGTH.category)
       var changed_data = {}
@@ -511,10 +480,7 @@ export default {
       }
 
       //Check if already exists
-      if (
-        this.monthCategoryBudgets[month] &&
-        this.monthCategoryBudgets[month][category_id]
-      ) {
+      if (this.monthCategoryBudgets[month] && this.monthCategoryBudgets[month][category_id]) {
         changed_data.doc._id = this.monthCategoryBudgets[month][category_id]._id
         changed_data.doc._rev = this.monthCategoryBudgets[month][category_id]._rev
         // console.log("PAYLOAD DOC")
@@ -526,23 +492,50 @@ export default {
         this.$store.dispatch('updateCategoryAmount', changed_data.doc)
       }
     },
-    getBudgetedValue(full_id) {
-      console.log("MONTHLY DATA")
-      console.log(this.monthlyCategoryData)
-      const id = full_id ? full_id.slice(-ID_LENGTH.category) : null
+    categoryCarryover(category) {
+      if (category._id === null) {
+        return partial
+      }
 
+      const category_id = category._id.slice(-ID_LENGTH.category)
+      const master_id = category.masterCategory
+      const all_months = this.monthsInUse
+      let carryover = _.get(
+        this.allCategoryBalances,
+        [this.selectedMonth, master_id, category_id, 'carryover'],
+        undefined
+      )
 
-      return (_.get(this.monthlyCategoryData, `${this.selectedMonth}.categories.${id}.budgeted`, 0) / 100).toFixed(2)
+      if (carryover === undefined && all_months && all_months.length > 0) {
+        const month_index = all_months.indexOf(this.selectedMonth)
+        let existing_month = all_months[0]
+        const target_month = this.selectedMonth
+        if (month_index > 0) {
+          const prev_month = all_months[month_index - 1]
+          carryover = this.getCategoryBalance(this.allCategoryBalances, prev_month, master_id, category_id)
+        } else if (this.compareAscii(existing_month, target_month) < 0) {
+          // let prev_month = this.monthsInUse[0]
+          for (let i = 0; i < all_months.length; i++) {
+            if (this.compareAscii(existing_month, target_month) < 0) {
+              existing_month = all_months[i]
+            } else {
+              break
+            }
+          }
+          carryover = this.getCategoryBalance(this.allCategoryBalances, existing_month, master_id, category_id)
+        } else {
+          carryover = 0
+        }
+      } else if (carryover === undefined) {
+        carryover = 0
+      }
+      return carryover
     },
-    getSpentValue(full_id) {
-      const id = full_id ? full_id.slice(-ID_LENGTH.category) : null
-
-      return _.get(this.monthlyCategoryData, `${this.selectedMonth}.categories.${id}.spent`, 0) / 100
-    },
-    getBalanceValue(full_id) {
-      const id = full_id ? full_id.slice(-ID_LENGTH.category) : null
-
-      return _.get(this.monthlyCategoryData, [this.selectedMonth, 'categories', id, 'balance'], 0) / 100
+    categoryValue(category) {
+      const month = this.selectedMonth
+      const category_id = category._id ? category._id.slice(-ID_LENGTH.category) : null
+      const master_id = category.masterCategory ? category.masterCategory : null
+      return _.get(this.allCategoryBalances, [month, master_id, category_id], {})
     },
     getOverspendingProperty(item) {
       const id = item._id ? item._id.slice(-ID_LENGTH.category) : null
@@ -586,7 +579,7 @@ export default {
           autocapitalize: 'off',
           autocorrect: 'off'
         },
-        inputValidator: value => {
+        inputValidator: (value) => {
           if (!value) {
             return 'You need to write something!'
           }
@@ -594,7 +587,7 @@ export default {
       })
       if (newCategoryName) {
         newItem.name = newCategoryName
-        this.$store.dispatch('commitDocToPouchAndVuex', newItem)
+        this.$store.dispatch('commitDocToPouchAndVuex', { current: newItem, previous: null })
       }
     }
   }

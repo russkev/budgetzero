@@ -41,7 +41,7 @@ export default {
                   )
                 }
               }`,
-              reduce: '_sum'
+                reduce: '_sum'
               },
               sum_transaction_by_budget: {
                 map: `function (doc) {
@@ -57,7 +57,7 @@ export default {
                   )
                 }
               }`,
-              reduce: '_sum'
+                reduce: '_sum'
               },
               transactions_by_account: {
                 map: `function (doc) {
@@ -70,7 +70,26 @@ export default {
                     ]) 
                   }
                 }`
-              }
+              },
+              // all_transactions: {
+              //   map: `const id = doc._id {
+              //     if (${id_transaction}) {
+              //       emit([
+              //         id.slice(${budget_id_start}, ${budget_id_end}),
+              //         id.slice(-${ID_LENGTH.transaction})
+              //       ],
+              //         {
+              //           doc.account,
+              //           doc.category,
+              //           doc.value,
+              //           doc.splits,
+              //         }
+              //       )
+              //     }
+              //   }
+                
+              //   `
+              // }
             }
           }
           if (existing_design_document) {

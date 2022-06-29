@@ -169,7 +169,7 @@ export default {
     },
     saveBudget() {
       this.dialog = false
-      this.$store.dispatch('commitDocToPouchAndVuex', this.item)
+      this.$store.dispatch('commitDocToPouchAndVuex', {current: this.item, previous: null})
     }
   }
 }

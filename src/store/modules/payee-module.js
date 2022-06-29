@@ -17,7 +17,7 @@ export default {
         name: payload
       }
 
-      return context.dispatch('commitDocToPouchAndVuex', payee)
+      return context.dispatch('commitDocToPouchAndVuex', {current: payee, previous: null})
     },
 
     /**

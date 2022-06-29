@@ -1,5 +1,5 @@
 import { sanitizeValueInput, randomInt, randomString} from '../../helper'
-import { ID_LENGTH, ID_NAME } from '../../constants'
+import { DEFAULT_ACCOUNT_BALANCE, ID_LENGTH, ID_NAME, UNCATEGORIZED } from '../../constants'
 
 export default {
   state: {},
@@ -57,39 +57,39 @@ export default {
       mirroredTransferTransaction.account = payload.payee
       mirroredTransferTransaction.payee = payload.account //The payee is the _id of the other account
       mirroredTransferTransaction.memo = payload.memo
-      mirroredTransferTransaction.category = null
+      mirroredTransferTransaction.category = UNCATEGORIZED._id
       mirroredTransferTransaction.date = payload.date
       mirroredTransferTransaction.cleared = payload.cleared
 
-      context.dispatch('commitDocToPouchAndVuex', mirroredTransferTransaction)
+      context.dispatch('commitDocToPouchAndVuex', {current: mirroredTransferTransaction, previous: null})
 
       return mirroredTransferTransaction._id.slice(-ID_LENGTH.transaction)
     },
 
     /**
      * Create or update transaction
-     * @param {doc} payload The transaction to create or update
+     * @param {doc} document The transaction to create or update
      */
-    async createOrUpdateTransaction(context, payload) {
+    async createOrUpdateTransaction(context, {current, previous}) {
       //Check if this is a transfer transaction. if so, get the account ID
       //TODO: only let this be a transfer if the account actually exists?
-      if (payload.payee && payload.payee.includes('Transfer: ')) {
+      if (current.payee && current.payee.includes('Transfer: ')) {
         const destination_account_id = Object.keys(context.getters.account_map).find(
-          (key) => context.getters.account_map[key] === payload.payee.slice(10)
+          (key) => context.getters.account_map[key] === current.payee.slice(10)
         )
-        payload.payee = destination_account_id
-        const mirroredTransferID = await context.dispatch('saveMirroredTransferTransaction', payload)
-        payload.transfer = mirroredTransferID
-        payload.category = null
+        current.payee = destination_account_id
+        const mirroredTransferID = await context.dispatch('saveMirroredTransferTransaction', current)
+        current.transfer = mirroredTransferID
+        current.category = UNCATEGORIZED._id
       } else {
-        payload.transfer = null
+        current.transfer = null
       }
 
-      payload.value = sanitizeValueInput(payload.value)
+      current.value = sanitizeValueInput(current.value)
 
-      await context.dispatch('getPayeeID', payload.payee).then((response) => {
-        payload.payee = response
-        return context.dispatch('commitDocToPouchAndVuex', payload)
+      await context.dispatch('getPayeeID', current.payee).then((response) => {
+        current.payee = response
+        return context.dispatch('commitDocToPouchAndVuex', {current, previous})
       })
     },
 
@@ -99,7 +99,7 @@ export default {
      */
     completeReconciliation(context, payload) {
       if (payload.adjustmentTransaction) {
-        context.dispatch('createOrUpdateTransaction', payload.adjustmentTransaction)
+        context.dispatch('createOrUpdateTransaction', {current: payload.adjustmentTransaction, previous: null})
       }
 
       //Search for transactions to lock
@@ -113,6 +113,35 @@ export default {
 
       //Commit to pouchdb
       context.dispatch('commitBulkDocsToPouchAndVuex', transactionsToLock)
+    },
+
+    calculateTransactionBalanceUpdate(context, {current, previous}) {
+        if (previous === null) {
+          previous = {
+            cleared: current.cleared,
+            value: 0,
+          }
+        }
+
+        let transaction_payload = {
+          account_id: current.account,
+          cleared: 0,
+          uncleared: 0,
+          working: current.value - previous.value
+        }
+
+        if (current.cleared && previous.cleared) {
+          transaction_payload.cleared = transaction_payload.working
+        } else if (current.cleared && !previous.cleared) {
+          transaction_payload.cleared = current.value
+          transaction_payload.uncleared = -current.value
+        } else if (!current.cleared && previous.cleared) {
+          transaction_payload.cleared = -current.value
+          transaction_payload.uncleared = current.value
+        } else {
+          transaction_payload.uncleared = transaction_payload.working
+        }
+        return transaction_payload
     },
 
     createMockTransactions(context, {amount, start, end}) {
@@ -138,7 +167,7 @@ export default {
             const transaction_id = this._vm.generateId(date)
 
             const category = categories[randomInt(3, categories.length - 1)]
-            const category_id = category._id ? category._id.slice(-ID_LENGTH.category) : null
+            const category_id = category._id.slice(-ID_LENGTH.category)
             const account_id = accounts[randomInt(0, accounts.length - 1)]._id.slice(-ID_LENGTH.account)
             return {
               account: account_id,
@@ -161,7 +190,7 @@ export default {
         let mock_budget_data = []
         month_array.forEach((year_month) => {
           categories.forEach((category) => {
-            const category_id = category._id ? category._id.slice(-ID_LENGTH.category) : null
+            const category_id = category._id.slice(-ID_LENGTH.category)
               if (category_id) {
                 const budget_amount_item = {
                   budget: randomInt(-20000, 30000),
@@ -179,7 +208,9 @@ export default {
           resolve(mock_transactions.length)
         })
       })
-    }
+    },
+
+    
   }
 }
 

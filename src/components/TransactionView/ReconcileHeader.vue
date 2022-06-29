@@ -74,7 +74,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import BaseDialogModalComponent from '../Modals/BaseDialogModalComponent.vue'
-import { ID_NAME, DEFAULT_BALANCE } from '../../constants'
+import { ID_NAME, DEFAULT_ACCOUNT_BALANCE } from '../../constants'
 import moment from 'moment'
 
 export default {
@@ -93,7 +93,7 @@ export default {
     ...mapGetters(['selectedBudgetID', 'accountBalances']),
     selected_account_balance() {
       const accountBalance = this.$store.getters.accountBalances[this.$route.params.account_id]
-      return accountBalance ? accountBalance : DEFAULT_BALANCE
+      return accountBalance ? accountBalance : DEFAULT_ACCOUNT_BALANCE
     },
     differenceAmount() {
       return this.selected_account_balance.cleared / 100 - this.reconcileAmount

@@ -1,4 +1,4 @@
-import { ID_NAME, ID_LENGTH } from '../../constants'
+import { ID_NAME, ID_LENGTH, UNCATEGORIZED } from '../../constants'
 import { logPerformanceTime, prevMonth } from '../../helper'
 import Vue from 'vue'
 
@@ -83,6 +83,7 @@ export default {
       const db = Vue.prototype.$pouch
       const budget_id = context.rootState.selectedBudgetID
       return fetchDocsByType(context, db, budget_id, ID_NAME.masterCategory, 'fetchMasterCategories').then((result) => {
+        result.push(UNCATEGORIZED)
         context.commit('SET_MASTER_CATEGORIES', result)
         return 'success'
       })
@@ -125,24 +126,24 @@ export default {
       // })
     },
     fetchAccountBalances: (context) => {
-      const db = Vue.prototype.$pouch
-      const t1 = performance.now()
-      const budget_id = context.rootState.selectedBudgetID
+      // const db = Vue.prototype.$pouch
+      // const t1 = performance.now()
+      // const budget_id = context.rootState.selectedBudgetID
 
-      return db
-        .query('stats/sum_transaction_by_account', {
-          group: true,
-          // group_level: 3,
-          startkey: [`${budget_id}`, '', ''],
-          endkey: [`${budget_id}`, '\ufff0', '\ufff0']
-        })
-        .then((result) => {
-          logPerformanceTime('fetchAccountBalances', t1)
-          return result.rows
-        })
-        .then((result) => {
-          return context.commit('SET_ACCOUNT_BALANCES', result)
-        })
+      // return db
+      //   .query('stats/sum_transaction_by_account', {
+      //     group: true,
+      //     // group_level: 3,
+      //     startkey: [`${budget_id}`, '', ''],
+      //     endkey: [`${budget_id}`, '\ufff0', '\ufff0']
+      //   })
+      //   .then((result) => {
+      //     logPerformanceTime('fetchAccountBalances', t1)
+      //     return result.rows
+      //   })
+      //   .then((result) => {
+      //     return context.commit('SET_ACCOUNT_BALANCES', result)
+      //   })
     },
     fetchBudgetBalances: (context) => {
       const db = Vue.prototype.$pouch
@@ -175,21 +176,11 @@ export default {
       const t1 = performance.now()
       const budget_id = context.rootState.selectedBudgetID
 
-      // return db
-      //   .allDocs({
-      //     include_docs: true,
-      //     startkey: `b_${budget_id}${ID_NAME.transaction}`,
-      //     endkey: `b_${budget_id}${ID_NAME.transaction}\ufff0`,
-      //   })
-      //   .then((result) => {
-      //     logPerformanceTime('fetchAllTransactions', t1)
-      //     return result
-      //   })
       return db
-        .query('stats/transactions_by_account', {
-          include_docs: false,
-          startkey: [budget_id, '', ''],
-          endkey: [budget_id, '\ufff0', '\ufff0']
+        .allDocs({
+          include_docs: true,
+          startkey: `b_${budget_id}${ID_NAME.transaction}`,
+          endkey: `b_${budget_id}${ID_NAME.transaction}\ufff0`,
         })
         .then((result) => {
           logPerformanceTime('fetchAllTransactions', t1)

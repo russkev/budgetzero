@@ -159,7 +159,7 @@
           </v-list-item-title>
         </v-list-item-content>
         <v-list-item-icon class="subtitle-2">
-          {{ (accountBalances[item._id.slice(-ID_LENGTH.account)].working / 100) | currency }}
+          {{ accountBalance(item._id) | currency}}
         </v-list-item-icon>
       </v-list-item>
 
@@ -185,7 +185,7 @@
           </v-list-item-title>
         </v-list-item-content>
         <v-list-item-icon class="subtitle-2">
-          {{ (accountBalances[item._id.slice(-ID_LENGTH.account)].working / 100) | currency }}
+          {{ accountBalance(item._id) | currency}}
         </v-list-item-icon>
       </v-list-item>
 
@@ -261,6 +261,9 @@
           </v-list-item>
         </v-list>
       </v-menu>
+      <v-btn @click="onClick()">
+        Click me
+      </v-btn>
     </template>
   </v-navigation-drawer>
 </template>
@@ -292,6 +295,7 @@ export default {
     ...mapGetters([
       'accounts',
       'accountBalances',
+      'allAccountBalances',
       'sync_state',
       'accountsOnBudget',
       'accountsOffBudget',
@@ -300,6 +304,35 @@ export default {
       'budgetRootsMap',
       'user'
     ]),
+    // ...mapState(['allAccountBalances']),
+    // ab() {
+    //   // console.log("AB")
+    //   // console.log(this.allAccountBalances)
+    //   console.log("ACCOUNTS")
+    //   console.log(this.allAccountBalances)
+    //   console.log(this.$store.state.category.allAccountBalances)
+
+    //   // return this.accounts.map((account) => {
+    //   //   const id = account._id.slice(-ID_LENGTH.account)
+    //   //   return _.get(this.$store.state.allAccountBalances, [id], 0)
+    //   // })
+    //   const result = this.accounts.reduce((partial, account) => {
+    //     const id = account._id.slice(-ID_LENGTH.account)
+    //     partial[id] = _.get(
+    //       this.allAccountBalances,
+    //       [id],
+    //       {
+    //         cleared: 0,
+    //         uncleared: 0,
+    //         working: 0,
+    //       }
+    //     )
+    //     return partial
+
+    //   }, {})
+    //   console.log(result)
+    //   return result
+    // },
     budgetName() {
       if (this.selectedBudget) {
         return this.budgetRootsMap[this.selectedBudget] ? this.budgetRootsMap[this.selectedBudget].name : 'None'
@@ -337,6 +370,13 @@ export default {
     createBudget() {
       this.$router.push({ path: `/create` })
     },
+    onClick() {
+      console.log(this.ab)
+    },
+    accountBalance(account_id) {
+      const id = account_id.slice(-ID_LENGTH.account)
+      return _.get(this.allAccountBalances, [id, 'working'], 0) / 100
+    }
   }
 }
 </script>

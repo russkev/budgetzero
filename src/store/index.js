@@ -5,7 +5,7 @@ import budget from './modules/budget-module'
 import category from './modules/category-module'
 import id from './modules/id-module'
 import payee from './modules/payee-module'
-import pouchdb from './modules/pouchdb-module'
+import pouchdb from './pouchdb/pouchdb-main'
 import reports from './modules/reports-module'
 import transaction from './modules/transaction-module'
 import user from './modules/user-module'
@@ -14,7 +14,10 @@ import pouchdbExport from './pouchdb/pouchdb-export'
 import pouchdbFetch from './pouchdb/pouchdb-fetch'
 import pouchdbInit from './pouchdb/pouchdb-init'
 import pouchdbRemote from './pouchdb/pouchdb-remote'
-import { generateId, generateShortId, validateId, } from './modules/id-module'
+import { generateId, generateShortId, validateId, compareAscii } from './modules/id-module'
+import { updateSingleCategory, defaultCategoryBalance, getCategoryBalance } from './modules/category-module'
+import { updateAccountBalances, defaultAccountBalance } from './modules/account-module'
+import { validateDate, validateMonth } from '../helper'
 import moment from 'moment'
 
 Vue.mixin({
@@ -22,6 +25,14 @@ Vue.mixin({
     generateId,
     generateShortId,
     validateId,
+    compareAscii,
+    defaultAccountBalance,
+    defaultCategoryBalance,
+    updateAccountBalances,
+    updateSingleCategory,
+    getCategoryBalance,
+    validateDate,
+    validateMonth,
   }
 })
 

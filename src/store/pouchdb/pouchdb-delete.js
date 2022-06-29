@@ -101,7 +101,7 @@ export default {
      * Deletes single document from pouchdb and then calls DELETE_DOCUMENT to remove from current list.
      * @param {doc} document The document to commit to pouchdb
      */
-    deleteDocFromPouchAndVuex: (context, {document}) => {
+    deleteDocFromPouchAndVuex: (context, document) => {
       const db = Vue.prototype.$pouch
       console.log('deleteDocFromPouchAndVuex', document)
       db.remove(document)

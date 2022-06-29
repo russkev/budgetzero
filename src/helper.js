@@ -49,13 +49,13 @@ function prevMonth(month_input) {
   return `${year.toString()}-${month.toString().padStart(2, '0')}`
 }
 
-function getMonthCategoryDate(month_category_id) {
+function getMonthCategoryMonth(month_category_id) {
   const date_regex = /(?<=\_)[0-9]{4}\-[0-9]{2}(?=\_)/
   const match = month_category_id.match(date_regex)
   if (match) {
     return match[0]
   } else {
-    return '0000-00'
+    return '0000-01'
   }
 }
 
@@ -100,6 +100,26 @@ function documentExists(db, id) {
     })
 }
 
+/**
+ * 
+ * @param {string} date 
+ * @returns true if date is of format 'YYYY-MM-DD'
+ */
+function validateDate(date) {
+  const pattern = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/
+  return pattern.test(date)
+}
+
+/**
+ * 
+ * @param {string} month 
+ * @returns true if month is of format 'YYYY-MM'
+ */
+function validateMonth(month) {
+  const pattern = /^\d{4}\-(0[1-9]|1[012])$/
+  return pattern.test(month)
+}
+
 export {
   sanitizeValueInput,
   randomInt,
@@ -108,7 +128,9 @@ export {
   docTypeFromId,
   nextMonth,
   prevMonth,
-  getMonthCategoryDate,
+  getMonthCategoryMonth,
   databaseExists,
   documentExists,
+  validateDate,
+  validateMonth,
 }

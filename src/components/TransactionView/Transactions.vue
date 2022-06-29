@@ -1,19 +1,18 @@
 <template>
   <div>
+    <TransactionHeader :selected_account_id="accountOptions.account_id" />
     <v-data-table
       v-model="selected"
       :headers="dataTableHeaders"
       :items="transactions"
       item-key="_id"
-      sort-by="_id"
       show-select
       single-expand
       :expanded.sync="expanded"
       :options.sync="accountOptions"
-      :server-items-length="num_transactions_total"
-      class="elevation-1"
+      :server-items-length="numTransactionsTotal"
       :footer-props="{
-        'items-per-page-options': [10, 20, 50, 100, 200]
+        'items-per-page-options': [2, 10, 20, 50, 100, 200]
       }"
     >
       <template #item="{ item, expand, select, isSelected }">
@@ -52,7 +51,13 @@
               <v-date-picker v-model="editedItem.date" @input="dateMenu = false" />
             </v-menu>
           </td>
-          <td v-else @click="editItem(item); expand(item)">
+          <td
+            v-else
+            @click="
+              editItem(item)
+              expand(item)
+            "
+          >
             {{ item.date }}
           </td>
 
@@ -67,7 +72,13 @@
             />
           </td>
 
-          <td v-else @click="editItem(item); expand(item)">
+          <td
+            v-else
+            @click="
+              editItem(item)
+              expand(item)
+            "
+          >
             {{ item.category_name }}
           </td>
 
@@ -76,71 +87,77 @@
             <v-text-field v-model="editedItem.memo" />
           </td>
 
-          <td v-else class="memo" @click="editItem(item); expand(item)">
+          <td
+            v-else
+            class="memo"
+            @click="
+              editItem(item)
+              expand(item)
+            "
+          >
             {{ item.memo }}
           </td>
 
           <!-- Outflow -->
           <td v-if="item._id === editedItem._id">
-            <v-text-field 
-              v-model="outflowAmount"
-              prefix='$'
-              color="red"
-              id="outflow-input"
-              :rules="[rules.currency]"
-            />
+            <v-text-field v-model="outflowAmount" prefix="$" color="red" id="outflow-input" :rules="[rules.currency]" />
           </td>
-          <td v-else @click="editItem(item); expand(item)">
+          <td
+            v-else
+            @click="
+              editItem(item)
+              expand(item)
+            "
+          >
             {{ item.value > 0 ? '' : (-item.value / 100) | currency }}
           </td>
 
           <!-- Inflow -->
           <td v-if="item._id === editedItem._id">
-            <v-text-field 
-              v-model="inflowAmount"
-              prefix='$'
-              color="green"
-              id="inflow-input"
-              :rules="[rules.currency]"
-            />
+            <v-text-field v-model="inflowAmount" prefix="$" color="green" id="inflow-input" :rules="[rules.currency]" />
           </td>
-          <td v-else @click="editItem(item); expand(item)">
+          <td
+            v-else
+            @click="
+              editItem(item)
+              expand(item)
+            "
+          >
             {{ item.value > 0 ? item.value / 100 : '' | currency }}
           </td>
         </tr>
       </template>
 
-      <template #expanded-item>
+      <template #expanded-item="{ item }">
         <td :colspan="dataTableHeaders.length" class="mr-0 pr-0 grey lighten-2">
           <v-btn small @click="cancel()"> Cancel </v-btn>
-          <v-btn small @click="save()"> Save </v-btn>
+          <v-btn small @click="save(item)"> Save </v-btn>
         </td>
       </template>
     </v-data-table>
-    <v-btn @click='onClickMe'>
-      Create
-    </v-btn>
-    <v-btn @click='deleteSelectedTransactions'>
-      Delete selected
-    </v-btn>
+    <v-btn @click="addTransaction"> Create </v-btn>
+    <v-btn @click="deleteSelectedTransactions"> Delete selected </v-btn>
+    <v-btn @click="onClickMe"> Click Me </v-btn>
   </div>
 </template>
 
 <script>
-import { DEFAULT_TRANSACTION, ID_LENGTH, ID_NAME } from '../../constants'
+import TransactionHeader from './TransactionHeader'
+import { DEFAULT_TRANSACTION, ID_LENGTH, ID_NAME, UNCATEGORIZED } from '../../constants'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
+import _ from 'lodash'
 
 export default {
-  components: { Treeselect },
+  components: { Treeselect, TransactionHeader },
   data() {
     return {
       selected: [],
       expanded: [],
-      num_transactions_total: 0,
+      numServerTransactions: 0,
       accountOptions: {
         account_id: this.$route.params.account_id
       },
@@ -148,16 +165,16 @@ export default {
       editedIndex: -1,
       date: moment(new Date()).format('YYYY-MM-DD'),
       dateMenuIsVisible: false,
-      creating_new_transactions: false,
+      creatingNewTransactions: false,
       editedItem: {
         ...DEFAULT_TRANSACTION,
         account: this.$route.params.account_id,
         date: moment(new Date()).format('YYYY-MM-DD')
       },
+      editedItemInitialDate: moment(new Date()).format('YYYY-MM-DD'),
       rules: {
         date: (value) => {
-          const pattern = /^\d{4}\-(0[1-9]|1[012])\-(0[1-9]|[12][0-9]|3[01])$/
-          return pattern.test(value) || 'Invalid date.'
+          return this.$vm.validateDate(value) || 'Invalid date.'
         },
         currency: (value) => {
           const result = isNaN(parseFloat(value)) && value.length > 0 ? 'Numbers only' : true
@@ -172,7 +189,7 @@ export default {
   },
   watch: {
     accountOptions: {
-      handler() {
+      handler(prev, current) {
         this.getTransactions()
       },
       deep: true
@@ -185,29 +202,29 @@ export default {
   },
   computed: {
     // Re-configure categoriesGroupedByMaster to be in correct format for treeselect
-    ...mapGetters(['dataTableHeaders', 'selectedBudgetID']),
+    ...mapGetters(['dataTableHeaders', 'selectedBudgetID', 'categoriesByTruncatedId']),
+    selectedAccount() {},
     categoryOptions() {
       const key_values = Object.entries(this.$store.getters.categoriesGroupedByMaster)
       return key_values.map(([master_category_id, categories]) => {
-        if (master_category_id === 'undefined') {
-          return {
-            id: 'null',
-            label: categories[0].name
-          }
-        } else {
-          const category_label = this.$store.getters.masterCategoriesByTruncatedId[master_category_id].name
-          return {
-            id: master_category_id,
-            label: category_label,
-            children: categories.map((category) => {
-              return {
-                id: category._id.slice(-ID_LENGTH.category),
-                label: category.name
-              }
-            })
-          }
+        const category_label = this.$store.getters.masterCategoriesByTruncatedId[master_category_id].name
+        const result = {
+          id: master_category_id,
+          label: category_label
         }
+        if (master_category_id !== UNCATEGORIZED._id) {
+          result['children'] = categories.map((category) => {
+            return {
+              id: category._id.slice(-ID_LENGTH.category),
+              label: category.name
+            }
+          })
+        }
+        return result
       })
+    },
+    numTransactionsTotal() {
+      return this.creatingNewTransactions ? this.numServerTransactions + 1 : this.numServerTransactions
     },
     outflowAmount: {
       get() {
@@ -229,20 +246,18 @@ export default {
   methods: {
     getTransactions() {
       this.$store.dispatch('fetchTransactionsForAccount', this.accountOptions).then((result) => {
-        console.log("categoriesByTruncatedId")
-        console.log(result)
-        this.num_transactions_total = result.total_rows
+        this.numServerTransactions = result.total_rows
         this.transactions = result.rows.map((row) => {
-          const category_name = _.get(this.$store.getters.categoriesByTruncatedId, [row.doc.category, 'name'], '')
+          const category_name = _.get(this.categoriesByTruncatedId, [row.doc.category, 'name'], '')
           return {
             ...row.doc,
-            ['category_name']: category_name,
+            ['category_name']: category_name
           }
         })
       })
     },
     editItem(item) {
-      this.creating_new_transactions = false
+      this.creatingNewTransactions = false
       this.editedIndex = this.transactions.indexOf(item)
       this.editedItem = { ...this.transactions[this.editedIndex] }
     },
@@ -254,9 +269,10 @@ export default {
 
       this.editedItem = { ...item, cleared: !item.cleared }
       this.prepareEditedItem()
-      this.$store.dispatch('createOrUpdateTransaction', this.editedItem).then(() => {
-        this.getTransactions()
-      })
+      const payload = { current: this.editedItem, previous: item }
+      this.$store
+        .dispatch('createOrUpdateTransaction', { current: payload, previous: null })
+        .then(() => this.getTransactions())
       this.resetEditedItem()
     },
     parseCurrencyValue(input_currency) {
@@ -264,10 +280,10 @@ export default {
       return input_currency.toString().replace(/[^0-9.]/g, '')
     },
     resetEditedItem() {
-      if (this.creating_new_transactions && this.editedIndex > -1) {
+      if (this.creatingNewTransactions && this.editedIndex > -1) {
         this.transactions.splice(this.editedIndex, 1)
       }
-      this.creating_new_transactions = false
+      this.creatingNewTransactions = false
       this.editedIndex = -1
       this.editedItem = {
         ...DEFAULT_TRANSACTION,
@@ -276,33 +292,33 @@ export default {
       }
     },
     prepareEditedItem() {
-      let value = 0
-      // if (this.editedItem.inflow !== '') {
-      //   value += this.editedItem.inflow
-      // }
-      // if (this.editedItem.outflow !== '') {
-      //   value -= this.editedItem.outflow
-      // }
-
+      if (this.creatingNewTransactions && this.editedItemInitialDate !== this.editedItem.date) {
+        this.editedItem['_id'] = `b_${this.selectedBudgetID}${ID_NAME.transaction}${this.generateId(
+          this.editedItem.date
+        )}`
+      }
 
       Vue.delete(this.editedItem, 'category_name')
 
-      if (this.editedItem.category === 'null') {
-        this.editedItem.category = null
-      }
+      // if (this.editedItem.category === 'null') {
+      //   this.editedItem.category = null
+      // }
     },
     addTransaction() {
-      this.creating_new_transactions = true
-      const date = moment(new Date()).format('YYYY-MM-DD')
+      if (this.creatingNewTransactions) {
+        return
+      }
+      this.creatingNewTransactions = true
       this.editedItem = {
         ...DEFAULT_TRANSACTION,
         account: this.$route.params.account_id,
-        date: date,
-        _id: `b_${this.selectedBudgetID}${ID_NAME.transaction}${this.generateId(date)}`
+        date: moment(new Date()).format('YYYY-MM-DD'),
+        _id: `b_${this.selectedBudgetID}${ID_NAME.transaction}${this.generateId()}`
       }
-      console.log(this.editedItem)
+      this.editedItemInitialDate = this.editedItem.date
       this.transactions.push(this.editedItem)
-      this.transactions.sort((a, b) => ('' + b._id).localeCompare(a._id))
+      // this.transactions.sort((a, b) => ('' + b._id).localeCompare(a._id))
+      this.transactions.sort((a, b) => this.compareAscii(b._id, a._id))
       this.editedIndex = this.transactions.indexOf(this.editedItem)
       this.expanded.push(this.editedItem)
     },
@@ -311,19 +327,17 @@ export default {
       if (this.selected.length < 1) {
         return
       }
-      this.$store
-        .dispatch('deleteBulkDocumentsFromPouchAndVuex', {documents: this.selected})
-        .then(() => {
-          this.getTransactions()
-          this.$store.dispatch('updateBalances')
-        })
-        // .then(() => {
-        //   this.selected = []
-        // })
-
+      this.$store.dispatch('deleteBulkDocumentsFromPouchAndVuex', { documents: this.selected }).then(() => {
+        this.getTransactions()
+        this.$store.dispatch('updateBalances')
+      })
+      // .then(() => {
+      //   this.selected = []
+      // })
     },
     deleteTransaction(item) {
-      this.$store.dispatch('deleteDocFromPouchAndVuex', {...item})
+      this.$store
+        .dispatch('deleteDocFromPouchAndVuex', { ...item })
         .then(() => {
           return this.getTransactions()
         })
@@ -332,10 +346,11 @@ export default {
         })
       this.cancel()
     },
-    save() {
+    save(item) {
+      const previous = this.creatingNewTransactions ? null : item
       this.prepareEditedItem()
       this.$store
-        .dispatch('createOrUpdateTransaction', this.editedItem)
+        .dispatch('createOrUpdateTransaction', { current: this.editedItem, previous: previous })
         .then(() => {
           this.getTransactions()
         })
@@ -350,12 +365,7 @@ export default {
       this.resetEditedItem()
     },
     onClickMe() {
-      // console.log(base64Date("2022-06-25"))
-      // console.log(base64Date("2022-06-24"))
-      // console.log(base64Date("2022-06-23"))
-      this.addTransaction()
-      console.log(this.editItem)
-      // this.$store.dispatch('fetchAllTransactions')
+      console.log(this.transactions)
     }
   }
 }

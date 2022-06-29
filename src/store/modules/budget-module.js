@@ -37,8 +37,10 @@ export default {
       }
 
       return context
-        .dispatch('commitDocToPouchAndVuex', budget)
+        .dispatch('commitDocToPouchAndVuex', {current: budget, previous: null})
         .then((result) => {
+          console.log("CREATE BUDGET")
+          console.log(result)
           return context.dispatch('setSelectedBudgetID', result.id.slice(-ID_LENGTH.budget))
         })
         .then(() => {
@@ -49,7 +51,7 @@ export default {
           return Promise.all(initialize_budget_promises)
         })
         .then(() => {
-          return context.dispatch('commitDocToPouchAndVuex', budgetOpened)
+          return context.dispatch('commitDocToPouchAndVuex', {current: budgetOpened, previous: null})
         })
         .then(() => {
           console.log('Created new budget')
