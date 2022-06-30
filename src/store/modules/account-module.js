@@ -5,7 +5,7 @@ import { ID_LENGTH, ID_NAME } from '../../constants'
 export default {
   state: {
     allAccountBalances: {}
-    // allMonths: []
+    // monthsInUse: []
   },
   getters: {
     allAccountBalances: (state) => state.allAccountBalances

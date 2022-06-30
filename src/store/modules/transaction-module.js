@@ -68,29 +68,18 @@ export default {
 
     /**
      * Create or update transaction
-     * @param {doc} document The transaction to create or update
+     * @param {doc} current The updated document, null if intending to delete
+     * @param {doc} previous The document that already exists on the database, null to create
      */
     async createOrUpdateTransaction(context, {current, previous}) {
-      //Check if this is a transfer transaction. if so, get the account ID
-      //TODO: only let this be a transfer if the account actually exists?
-      if (current.payee && current.payee.includes('Transfer: ')) {
-        const destination_account_id = Object.keys(context.getters.account_map).find(
-          (key) => context.getters.account_map[key] === current.payee.slice(10)
-        )
-        current.payee = destination_account_id
-        const mirroredTransferID = await context.dispatch('saveMirroredTransferTransaction', current)
-        current.transfer = mirroredTransferID
-        current.category = UNCATEGORIZED._id
-      } else {
-        current.transfer = null
+      if (current) {
+        current = await processTransfer(current, context)
+        current.value = sanitizeValueInput(current.value)
+        const payee = await context.dispatch('getPayeeID', current.payee)
+        current.payee = payee
       }
 
-      current.value = sanitizeValueInput(current.value)
-
-      await context.dispatch('getPayeeID', current.payee).then((response) => {
-        current.payee = response
-        return context.dispatch('commitDocToPouchAndVuex', {current, previous})
-      })
+      return context.dispatch('commitDocToPouchAndVuex', {current, previous})
     },
 
     /**
@@ -113,35 +102,6 @@ export default {
 
       //Commit to pouchdb
       context.dispatch('commitBulkDocsToPouchAndVuex', transactionsToLock)
-    },
-
-    calculateTransactionBalanceUpdate(context, {current, previous}) {
-        if (previous === null) {
-          previous = {
-            cleared: current.cleared,
-            value: 0,
-          }
-        }
-
-        let transaction_payload = {
-          account_id: current.account,
-          cleared: 0,
-          uncleared: 0,
-          working: current.value - previous.value
-        }
-
-        if (current.cleared && previous.cleared) {
-          transaction_payload.cleared = transaction_payload.working
-        } else if (current.cleared && !previous.cleared) {
-          transaction_payload.cleared = current.value
-          transaction_payload.uncleared = -current.value
-        } else if (!current.cleared && previous.cleared) {
-          transaction_payload.cleared = -current.value
-          transaction_payload.uncleared = current.value
-        } else {
-          transaction_payload.uncleared = transaction_payload.working
-        }
-        return transaction_payload
     },
 
     createMockTransactions(context, {amount, start, end}) {
@@ -214,6 +174,35 @@ export default {
   }
 }
 
+/**
+ * Check if this is a transfer transaction. if so, get the account ID
+ * @param {*} transaction The transaction document to process
+ * @param {*} context The Vue context 
+ * @returns The updated transaction document
+ */
+async function processTransfer(transaction, context) {
+  //TODO: only let this be a transfer if the account actually exists?
+
+  if (transaction && transaction.payee && transaction.payee.includes('Transfer: ')) {
+    const destination_account_id = Object.keys(context.getters.account_map).find(
+      (key) => context.getters.account_map[key] === transaction.payee.slice(10)
+    )
+    const mirrored_transfer_id = await context.dispatch('saveMirroredTransferTransaction', transaction)
+
+    return {
+      ...transaction,
+      payee: destination_account_id,
+      transfer: mirrored_transfer_id,
+      category: UNCATEGORIZED._id
+    }
+  } else {
+    return {
+      ...transaction,
+      transfer: null
+    }
+  }
+}
+
 function monthArray(start, end) {
   const start_array = start.split('-')
   const end_array = end.split('-')
@@ -233,6 +222,45 @@ function monthArray(start, end) {
   }
   return month_array
 }
+
+const calculateTransactionBalanceUpdate = (current, previous) => {
+    // Note that 'cleared' in a document (like current and previous) is the isCleared boolean value.
+    // 'cleared' in a transaction_payload is the dollar amount that has been cleared
+    if (previous === null) {
+      previous = {
+        cleared: current.cleared,
+        value: 0,
+      }
+    }
+    if (current === null) {
+      current = {
+        cleared: previous.cleared,
+        value: 0
+      }
+    }
+
+    let transaction_payload = {
+      account_id: current.account,
+      cleared: 0,
+      uncleared: 0,
+      working: current.value - previous.value
+    }
+
+    if (current.cleared && previous.cleared) {
+      transaction_payload.cleared = transaction_payload.working
+    } else if (current.cleared && !previous.cleared) {
+      transaction_payload.cleared = current.value
+      transaction_payload.uncleared = -current.value
+    } else if (!current.cleared && previous.cleared) {
+      transaction_payload.cleared = -current.value
+      transaction_payload.uncleared = current.value
+    } else {
+      transaction_payload.uncleared = transaction_payload.working
+    }
+    return transaction_payload
+}
+
+export { calculateTransactionBalanceUpdate }
 
 const dataTableHeaders = [
   {

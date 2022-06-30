@@ -118,17 +118,17 @@ export default {
      * @param {array} documents The documents to delete.
      */
     deleteBulkDocumentsFromPouchAndVuex: (context, {documents}) => {
-      const payload = documents.map((transaction) => {
+      const payload = documents.map((doc) => {
         return {
-          ...transaction,
-          _deleted: true,
+          current: {
+            ...doc,
+            _deleted: true,
+            value: 0,
+          },
+          previous: doc
         }
       })
-      // documents.map((transaction) => (transaction._deleted = true))
       return context.dispatch('commitBulkDocsToPouchAndVuex', payload)
-        // .then((response) => {
-        //   context.dispatch('getAllDocsFromPouchDB') //TODO: reloads everything after bulk delete...not that efficient?
-        // })
     }
   }
 }

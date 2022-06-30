@@ -300,9 +300,9 @@ export default {
 
       Vue.delete(this.editedItem, 'category_name')
 
-      // if (this.editedItem.category === 'null') {
-      //   this.editedItem.category = null
-      // }
+      if (this.editedItem.category === null) {
+        this.editedItem.category = UNCATEGORIZED._id
+      }
     },
     addTransaction() {
       if (this.creatingNewTransactions) {
@@ -330,6 +330,7 @@ export default {
       this.$store.dispatch('deleteBulkDocumentsFromPouchAndVuex', { documents: this.selected }).then(() => {
         this.getTransactions()
         this.$store.dispatch('updateBalances')
+        this.selected = []
       })
       // .then(() => {
       //   this.selected = []
@@ -337,7 +338,8 @@ export default {
     },
     deleteTransaction(item) {
       this.$store
-        .dispatch('deleteDocFromPouchAndVuex', { ...item })
+        // .dispatch('deleteDocFromPouchAndVuex', { ...item })
+        .dispatch('createOrUpdateTransaction', { current: null, previous: item })
         .then(() => {
           return this.getTransactions()
         })

@@ -3,8 +3,8 @@ import { ID_NAME } from './constants'
 
 // Clean/sanitize amount input
 function sanitizeValueInput(value) {
-  let amt = value.toString().replace(/[^0-9.-]/g, '') * 100
-  return parseInt(amt) / 100
+  let amount = value.toString().replace(/[^0-9.-]/g, '') * 100
+  return parseInt(amount) / 100
 }
 
 function randomInt(min = 0, max = 100) {

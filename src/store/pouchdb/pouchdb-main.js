@@ -60,8 +60,8 @@ export default {
     categories: (state) => {
       return [UNCATEGORIZED, ...state.categories]
     },
-    categoriesByTruncatedId: (state) => {
-      return state.categories.reduce((partial, category) => {
+    categoriesByTruncatedId: (state, getters) => {
+      return getters.categories.reduce((partial, category) => {
         partial[category._id.slice(-ID_LENGTH.category)] = category
         return partial
       }, {})
@@ -182,7 +182,7 @@ export default {
         rObj.name = obj.name
         return rObj
       }),
-    payee_names: (state, getters) => getters.payees.map((obj) => obj.name),
+    payee_names: (state, getters) => getters.payees.map((obj) => obj.name)
   },
   mutations: {
     SET_TRANSACTIONS(state, transactions) {
@@ -333,116 +333,150 @@ export default {
         default:
           console.error("doesn't recognize doc type ", docType)
       }
-    },
+    }
     // SET_ALL_MONTHS_FROM_OBJECT(state, object) {
-    //   state.allMonths = Object.keys(object)
+    //   state.monthsInUse = Object.keys(object)
     //     // .sort((a, b) => ('' + a).localeCompare(b))
     //     .sort((a, b) => this._vm.compareAscii(a, b))
     //     .filter((month) => this._vm.validateMonth(month))
     // },
     // UPDATE_ALL_MONTHS(state, month) {
     //   if (!this._vm.validateMonth(month)) {
-    //     console.warn(`Trying to update allMonths with invalid month: ${month}`)
+    //     console.warn(`Trying to update monthsInUse with invalid month: ${month}`)
     //     return
     //   }
 
-    //   if (!state.allMonths.includes(month)) {
-    //     state.allMonths.push(month)
-    //     // state.allMonths.sort((a, b) => ('' + a).localeCompare(b))
-    //     state.allMonths.sort((a, b) => this._vm.compareAscii(a, b))
+    //   if (!state.monthsInUse.includes(month)) {
+    //     state.monthsInUse.push(month)
+    //     // state.monthsInUse.sort((a, b) => ('' + a).localeCompare(b))
+    //     state.monthsInUse.sort((a, b) => this._vm.compareAscii(a, b))
     //   }
     // }
   },
   actions: {
+    /**
+     * Bulk commits list of documents to pouchdb.
+     * The calling component is responsible for updating current list to be in sync with store.
+     * @param {array} payload [{current, previous}] The  documents to commit to pouchdb
+     */
+    async commitBulkDocsToPouchAndVuex(context, payload) {
+      const database_exists = await databaseExists(this._vm.$pouch)
+      if (!database_exists) {
+        await context.dispatch('createLocalPouchDB', context)
+      }
+
+      const valid_documents = payload.map((doc) => {
+        if (doc.current !== undefined && doc.previous !== undefined) {
+          const doc_type = validateDocument(doc.current, doc.previous)
+
+          if (doc_type) {
+            doc['doc_type'] = doc_type
+            return doc
+          }
+        } else {
+          console.warm('Invalid document provided to commitBulkDocsToPouchAndVuex', doc)
+        }
+      })
+
+      const db_payload = valid_documents.map((doc) => {
+        return doc.current ? doc.current : doc.previous
+      })
+
+      try {
+        const results = await context.dispatch('commitDocsToPouch', db_payload)
+        const results_by_id = results.reduce((partial, result) => {
+          partial[result.id] = result
+          return partial
+        }, {})
+
+        return Promise.all(valid_documents.map((valid_document) => {
+          const id = valid_document.current ? valid_document.current._id : valid_document.previous._id
+          if (results_by_id[id] !== undefined && results_by_id[id].ok){
+            return context.dispatch('commitDocToVuex', valid_document)
+          }
+        }))
+
+        // if (result.ok) {
+        //   return Promise.all(
+        //     valid_documents.map((doc) => {
+        //       return context.dispatch('commitDocToVuex', doc)
+        //     })
+        //   )
+        // }
+      } catch (error) {
+        console.log('ACTION: commitBulkDocsToPouchAndVuex failed')
+        return context.commit('API_FAILURE', error)
+      }
+    },
+
     /**
      * Commits single document to pouchdb and then calls UPDATE_VUE_DOCUMENT to update current document list.
      * @param {doc} document The document to commit to pouchdb
      */
     commitDocToPouchAndVuex(context, { current, previous }) {
       console.log('commitDocToPouchAndVuex')
-      var docType = null
-      var index = null
-
-      if (current && current._id) {
-        docType = docTypeFromId(current._id)
-      }
-
-      var validationResult = {
-        errors: 'Validation schema not found.'
-      }
-
-      switch (docType) {
-        case ID_NAME.transaction:
-          validationResult = validateSchema.validate(current, schema_transaction)
-          return context.dispatch('commitTransaction', { current, previous })
-        case ID_NAME.category:
-          validationResult = validateSchema.validate(current, schema_category)
-          // index = context.getters.categoriesIndexById[document._id]
-          break
-        case ID_NAME.masterCategory:
-          validationResult = validateSchema.validate(current, schema_masterCategory)
-          // index = context.getters.masterCategoriesIndexById[document._id]
-          break
-        case ID_NAME.account:
-          validationResult = validateSchema.validate(current, schema_account)
-          // index = context.getters.accountsIndexById[document._id]
-          break
-        case ID_NAME.monthCategory:
-          validationResult = validateSchema.validate(current, schema_monthCategory)
-          // index = context.getters.monthCategoryBudgetIndexById[document._id]
-          break
-        case ID_NAME.payee:
-          validationResult = validateSchema.validate(current, schema_payee)
-          // index = context.getters.payeesIndexById[document._id]
-          break
-        case ID_NAME.budget:
-          validationResult = validateSchema.validate(current, schema_budget)
-          // index = context.getters.budgetRootIndexById[document._id]
-          break
-        case ID_NAME.budgetOpened:
-          //TODO: validate
-          validationResult = validateSchema.validate(current, schema_budgetOpened)
-          break
-        default:
-          console.error("doesn't recognize doc type ", docType)
-      }
-
-      if (validationResult.errors.length > 0) {
-        this.commit('SET_SNACKBAR_MESSAGE', {
-          snackbarMessage: 'Validation failed: ' + validationResult.errors.toString(),
-          snackbarColor: 'error'
-        })
-        console.log('failed validation:', current)
+      if (!current && !previous) {
+        console.warn(`commitDocToPouchAndVuex called with invalid 'current' and 'previous'`)
         return
       }
-
-      //Commit to Pouchdb
-      const db = this._vm.$pouch
-      return db.put(current)
+      const doc_type = validateDocument(current, previous)
+      if (doc_type) {
+        context.dispatch('commitDocToPouch', { current, previous }).then((result) => {
+          if (result.ok) {
+            return context.dispatch('commitDocToVuex', { current, previous, doc_type })
+          }
+        })
+      }
     },
 
-    commitTransaction(context, { current, previous }) {
+    commitDocToPouch(context, { current, previous }) {
       const db = this._vm.$pouch
-      return db.put(current).then((result) => {
-        if (result.ok) {
-          context
-            .dispatch('calculateTransactionBalanceUpdate', { current, previous })
-            .then((result) => {
-              return this.commit('UPDATE_ACCOUNT_BALANCES', result)
-            })
-          context
-            .dispatch('calculateCategoryBalanceUpdate', { current, previous })
-            .then((results) => {
-              results.map((result) => {
-                return this.commit('UPDATE_CATEGORY_BALANCES', result)
-              })
-            })
-          // context
-          //   .dispatch('calculateTransactionBalanceUpdate', { current, previous })
-          //   .then((result) => {
-          //     return this.commit('UPDATE_CATEGORY_BALANCES', result)
-          //   })
-        }
+      const result = current ? db.put(current) : db.remove(previous)
+      return result
+    },
+
+    commitDocsToPouch(context, docs) {
+      const db = this._vm.$pouch
+      return db.bulkDocs(docs)
+    },
+
+    async commitDocToVuex(context, { current, previous, doc_type }) {
+      switch (doc_type) {
+        case ID_NAME.transaction:
+          return context.dispatch('commitTransactionToVuex', {current, previous})
+        case ID_NAME.category:
+          return
+        case ID_NAME.masterCategory:
+          return
+        case ID_NAME.account:
+          return
+        case ID_NAME.monthCategory:
+          return
+        case ID_NAME.payee:
+          return
+        case ID_NAME.budget:
+          return
+        case ID_NAME.budgetOpened:
+          return
+        default:
+          console.error("doesn't recognize doc type ", doc_type)
+          return
+      }
+    },
+
+    async commitDocToDb(context, { current, previous }) {
+      const db = this._vm.$pouch
+      const result = current ? db.put(current) : db.remove(previous)
+      return result
+    },
+
+    async commitTransactionToVuex(context, { current, previous }) {
+      const transaction_payload = this._vm.calculateTransactionBalanceUpdate(current, previous)
+      this.commit('UPDATE_ACCOUNT_BALANCES', transaction_payload)
+
+      const category_balances = await context.dispatch('calculateCategoryBalanceUpdate', { current, previous })
+      category_balances.map((result) => {
+        this.commit('UPDATE_CATEGORY_BALANCES', result)
       })
     },
 
@@ -453,33 +487,6 @@ export default {
         })
         .catch((error) => {
           context.commit('API_FAILURE', error)
-        })
-    },
-
-    /**
-     * Bulk commits list of documents to pouchdb.
-     * The calling component is responsible for updating current list to be in sync with store.
-     * @param {array} payload The documents to commit to pouchdb
-     */
-    commitBulkDocsToPouchAndVuex(context, payload) {
-      databaseExists(this._vm.$pouch)
-        .then((database_exists) => {
-          if (database_exists) {
-            return
-          } else {
-            return context.dispatch('createLocalPouchDB', context)
-          }
-        })
-        .then(() => {
-          return this._vm.$pouch.bulkDocs(payload)
-        })
-        // .then((response) => {
-        //   console.log('ACTION: commitBulkDocsToPouchAndVuex succeeded', response)
-        //   return context.dispatch('loadLocalBudgetRoot')
-        // })
-        .catch((err) => {
-          console.log('ACTION: commitBulkDocsToPouchAndVuex failed')
-          return context.commit('API_FAILURE', err)
         })
     },
 
@@ -516,5 +523,67 @@ export default {
         return
       })
     }
+  }
+}
+
+const validateDocument = (current, previous) => {
+  let doc_type = null
+  let validation_result = {
+    errors: 'Validation schema not found.'
+  }
+
+  if (current && current._id) {
+    doc_type = docTypeFromId(current._id)
+  } else if (!current && previous && previous._id) {
+    doc_type = docTypeFromId(previous._id)
+  } else if (current && current._id && previous && previous._id) {
+    const current_doc_type = docTypeFromId(current._id)
+    const previous_doc_type = docTypeFromId(previous._id)
+    if (current_doc_type === previous_doc_type) {
+      doc_type = current_doc_type
+    } else {
+      validation_result.errors = 'Current and previous are not of same type'
+      doc_type = null
+    }
+  }
+
+  switch (doc_type) {
+    case ID_NAME.transaction:
+      validation_result = validateSchema.validate(current, schema_transaction)
+      break
+    case ID_NAME.category:
+      validation_result = validateSchema.validate(current, schema_category)
+      break
+    case ID_NAME.masterCategory:
+      validation_result = validateSchema.validate(current, schema_masterCategory)
+      break
+    case ID_NAME.account:
+      validation_result = validateSchema.validate(current, schema_account)
+      break
+    case ID_NAME.monthCategory:
+      validation_result = validateSchema.validate(current, schema_monthCategory)
+      break
+    case ID_NAME.payee:
+      validation_result = validateSchema.validate(current, schema_payee)
+      break
+    case ID_NAME.budget:
+      validation_result = validateSchema.validate(current, schema_budget)
+      break
+    case ID_NAME.budgetOpened:
+      validation_result = validateSchema.validate(current, schema_budgetOpened)
+      break
+    default:
+      console.error("doesn't recognize doc type ", doc_type)
+  }
+
+  if (validation_result.errors.length > 0) {
+    this.commit('SET_SNACKBAR_MESSAGE', {
+      snackbarMessage: 'Validation failed: ' + validation_result.errors.toString(),
+      snackbarColor: 'error'
+    })
+    console.log('failed validation:', current)
+    return false
+  } else {
+    return doc_type
   }
 }
