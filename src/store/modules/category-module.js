@@ -1,52 +1,94 @@
-import { prevMonth, logPerformanceTime, extractMonthCategoryMonth } from '../../helper'
-import { DEFAULT_MONTH_CATEGORY, ID_LENGTH, ID_NAME } from '../../constants'
+import {  logPerformanceTime, extractMonthCategoryMonth } from '../../helper'
+import { ID_LENGTH, ID_NAME, UNCATEGORIZED } from '../../constants'
 import { compareAscii } from './id-module'
-import _, { result } from 'lodash'
+import _ from 'lodash'
 import Vue from 'vue'
+
+const DEFAULT_CATEGORY_STATE = {
+  allCategoryBalances: {},
+  // monthCategoryBudgets: [],
+  masterCategories: [],
+  categories: []
+}
 
 export default {
   state: {
-    monthlyCategoryData: {},
-    allCategoryBalances: {}
+    ...DEFAULT_CATEGORY_STATE
   },
   getters: {
-    monthlyCategoryData: (state) => state.monthlyCategoryData,
     allCategoryBalances: (state) => state.allCategoryBalances,
     monthsInUse(state) {
-      return Object.keys(state.allCategoryBalances)
-    }
+      return Object.keys(state.allCategoryBalances).sort((a, b) => compareAscii(a, b))
+    },
+    // masterCategories: (state) => [...state.masterCategories].sort((a, b) => (a.sort > b.sort ? 1 : -1)),
+    masterCategories: (state) => state.masterCategories,
+    masterCategoriesById: (state) => {
+      return state.masterCategories.reduce((partial, masterCategory) => {
+        partial[masterCategory._id.slice(-ID_LENGTH.category)] = masterCategory
+        return partial
+      }, {})
+    },
+    // monthCategoryBudgets: (state) => state.monthCategoryBudgets,
+    categories: (state) => state.categories,
+    // categories: (state) => {
+    //   return [UNCATEGORIZED, ...state.categories]
+    // },
+    categoriesById: (state) => {
+      return state.categories.reduce((partial, category) => {
+        partial[category._id.slice(-ID_LENGTH.category)] = category
+        return partial
+      }, {})
+    },
+    categoriesByMaster: (state) => _.groupBy(state.categories, 'masterCategory')
   },
   mutations: {
-    SET_MONTHLY_CATEGORY_DATA(state, payload) {
-      state.monthlyCategoryData = payload
-    },
     REORDER_MASTER_CATEGORIES(state, payload) {
       payload.forEach((master, i) => {
         master.sort = i
         this.dispatch('commitDocToPouchAndVuex', { current: master, previous: null })
       })
     },
-
     SET_ALL_CATEGORY_BALANCES(state, payload) {
       state.allCategoryBalances = payload
     },
-
-    INIT_CATEGORY_BALANCES_MONTH(state, { month, categories, monthCategories, getters }) {
+    INIT_CATEGORY_BALANCES_MONTH(state, { month, categories, monthCategories }) {
       const month_balances = initCategoryBalancesMonth(state.allCategoryBalances, month, categories, monthCategories)
       Vue.set(state.allCategoryBalances, month, month_balances)
     },
+    SET_MASTER_CATEGORIES(state, master_categories) {
+      state.masterCategories = master_categories.sort((a, b) => a.sort - b.sort)
+    },
+    SET_CATEGORIES(state, categories) {
+      state.categories = [UNCATEGORIZED, ...categories]
+    },
+    // UPDATE_MONTH_CATEGORY(state, doc) {
+    //   const month = extractMonthCategoryMonth(doc._id)
+    //   const category_id = doc._id.slice(-ID_LENGTH.category)
 
+    //   if (state.monthCategoryBudgets[month] === undefined) {
+    //     Vue.set(state.monthCategoryBudgets, month, {})
+    //   }
+    //   Vue.set(state.monthCategoryBudgets[month], category_id, doc)
+    // },
+    // SET_MONTH_CATEGORY_BUDGETS(state, month_category_budgets) {
+    //   state.monthCategoryBudgets = month_category_budgets.reduce((partial, row) => {
+    //     const row_id = row._id
+    //     const category_id = row_id.slice(-ID_LENGTH.category)
+    //     const month = extractMonthCategoryMonth(row_id)
+
+    //     if (partial[month] === undefined) {
+    //       partial[month] = {}
+    //     }
+    //     partial[month][category_id] = row
+    //     return partial
+    //   }, {})
+    // },
     UPDATE_CATEGORY_BALANCES(state, { month, master_id, category_id, spent, doc }) {
       const previous_month_balances = state.allCategoryBalances[month]
-      const month_balances = updateSingleCategory(
-        previous_month_balances,
-        master_id,
-        category_id,
-        {
-          spent: spent,
-          doc: doc,
-        }
-      )
+      const month_balances = updateSingleCategory(previous_month_balances, master_id, category_id, {
+        spent: spent,
+        doc: doc
+      })
       Vue.set(state.allCategoryBalances, month, month_balances)
 
       // If month is not the latest month, all subsequent months need to have their carryover updated
@@ -57,118 +99,18 @@ export default {
             state.allCategoryBalances[current_month],
             master_id,
             category_id,
-            {carryover: prev_balance}
+            { carryover: prev_balance }
           )
           Vue.set(state.allCategoryBalances, current_month, current_month_balances)
           prev_balance = getCategoryBalance(state.allCategoryBalances, current_month, master_id, category_id)
         }
       })
+    },
+    RESET_CATEGORY_STATE(state) {
+      state = { ...DEFAULT_CATEGORY_STATE }
     }
   },
   actions: {
-
-    // calculateMonthlyCategoryData({ getters, commit, dispatch }) {
-    //   let final_data = {}
-
-    //   const selected_month = getters.selectedMonth
-    //   const prev_month = prevMonth(selected_month)
-    //   console.log(`Selected month: ${selected_month}, prev month: ${prev_month}`)
-    //   const t1 = performance.now()
-
-    //   return new Promise((resolve, reject) => {
-    //     return dispatch('calculateSingleMonthData', { month: prev_month, previous_month_data: {} })
-    //       .then((result) => {
-    //         final_data[prev_month] = result
-    //         return dispatch('calculateSingleMonthData', {
-    //           month: selected_month,
-    //           previous_month_data: final_data[prev_month]
-    //         })
-    //       })
-    //       .then((result) => {
-    //         final_data[selected_month] = result
-    //         commit('SET_MONTHLY_CATEGORY_DATA', final_data)
-    //         resolve(final_data)
-    //         logPerformanceTime('calculateMonthlyCategoryData', t1)
-    //       })
-    //   })
-    // },
-
-    // calculateSingleMonthData({ getters, dispatch }, { month, previous_month_data }) {
-    //   let summaryData = {
-    //     income_this_month: 0,
-    //     overspent: 0,
-    //     last_month_overspent: _.get(previous_month_data, `summaryData.overspent`, 0),
-    //     balance_this_month: 0,
-    //     budgeted_this_month: 0,
-    //     available_to_budget_this_month: 0,
-    //     available_to_budget_last_month: _.get(previous_month_data, `summaryData.available_to_budget_this_month`, 0)
-    //   }
-    //   let categories = {}
-
-    //   return Promise.all(
-    //     getters.categories.map((category) => {
-    //       return dispatch('calculateSingleCategoryData', {
-    //         month: month,
-    //         category: category,
-    //         previous_month_data: previous_month_data
-    //       }).then((result) => {
-    //         summaryData.overspent += result.overspent
-    //         summaryData.budgeted_this_month += result.budgeted_this_month
-    //         summaryData.income_this_month += result.income_this_month
-    //         categories = { ...categories, ...result.categories }
-    //         return
-    //       })
-    //     })
-    //   ).then(() => {
-    //     summaryData.available_to_budget_this_month =
-    //       summaryData.available_to_budget_last_month +
-    //       summaryData.income_this_month -
-    //       summaryData.budgeted_this_month +
-    //       summaryData.last_month_overspent
-
-    //     return { summaryData: summaryData, categories: categories }
-    //   })
-    // },
-
-    // calculateSingleCategoryData({ getters }, { month, category, previous_month_data }) {
-    //   const category_id = category._id ? category._id.slice(-ID_LENGTH.category) : null
-
-    //   const spent = _.get(getters.budgetBalances, [month, category_id], 0)
-    //   const isIncome = _.get(getters.categoriesById, [category_id, 'isIncome'], false)
-    //   const budgeted = _.get(getters.monthCategoryBudgets, [month, category_id, 'budget'], 0)
-    //   const activity = spent + budgeted
-    //   const prev_month = _.get(previous_month_data, ['categories', category_id, 'overspending'], false)
-
-    //   const isOverspending = _.get(getters.monthCategoryBudgets, [month, category_id, 'overspending'], false)
-
-    //   var category_balance
-    //   var category_balance_raw = _.get(previous_month_data, ['categories', category_id, 'balance'], 0)
-
-    //   if (category_balance_raw > 0 || prev_month) {
-    //     category_balance = activity + category_balance_raw
-    //   } else {
-    //     category_balance = activity
-    //   }
-
-    //   if (isOverspending) {
-    //     //Need to carry over overspent balance to next month
-    //   }
-
-    //   let result_object = {
-    //     overspent: category_balance < 0 && !isOverspending ? category_balance : 0,
-    //     budgeted_this_month: budgeted,
-    //     income_this_month: isIncome ? spent : 0,
-    //     categories: {}
-    //   }
-
-    //   result_object.categories[category_id] = {
-    //     budgeted: budgeted,
-    //     spent: spent,
-    //     balance: category_balance,
-    //     overspending: isOverspending
-    //   }
-    //   return result_object
-    // },
     createMasterCategory: async (context, { category_name, is_income = false, sort = 1 }) => {
       const prefix = `b_${context.rootState.selectedBudgetId}${ID_NAME.masterCategory}`
       const id = await context.dispatch('generateUniqueShortId', { prefix, sort })
@@ -184,7 +126,7 @@ export default {
     },
 
     createCategory: async (context, payload) => {
-      const categoriesGroup = context.getters.categoriesGroupedByMaster[payload.master_category_id]
+      const categoriesGroup = context.getters.categoriesByMaster[payload.master_category_id]
 
       const sort_length = categoriesGroup ? categoriesGroup.length : 0
 
@@ -225,7 +167,7 @@ export default {
     },
     commitMonthCategoryToVuex(context, { current, previous }) {
       context
-        .dispatch('calculateMonthCategoryBalanceUpdate', {current, previous})
+        .dispatch('calculateMonthCategoryBalanceUpdate', { current, previous })
         .then((category_balances_update) => {
           console.log('commitMonthCategoryToVuex')
           return this.commit('UPDATE_CATEGORY_BALANCES', category_balances_update)
@@ -245,16 +187,16 @@ export default {
       const to_master_category_id = payload.to.className
 
       const item = {
-        ...context.getters.categoriesGroupedByMaster[from_master_category_id][old_index],
+        ...context.getters.categoriesByMaster[from_master_category_id][old_index],
         sort: new_index > old_index ? new_index + 0.5 : new_index - 0.5,
         masterCategory: to_master_category_id
       }
 
       //First, we update the subcategory to it's correct mastercategory
       context.dispatch('commitDocToPouchAndVuex', { current: item, previous: null }).then((result) => {
-        let categoriesGroupedByMaster = JSON.parse(JSON.stringify(context.getters.categoriesGroupedByMaster))
+        let categoriesByMaster = JSON.parse(JSON.stringify(context.getters.categoriesByMaster))
         // Then iterate through them and re-set all their sort values
-        for (const [key, masterArray] of Object.entries(categoriesGroupedByMaster)) {
+        for (const [key, masterArray] of Object.entries(categoriesByMaster)) {
           if (key !== 'undefined') {
             //Skip undefined master categories (income, incomeNextMonth, etc)
             masterArray.sort((a, b) => (a.sort > b.sort ? 1 : -1))
@@ -342,17 +284,15 @@ export default {
       )
     },
 
-
     async calculateAllValues({ commit, dispatch, getters }) {
       console.log('CALCULATE ALL VALUES')
 
       let b_balances = {}
-      return Promise
-        .all([
-          dispatch('fetchCategories'),
-          dispatch('fetchMasterCategories'),
-          dispatch('fetchMonthCategories')
-        ])
+      return Promise.all([
+        dispatch('fetchCategories'),
+        dispatch('fetchMasterCategories'),
+        dispatch('fetchMonthCategories')
+      ])
         .then((results) => {
           const month_categories = results[2]
           month_categories.map((month_category) => {
@@ -365,19 +305,16 @@ export default {
                 b_balances,
                 month,
                 getters.categories,
-                getters.monthCategories,
+                getters.monthCategories
               )
             }
-
-
 
             // TODO make it so that monthCategories come from one location
             // In fact, make it so that all derived categories aren't stored (or as much as possible)
             // Take heed from how accounts are done
 
-            b_balances[month] = updateSingleCategory(b_balances[month], master_id, category_id, {doc: month_category})
+            b_balances[month] = updateSingleCategory(b_balances[month], master_id, category_id, { doc: month_category })
           })
-          
         })
         .then(() => {
           return dispatch('fetchAllTransactions')
@@ -385,7 +322,6 @@ export default {
         .then((result) => {
           const t1 = performance.now()
           let a_balances = {}
-
 
           // console.log(result)
           result.rows.map((row) => {
@@ -409,7 +345,7 @@ export default {
               )
             }
 
-            b_balances[month] = updateSingleCategory(b_balances[month], master_id, category_id, {spent: working})
+            b_balances[month] = updateSingleCategory(b_balances[month], master_id, category_id, { spent: working })
           })
           logPerformanceTime('calculateAllValues', t1)
           commit('SET_ALL_ACCOUNT_BALANCES', a_balances)

@@ -201,11 +201,11 @@ export default {
     }
   },
   computed: {
-    // Re-configure categoriesGroupedByMaster to be in correct format for treeselect
+    // Re-configure categoriesByMaster to be in correct format for treeselect
     ...mapGetters(['dataTableHeaders', 'selectedBudgetId', 'categoriesById']),
     selectedAccount() {},
     categoryOptions() {
-      const key_values = Object.entries(this.$store.getters.categoriesGroupedByMaster)
+      const key_values = Object.entries(this.$store.getters.categoriesByMaster)
       return key_values.map(([master_category_id, categories]) => {
         const category_label = this.$store.getters.masterCategoriesById[master_category_id].name
         const result = {

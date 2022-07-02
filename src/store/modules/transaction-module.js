@@ -1,28 +1,39 @@
 import { sanitizeValueInput, randomInt, randomString} from '../../helper'
-import { DEFAULT_ACCOUNT_BALANCE, ID_LENGTH, ID_NAME, UNCATEGORIZED } from '../../constants'
+import { ID_LENGTH, ID_NAME, UNCATEGORIZED } from '../../constants'
+
+const DEFAULT_TRANSACTIONS_STATE = {
+  // transactions: []
+}
 
 export default {
-  state: {},
+  state: {
+    ...DEFAULT_TRANSACTIONS_STATE
+  },
   getters: {
-    dataTableHeaders: () => dataTableHeaders,
-    transactionsOnBudget: (state, getters) => {
-      //Get list of account _ids that are on budget
-      var accounts = getters.accountsOnBudget.map((account) => account._id.slice(-ID_LENGTH.account))
-      var transactionsOnBudget = []
+    // transactions: (state) => state.transactions,
+    // transactions_by_account: (state, getters) => _.groupBy(getters.transactions, 'account'),
+    dataTableHeaders: () => dataTableHeaders
+    // transactionsOnBudget: (state, getters) => {
+    //   //Get list of account _ids that are on budget
+    //   var accounts = getters.accountsOnBudget.map((account) => account._id.slice(-ID_LENGTH.account))
+    //   var transactionsOnBudget = []
 
-      //
-      for (let [key, value] of Object.entries(getters.transactions_by_account)) {
-        if (accounts.includes(key)) {
-          transactionsOnBudget = transactionsOnBudget.concat(value)
-        }
-      }
-      return transactionsOnBudget
-    }
+    //   //
+    //   for (let [key, value] of Object.entries(getters.transactions_by_account)) {
+    //     if (accounts.includes(key)) {
+    //       transactionsOnBudget = transactionsOnBudget.concat(value)
+    //     }
+    //   }
+    //   return transactionsOnBudget
+    // }
   },
   mutations: {
-    UPDATE_RECONCILED(state, transactionsToLock) {
-      transactionsToLock.map((transactionToLock) => (transactionToLock.reconciled = true))
-    }
+    // SET_TRANSACTIONS(state, transactions) {
+    //   state.transactions = transactions
+    // }
+    // UPDATE_RECONCILED(state, transactionsToLock) {
+    //   transactionsToLock.map((transactionToLock) => (transactionToLock.reconciled = true))
+    // }
   },
   actions: {
     /**
@@ -61,7 +72,7 @@ export default {
       mirroredTransferTransaction.date = payload.date
       mirroredTransferTransaction.cleared = payload.cleared
 
-      context.dispatch('commitDocToPouchAndVuex', {current: mirroredTransferTransaction, previous: null})
+      context.dispatch('commitDocToPouchAndVuex', { current: mirroredTransferTransaction, previous: null })
 
       return mirroredTransferTransaction._id.slice(-ID_LENGTH.transaction)
     },
@@ -71,7 +82,7 @@ export default {
      * @param {doc} current The updated document, null if intending to delete
      * @param {doc} previous The document that already exists on the database, null to create
      */
-    async createOrUpdateTransaction(context, {current, previous}) {
+    async createOrUpdateTransaction(context, { current, previous }) {
       if (current) {
         current = await processTransfer(current, context)
         current.value = sanitizeValueInput(current.value)
@@ -79,7 +90,7 @@ export default {
         current.payee = payee
       }
 
-      return context.dispatch('commitDocToPouchAndVuex', {current, previous})
+      return context.dispatch('commitDocToPouchAndVuex', { current, previous })
     },
 
     /**
@@ -88,7 +99,7 @@ export default {
      */
     completeReconciliation(context, payload) {
       if (payload.adjustmentTransaction) {
-        context.dispatch('createOrUpdateTransaction', {current: payload.adjustmentTransaction, previous: null})
+        context.dispatch('createOrUpdateTransaction', { current: payload.adjustmentTransaction, previous: null })
       }
 
       //Search for transactions to lock
@@ -104,7 +115,7 @@ export default {
       context.dispatch('commitBulkDocsToPouchAndVuex', transactionsToLock)
     },
 
-    createMockTransactions(context, {amount, start, end}) {
+    createMockTransactions(context, { amount, start, end }) {
       return new Promise((resolve, reject) => {
         const num_transactions = parseInt(amount)
         if (!num_transactions) {
@@ -151,26 +162,23 @@ export default {
         month_array.forEach((year_month) => {
           categories.forEach((category) => {
             const category_id = category._id.slice(-ID_LENGTH.category)
-              if (category_id) {
-                const budget_amount_item = {
-                  budget: randomInt(-20000, 30000),
-                  overspending: null,
-                  note: randomString(randomInt(0, 100)),
-                  _id: `b_${context.getters.selectedBudgetId}${ID_NAME.monthCategory}${year_month}_${category_id}`
-                }
-                mock_budget_data.push(budget_amount_item)
+            if (category_id) {
+              const budget_amount_item = {
+                budget: randomInt(-20000, 30000),
+                overspending: null,
+                note: randomString(randomInt(0, 100)),
+                _id: `b_${context.getters.selectedBudgetId}${ID_NAME.monthCategory}${year_month}_${category_id}`
               }
+              mock_budget_data.push(budget_amount_item)
+            }
           })
         })
-
 
         context.dispatch('commitBulkDocsToPouchAndVuex', mock_budget_data.concat(mock_transactions)).then(() => {
           resolve(mock_transactions.length)
         })
       })
-    },
-
-    
+    }
   }
 }
 
@@ -181,26 +189,27 @@ export default {
  * @returns The updated transaction document
  */
 async function processTransfer(transaction, context) {
+  console.warn("PROCESS TRANSFER NOT IMPLEMENTED")
   //TODO: only let this be a transfer if the account actually exists?
 
-  if (transaction && transaction.payee && transaction.payee.includes('Transfer: ')) {
-    const destination_account_id = Object.keys(context.getters.account_map).find(
-      (key) => context.getters.account_map[key] === transaction.payee.slice(10)
-    )
-    const mirrored_transfer_id = await context.dispatch('saveMirroredTransferTransaction', transaction)
+  // if (transaction && transaction.payee && transaction.payee.includes('Transfer: ')) {
+  //   const destination_account_id = Object.keys(context.getters.account_map).find(
+  //     (key) => context.getters.account_map[key] === transaction.payee.slice(10)
+  //   )
+  //   const mirrored_transfer_id = await context.dispatch('saveMirroredTransferTransaction', transaction)
 
-    return {
-      ...transaction,
-      payee: destination_account_id,
-      transfer: mirrored_transfer_id,
-      category: UNCATEGORIZED._id
-    }
-  } else {
-    return {
-      ...transaction,
-      transfer: null
-    }
-  }
+  //   return {
+  //     ...transaction,
+  //     payee: destination_account_id,
+  //     transfer: mirrored_transfer_id,
+  //     category: UNCATEGORIZED._id
+  //   }
+  // } else {
+  //   return {
+  //     ...transaction,
+  //     transfer: null
+  //   }
+  // }
 }
 
 function monthArray(start, end) {

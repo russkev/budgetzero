@@ -14,7 +14,7 @@
           <span class="text-h3">Accounts</span>
           <v-spacer />
 
-          <AccountAddModal v-model="showModal" :editeditem="editedItem" @save="save()" />
+          <AccountAddModal v-model="showModal" :edited-item="editedItem" @save="save()" />
 
           <v-btn id="addAccountBtn" color="accent" :dark="budgetExists" :disabled="!budgetExists" class="mb-2" @click="create()" >
             Add Account
@@ -64,6 +64,19 @@ View: Name -- Type -- Balance
 }
 
 */
+
+const DEFAULT_ACCOUNT_ITEM = {
+  type: '',
+  checkNumber: true,
+  closed: false,
+  name: '',
+  note: null,
+  sort: 0,
+  onBudget: true,
+  balanceIsNegative: false,
+  initialBalance: 0
+}
+
 export default {
   name: 'AccountGrid',
   components: {
@@ -86,17 +99,8 @@ export default {
       ],
       editedIndex: -1,
       editedItem: null,
-      emptyItem: {
-        type: '',
-        checkNumber: true,
-        closed: false,
-        name: '',
-        note: null,
-        sort: 0,
-        onBudget: true,
-        balanceIsNegative: false,
-        initialBalance: 0
-      },
+      previousItem: null,
+
       showModal: false,
       nameRules: [
         (v) => !!v || 'Name is required',
@@ -115,12 +119,14 @@ export default {
   methods: {
     create() {
       this.editedIndex = -1
-      this.editedItem = Object.assign({}, this.emptyItem)
+      this.editedItem = {...DEFAULT_ACCOUNT_ITEM}
+      this.previousItem = null
       this.showModal = true
     },
     editItem(item) {
       this.editedIndex = this.accounts.indexOf(item)
       this.editedItem = Object.assign({}, item)
+      this.previousItem = item
       this.showModal = true
     },
     deleteItem(item) {
@@ -155,60 +161,31 @@ export default {
     close() {
       this.showModal = false
       setTimeout(() => {
-        // this.editedItem = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1
+        this.resetItems()
       }, 300)
     },
     save() {
-      console.log('save account clicked')
       if (this.editedIndex > -1) {
-        // Editing existing account
-        const editPayload = {
-          type: this.editedItem.type,
-          checkNumber: this.editedItem.checkNumber,
-          closed: this.editedItem.closed,
-          name: this.editedItem.name,
-          note: this.editedItem.note,
-          sort: this.editedItem.sort,
-          onBudget: this.editedItem.onBudget,
-          balanceIsNegative: this.editedItem.balanceIsNegative,
-          _id: this.editedItem._id,
-          _rev: this.editedItem._rev
+        const payload = {
+          ...this.editedItem
         }
-        // Object.assign(this.accounts[this.editedIndex], this.editedItem)
-        const payload =  {
-          "index": this.editedIndex, 
-          "value": this.editedItem 
-        }
-        // console.log("EDITED")
-        // console.log(this.editedIndex)
-        this.$store.commit('UPDATE_ACCOUNT', {"index": this.editedIndex, "value": this.editedItem})
-        this.$store.dispatch('createUpdateAccount', {
-          account: editPayload,
-          initialBalance: false
-        })
+        this.$store
+          .dispatch('commitDocToPouchAndVuex', { current: payload, previous: this.previousItem})
       } else {
-        // Creating new account
-        const newPayload = {
-          type: this.editedItem.type,
-          checkNumber: this.editedItem.checkNumber,
-          closed: this.editedItem.closed,
-          name: this.editedItem.name,
-          note: this.editedItem.note,
-          sort: this.editedItem.sort,
-          onBudget: this.editedItem.onBudget,
-          balanceIsNegative: this.editedItem.balanceIsNegative,
+        const payload = {
+          ...this.editedItem,
           _id: `b_${this.selectedBudgetId}${ID_NAME.account}${this.generateShortId()}`
         }
-        console.log('new account', newPayload, this.editedItem.initialBalance)
-        this.$store.dispatch('createUpdateAccount', {
-          account: newPayload,
-          initialBalance: this.editedItem.initialBalance
-        })
-        // this.desserts.push(this.editedItem); //Can't push onto vuex
+        this.$store.dispatch('commitDocToPouchAndVuex', {current: payload, previous: null})
       }
-      this.close()
-    }
+    },
+    resetItems() {
+      this.editedIndex = -1
+      this.editedItem = {...DEFAULT_ACCOUNT_ITEM}
+      this.previousItem = null
+    },
+
+    
   }
 }
 </script>

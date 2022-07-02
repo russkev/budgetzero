@@ -22,20 +22,6 @@ export const ID_NAME = {
   payee: '_payee_'
 }
 
-export const DEFAULT_STATE = {
-  transactions: [],
-  monthCategoryBudgets: [],
-  masterCategories: [],
-  categories: [],
-  payees: [],
-  accounts: [],
-  budgetRoots: [],
-  accountBalances: {},
-  budgetBalances: {},
-  budgetOpened: null,
-  budgetExists: true, // This opens the create budget modal when 'false'
-}
-
 export const DEFAULT_ACCOUNT_BALANCE = {
   cleared: 0,
   uncleared: 0,

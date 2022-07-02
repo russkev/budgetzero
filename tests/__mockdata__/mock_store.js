@@ -30,8 +30,8 @@ const mock_store = {
     // month_category_lookup: () => {
     //   return month_category_lookup;
     // },
-    // categoriesGroupedByMaster: () => {
-    //   return categoriesGroupedByMaster;
+    // categoriesByMaster: () => {
+    //   return categoriesByMaster;
     // },
     // selectedBudgetId: state => state.selectedBudgetId,
   }

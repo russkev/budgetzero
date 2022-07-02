@@ -176,10 +176,6 @@
               Accounts:
               <tree-view :data="accounts" :options="{ maxDepth: 0 }" />
             </p>
-            <p>
-              Monthly Data:
-              <tree-view :data="monthlyCategoryData" :options="{ maxDepth: 0 }" />
-            </p>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -225,7 +221,6 @@ export default {
     ...mapGetters([
       'transactions',
       'accounts',
-      'monthlyCategoryData',
       'payees',
       'selectedBudgetId',
       'remoteSyncURL',

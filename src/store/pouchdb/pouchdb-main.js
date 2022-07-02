@@ -10,291 +10,120 @@ import {
   validateSchema
 } from '../validation'
 import _ from 'lodash'
-import { ID_LENGTH, ID_NAME, DEFAULT_STATE, DEFAULT_ACCOUNT_BALANCE, UNCATEGORIZED } from '../../constants'
+import { ID_LENGTH, ID_NAME, DEFAULT_ACCOUNT_BALANCE,  } from '../../constants'
 import { databaseExists, docTypeFromId, extractMonthCategoryMonth } from '../../helper'
 import Vue from 'vue'
 /**
  * This pouchdb vuex module contains code that interacts with the pouchdb database.
  */
 
+// const DEFAULT_STATE = {
+//   // accountBalances: {},
+
+// }
+
 export default {
-  state: {
-    ...DEFAULT_STATE
-  },
-  getters: {
-    //Plain getters for main doc types
-    transactions: (state) => state.transactions,
-    accounts: (state) => state.accounts,
-    accountsById: (state) => {
-      return state.accounts.reduce((partial, account) => {
-        partial[account._id.slice(-ID_LENGTH.account)] = account
-        return partial
-      }, {})
-    },
-    // masterCategories: (state) => state.masterCategories,
-    masterCategories: (state) => [...state.masterCategories].sort((a, b) => (a.sort > b.sort ? 1 : -1)),
-    monthCategoryBudgets: (state) => state.monthCategoryBudgets,
-    payees: (state) => {
-      return [
-        {
-          id: null,
-          name: 'Payee not selected.'
-        }
-      ].concat(state.payees)
-    },
-    categories: (state) => {
-      return [UNCATEGORIZED, ...state.categories]
-    },
-    categoriesById: (state, getters) => {
-      return getters.categories.reduce((partial, category) => {
-        partial[category._id.slice(-ID_LENGTH.category)] = category
-        return partial
-      }, {})
-    },
-    masterCategoriesById: (state, getters) => {
-      return getters.masterCategories.reduce((partial, masterCategory) => {
-        partial[masterCategory._id.slice(-ID_LENGTH.category)] = masterCategory
-        return partial
-      }, {})
-    },
+  // state: {
+  //   ...DEFAULT_STATE
+  // },
+  // getters: {
+  //   //Plain getters for main doc types
+
+  //   // masterCategories: (state) => state.masterCategories,
 
 
-    listOfImportIds: (state) => state.transactions.map((transaction) => _.get(transaction, 'importID', '')),
-    budgetRoots: (state) => state.budgetRoots,
-    budgetRootsMap: (state, getters) => {
-      return getters.budgetRoots.reduce((map, budget_root) => {
-        if (budget_root._id) {
-          map[budget_root._id.slice(-ID_LENGTH.budget)] = budget_root
-          return map
-        }
-      }, {})
-    },
-    budgetOpened: (state) =>
-      state.budgetOpened.map((row) => {
-        var obj = row.doc
-        return obj
-      }),
-    budgetOpenedMap: (state, getters) =>
-      getters.budgetOpened.reduce((map, obj) => {
-        const id = obj._id ? obj._id.slice(-ID_LENGTH.budget) : null
-        map[id] = obj
-        return map
-      }, {}),
-    budgetExists: (state) => state.budgetExists,
+  //   // listOfImportIds: (state) => state.transactions.map((transaction) => _.get(transaction, 'importID', '')),
 
-    transactions_by_account: (state, getters) => _.groupBy(getters.transactions, 'account'),
-    category_map: (state, getters) =>
-      getters.categories.reduce((map, obj) => {
-        const id = obj._id ? obj._id.slice(-ID_LENGTH.category) : null
-        map[id] = obj.name
-        return map
-      }, {}),
-    categoriesGroupedByMaster: (state, getters) => _.groupBy(getters.categories, 'masterCategory'),
-    account_map: (getters) =>
-      getters.accounts.reduce((map, obj) => {
-        map[obj._id.slice(-ID_LENGTH.account)] = obj.name
-        return map
-      }, {}),
-    accountsOnBudget: (state, getters) => {
-      return getters.accounts.filter((account) => account.onBudget)
-    },
-    accountsOffBudget: (state, getters) => {
-      return getters.accounts.filter((account) => !account.onBudget)
-    },
-    accountBalances: (state, getters) => {
-      return state.accountBalances
-    },
-    budgetBalances: (state, getters) => {
-      return state.budgetBalances
-    },
-    payee_map: (state, getters) => {
-      let payees = getters.payees.reduce((map, obj) => {
-        const id = obj._id ? obj._id.slice(-ID_LENGTH.payee) : null
-        map[id] = obj.name
-        return map
-      }, {})
-      payees['---------------------initial-balance'] = 'Initial Balance'
-      return payees
-    },
-    payee_array: (state, getters) =>
-      getters.payees.map((obj) => {
-        const rObj = {}
-        rObj.id = obj.id ? obj.id.slice(-ID_LENGTH.payee) : null
-        rObj.name = obj.name
-        return rObj
-      }),
-    payee_names: (state, getters) => getters.payees.map((obj) => obj.name)
-  },
-  mutations: {
-    SET_TRANSACTIONS(state, transactions) {
-      state.transactions = transactions
-    },
-    SET_MONTH_CATEGORY_BUDGETS(state, month_category_budgets) {
-      state.monthCategoryBudgets = month_category_budgets.reduce((partial, row) => {
-        const row_id = row._id
-        const category_id = row_id.slice(-ID_LENGTH.category)
-        const month = extractMonthCategoryMonth(row_id)
 
-        if (partial[month] === undefined) {
-          partial[month] = {}
-        }
-        partial[month][category_id] = row
-        return partial
-      }, {})
-    },
-    UPDATE_MONTH_CATEGORY(state, doc) {
-      const month = extractMonthCategoryMonth(doc._id)
-      const category_id = doc._id.slice(-ID_LENGTH.category)
+  //   // category_map: (state, getters) =>
+  //   //   getters.categories.reduce((map, obj) => {
+  //   //     const id = obj._id ? obj._id.slice(-ID_LENGTH.category) : null
+  //   //     map[id] = obj.name
+  //   //     return map
+  //   //   }, {}),
 
-      if (state.monthCategoryBudgets[month] === undefined) {
-        Vue.set(state.monthCategoryBudgets, month, {})
-      }
-      Vue.set(state.monthCategoryBudgets[month], category_id, doc)
-    },
-    SET_PAYEES(state, payees) {
-      state.payees = payees
-    },
-    SET_MASTER_CATEGORIES(state, master_categories) {
-      state.masterCategories = master_categories
-    },
-    SET_CATEGORIES(state, categories) {
-      state.categories = categories
-    },
-    SET_ACCOUNTS(state, accounts) {
-      state.accounts = accounts
 
-      const initial_account_balances = accounts.reduce((balances, account) => {
-        balances[account._id.slice(-ID_LENGTH.account)] = DEFAULT_ACCOUNT_BALANCE
-        return balances
-      }, {})
 
-      state.accountBalances = { ...initial_account_balances, ...state.accountBalances }
-    },
-    UPDATE_ACCOUNT(state, { index, value }) {
-      state.accounts[index] = value
-    },
-    SET_ACCOUNT_BALANCES(state, balances) {
-      const new_balances = balances.reduce((partial, account_data) => {
-        const key = account_data.key
-        const value = account_data.value
-        if (partial[key[1]] === undefined) {
-          partial[key[1]] = { ...DEFAULT_ACCOUNT_BALANCE }
-        }
-        if (key[2]) {
-          partial[key[1]].cleared = value
-        } else {
-          partial[key[1]].uncleared = value
-        }
-        partial[key[1]].working = partial[key[1]].working + value
-        return partial
-      }, {})
+  // },
+  // mutations: {
 
-      state.accountBalances = { ...state.accountBalances, ...new_balances }
-    },
-    SET_BUDGET_BALANCES(state, balances) {
-      state.budgetBalances = balances.reduce((partial, budget_data) => {
-        const date = budget_data.key[1]
-        const category_id = budget_data.key[2]
-        const value = budget_data.value
 
-        if (!partial[date]) {
-          partial[date] = {}
-        }
-        partial[date][category_id] = value
-        return partial
-      }, {})
-    },
-    // DELETE_DOCUMENT(state, payload) {
-    //   // Only works for deleting transactions. In the future may need to delete other types of docs.
-    //   const index = state.transactions.findIndex((row) => row._id == payload.id)
-    //   state.transactions.splice(index, 1)
+
+
+    // DELETE_LOCAL_DB(state) {
+    //   const default_state = JSON.parse(JSON.stringify(DEFAULT_STATE))
+    //   Object.keys(default_state).forEach((key) => {
+    //     state[key] = default_state[key]
+    //   })
     // },
-    DELETE_LOCAL_DB(state) {
-      const default_state = JSON.parse(JSON.stringify(DEFAULT_STATE))
-      Object.keys(default_state).forEach((key) => {
-        state[key] = default_state[key]
-      })
-    },
-    SET_BUDGET_ROOTS(state, budgets) {
-      if (budgets.length == 0) {
-        state.budgetExists = false
-      } else {
-        state.budgetExists = true
-      }
-      // Get budget ids
-      state.budgetRoots = budgets.map((budget) => {
-        return budget.doc
-      })
-    },
-    SET_BUDGET_OPENED(state, payload) {
-      state.budgetOpened = payload
-    },
-    UPDATE_VUE_DOCUMENT(state, { payload, index, docType }) {
-      switch (docType) {
-        case ID_NAME.transaction:
-          if (isNaN(index)) {
-            state.transactions = [...state.transactions, payload]
-          } else {
-            Object.assign(state.transactions[index], payload)
-          }
-          break
-        case ID_NAME.category:
-          if (isNaN(index)) {
-            state.categories.push(payload)
-          } else {
-            Object.assign(state.categories[index], payload)
-          }
-          break
-        case ID_NAME.masterCategory:
-          if (isNaN(index)) {
-            state.masterCategories.push(payload)
-            console.log('masterCategory no index...', payload)
-          } else {
-            Object.assign(state.masterCategories[index], payload)
-          }
-          break
-        case ID_NAME.account:
-          if (isNaN(index)) {
-            this.commit('SET_ACCOUNTS', state.accounts.concat(payload))
-            // state.accounts.push(payload)
-            console.log('account no index...', payload)
-          } else {
-            Object.assign(state.accounts[index], payload)
-          }
-          break
-        case ID_NAME.monthCategory:
-          if (isNaN(index)) {
-            state.monthCategoryBudgets.push(payload)
-          } else {
-            Object.assign(state.monthCategoryBudgets[index], payload)
-          }
-          break
-        case ID_NAME.payee:
-          if (isNaN(index)) {
-            state.payees.push(payload)
-          } else {
-            Object.assign(state.payees[index], payload)
-          }
-          break
-        case ID_NAME.budget:
-          //TODO: validate
-          if (isNaN(index)) {
-            state.budgetRoots.push(payload)
-          } else {
-            Object.assign(state.budgetRoots[index], payload)
-          }
-          break
-        case ID_NAME.budgetOpened:
-          //TODO: validate
-          if (isNaN(index)) {
-          } else {
-          }
-          break
-        default:
-          console.error("doesn't recognize doc type ", docType)
-      }
-    },
-  },
+
+
+  //   UPDATE_VUE_DOCUMENT(state, { payload, index, docType }) {
+  //     switch (docType) {
+  //       case ID_NAME.transaction:
+  //         if (isNaN(index)) {
+  //           state.transactions = [...state.transactions, payload]
+  //         } else {
+  //           Object.assign(state.transactions[index], payload)
+  //         }
+  //         break
+  //       case ID_NAME.category:
+  //         if (isNaN(index)) {
+  //           state.categories.push(payload)
+  //         } else {
+  //           Object.assign(state.categories[index], payload)
+  //         }
+  //         break
+  //       case ID_NAME.masterCategory:
+  //         if (isNaN(index)) {
+  //           state.masterCategories.push(payload)
+  //           console.log('masterCategory no index...', payload)
+  //         } else {
+  //           Object.assign(state.masterCategories[index], payload)
+  //         }
+  //         break
+  //       case ID_NAME.account:
+  //         if (isNaN(index)) {
+  //           this.commit('SET_ACCOUNTS', state.accounts.concat(payload))
+  //           // state.accounts.push(payload)
+  //           console.log('account no index...', payload)
+  //         } else {
+  //           Object.assign(state.accounts[index], payload)
+  //         }
+  //         break
+  //       case ID_NAME.monthCategory:
+  //         if (isNaN(index)) {
+  //           state.monthCategoryBudgets.push(payload)
+  //         } else {
+  //           Object.assign(state.monthCategoryBudgets[index], payload)
+  //         }
+  //         break
+  //       case ID_NAME.payee:
+  //         if (isNaN(index)) {
+  //           state.payees.push(payload)
+  //         } else {
+  //           Object.assign(state.payees[index], payload)
+  //         }
+  //         break
+  //       case ID_NAME.budget:
+  //         //TODO: validate
+  //         if (isNaN(index)) {
+  //           state.budgetRoots.push(payload)
+  //         } else {
+  //           Object.assign(state.budgetRoots[index], payload)
+  //         }
+  //         break
+  //       case ID_NAME.budgetOpened:
+  //         //TODO: validate
+  //         if (isNaN(index)) {
+  //         } else {
+  //         }
+  //         break
+  //       default:
+  //         console.error("doesn't recognize doc type ", docType)
+  //     }
+  //   },
+  // },
   actions: {
     /**
      * Bulk commits list of documents to pouchdb.
@@ -429,7 +258,7 @@ export default {
         case ID_NAME.masterCategory:
           return
         case ID_NAME.account:
-          return
+          return context.dispatch('fetchAccounts')
         case ID_NAME.monthCategory:
           return context.dispatch('commitMonthCategoryToVuex', {current, previous})
         case ID_NAME.payee:
@@ -512,12 +341,8 @@ const validateDocument = (current, previous) => {
   let validation_result = {
     errors: 'Validation schema not found.'
   }
-
-  if (current && current._id) {
-    doc_type = docTypeFromId(current._id)
-  } else if (!current && previous && previous._id) {
-    doc_type = docTypeFromId(previous._id)
-  } else if (current && current._id && previous && previous._id) {
+  let doc = current
+  if (current && current._id && previous && previous._id) {
     const current_doc_type = docTypeFromId(current._id)
     const previous_doc_type = docTypeFromId(previous._id)
     if (current_doc_type === previous_doc_type) {
@@ -527,31 +352,37 @@ const validateDocument = (current, previous) => {
       doc_type = null
     }
   }
+  else if (current && current._id) {
+    doc_type = docTypeFromId(current._id)
+  } else if (!current && previous && previous._id) {
+    doc_type = docTypeFromId(previous._id)
+    doc = previous
+  }
 
   switch (doc_type) {
     case ID_NAME.transaction:
-      validation_result = validateSchema.validate(current, schema_transaction)
+      validation_result = validateSchema.validate(doc, schema_transaction)
       break
     case ID_NAME.category:
-      validation_result = validateSchema.validate(current, schema_category)
+      validation_result = validateSchema.validate(doc, schema_category)
       break
     case ID_NAME.masterCategory:
-      validation_result = validateSchema.validate(current, schema_masterCategory)
+      validation_result = validateSchema.validate(doc, schema_masterCategory)
       break
     case ID_NAME.account:
-      validation_result = validateSchema.validate(current, schema_account)
+      validation_result = validateSchema.validate(doc, schema_account)
       break
     case ID_NAME.monthCategory:
-      validation_result = validateSchema.validate(current, schema_monthCategory)
+      validation_result = validateSchema.validate(doc, schema_monthCategory)
       break
     case ID_NAME.payee:
-      validation_result = validateSchema.validate(current, schema_payee)
+      validation_result = validateSchema.validate(doc, schema_payee)
       break
     case ID_NAME.budget:
-      validation_result = validateSchema.validate(current, schema_budget)
+      validation_result = validateSchema.validate(doc, schema_budget)
       break
     case ID_NAME.budgetOpened:
-      validation_result = validateSchema.validate(current, schema_budgetOpened)
+      validation_result = validateSchema.validate(doc, schema_budgetOpened)
       break
     default:
       console.error("doesn't recognize doc type ", doc_type)

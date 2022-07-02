@@ -227,7 +227,7 @@
 
         <!-- Container under each master category containing all individual categories -->
         <draggable
-          v-if="categoriesGroupedByMaster[cat._id.slice(-36)] && !cat.collapsed"
+          v-if="categoriesByMaster[cat._id.slice(-36)] && !cat.collapsed"
           tag="div"
           :class="cat._id.slice(-36)"
           :group="{ name: cat._id.slice(-36), put: true }"
@@ -236,7 +236,7 @@
         >
           <!-- Each individual category row -->
           <v-row
-            v-for="item in categoriesGroupedByMaster[cat._id.slice(-36)]
+            v-for="item in categoriesByMaster[cat._id.slice(-36)]
               .sort((a, b) => (a.sort > b.sort ? 1 : -1))
               .filter(cat => !cat.hidden || isReorderingCategories)"
             :key="item._id"
@@ -387,9 +387,9 @@ export default {
         this.$store.dispatch('reorderMasterCategories', value)
       }
     },
-    categoriesGroupedByMaster: {
+    categoriesByMaster: {
       get() {
-        return this.$store.getters.categoriesGroupedByMaster
+        return this.$store.getters.categoriesByMaster
       },
       set(value) {
         this.$store.dispatch('reorderMasterCategories', value)

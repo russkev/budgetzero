@@ -3,10 +3,64 @@ import moment from 'moment'
 
 import { ID_LENGTH, ID_NAME } from '../../constants.js'
 
+const DEFAULT_BUDGET_STATE = {
+  budgetRoots: [],
+  budgetBalances: {},
+  budgetOpened: null,
+  budgetExists: true // This opens the create budget modal when 'false'
+}
+
 export default {
-  state: {},
-  getters: {},
-  mutations: {},
+  state: {
+    ...DEFAULT_BUDGET_STATE
+  },
+  getters: {
+    budgetRoots: (state) => state.budgetRoots,
+    budgetRootsMap: (state, getters) => {
+      return getters.budgetRoots.reduce((map, budget_root) => {
+        if (budget_root._id) {
+          map[budget_root._id.slice(-ID_LENGTH.budget)] = budget_root
+          return map
+        }
+      }, {})
+    },
+    budgetOpened: (state) =>
+      state.budgetOpened.map((row) => {
+        var obj = row.doc
+        return obj
+      }),
+    budgetOpenedMap: (state, getters) =>
+      getters.budgetOpened.reduce((map, obj) => {
+        const id = obj._id ? obj._id.slice(-ID_LENGTH.budget) : null
+        map[id] = obj
+        return map
+      }, {}),
+    budgetExists: (state) => state.budgetExists,
+    budgetBalances: (state, getters) => {
+      return state.budgetBalances
+    }
+  },
+  mutations: {
+    RESET_BUDGET_STATE(state) {
+      Object.entries({ ...DEFAULT_BUDGET_STATE }).forEach(([key, value]) => {
+        state[key] = value
+      })
+    },
+    SET_BUDGET_ROOTS(state, budgets) {
+      if (budgets.length == 0) {
+        state.budgetExists = false
+      } else {
+        state.budgetExists = true
+      }
+      // Get budget ids
+      state.budgetRoots = budgets.map((budget) => {
+        return budget.doc
+      })
+    },
+    SET_BUDGET_OPENED(state, payload) {
+      state.budgetOpened = payload
+    }
+  },
   actions: {
     /**
      * Creates new budget and commits to pouchdb
@@ -37,9 +91,9 @@ export default {
       }
 
       return context
-        .dispatch('commitDocToPouchAndVuex', {current: budget, previous: null})
+        .dispatch('commitDocToPouchAndVuex', { current: budget, previous: null })
         .then((result) => {
-          console.log("CREATE BUDGET")
+          console.log('CREATE BUDGET')
           console.log(result)
           return context.dispatch('setSelectedBudgetID', result.id.slice(-ID_LENGTH.budget))
         })
@@ -51,7 +105,7 @@ export default {
           return Promise.all(initialize_budget_promises)
         })
         .then(() => {
-          return context.dispatch('commitDocToPouchAndVuex', {current: budgetOpened, previous: null})
+          return context.dispatch('commitDocToPouchAndVuex', { current: budgetOpened, previous: null })
         })
         .then(() => {
           console.log('Created new budget')
@@ -155,6 +209,6 @@ export default {
         payload.overspending = !payload.overspending
       }
       context.dispatch('updateMonthCategory', payload)
-    },
+    }
   }
 }

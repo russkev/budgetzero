@@ -132,11 +132,10 @@ export default {
       'masterCategories',
       'masterCategoriesById',
       'allCategoryBalances',
-      'monthlyCategoryData',
       'monthCategoryBudgets',
       'selectedMonth',
       'monthsInUse',
-      'categoriesGroupedByMaster'
+      'categoriesByMaster'
     ]),
     masterCategories: {
       get() {
@@ -148,7 +147,7 @@ export default {
     },
     masterCategoriesData() {
       return this.masterCategories
-        .sort((a, b) => a.sort - b.sort)
+        // .sort((a, b) => a.sort - b.sort)
         .map((master_category) => {
           return {
             id: master_category._id.slice(-ID_LENGTH.category)
@@ -253,11 +252,11 @@ export default {
       this.categoriesData = this.masterCategories.reduce((partial, master_category) => {
         const master_id = master_category._id.slice(-ID_LENGTH.category)
 
-        if (!Array.isArray(this.categoriesGroupedByMaster[master_id])) {
+        if (!Array.isArray(this.categoriesByMaster[master_id])) {
           return partial
         }
 
-        partial[master_id] = this.categoriesGroupedByMaster[master_id]
+        partial[master_id] = this.categoriesByMaster[master_id]
           .sort((a, b) => a.sort - b.sort)
           .map((category) => {
             const category_id = category._id.slice(-ID_LENGTH.category)

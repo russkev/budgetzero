@@ -1,8 +1,44 @@
 
+const DEFAULT_PAYEES_STATE = {
+  payees: []
+}
+
 export default {
-  state: {},
-  getters: {},
-  mutations: {},
+  state: {
+    ...DEFAULT_PAYEES_STATE
+  },
+  getters: {
+    payees: (state) => {
+      return [
+        {
+          id: null,
+          name: 'Payee not selected.'
+        }
+      ].concat(state.payees)
+    }
+    // payee_map: (state, getters) => {
+    //   let payees = getters.payees.reduce((map, obj) => {
+    //     const id = obj._id ? obj._id.slice(-ID_LENGTH.payee) : null
+    //     map[id] = obj.name
+    //     return map
+    //   }, {})
+    //   payees['---------------------initial-balance'] = 'Initial Balance'
+    //   return payees
+    // },
+    // payee_array: (state, getters) =>
+    //   getters.payees.map((obj) => {
+    //     const rObj = {}
+    //     rObj.id = obj.id ? obj.id.slice(-ID_LENGTH.payee) : null
+    //     rObj.name = obj.name
+    //     return rObj
+    //   }),
+    // payee_names: (state, getters) => getters.payees.map((obj) => obj.name)
+  },
+  mutations: {
+    SET_PAYEES(state, payees) {
+      state.payees = payees
+    }
+  },
   actions: {
     /**
      * Create payee doc.
@@ -17,7 +53,7 @@ export default {
         name: payload
       }
 
-      return context.dispatch('commitDocToPouchAndVuex', {current: payee, previous: null})
+      return context.dispatch('commitDocToPouchAndVuex', { current: payee, previous: null })
     },
 
     /**

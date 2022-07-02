@@ -1,8 +1,8 @@
 <template>
   <v-dialog v-model="show" max-width="500px">
-    <BaseModalComponent :item="editeditem" @confirm="deleteItem(editeditem)">
+    <BaseModalComponent :item="editedItem" @confirm="deleteItem(editedItem)">
       <template #title>
-        <span v-if="!editeditem._id">Add Account</span>
+        <span v-if="!editedItem._id">Add Account</span>
         <span v-else>Edit Account</span>
       </template>
       <template #body>
@@ -11,7 +11,7 @@
             <v-col cols="12">
               <v-text-field
                 id="nameField"
-                v-model="editeditem.name"
+                v-model="editedItem.name"
                 label="Account Name"
                 :rules="nameRules"
                 data-cy="account-name"
@@ -20,7 +20,7 @@
             <v-col cols="4">
               <v-select
                 id="typeField"
-                v-model="editeditem.type"
+                v-model="editedItem.type"
                 :items="['CHECKING', 'CREDIT', 'SAVING', 'MORTGAGE', 'CASH', 'INVESTMENT', 'OTHER']"
                 label="Type"
                 data-cy="account-type"
@@ -31,20 +31,20 @@
             <v-col cols="4">
               <v-switch
                 id="onBudgetSwitch"
-                v-model="editeditem.onBudget"
+                v-model="editedItem.onBudget"
                 label="On Budget?"
                 data-cy="account-on-budget"
               />
             </v-col>
             <v-col cols="4">
-              <v-switch id="balanceIsNegativeSwitch" v-model="editeditem.balanceIsNegative" label="Invert Balance" />
+              <v-switch id="balanceIsNegativeSwitch" v-model="editedItem.balanceIsNegative" label="Invert Balance" />
               <span>(generally for credit card accounts)</span>
             </v-col>
 
             <v-col cols="12">
               <v-textarea
                 id="noteField"
-                v-model="editeditem.note"
+                v-model="editedItem.note"
                 auto-grow
                 dense
                 label="Notes"
@@ -54,9 +54,9 @@
             </v-col>
             <v-col cols="12" sm="6" md="4">
               <v-text-field
-                v-if="!editeditem.hasOwnProperty('_id')"
+                v-if="!editedItem.hasOwnProperty('_id')"
                 id="startingBalanceField"
-                v-model="editeditem.initialBalance"
+                v-model="editedItem.initialBalance"
                 label="Starting Balance"
                 prefix="$"
                 data-cy="account-starting-balance"
@@ -85,7 +85,7 @@ export default {
   components: {
     BaseModalComponent
   },
-  props: ['value', 'editeditem'],
+  props: ['value', 'editedItem'],
   data: () => ({
     nameRules: [v => !!v || 'Name is required', v => (v && v.length <= 200) || 'Name must be less than 200 characters'],
     typeRules: [v => !!v || 'Type is required'],
@@ -114,10 +114,10 @@ export default {
 
   methods: {
     accountTypeChanged() {
-      if (this.editeditem.type == 'CREDIT') {
-        this.editeditem.balanceIsNegative = true
+      if (this.editedItem.type == 'CREDIT') {
+        this.editedItem.balanceIsNegative = true
       } else {
-        this.editeditem.balanceIsNegative = false
+        this.editedItem.balanceIsNegative = false
       }
     },
     close() {

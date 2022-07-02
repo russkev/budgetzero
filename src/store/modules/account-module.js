@@ -2,22 +2,50 @@ import { sanitizeValueInput } from '../../helper'
 import moment from 'moment'
 import { ID_LENGTH, ID_NAME } from '../../constants'
 
+const DEFAULT_ACCOUNT_STATE = {
+  allAccountBalances: {},
+  accounts: [],
+}
+
 export default {
   state: {
-    allAccountBalances: {}
-    // monthsInUse: []
+    ...DEFAULT_ACCOUNT_STATE
   },
   getters: {
-    allAccountBalances: (state) => state.allAccountBalances
+    allAccountBalances: (state) => state.allAccountBalances,
+    accounts: (state) => state.accounts,
+    accountsById: (state) => {
+      return state.accounts.reduce((partial, account) => {
+        partial[account._id.slice(-ID_LENGTH.account)] = account
+        return partial
+      }, {})
+    },
+    accountsOnBudget: (state) => {
+      return state.accounts.filter((account) => account.onBudget)
+    },
+    accountsOffBudget: (state) => {
+      return state.accounts.filter((account) => !account.onBudget)
+    }
+    // accountBalances: (state, getters) => {
+    //   return state.accountBalances
+    // },
   },
   mutations: {
+    SET_ACCOUNTS(state, accounts) {
+      state.accounts = accounts
+    },
     SET_ALL_ACCOUNT_BALANCES(state, payload) {
       state.allAccountBalances = payload
     },
-
+    // UPDATE_ACCOUNT(state, { index, value }) {
+    //   state.accounts[index] = value
+    // },
     UPDATE_ACCOUNT_BALANCES(state, { account_id, cleared, uncleared, working }) {
       _.defaultsDeep(state.allAccountBalances, defaultAccountBalance(account_id))
       updateAccountBalances(state.allAccountBalances, account_id, cleared, uncleared, working)
+    },
+    RESET_ACCOUNT_STATE(state) {
+      state = { ...DEFAULT_ACCOUNT_STATE }
     }
   },
   actions: {
@@ -63,7 +91,8 @@ export default {
               reject(result2.total_rows)
             } else {
               // Dispatch account for deletion
-              context.dispatch('deleteDocFromPouchAndVuex', payload)
+              // context.dispatch('deleteDocFromPouchAndVuex', payload)
+              context.dispatch('commitDocToPouchAndVuex', {current: null, previous: payload})
               resolve('Success')
             }
           })
