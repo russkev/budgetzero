@@ -43,7 +43,9 @@ export const DEFAULT_ACCOUNT_BALANCE = {
 }
 
 export const DEFAULT_MONTH_CATEGORY = {
+  _id: '',
   budget: 0,
+  spent: 0,
   overspending: null,
   hidden: null,
   note: ''

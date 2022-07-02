@@ -131,11 +131,11 @@ const schema_monthCategory = {
     spent: {
       type: ['null', 'integer']
     },
-    overspending: {
-      type: ['boolean', 'null']
-    },
     hidden: {
       type: ['boolean', 'null']
+    },
+    note: {
+      type: ['string', 'null']
     }
   },
   required: ['_id', 'budget', 'overspending']

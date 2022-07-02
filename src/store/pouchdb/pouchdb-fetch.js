@@ -92,10 +92,15 @@ export default {
       const db = Vue.prototype.$pouch
       const budget_id = context.rootState.selectedBudgetID
       // const name = ID_NAME.monthCategory + context.
-      return fetchDocsByType(context, db, budget_id, ID_NAME.monthCategory, 'fetchMonthCategories').then((result) => {
-        context.commit('SET_MONTH_CATEGORY_BUDGETS', result)
-        return 'success'
-      })
+      return fetchDocsByType(context, db, budget_id, ID_NAME.monthCategory, 'fetchMonthCategories')
+        // .then((result) => {
+        //   console.log(result)
+        //   return result
+        // })
+      // .then((result) => {
+      //   context.commit('SET_MONTH_CATEGORY_BUDGETS', result)
+      //   return 'success'
+      // })
     },
     fetchTransactionsForAccount: async (context, options) => {
       const t1 = performance.now()

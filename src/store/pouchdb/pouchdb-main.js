@@ -11,8 +11,8 @@ import {
 } from '../validation'
 import _ from 'lodash'
 import { ID_LENGTH, ID_NAME, DEFAULT_STATE, DEFAULT_ACCOUNT_BALANCE, UNCATEGORIZED } from '../../constants'
-import { databaseExists, docTypeFromId, getMonthCategoryMonth } from '../../helper'
-
+import { databaseExists, docTypeFromId, extractMonthCategoryMonth } from '../../helper'
+import Vue from 'vue'
 /**
  * This pouchdb vuex module contains code that interacts with the pouchdb database.
  */
@@ -33,22 +33,7 @@ export default {
     },
     // masterCategories: (state) => state.masterCategories,
     masterCategories: (state) => [...state.masterCategories].sort((a, b) => (a.sort > b.sort ? 1 : -1)),
-    monthCategoryBudgets: (state) => {
-      const result = state.monthCategoryBudgets.reduce((partial, row) => {
-        // Extract date from the id and add it as a separate property
-        const row_id = row._id
-        const category_id = row_id.slice(-ID_LENGTH.category)
-        const month = getMonthCategoryMonth(row_id)
-        return {
-          ...partial,
-          [month]: {
-            ...partial[month],
-            [category_id]: row
-          }
-        }
-      }, {})
-      return result
-    },
+    monthCategoryBudgets: (state) => state.monthCategoryBudgets,
     payees: (state) => {
       return [
         {
@@ -73,50 +58,6 @@ export default {
       }, {})
     },
 
-    //Lookups for main doc types
-    budgetRootIndexById: (state, getters) => {
-      return getters.budgetRoots.reduce((map, obj, i) => {
-        map[obj._id] = i
-        return map
-      }, {})
-    },
-    monthCategoryBudgetIndexById: (state, getters) => {
-      return state.monthCategoryBudgets.reduce((map, monthCategoryBudget, i) => {
-        map[monthCategoryBudget._id] = i
-        return map
-      }, {})
-    },
-    transactionsIndexById: (state, getters) => {
-      return getters.transactions.reduce((map, obj, i) => {
-        map[obj._id] = i
-        return map
-      }, {})
-    },
-    masterCategoriesIndexById: (state, getters) => {
-      return state.masterCategories.reduce((map, obj, i) => {
-        map[obj._id] = i
-        return map
-      }, {})
-    },
-    categoriesIndexById: (state, getters) => {
-      return state.categories.reduce((map, obj, i) => {
-        map[obj._id] = i
-        return map
-      }, {})
-    },
-
-    payeesIndexById: (state, getters) => {
-      return getters.payees.reduce((map, obj, i) => {
-        map[obj._id] = i
-        return map
-      }, {})
-    },
-    accountsIndexById: (state, getters) => {
-      return getters.accounts.reduce((map, obj, i) => {
-        map[obj._id] = i
-        return map
-      }, {})
-    },
 
     listOfImportIds: (state) => state.transactions.map((transaction) => _.get(transaction, 'importID', '')),
     budgetRoots: (state) => state.budgetRoots,
@@ -189,7 +130,26 @@ export default {
       state.transactions = transactions
     },
     SET_MONTH_CATEGORY_BUDGETS(state, month_category_budgets) {
-      state.monthCategoryBudgets = month_category_budgets
+      state.monthCategoryBudgets = month_category_budgets.reduce((partial, row) => {
+        const row_id = row._id
+        const category_id = row_id.slice(-ID_LENGTH.category)
+        const month = extractMonthCategoryMonth(row_id)
+
+        if (partial[month] === undefined) {
+          partial[month] = {}
+        }
+        partial[month][category_id] = row
+        return partial
+      }, {})
+    },
+    UPDATE_MONTH_CATEGORY(state, doc) {
+      const month = extractMonthCategoryMonth(doc._id)
+      const category_id = doc._id.slice(-ID_LENGTH.category)
+
+      if (state.monthCategoryBudgets[month] === undefined) {
+        Vue.set(state.monthCategoryBudgets, month, {})
+      }
+      Vue.set(state.monthCategoryBudgets[month], category_id, doc)
     },
     SET_PAYEES(state, payees) {
       state.payees = payees
@@ -333,7 +293,8 @@ export default {
         default:
           console.error("doesn't recognize doc type ", docType)
       }
-    }
+    },
+
     // SET_ALL_MONTHS_FROM_OBJECT(state, object) {
     //   state.monthsInUse = Object.keys(object)
     //     // .sort((a, b) => ('' + a).localeCompare(b))
@@ -392,17 +353,10 @@ export default {
         return Promise.all(valid_documents.map((valid_document) => {
           const id = valid_document.current ? valid_document.current._id : valid_document.previous._id
           if (results_by_id[id] !== undefined && results_by_id[id].ok){
+            valid_document._rev = results_by_id[id].rev
             return context.dispatch('commitDocToVuex', valid_document)
           }
         }))
-
-        // if (result.ok) {
-        //   return Promise.all(
-        //     valid_documents.map((doc) => {
-        //       return context.dispatch('commitDocToVuex', doc)
-        //     })
-        //   )
-        // }
       } catch (error) {
         console.log('ACTION: commitBulkDocsToPouchAndVuex failed')
         return context.commit('API_FAILURE', error)
@@ -421,18 +375,40 @@ export default {
       }
       const doc_type = validateDocument(current, previous)
       if (doc_type) {
-        context.dispatch('commitDocToPouch', { current, previous }).then((result) => {
+        return context.dispatch('commitDocToPouch', { current, previous }).then((result) => {
           if (result.ok) {
+            if (current) {
+              current._rev = result.rev
+            } 
             return context.dispatch('commitDocToVuex', { current, previous, doc_type })
+          } else {
+            Promise.reject("Pouch update failed")
           }
         })
+      }
+      else {
+        Promise.reject("Invalid document type")
       }
     },
 
     commitDocToPouch(context, { current, previous }) {
       const db = this._vm.$pouch
-      const result = current ? db.put(current) : db.remove(previous)
-      return result
+      if (current) {
+        return db.put(current).then((result) => {
+          return result
+        }).catch((error) => {
+          console.log(error)
+          return {}
+        })
+      } else {
+        db.remove(previous).then((result) => {
+          return result
+        }).catch((error) => {
+          console.log(error)
+          return {}
+        })
+      }
+      return current ? db.put(current) : db.remove(previous)
     },
 
     commitDocsToPouch(context, docs) {
@@ -440,7 +416,7 @@ export default {
       return db.bulkDocs(docs)
     },
 
-    async commitDocToVuex(context, { current, previous, doc_type }) {
+    commitDocToVuex(context, { current, previous, doc_type }) {
       switch (doc_type) {
         case ID_NAME.transaction:
           return context.dispatch('commitTransactionToVuex', {current, previous})
@@ -451,7 +427,7 @@ export default {
         case ID_NAME.account:
           return
         case ID_NAME.monthCategory:
-          return
+          return context.dispatch('commitMonthCategoryToVuex', {current, previous})
         case ID_NAME.payee:
           return
         case ID_NAME.budget:

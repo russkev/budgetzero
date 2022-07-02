@@ -317,13 +317,11 @@ export default {
       }
       this.editedItemInitialDate = this.editedItem.date
       this.transactions.push(this.editedItem)
-      // this.transactions.sort((a, b) => ('' + b._id).localeCompare(a._id))
       this.transactions.sort((a, b) => this.compareAscii(b._id, a._id))
       this.editedIndex = this.transactions.indexOf(this.editedItem)
       this.expanded.push(this.editedItem)
     },
     deleteSelectedTransactions() {
-      // const payload = [...this.selected]
       if (this.selected.length < 1) {
         return
       }
@@ -332,13 +330,9 @@ export default {
         this.$store.dispatch('updateBalances')
         this.selected = []
       })
-      // .then(() => {
-      //   this.selected = []
-      // })
     },
     deleteTransaction(item) {
       this.$store
-        // .dispatch('deleteDocFromPouchAndVuex', { ...item })
         .dispatch('createOrUpdateTransaction', { current: null, previous: item })
         .then(() => {
           return this.getTransactions()

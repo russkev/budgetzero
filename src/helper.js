@@ -49,7 +49,7 @@ function prevMonth(month_input) {
   return `${year.toString()}-${month.toString().padStart(2, '0')}`
 }
 
-function getMonthCategoryMonth(month_category_id) {
+function extractMonthCategoryMonth(month_category_id) {
   const date_regex = /(?<=\_)[0-9]{4}\-[0-9]{2}(?=\_)/
   const match = month_category_id.match(date_regex)
   if (match) {
@@ -128,7 +128,7 @@ export {
   docTypeFromId,
   nextMonth,
   prevMonth,
-  getMonthCategoryMonth,
+  extractMonthCategoryMonth,
   databaseExists,
   documentExists,
   validateDate,

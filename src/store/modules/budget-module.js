@@ -154,7 +154,7 @@ export default {
 
         payload.overspending = !payload.overspending
       }
-      context.dispatch('updateCategoryAmount', payload)
+      context.dispatch('updateMonthCategory', payload)
     },
   }
 }
