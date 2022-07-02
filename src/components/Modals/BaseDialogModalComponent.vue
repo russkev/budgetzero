@@ -46,7 +46,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['selectedBudgetID']),
+    ...mapState(['selectedBudgetId']),
     show: {
       get() {
         return this.value

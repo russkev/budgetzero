@@ -47,7 +47,7 @@
         Backup Current Budget
       </v-btn>
 
-      <span class="pl-2">Backup current budget: {{ this.$store.getters.selectedBudgetID }} </span>
+      <span class="pl-2">Backup current budget: {{ this.$store.getters.selectedBudgetId }} </span>
 
       <h3 class="mx-2 pt-2">Restore</h3>
 
@@ -227,7 +227,7 @@ export default {
       'accounts',
       'monthlyCategoryData',
       'payees',
-      'selectedBudgetID',
+      'selectedBudgetId',
       'remoteSyncURL',
       'sync_state'
     ]),

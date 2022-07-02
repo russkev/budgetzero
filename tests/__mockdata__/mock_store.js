@@ -33,7 +33,7 @@ const mock_store = {
     // categoriesGroupedByMaster: () => {
     //   return categoriesGroupedByMaster;
     // },
-    // selectedBudgetID: state => state.selectedBudgetID,
+    // selectedBudgetId: state => state.selectedBudgetId,
   }
 };
 

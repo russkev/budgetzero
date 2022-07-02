@@ -378,7 +378,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['selectedBudgetID', 'monthlyData', 'month_selected', 'month_category_lookup']),
+    ...mapGetters(['selectedBudgetId', 'monthlyData', 'month_selected', 'month_category_lookup']),
     masterCategories: {
       get() {
         return this.$store.getters.masterCategories
@@ -452,7 +452,7 @@ export default {
         budget: Math.round(event * 100),
         overspending: null,
         note: '',
-        _id: `b_${this.selectedBudgetID}_m_category_${this.month_selected}-01_${item._id.slice(-36)}`
+        _id: `b_${this.selectedBudgetId}_m_category_${this.month_selected}-01_${item._id.slice(-36)}`
       }
 
       //Check if already exists

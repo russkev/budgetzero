@@ -36,7 +36,7 @@ export default {
       if (payload.transfer) {
         const index =
           context.getters.transactionsIndexById[
-            `b_${context.getters.selectedBudgetID}${ID_NAME.transaction}${payload.transfer}`
+            `b_${context.getters.selectedBudgetId}${ID_NAME.transaction}${payload.transfer}`
           ]
         if (index) {
           mirrorExists = true
@@ -45,7 +45,7 @@ export default {
       }
       if (!mirrorExists) {
         //Creating new transaction
-        mirroredTransferTransaction._id = `b_${context.getters.selectedBudgetID}${
+        mirroredTransferTransaction._id = `b_${context.getters.selectedBudgetId}${
           ID_NAME.transaction
         }${this._vm.generateId(payload.date)}`
 
@@ -142,7 +142,7 @@ export default {
               payee: null,
               transfer: null,
               splits: [],
-              _id: `b_${context.getters.selectedBudgetID}${ID_NAME.transaction}${transaction_id}`,
+              _id: `b_${context.getters.selectedBudgetId}${ID_NAME.transaction}${transaction_id}`,
               _rev: ''
             }
           })
@@ -156,7 +156,7 @@ export default {
                   budget: randomInt(-20000, 30000),
                   overspending: null,
                   note: randomString(randomInt(0, 100)),
-                  _id: `b_${context.getters.selectedBudgetID}${ID_NAME.monthCategory}${year_month}_${category_id}`
+                  _id: `b_${context.getters.selectedBudgetId}${ID_NAME.monthCategory}${year_month}_${category_id}`
                 }
                 mock_budget_data.push(budget_amount_item)
               }

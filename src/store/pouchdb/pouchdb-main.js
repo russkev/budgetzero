@@ -25,7 +25,7 @@ export default {
     //Plain getters for main doc types
     transactions: (state) => state.transactions,
     accounts: (state) => state.accounts,
-    accountsByTruncatedId: (state) => {
+    accountsById: (state) => {
       return state.accounts.reduce((partial, account) => {
         partial[account._id.slice(-ID_LENGTH.account)] = account
         return partial
@@ -45,13 +45,13 @@ export default {
     categories: (state) => {
       return [UNCATEGORIZED, ...state.categories]
     },
-    categoriesByTruncatedId: (state, getters) => {
+    categoriesById: (state, getters) => {
       return getters.categories.reduce((partial, category) => {
         partial[category._id.slice(-ID_LENGTH.category)] = category
         return partial
       }, {})
     },
-    masterCategoriesByTruncatedId: (state, getters) => {
+    masterCategoriesById: (state, getters) => {
       return getters.masterCategories.reduce((partial, masterCategory) => {
         partial[masterCategory._id.slice(-ID_LENGTH.category)] = masterCategory
         return partial
@@ -294,25 +294,6 @@ export default {
           console.error("doesn't recognize doc type ", docType)
       }
     },
-
-    // SET_ALL_MONTHS_FROM_OBJECT(state, object) {
-    //   state.monthsInUse = Object.keys(object)
-    //     // .sort((a, b) => ('' + a).localeCompare(b))
-    //     .sort((a, b) => this._vm.compareAscii(a, b))
-    //     .filter((month) => this._vm.validateMonth(month))
-    // },
-    // UPDATE_ALL_MONTHS(state, month) {
-    //   if (!this._vm.validateMonth(month)) {
-    //     console.warn(`Trying to update monthsInUse with invalid month: ${month}`)
-    //     return
-    //   }
-
-    //   if (!state.monthsInUse.includes(month)) {
-    //     state.monthsInUse.push(month)
-    //     // state.monthsInUse.sort((a, b) => ('' + a).localeCompare(b))
-    //     state.monthsInUse.sort((a, b) => this._vm.compareAscii(a, b))
-    //   }
-    // }
   },
   actions: {
     /**
@@ -375,40 +356,63 @@ export default {
       }
       const doc_type = validateDocument(current, previous)
       if (doc_type) {
-        return context.dispatch('commitDocToPouch', { current, previous }).then((result) => {
-          if (result.ok) {
-            if (current) {
-              current._rev = result.rev
-            } 
-            return context.dispatch('commitDocToVuex', { current, previous, doc_type })
-          } else {
-            Promise.reject("Pouch update failed")
-          }
-        })
+        return context
+          .dispatch('commitDocToPouch', { current, previous, doc_type })
+          .then((result) => {
+            if (result.ok) {
+              if (current) {
+                current._rev = result.rev
+              } 
+              return context.dispatch('commitDocToVuex', { current, previous, doc_type })
+            } else {
+              console.log(result)
+              Promise.reject(`Pouch update failed`)
+            }
+          })
       }
       else {
         Promise.reject("Invalid document type")
       }
     },
 
-    commitDocToPouch(context, { current, previous }) {
+    commitDocToPouch(context, { current, previous, doc_type }) {
       const db = this._vm.$pouch
       if (current) {
-        return db.put(current).then((result) => {
-          return result
-        }).catch((error) => {
-          console.log(error)
-          return {}
-        })
+        if (doc_type === ID_NAME.transaction && previous && current.date !== previous.date) {
+          // New transaction date requires a new ID which means the old transaction has to be deleted
+          const transaction_id = this._vm.generateId(current.date)
+          const for_db_previous = {
+            ...current, 
+            _deleted: true
+          }
+          const for_db_current = {
+            ...current, 
+            _id: `b_${context.getters.selectedBudgetId}${ID_NAME.transaction}${transaction_id}`
+          }
+          delete for_db_current._rev
+          return db.bulkDocs([for_db_current, for_db_previous]).then((results) => {
+            const all_successful = results
+              .reduce((partial, result) => {
+                if (!result.ok) {
+                  return false
+                } else {
+                  return partial
+                }
+              }, true)
+            if (all_successful) {
+              // Return first result because it is the one with the correct _rev
+              return results[0]
+            } else {
+              Promise.reject(`Pouch update failed`)
+              console.log(results)
+            }
+          })
+        } else {
+          return db.put(current)
+        }
       } else {
-        db.remove(previous).then((result) => {
-          return result
-        }).catch((error) => {
-          console.log(error)
-          return {}
-        })
+        return db.remove(previous)
       }
-      return current ? db.put(current) : db.remove(previous)
     },
 
     commitDocsToPouch(context, docs) {
@@ -459,7 +463,8 @@ export default {
     updateBalances(context) {
       return Promise.all([context.dispatch('fetchAccountBalances'), context.dispatch('fetchBudgetBalances')])
         .then((response) => {
-          return context.dispatch('calculateMonthlyCategoryData')
+          return response
+          // return context.dispatch('calculateMonthlyCategoryData')
         })
         .catch((error) => {
           context.commit('API_FAILURE', error)

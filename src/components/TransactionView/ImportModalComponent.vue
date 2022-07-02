@@ -157,7 +157,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['accounts', 'selectedBudgetID']),
+    ...mapGetters(['accounts', 'selectedBudgetId']),
     show: {
       get() {
         return this.visible
@@ -257,7 +257,7 @@ export default {
             importID: importID,
             transfer: null,
             splits: [],
-            _id: `b_${this.selectedBudgetID}${ID_NAME.transaction}${this.generateId(date, trn.FITID)}`
+            _id: `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId(date, trn.FITID)}`
           }
 
           this.importCount.imported++
@@ -303,7 +303,7 @@ export default {
           payee: trn.payee,
           transfer: null,
           splits: [],
-          _id: `b_${this.selectedBudgetID}${ID_NAME.transaction}${this.generateId(date)}`
+          _id: `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId(date)}`
         }
         this.importCount.imported++
         transactionListToImport.push(jsonData)

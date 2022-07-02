@@ -135,7 +135,7 @@ export default {
         budget: 0,
         overspending: true,
         note: '',
-        _id: `b_${context.getters.selectedBudgetID}${ID_NAME.monthCategory}${
+        _id: `b_${context.getters.selectedBudgetId}${ID_NAME.monthCategory}${
           context.getters.month_selected
         }_${item._id.slice(-ID_LENGTH.category)}`,
         date: context.getters.month_selected + '-01'

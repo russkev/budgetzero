@@ -43,7 +43,7 @@ describe("accounts table", () => {
       .filter(row => row._id.includes("_category_"))
       .filter(row => !row._id.includes("monthCategory"));
     store.state.pouchdb.month_selected = "2020-12";
-    store.state.selectedBudgetID = "cc28ac0b-19fe-4735-a2e7-9bb91d54b6cc";
+    store.state.selectedBudgetId = "cc28ac0b-19fe-4735-a2e7-9bb91d54b6cc";
     numberOfAccounts = data.filter(row => row._id.includes("_account_")).length;
   });
 

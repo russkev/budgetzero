@@ -84,7 +84,7 @@
           </thead>
           <tbody>
             <tr v-for="budget in budgetRoots" :key="budget._id">
-              <td v-if="budget._id.slice(-ID_LENGTH.budget) == selectedBudgetID">
+              <td v-if="budget._id.slice(-ID_LENGTH.budget) == selectedBudgetId">
                 <v-icon color="accent">
                   mdi-check-bold
                 </v-icon>
@@ -135,10 +135,10 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['budgetRoots', 'payees', 'selectedBudgetID'])
+    ...mapGetters(['budgetRoots', 'payees', 'selectedBudgetId'])
   },
   watch: {
-    selectedBudgetID: function(newBudget, oldBudget) {
+    selectedBudgetId: function(newBudget, oldBudget) {
       this.selectedBudget = newBudget //Assign value from vuex to local var when loads/updates
     }
   },

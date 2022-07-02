@@ -105,9 +105,9 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['accounts', 'selectedBudgetID']),
+    ...mapGetters(['accounts', 'selectedBudgetId']),
     budgetExists() {
-      return this.selectedBudgetID != "null"
+      return this.selectedBudgetId != "null"
     }
   },
   mounted() {},
@@ -198,7 +198,7 @@ export default {
           sort: this.editedItem.sort,
           onBudget: this.editedItem.onBudget,
           balanceIsNegative: this.editedItem.balanceIsNegative,
-          _id: `b_${this.selectedBudgetID}${ID_NAME.account}${this.generateShortId()}`
+          _id: `b_${this.selectedBudgetId}${ID_NAME.account}${this.generateShortId()}`
         }
         console.log('new account', newPayload, this.editedItem.initialBalance)
         this.$store.dispatch('createUpdateAccount', {

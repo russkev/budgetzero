@@ -59,21 +59,21 @@ export default {
     },
     fetchAccounts: (context) => {
       const db = Vue.prototype.$pouch
-      const budget_id = context.rootState.selectedBudgetID
+      const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.account, 'fetchAccounts').then((result) => {
         return context.commit('SET_ACCOUNTS', result)
       })
     },
     fetchPayees: (context) => {
       const db = Vue.prototype.$pouch
-      const budget_id = context.rootState.selectedBudgetID
+      const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.payee, 'fetchPayees').then((result) => {
         return context.commit('SET_PAYEES', result)
       })
     },
     fetchCategories: (context) => {
       const db = Vue.prototype.$pouch
-      const budget_id = context.rootState.selectedBudgetID
+      const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.category, 'fetchCategories').then((result) => {
         context.commit('SET_CATEGORIES', result)
         return 'success'
@@ -81,7 +81,7 @@ export default {
     },
     fetchMasterCategories: (context) => {
       const db = Vue.prototype.$pouch
-      const budget_id = context.rootState.selectedBudgetID
+      const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.masterCategory, 'fetchMasterCategories').then((result) => {
         result.push(UNCATEGORIZED)
         context.commit('SET_MASTER_CATEGORIES', result)
@@ -90,7 +90,7 @@ export default {
     },
     fetchMonthCategories: (context) => {
       const db = Vue.prototype.$pouch
-      const budget_id = context.rootState.selectedBudgetID
+      const budget_id = context.rootState.selectedBudgetId
       // const name = ID_NAME.monthCategory + context.
       return fetchDocsByType(context, db, budget_id, ID_NAME.monthCategory, 'fetchMonthCategories')
         // .then((result) => {
@@ -106,10 +106,10 @@ export default {
       const t1 = performance.now()
 
       const db = Vue.prototype.$pouch
-      let budget_id = context.rootState.selectedBudgetID
+      let budget_id = context.rootState.selectedBudgetId
       if (!budget_id) {
         await context.dispatch('fetchAllBudgetRoots')
-        budget_id = context.rootState.selectedBudgetID
+        budget_id = context.rootState.selectedBudgetId
       }
       const skip_amount = (options.page - 1) * options.itemsPerPage
       return db
@@ -133,7 +133,7 @@ export default {
     fetchAccountBalances: (context) => {
       // const db = Vue.prototype.$pouch
       // const t1 = performance.now()
-      // const budget_id = context.rootState.selectedBudgetID
+      // const budget_id = context.rootState.selectedBudgetId
 
       // return db
       //   .query('stats/sum_transaction_by_account', {
@@ -153,7 +153,7 @@ export default {
     fetchBudgetBalances: (context) => {
       const db = Vue.prototype.$pouch
       const t1 = performance.now()
-      const budget_id = context.rootState.selectedBudgetID
+      const budget_id = context.rootState.selectedBudgetId
       const month_end = context.rootState.selectedMonth
       const month_start = prevMonth(month_end)
 
@@ -179,7 +179,7 @@ export default {
     fetchAllTransactions: (context) => {
       const db = Vue.prototype.$pouch
       const t1 = performance.now()
-      const budget_id = context.rootState.selectedBudgetID
+      const budget_id = context.rootState.selectedBudgetId
 
       return db
         .allDocs({

@@ -80,17 +80,17 @@ import _ from 'lodash'
 export default {
   props: ['selected_account_id'],
   computed: {
-    ...mapGetters(['allAccountBalances', 'accountsByTruncatedId']),
+    ...mapGetters(['allAccountBalances', 'accountsById']),
     accountBalance() {
       const accountBalance = this.allAccountBalances[this.selected_account_id]
       return accountBalance ? accountBalance : DEFAULT_ACCOUNT_BALANCE
     },
     accountName() {
       console.log("selectedAccount")
-      console.log(this.accountsByTruncatedId)
+      console.log(this.accountsById)
 
-      // return this.accountsByTruncatedId[this.selected_account_id].name || ''
-      return _.get(this.accountsByTruncatedId, [this.selected_account_id, 'name'], '')
+      // return this.accountsById[this.selected_account_id].name || ''
+      return _.get(this.accountsById, [this.selected_account_id, 'name'], '')
     }
   },
   methods: {}

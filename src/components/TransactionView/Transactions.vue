@@ -44,12 +44,11 @@
 
           <!-- Date input -->
           <td v-if="item._id === editedItem._id" id="edit-date-input">
-            <v-menu v-model="dateMenuIsVisible" transition="scale-transition" offset-x offset-y>
-              <template #activator="{ on }">
-                <v-text-field class="pa-0 pb-1" label="" v-model="editedItem.date" v-on="on" :rules="[rules.date]" />
-              </template>
-              <v-date-picker v-model="editedItem.date" @input="dateMenu = false" />
-            </v-menu>
+              <!-- <v-text-field v-model="editedItem.date" :rules="[rules.date]">
+                <template v-slot:append-outer> -->
+                  <date-picker v-model="editedItem.date"/>
+                <!-- </template>
+              </v-text-field> -->
           </td>
           <td
             v-else
@@ -150,9 +149,10 @@ import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 import _ from 'lodash'
+import DatePicker from './DatePicker'
 
 export default {
-  components: { Treeselect, TransactionHeader },
+  components: { Treeselect, TransactionHeader, DatePicker },
   data() {
     return {
       selected: [],
@@ -173,9 +173,9 @@ export default {
       },
       editedItemInitialDate: moment(new Date()).format('YYYY-MM-DD'),
       rules: {
-        date: (value) => {
-          return this.$vm.validateDate(value) || 'Invalid date.'
-        },
+        // date: (value) => {
+        //   return this.$vm.validateDate(value) || 'Invalid date.'
+        // },
         currency: (value) => {
           const result = isNaN(parseFloat(value)) && value.length > 0 ? 'Numbers only' : true
           return result
@@ -202,12 +202,12 @@ export default {
   },
   computed: {
     // Re-configure categoriesGroupedByMaster to be in correct format for treeselect
-    ...mapGetters(['dataTableHeaders', 'selectedBudgetID', 'categoriesByTruncatedId']),
+    ...mapGetters(['dataTableHeaders', 'selectedBudgetId', 'categoriesById']),
     selectedAccount() {},
     categoryOptions() {
       const key_values = Object.entries(this.$store.getters.categoriesGroupedByMaster)
       return key_values.map(([master_category_id, categories]) => {
-        const category_label = this.$store.getters.masterCategoriesByTruncatedId[master_category_id].name
+        const category_label = this.$store.getters.masterCategoriesById[master_category_id].name
         const result = {
           id: master_category_id,
           label: category_label
@@ -248,7 +248,7 @@ export default {
       this.$store.dispatch('fetchTransactionsForAccount', this.accountOptions).then((result) => {
         this.numServerTransactions = result.total_rows
         this.transactions = result.rows.map((row) => {
-          const category_name = _.get(this.categoriesByTruncatedId, [row.doc.category, 'name'], '')
+          const category_name = _.get(this.categoriesById, [row.doc.category, 'name'], '')
           return {
             ...row.doc,
             ['category_name']: category_name
@@ -271,7 +271,7 @@ export default {
       this.prepareEditedItem()
       const payload = { current: this.editedItem, previous: item }
       this.$store
-        .dispatch('createOrUpdateTransaction', { current: payload, previous: null })
+        .dispatch('createOrUpdateTransaction', payload)
         .then(() => this.getTransactions())
       this.resetEditedItem()
     },
@@ -293,7 +293,7 @@ export default {
     },
     prepareEditedItem() {
       if (this.creatingNewTransactions && this.editedItemInitialDate !== this.editedItem.date) {
-        this.editedItem['_id'] = `b_${this.selectedBudgetID}${ID_NAME.transaction}${this.generateId(
+        this.editedItem['_id'] = `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId(
           this.editedItem.date
         )}`
       }
@@ -313,7 +313,7 @@ export default {
         ...DEFAULT_TRANSACTION,
         account: this.$route.params.account_id,
         date: moment(new Date()).format('YYYY-MM-DD'),
-        _id: `b_${this.selectedBudgetID}${ID_NAME.transaction}${this.generateId()}`
+        _id: `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId()}`
       }
       this.editedItemInitialDate = this.editedItem.date
       this.transactions.push(this.editedItem)
@@ -343,7 +343,13 @@ export default {
       this.cancel()
     },
     save(item) {
-      const previous = this.creatingNewTransactions ? null : item
+      // let payload = {}
+      let previous = this.creatingNewTransactions ? null : item
+      // if (previous !== null && this.editedItem.date !== this.editedItem.month) {
+      //   payload = {
+      //     current:
+      //   }
+      // }
       this.prepareEditedItem()
       this.$store
         .dispatch('createOrUpdateTransaction', { current: this.editedItem, previous: previous })

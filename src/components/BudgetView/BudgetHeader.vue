@@ -5,50 +5,40 @@
         <v-card-title id="selected-month" class="headline grey lighten-4 py-2">
           {{ selectedMonth | moment('MMMM YYYY') }}
         </v-card-title>
-        <v-card-subtitle v-if="!doesMonthDataExist" id="data-doesnt-exist-msg" class="grey lighten-4 pt-2 pb-1">
+        <v-card-subtitle v-if="!monthDataExists" id="data-doesnt-exist-msg" class="grey lighten-4 pt-2 pb-1">
           <span>Data does not exist for this month</span>
         </v-card-subtitle>
         <v-divider />
         <v-card-text class="pa-0">
           <div class="px-2 pt-2">
-            <p style="text-align:left;" class="subtitle-2 mb-0">
+            <p style="text-align: left" class="subtitle-2 mb-0">
               Leftover Last Month
-              <span id="leftover-amount" style="float:right;">
-                {{
-                  monthlyCategoryData[selectedMonth]
-                    ? monthlyCategoryData[selectedMonth].summaryData.available_to_budget_last_month / 100
-                    : 0 | currency
-                }}
+              <span id="leftover-amount" style="float: right">
+                {{ (monthStats.leftover_last_month / 100) | currency }}
               </span>
             </p>
-            <p style="text-align:left;" class="subtitle-2 mb-0">
+            <p style="text-align: left" class="subtitle-2 mb-0">
               Income This Month
-              <span id="income-amount" style="float:right;">
-                {{
-                  monthlyCategoryData[selectedMonth]
-                    ? monthlyCategoryData[selectedMonth].summaryData.income_this_month / 100
-                    : 0 | currency
-                }}
+              <span id="income-amount" style="float: right">
+                {{ (monthStats.income_this_month / 100) | currency }}
               </span>
             </p>
-            <p style="text-align:left;" class="subtitle-2 mb-0">
+            <p style="text-align: left" class="subtitle-2 mb-0">
               Overspent Last Month
-              <span id="overspent-amount" style="float:right;">
-                {{
-                  monthlyCategoryData[selectedMonth]
-                    ? monthlyCategoryData[selectedMonth].summaryData.last_month_overspent / 100
-                    : 0 | currency
-                }}
+              <span id="overspent-amount" style="float: right">
+                {{ (monthStats.overspent_last_month / 100) | currency }}
               </span>
             </p>
-            <p style="text-align:left;" class="subtitle-2 mb-2">
+            <p style="text-align: left" class="subtitle-2 mb-2">
               Budgeted This Month
-              <span id="budgeted-amount" style="float:right;">
-                {{
-                  monthlyCategoryData[selectedMonth]
-                    ? monthlyCategoryData[selectedMonth].summaryData.budgeted_this_month / 100
-                    : 0 | currency
-                }}
+              <span id="budgeted-amount" style="float: right">
+                {{ (monthStats.budgeted_this_month / 100) | currency }}
+              </span>
+            </p>
+            <p style="text-align: left" class="subtitle-2 mb-2">
+              Spent This Month
+              <span id="budgeted-amount" style="float: right">
+                {{ (monthStats.spent_this_month / 100) | currency }}
               </span>
             </p>
           </div>
@@ -59,11 +49,7 @@
           </div>
 
           <div id="available-to-budget-amount" class="title text-center mb-0">
-            {{
-              monthlyCategoryData[selectedMonth]
-                ? monthlyCategoryData[selectedMonth].summaryData.available_to_budget_this_month / 100
-                : 0 | currency
-            }}
+            {{ (availableToBudget / 100) | currency }}
           </div>
         </v-card-text>
       </v-card>
@@ -80,14 +66,45 @@ export default {
     return {}
   },
   computed: {
-    ...mapGetters(['monthlyCategoryData', 'selectedMonth' ]),
-    doesMonthDataExist() {
-      if (this.monthlyCategoryData.hasOwnProperty(`${this.selectedMonth}`)) {
-        return true
-      } else {
-        return false
-      }
+    ...mapGetters(['selectedMonth', 'allCategoryBalances', 'masterCategoriesById']),
+    monthDataExists() {
+      return this.allCategoryBalances[this.selectedMonth] !== undefined
     },
+    monthStats() {
+      let stats = {
+        leftover_last_month: 0,
+        income_this_month: 0,
+        overspent_last_month: 0,
+        budgeted_this_month: 0,
+        spent_this_month: 0
+      }
+      if (!this.monthDataExists) {
+        return stats
+      }
+
+      Object.entries(this.allCategoryBalances[this.selectedMonth]).reduce((partial, [master_id, categories]) => {
+        const is_income = this.masterCategoriesById[master_id].isIncome
+        Object.values(categories).map((category) => {
+          if (is_income) {
+            stats.income_this_month += _.get(category, ['spent'], 0)
+            stats.leftover_last_month += _.get(category, ['carryover'], 0)
+          } else {
+            stats.spent_this_month += _.get(category, ['spent'], 0)
+            stats.overspent_last_month += _.get(category, ['carryover'], 0)
+          }
+          stats.budgeted_this_month += _.get(category, ['doc', 'budget'], 0)
+        })
+      })
+      return stats
+    },
+    availableToBudget() {
+      return (
+        this.monthStats.leftover_last_month +
+        this.monthStats.income_this_month -
+        this.monthStats.budgeted_this_month + 
+        this.monthStats.overspent_last_month 
+      )
+    }
   },
   methods: {}
 }

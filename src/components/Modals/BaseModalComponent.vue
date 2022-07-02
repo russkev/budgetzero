@@ -41,7 +41,7 @@ export default {
     }
   },
   computed: {
-    ...mapState(['selectedBudgetID'])
+    ...mapState(['selectedBudgetId'])
   },
   methods: {
     close() {

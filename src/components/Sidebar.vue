@@ -140,7 +140,7 @@
       <!-- <v-list-group value="true">
         <template v-slot:activator> -->
       <v-list-item-title class="pl-2 pt-1 pb-1 font-weight-medium subtitle-2 blue-grey--text text--lighten-3">
-        ON BUDGET <span class="float-right pr-4">{{ sumOfOnBudgetAccounts | currency }}</span>
+        ON BUDGET <span class="float-right pr-4">{{ accountTotals['on_budget'] / 100 | currency }}</span>
       </v-list-item-title>
 
       <!-- </template> -->
@@ -159,7 +159,7 @@
           </v-list-item-title>
         </v-list-item-content>
         <v-list-item-icon class="subtitle-2">
-          {{ accountBalance(item._id) | currency}}
+          {{ accountTotals[item._id.slice(-ID_LENGTH.account)] / 100 | currency}}
         </v-list-item-icon>
       </v-list-item>
 
@@ -168,7 +168,7 @@
       <!-- <v-list-group value="true">
         <template v-slot:activator> -->
       <v-list-item-title class="pl-2 pt-1 pb-1 font-weight-medium subtitle-2 blue-grey--text text--lighten-3">
-        OFF BUDGET <span class="float-right pr-4">{{ sumOfOffBudgetAccounts | currency }}</span>
+        OFF BUDGET <span class="float-right pr-4">{{ accountTotals['off_budget'] / 100 | currency }}</span>
       </v-list-item-title>
       <!-- </template> -->
 
@@ -185,7 +185,7 @@
           </v-list-item-title>
         </v-list-item-content>
         <v-list-item-icon class="subtitle-2">
-          {{ accountBalance(item._id) | currency}}
+          {{ accountTotals[item._id.slice(-ID_LENGTH.account)] / 100 | currency}}
         </v-list-item-icon>
       </v-list-item>
 
@@ -269,7 +269,7 @@
 </template>
 
 <script>
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 import BaseDialogModalComponent from './Modals/BaseDialogModalComponent'
 import { ID_LENGTH } from '../constants'
 import moment from 'moment'
@@ -297,42 +297,14 @@ export default {
       'accountBalances',
       'allAccountBalances',
       'sync_state',
+      'accountsById',
       'accountsOnBudget',
       'accountsOffBudget',
-      'selectedBudgetID',
+      'selectedBudgetId',
       'budgetRoots',
       'budgetRootsMap',
       'user'
     ]),
-    // ...mapState(['allAccountBalances']),
-    // ab() {
-    //   // console.log("AB")
-    //   // console.log(this.allAccountBalances)
-    //   console.log("ACCOUNTS")
-    //   console.log(this.allAccountBalances)
-    //   console.log(this.$store.state.category.allAccountBalances)
-
-    //   // return this.accounts.map((account) => {
-    //   //   const id = account._id.slice(-ID_LENGTH.account)
-    //   //   return _.get(this.$store.state.allAccountBalances, [id], 0)
-    //   // })
-    //   const result = this.accounts.reduce((partial, account) => {
-    //     const id = account._id.slice(-ID_LENGTH.account)
-    //     partial[id] = _.get(
-    //       this.allAccountBalances,
-    //       [id],
-    //       {
-    //         cleared: 0,
-    //         uncleared: 0,
-    //         working: 0,
-    //       }
-    //     )
-    //     return partial
-
-    //   }, {})
-    //   console.log(result)
-    //   return result
-    // },
     budgetName() {
       if (this.selectedBudget) {
         return this.budgetRootsMap[this.selectedBudget] ? this.budgetRootsMap[this.selectedBudget].name : 'None'
@@ -340,29 +312,23 @@ export default {
         return ''
       }
     },
-    sumOfOnBudgetAccounts() {
-      return this.accounts.reduce((account_sum, account) => {
-        const accountBalance = this.accountBalances[account._id.slice(-ID_LENGTH.account)]
-        if(account.onBudget && accountBalance !== undefined) {
-          return account_sum + accountBalance.working / 100
+    accountTotals() {
+      return this.accounts.reduce((partial, account) => {
+        const account_id = account._id.slice(-ID_LENGTH.account)
+        const account_total = _.get(this.allAccountBalances, [account_id, 'working'], 0)
+        const account_on_budget = account.onBudget
+        partial[account_id] = account_total
+        if(account_on_budget) {
+          partial.on_budget += account_total
         } else {
-          return account_sum
-        }  
-      }, 0)
-    },
-    sumOfOffBudgetAccounts() {
-      return this.accounts.reduce((account_sum, account) => {
-        const accountBalance = this.accountBalances[account._id.slice(-ID_LENGTH.account)]
-        if(!account.onBudget && accountBalance !== undefined) {
-          return account_sum + accountBalance.working / 100
-        } else {
-          return account_sum
-        }  
-      }, 0)
+          partial.off_budget += account_total
+        }
+        return partial
+      }, {on_budget: 0, off_budget: 0}) 
     },
   },
   watch: {
-    selectedBudgetID: function(newBudget, oldBudget) {
+    selectedBudgetId: function(newBudget, oldBudget) {
       this.selectedBudget = newBudget //Assign value from vuex to local var when loads/updates
     }
   },
@@ -370,13 +336,6 @@ export default {
     createBudget() {
       this.$router.push({ path: `/create` })
     },
-    onClick() {
-      console.log(this.ab)
-    },
-    accountBalance(account_id) {
-      const id = account_id.slice(-ID_LENGTH.account)
-      return _.get(this.allAccountBalances, [id, 'working'], 0) / 100
-    }
   }
 }
 </script>

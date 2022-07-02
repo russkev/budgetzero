@@ -16,7 +16,7 @@ export default {
 
         month_item.month = month
         const amount_data = Object.entries(month_data).reduce((partial, [id, value]) => {
-          if (_.get(getters.categoriesByTruncatedId, [id, "isIncome"], false)) {
+          if (_.get(getters.categoriesById, [id, "isIncome"], false)) {
             partial.income += value
           }
           partial.value += value

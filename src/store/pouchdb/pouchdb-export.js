@@ -10,7 +10,7 @@ export default {
     exportSelectedBudgetAsJSON: (context) => {
       // const db = this._vm.$pouch
       const db = Vue.prototype.$pouch
-      const selected_budget_id = context.rootState.selectedBudgetID
+      const selected_budget_id = context.rootState.selectedBudgetId
       return db
         .allDocs({
           include_docs: true,

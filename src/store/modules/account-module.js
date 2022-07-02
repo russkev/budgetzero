@@ -38,7 +38,7 @@ export default {
             payee: `---------------------initial-balance`,
             transfer: null,
             splits: [],
-            _id: `b_${context.getters.selectedBudgetID}${ID_NAME.transaction}${this._vm.generateId(date)}`
+            _id: `b_${context.getters.selectedBudgetId}${ID_NAME.transaction}${this._vm.generateId(date)}`
           }
           console.log('initTransaction', initTransaction)
           return context.dispatch('createOrUpdateTransaction', { current: initTransaction, previous: null })

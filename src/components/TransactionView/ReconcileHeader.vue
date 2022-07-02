@@ -90,7 +90,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['selectedBudgetID', 'accountBalances']),
+    ...mapGetters(['selectedBudgetId', 'accountBalances']),
     selected_account_balance() {
       const accountBalance = this.$store.getters.accountBalances[this.$route.params.account_id]
       return accountBalance ? accountBalance : DEFAULT_ACCOUNT_BALANCE
@@ -131,7 +131,7 @@ export default {
         payee: 'Reconcile adjustment',
         transfer: null,
         splits: [],
-        _id: `b_${this.selectedBudgetID}${ID_NAME.transaction}${this.generateId(date)}`,
+        _id: `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId(date)}`,
         _rev: ''
       }
 

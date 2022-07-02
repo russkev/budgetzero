@@ -13,7 +13,7 @@ export default {
      */
     createPayee(context, payload) {
       var payee = {
-        _id: `b_${context.rootState.selectedBudgetID}${ID_NAME.payee}${this._vm.generateId()}`,
+        _id: `b_${context.rootState.selectedBudgetId}${ID_NAME.payee}${this._vm.generateId()}`,
         name: payload
       }
 

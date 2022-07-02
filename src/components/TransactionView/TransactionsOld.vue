@@ -680,7 +680,7 @@ export default {
       'accounts',
       'account_map',
       'transactions_by_account',
-      'selectedBudgetID',
+      'selectedBudgetId',
       'transactions',
       'monthlyCategoryData',
       'month_selected'
@@ -872,7 +872,7 @@ export default {
         }
 
         if (this.creatingNewTransaction) {
-          this.editedItem._id = `b_${this.selectedBudgetID}${ID_NAME.transaction}${this.generateId(this.editItem.date)}`
+          this.editedItem._id = `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId(this.editItem.date)}`
         }
         this.editedItem.approved = true
 

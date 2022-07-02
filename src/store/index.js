@@ -63,7 +63,7 @@ export default new Vuex.Store({
     snackbarColor: '',
     snackbar: false,
     sync_state: '',
-    selectedBudgetID: null,
+    selectedBudgetId: null,
     selectedMonth: moment(new Date()).format('YYYY-MM')
   },
   getters: {
@@ -71,7 +71,7 @@ export default new Vuex.Store({
     snackbarColor: (state) => state.snackbarColor,
     sync_state: (state) => state.sync_state,
     snackbar: (state) => state.snackbar,
-    selectedBudgetID: (state) => state.selectedBudgetID,
+    selectedBudgetId: (state) => state.selectedBudgetId,
     selectedMonth: (state) => state.selectedMonth
   },
   mutations: {
@@ -100,9 +100,9 @@ export default new Vuex.Store({
     // GO_TO_CURRENT_MONTH(state) {
     //   state.selected_month = moment(new Date()).format('YYYY-MM')
     // },
-    UPDATE_SELECTED_BUDGET(state, selectedBudgetID) {
-      state.selectedBudgetID = selectedBudgetID
-      localStorage.budgetID = selectedBudgetID
+    UPDATE_SELECTED_BUDGET(state, selectedBudgetId) {
+      state.selectedBudgetId = selectedBudgetId
+      localStorage.budgetID = selectedBudgetId
     },
     UPDATE_SELECTED_MONTH(state, year_month) {
       state.selectedMonth = year_month

@@ -38,8 +38,17 @@
         <v-row>
           <v-col class="master-category-row">
             <h3>
-              {{ masterCategoriesByTruncatedId[master_category.id].name}}
+              {{ masterCategoriesById[master_category.id].name}}
             </h3>
+          </v-col>
+          <v-col>
+            {{ masterCategoriesStats[master_category.id].budget / 100 }}
+          </v-col>
+          <v-col>
+            {{ masterCategoriesStats[master_category.id].spent / 100 }}
+          </v-col>
+          <v-col>
+            {{ masterCategoriesStats[master_category.id].balance / 100 }}
           </v-col>
         </v-row> 
         </v-container>
@@ -50,7 +59,7 @@
           :key="category.id"
         >
           <v-col>
-            {{ categoriesByTruncatedId[category.id].name}}
+            {{ categoriesById[category.id].name}}
           </v-col>
           <v-col>
             <v-text-field 
@@ -118,10 +127,10 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'selectedBudgetID',
-      'categoriesByTruncatedId',
+      'selectedBudgetId',
+      'categoriesById',
       'masterCategories',
-      'masterCategoriesByTruncatedId',
+      'masterCategoriesById',
       'allCategoryBalances',
       'monthlyCategoryData',
       'monthCategoryBudgets',
@@ -145,6 +154,22 @@ export default {
             id: master_category._id.slice(-ID_LENGTH.category)
           }
         })
+    },
+    masterCategoriesStats() {
+      return this.masterCategories.reduce((partial, master_category) => {
+        const master_id = master_category._id.slice(-ID_LENGTH.category)
+        partial[master_id] = {budget: 0, spent: 0, balance: 0}
+        const month_data = Object.values(_.get(this.allCategoryBalances, [this.selectedMonth, master_id], {}))
+        month_data.map((category) => {
+          const budget = _.get(category, ['doc', 'budget'], 0)
+          const spent = _.get(category, ['spent'], 0)
+          const carryover = _.get(category, ['carryover'], 0)
+          partial[master_id].budget += budget
+          partial[master_id].spent += spent
+          partial[master_id].balance += budget + spent + carryover
+        })
+        return partial
+      }, {})
     },
     categories: {
       get() {
@@ -181,13 +206,10 @@ export default {
     },
     selectedMonth: {
       handler() {
-        // this.updateMonthCategoryData()
         this.getCategoriesData()
       }
     }
   },
-  // watch: {
-  // },
   methods: {
     ...mapActions(['updateMonthCategory', 'deleteDocFromPouchAndVuex']),
 
@@ -267,7 +289,7 @@ export default {
     },
     onCategoryBudgetChanged(category_id, event) {
       const month = this.selectedMonth
-      const master_id = this.categoriesByTruncatedId[category_id]['masterCategory']
+      const master_id = this.categoriesById[category_id]['masterCategory']
 
 
       let budget_value = parseInt(event)
@@ -283,7 +305,7 @@ export default {
       if (previous === null) {
         current = {
           ...DEFAULT_MONTH_CATEGORY,
-          _id: `b_${this.selectedBudgetID}${ID_NAME.monthCategory}${month}_${category_id}`,
+          _id: `b_${this.selectedBudgetId}${ID_NAME.monthCategory}${month}_${category_id}`,
           budget: budget_value
         }
       } else {
@@ -294,6 +316,7 @@ export default {
       }
       this.$store.dispatch('updateMonthCategory', { current, previous }).then(() => {
         this.getCategoriesData()
+        // console.log(this.categoriesData)
       })
     },
     categoryCarryover(category) {

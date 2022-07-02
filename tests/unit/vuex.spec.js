@@ -22,7 +22,7 @@ describe("vuex budget module", () => {
       .filter(row => row._id.includes("_category_"))
       .filter(row => !row._id.includes("monthCategory"));
     // store.state.pouchdb.month_selected = "2020-12",
-    // store.state.pouchdb.selectedBudgetID = "79de488f-448e-4b4d-97ad-61e5e4f5df31",
+    // store.state.pouchdb.selectedBudgetId = "79de488f-448e-4b4d-97ad-61e5e4f5df31",
   });
 
   it("monthlyCategoryData getter matches snapshot", async () => {
