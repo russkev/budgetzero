@@ -6,7 +6,7 @@ import { ID_LENGTH, ID_NAME } from '../../constants.js'
 const DEFAULT_BUDGET_STATE = {
   allBudgets: [],
   budgetBalances: {},
-  budgetOpened: {},
+  // budgetOpened: {},
   budgetExists: true // This opens the create budget modal when 'false'
 }
 
@@ -24,15 +24,15 @@ export default {
         return partial
       }, {})
     },
-    budgetRootsMap: (state, getters) => {
-      return getters.allBudgets.reduce((map, budget_root) => {
-        if (budget_root._id) {
-          map[budget_root._id.slice(-ID_LENGTH.budget)] = budget_root
-          return map
-        }
-      }, {})
-    },
-    budgetOpened: (state) => state.budgetOpened,
+    // budgetRootsMap: (state, getters) => {
+    //   return getters.allBudgets.reduce((map, budget_root) => {
+    //     if (budget_root._id) {
+    //       map[budget_root._id.slice(-ID_LENGTH.budget)] = budget_root
+    //       return map
+    //     }
+    //   }, {})
+    // },
+    // budgetOpened: (state) => state.budgetOpened,
       // state.budgetOpened.map((row) => {
       //   var obj = row.doc
       //   return obj
@@ -61,24 +61,24 @@ export default {
       // Get budget ids
       state.allBudgets = budgets
     },
-    SET_BUDGET_OPENED(state, payload) {
-      state.budgetOpened = payload
-    }
+    // SET_BUDGET_OPENED(state, payload) {
+    //   state.budgetOpened = payload
+    // }
   },
   actions: {
-    /**
-     * Creates new budget and commits to pouchdb
-     * @param {*} context
-     * @param {string} budgetName The name of the budget to be created
-     */
+    // /**
+    //  * Creates new budget and commits to pouchdb
+    //  * @param {*} context
+    //  * @param {string} budgetName The name of the budget to be created
+    //  */
 
-    commitBudgetOpened(context, {current, previous}) {
-      let payload = current
-      if (!current) {
-        payload = DEFAULT_BUDGET_STATE.budgetOpened
-      }
-      context.commit('SET_BUDGET_OPENED', payload)
-    },
+    // commitBudgetOpened(context, {current, previous}) {
+    //   let payload = current
+    //   if (!current) {
+    //     payload = DEFAULT_BUDGET_STATE.budgetOpened
+    //   }
+    //   context.commit('SET_BUDGET_OPENED', payload)
+    // },
 
     /**
      * Creates new budget and commits to pouchdb
@@ -104,10 +104,10 @@ export default {
         _id: `${ID_NAME.budget}${budget_id}`
       }
 
-      var budgetOpened = {
-        opened: moment(new Date()).format('YYYY-MM-DD'),
-        _id: ID_NAME.budgetOpened + budget_id
-      }
+      // var budgetOpened = {
+      //   opened: moment(new Date()).format('YYYY-MM-DD'),
+      //   _id: ID_NAME.budgetOpened + budget_id
+      // }
 
       return context
         .dispatch('commitDocToPouchAndVuex', { current: budget, previous: null })
@@ -124,9 +124,9 @@ export default {
           }
           return Promise.all(initialize_budget_promises)
         })
-        .then(() => {
-          return context.dispatch('commitDocToPouchAndVuex', { current: budgetOpened, previous: null })
-        })
+        // .then(() => {
+        //   return context.dispatch('commitDocToPouchAndVuex', { current: budgetOpened, previous: null })
+        // })
         .catch((err) => {
           console.log(err)
         })
@@ -144,22 +144,22 @@ export default {
       return context.dispatch('setSelectedBudgetID', new_budget_id)
     },
 
-    getBudgetOpened(context) {
-      return this._vm.$pouch
-        .allDocs({
-          include_docs: true,
-          attachments: true,
-          startkey: ID_NAME.budgetOpened,
-          endkey: ID_NAME.budgetOpened + '\ufff0'
-        })
-        .then((result) => {
-          context.commit('GET_BUDGET_OPENED', result.rows)
-        })
-        .catch((err) => {
-          console.log(err)
-          context.commit('API_FAILURE', err)
-        })
-    },
+    // getBudgetOpened(context) {
+    //   return this._vm.$pouch
+    //     .allDocs({
+    //       include_docs: true,
+    //       attachments: true,
+    //       startkey: ID_NAME.budgetOpened,
+    //       endkey: ID_NAME.budgetOpened + '\ufff0'
+    //     })
+    //     .then((result) => {
+    //       context.commit('GET_BUDGET_OPENED', result.rows)
+    //     })
+    //     .catch((err) => {
+    //       console.log(err)
+    //       context.commit('API_FAILURE', err)
+    //     })
+    // },
 
     updateSelectedBudgetId(context, budgets) {
       let selected_budget_id = context.getters.selectedBudgetId
@@ -220,14 +220,14 @@ export default {
             //Bulk delete
             context.dispatch('commitBulkDocsToPouchAndVuex', rowsToDelete).then(
               (response) => {
-                this._vm.$pouch
-                  .get(ID_NAME.budgetOpened + budget_id)
-                  .then(function (doc) {
-                    context.dispatch('deleteDocFromPouchAndVuex', doc)
-                  })
-                  .catch(function (err) {
-                    console.log(err)
-                  })
+                // this._vm.$pouch
+                //   .get(ID_NAME.budgetOpened + budget_id)
+                //   .then(function (doc) {
+                //     context.dispatch('deleteDocFromPouchAndVuex', doc)
+                //   })
+                //   .catch(function (err) {
+                //     console.log(err)
+                //   })
 
                 // Finally, delete the budget_ doc
                 //TODO: Put this inside .then() above?

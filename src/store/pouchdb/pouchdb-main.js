@@ -1,6 +1,6 @@
 import {
   schema_budget,
-  schema_budgetOpened,
+  // schema_budgetOpened,
   schema_account,
   schema_transaction,
   schema_category,
@@ -156,8 +156,8 @@ export default {
           return
         case ID_NAME.budget:
           return context.dispatch('commitBudgetToVuex', { current, previous })
-        case ID_NAME.budgetOpened:
-          return context.dispatch('commitBudgetOpened', { current, previous })
+        // case ID_NAME.budgetOpened:
+        //   return context.dispatch('commitBudgetOpened', { current, previous })
         default:
           console.error("doesn't recognize doc type ", doc_type)
           return
@@ -210,7 +210,7 @@ export default {
         const budgets = await context.dispatch('fetchAllBudgets')
         await context.dispatch('updateSelectedBudgetId', budgets)
         context.dispatch('getAllDocsFromPouchDB')
-        context.dispatch('fetchBudgetOpened')
+        // context.dispatch('fetchBudgetOpened')
       } catch (error) {
         console.log(error)
         message = error.msg ? error.msg : error
@@ -268,9 +268,9 @@ const validateDocument = (current, previous) => {
     case ID_NAME.budget:
       validation_result = validateSchema.validate(doc, schema_budget)
       break
-    case ID_NAME.budgetOpened:
-      validation_result = validateSchema.validate(doc, schema_budgetOpened)
-      break
+    // case ID_NAME.budgetOpened:
+    //   validation_result = validateSchema.validate(doc, schema_budgetOpened)
+    //   break
     default:
       console.error("doesn't recognize doc type ", doc_type)
   }

@@ -23,8 +23,8 @@ export default {
           var b_object = context.rootGetters.budgetRootsMap[selected_budget_id]
           delete b_object['_rev']
 
-          var b_opened_object = context.rootGetters.budgetOpenedMap[selected_budget_id]
-          delete b_opened_object['_rev']
+          // var b_opened_object = context.rootGetters.budgetOpenedMap[selected_budget_id]
+          // delete b_opened_object['_rev']
 
           console.log('exportBudgetAsJSON', b_object.name)
           const export_date = moment(new Date()).format('YYYY-MM-DD_hh-mm')
@@ -37,7 +37,7 @@ export default {
             })
 
           reformattedExport.push(b_object)
-          reformattedExport.push(b_opened_object)
+          // reformattedExport.push(b_opened_object)
 
           var blob = new Blob([JSON.stringify(reformattedExport)], {
             type: 'text/plain;charset=utf-8'

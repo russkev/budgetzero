@@ -7,25 +7,25 @@ export default {
   getters: {},
   mutations: {},
   actions: {
-    fetchBudgetOpened: (context) => {
-      const db = Vue.prototype.$pouch
-      const t1 = performance.now()
-      return db
-        .allDocs({
-          include_docs: true,
-          attachments: false,
-          startkey: ID_NAME.budgetOpened,
-          endkey: ID_NAME.budgetOpened + '\ufff0'
-        })
-        .then((result) => {
-          logPerformanceTime('loadBudgetOpened', t1)
-          return context.commit('SET_BUDGET_OPENED', result.rows)
-        })
-        .catch((err) => {
-          console.log(err)
-          context.commit('API_FAILURE', err)
-        })
-    },
+    // fetchBudgetOpened: (context) => {
+    //   const db = Vue.prototype.$pouch
+    //   const t1 = performance.now()
+    //   return db
+    //     .allDocs({
+    //       include_docs: true,
+    //       attachments: false,
+    //       startkey: ID_NAME.budgetOpened,
+    //       endkey: ID_NAME.budgetOpened + '\ufff0'
+    //     })
+    //     .then((result) => {
+    //       logPerformanceTime('loadBudgetOpened', t1)
+    //       return context.commit('SET_BUDGET_OPENED', result.rows)
+    //     })
+    //     .catch((err) => {
+    //       console.log(err)
+    //       context.commit('API_FAILURE', err)
+    //     })
+    // },
     fetchAllBudgets: (context) => {
       const db = Vue.prototype.$pouch
       const t1 = performance.now()

@@ -210,25 +210,25 @@ const schema_budget = {
   required: ['_id', 'name', 'created', 'accessed', 'currency', 'checkNumber']
 }
 
-const budgetOpened_id_length = ID_NAME.budgetOpened.length + ID_LENGTH.budget
-const schema_budgetOpened = {
-  type: 'object',
-  properties: {
-    _id: {
-      type: 'string',
-      minLength: budgetOpened_id_length,
-      maxLength: budgetOpened_id_length
-    },
-    opened: {
-      type: 'string'
-    }
-  },
-  required: ['_id', 'opened']
-}
+// const budgetOpened_id_length = ID_NAME.budgetOpened.length + ID_LENGTH.budget
+// const schema_budgetOpened = {
+//   type: 'object',
+//   properties: {
+//     _id: {
+//       type: 'string',
+//       minLength: budgetOpened_id_length,
+//       maxLength: budgetOpened_id_length
+//     },
+//     opened: {
+//       type: 'string'
+//     }
+//   },
+//   required: ['_id', 'opened']
+// }
 
 export {
   schema_budget,
-  schema_budgetOpened,
+  // schema_budgetOpened,
   schema_account,
   schema_transaction,
   schema_category,

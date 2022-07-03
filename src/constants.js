@@ -14,7 +14,7 @@ export const ID_LENGTH = {
 export const ID_NAME = {
   account: '_account_',
   budget: 'budget_',
-  budgetOpened: '_budgetOpened',
+  // budgetOpened: '_budgetOpened',
   transaction: '_transaction_',
   category: '_category_',
   monthCategory: '_monthCategory_',

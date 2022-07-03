@@ -307,12 +307,14 @@ export default {
       'accountsOffBudget',
       'selectedBudgetId',
       'allBudgets',
-      'budgetRootsMap',
+      'budgetsById',
+      // 'budgetRootsMap',
       'user'
     ]),
     budgetName() {
       if (this.selectedBudget) {
-        return this.budgetRootsMap[this.selectedBudget] ? this.budgetRootsMap[this.selectedBudget].name : 'None'
+        // return this.budgetRootsMap[this.selectedBudget] ? this.budgetRootsMap[this.selectedBudget].name : 'None'
+        return _.get(this.budgetsById, [this.selectedBudgetId, 'name'], '')
       } else {
         return ''
       }
