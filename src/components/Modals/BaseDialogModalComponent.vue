@@ -36,6 +36,7 @@
 import { mapState } from 'vuex'
 
 export default {
+  name: 'BaseDialogModalComponent',
   props: {
     value: Boolean
   },

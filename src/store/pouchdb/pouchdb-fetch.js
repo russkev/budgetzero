@@ -26,7 +26,7 @@ export default {
           context.commit('API_FAILURE', err)
         })
     },
-    fetchAllBudgetRoots: (context) => {
+    fetchAllBudgets: (context) => {
       const db = Vue.prototype.$pouch
       const t1 = performance.now()
       return db
@@ -37,18 +37,16 @@ export default {
           endkey: ID_NAME.budget + '\ufff0'
         })
         .then((result) => {
-          logPerformanceTime('fetchAllBudgetRoots', t1)
-          context.commit('SET_BUDGET_ROOTS', result.rows)
-
+          logPerformanceTime('fetchAllBudgets', t1)
+          context.commit('SET_ALL_BUDGETS', result.rows)
           let selected_budget_id = null
           if (localStorage.budgetID) {
             selected_budget_id = localStorage.budgetID
           } else if (result.rows.length > 0) {
             selected_budget_id = result.rows[0].id.slice(-ID_LENGTH.budget)
           }
-
           if (selected_budget_id !== null) {
-            return context.commit('UPDATE_SELECTED_BUDGET', selected_budget_id)
+            return context.commit('UPDATE_SELECTED_BUDGET_ID', selected_budget_id)
           }
           return
         })
@@ -108,7 +106,7 @@ export default {
       const db = Vue.prototype.$pouch
       let budget_id = context.rootState.selectedBudgetId
       if (!budget_id) {
-        await context.dispatch('fetchAllBudgetRoots')
+        await context.dispatch('fetchAllBudgets')
         budget_id = context.rootState.selectedBudgetId
       }
       const skip_amount = (options.page - 1) * options.itemsPerPage

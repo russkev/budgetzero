@@ -7,7 +7,7 @@
       <template #body>
         <v-select
           v-model="selectedBudget"
-          :items="budgetRoots"
+          :items="allBudgets"
           label=""
           class="pa-0 pb-1"
           item-text="name"
@@ -83,7 +83,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="budget in budgetRoots" :key="budget._id">
+            <tr v-for="budget in allBudgets" :key="budget._id">
               <td v-if="budget._id.slice(-ID_LENGTH.budget) == selectedBudgetId">
                 <v-icon color="accent">
                   mdi-check-bold
@@ -135,7 +135,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['budgetRoots', 'payees', 'selectedBudgetId'])
+    ...mapGetters(['allBudgets', 'payees', 'selectedBudgetId'])
   },
   watch: {
     selectedBudgetId: function(newBudget, oldBudget) {
@@ -157,7 +157,7 @@ export default {
       ) {
         this.item = JSON.parse(JSON.stringify(item))
         await this.$store.dispatch('deleteEntireBudget', item)
-        this.$store.dispatch('loadLocalBudgetRoot')
+        this.$store.dispatch('loadLocalBudget')
         
       } else {
         // cancel

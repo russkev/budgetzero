@@ -37,7 +37,12 @@ export default {
   mutations: {
     SET_PAYEES(state, payees) {
       state.payees = payees
-    }
+    },
+    RESET_PAYEES_STATE(state) {
+      Object.entries(DEFAULT_PAYEES_STATE).forEach(([key, value]) => {
+        state[key] = value
+      })
+    },
   },
   actions: {
     /**

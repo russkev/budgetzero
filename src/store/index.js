@@ -87,22 +87,9 @@ export default new Vuex.Store({
     SET_SNACKBAR(state, snackbar) {
       state.snackbar = snackbar
     },
-    // ADD_MONTH(state) {
-    //   state.selected_month = moment(state.selected_month)
-    //     .add(1, 'M')
-    //     .format('YYYY-MM')
-    // },
-    // PREVIOUS_MONTH(state) {
-    //   state.selected_month = moment(state.selected_month)
-    //     .subtract(1, 'M')
-    //     .format('YYYY-MM')
-    // },
-    // GO_TO_CURRENT_MONTH(state) {
-    //   state.selected_month = moment(new Date()).format('YYYY-MM')
-    // },
-    UPDATE_SELECTED_BUDGET(state, selectedBudgetId) {
-      state.selectedBudgetId = selectedBudgetId
-      localStorage.budgetID = selectedBudgetId
+    UPDATE_SELECTED_BUDGET_ID(state, selected_budget_id) {
+      state.selectedBudgetId = selected_budget_id
+      localStorage.budgetID = selected_budget_id
     },
     UPDATE_SELECTED_MONTH(state, year_month) {
       state.selectedMonth = year_month
@@ -112,9 +99,13 @@ export default new Vuex.Store({
     setSnackBarBoolean(context, snackbar) {
       context.commit('SET_SNACKBAR', snackbar)
     },
-    setSelectedBudgetID(context, payload) {
-      context.commit('UPDATE_SELECTED_BUDGET', payload)
-      context.dispatch('loadLocalBudgetRoot')
+    setSelectedBudgetID(context, budget_id) {
+      if (this.selectedBudgetId !== budget_id) {
+        context.commit('UPDATE_SELECTED_BUDGET_ID', budget_id)
+        return context.dispatch('loadLocalBudget')
+      } else {
+        return
+      }
     }
   }
 })

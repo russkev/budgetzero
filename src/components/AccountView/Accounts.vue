@@ -35,11 +35,25 @@
     </v-data-table>
   </v-card>
 </template>
+
+
+
 <script>
 import { mapGetters } from 'vuex'
 import AccountAddModal from './AccountAddModal'
 import { ID_NAME } from '../../constants'
 
+const DEFAULT_ACCOUNT_ITEM = {
+  type: '',
+  checkNumber: true,
+  closed: false,
+  name: '',
+  note: null,
+  sort: 0,
+  onBudget: true,
+  balanceIsNegative: false,
+  initialBalance: 0,
+}
 /*
 Account view
 -------------
@@ -65,17 +79,7 @@ View: Name -- Type -- Balance
 
 */
 
-const DEFAULT_ACCOUNT_ITEM = {
-  type: '',
-  checkNumber: true,
-  closed: false,
-  name: '',
-  note: null,
-  sort: 0,
-  onBudget: true,
-  balanceIsNegative: false,
-  initialBalance: 0
-}
+
 
 export default {
   name: 'AccountGrid',

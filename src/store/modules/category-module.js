@@ -107,7 +107,9 @@ export default {
       })
     },
     RESET_CATEGORY_STATE(state) {
-      state = { ...DEFAULT_CATEGORY_STATE }
+      Object.entries(DEFAULT_CATEGORY_STATE).forEach(([key, value]) => {
+        state[key] = value
+      })
     }
   },
   actions: {

@@ -2,31 +2,41 @@ import Vue from 'vue'
 import PouchDB from 'pouchdb'
 import moment from 'moment'
 
+const DEFAULT_REMOTE_STATE = {
+  remoteSyncURL: null,
+  syncHandle: null
+}
+
 export default {
   state: {
-    remoteSyncURL: null,
-    syncHandle: null
+    ...DEFAULT_REMOTE_STATE
   },
   getters: {
     remoteSyncURL: (state) => state.remoteSyncURL
   },
   mutations: {
     GET_REMOTE_SYNC_URL(state) {
-      if (localStorage.remoteSyncURL) {
-        this.state.pouchdb.remoteSyncURL = localStorage.remoteSyncURL
-        this.dispatch('startRemoteSyncToCustomURL', localStorage.remoteSyncURL)
+      const remote_sync_url = localStorage.remoteSyncURL
+      if (remote_sync_url) {
+        state.remoteSyncURL = remote_sync_url
+        this.dispatch('startRemoteSyncToCustomURL', remote_sync_url)
       }
     },
     SET_REMOTE_SYNC_URL(state, url) {
-      this.state.pouchdb.remoteSyncURL = url
+      state.remoteSyncURL = url
       localStorage.remoteSyncURL = url
     },
     CLEAR_REMOTE_SYNC_URL(state) {
       localStorage.removeItem('remoteSyncURL')
-      this.state.pouchdb.remoteSyncURL = ''
+      state.remoteSyncURL = ''
     },
     SET_SYNC_HANDLER(state, syncHandler) {
-      this.state.pouchdb.syncHandle = syncHandler
+      state.syncHandle = syncHandler
+    },
+    RESET_REMOTE_STATE(state) {
+      Object.entries(DEFAULT_STATE).forEach(([key, value]) => {
+        state[key] = value
+      })
     }
   },
   actions: {

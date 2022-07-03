@@ -45,7 +45,9 @@ export default {
       updateAccountBalances(state.allAccountBalances, account_id, cleared, uncleared, working)
     },
     RESET_ACCOUNT_STATE(state) {
-      state = { ...DEFAULT_ACCOUNT_STATE }
+      Object.entries(DEFAULT_ACCOUNT_STATE).forEach(([key, value]) => {
+        state[key] = value
+      })
     }
   },
   actions: {
@@ -91,7 +93,6 @@ export default {
               reject(result2.total_rows)
             } else {
               // Dispatch account for deletion
-              // context.dispatch('deleteDocFromPouchAndVuex', payload)
               context.dispatch('commitDocToPouchAndVuex', {current: null, previous: payload})
               resolve('Success')
             }

@@ -3,22 +3,7 @@
     <!-- Global confirm dialog -->
     <confirm-dialog ref="confirm"></confirm-dialog>
 
-    <!-- Modal to input reconcile amount  -->
-    <BaseDialogModalComponent v-model="isModalVisibleCreateBudget">
-      <template #title>
-        Let's get started!
-      </template>
-      <template #body>
-        <v-text-field v-model="budgetName" id="budgetNameField" label="Enter a name for your budget" required />
-        <v-checkbox v-model="useDefaultCategories" id="budgetUseDefaultCategories" label="Use default categories?" />
-      </template>
-      <template #actions>
-        <v-spacer />
-        <v-btn id="createBudgetBtn" color="accent" @click="createBudget()" :loading="createBudgetIsLoading">
-          Create Budget
-        </v-btn>
-      </template>
-    </BaseDialogModalComponent>
+    <budget-add-modal v-model="isModalVisibleCreateBudget"/>
 
     <sidebar />
 
@@ -41,22 +26,20 @@
 import Sidebar from './components/Sidebar.vue'
 import BaseDialogModalComponent from './components/Modals/BaseDialogModalComponent.vue'
 import ConfirmDialog from './components/Modals/ConfirmDialog.vue'
-import moment from 'moment'
+import BudgetAddModal from './components/BudgetView/BudgetAddModal.vue'
 
 export default {
   name: 'App',
   components: {
     Sidebar,
     BaseDialogModalComponent,
-    ConfirmDialog
+    ConfirmDialog,
+    BudgetAddModal,
   },
   data() {
     return {
       drawer: null,
       mini: false,
-      budgetName: null,
-      useDefaultCategories: false,
-      createBudgetIsLoading: false,
     }
   },
   computed: {
@@ -83,30 +66,6 @@ export default {
       }
     }
   },
-  mounted() {
-    this.$store.dispatch('AUTH_CHECK')
-    this.$root.$confirm = this.$refs.confirm.open
-  },
-  methods: {
-    async createBudget() {
-      this.createBudgetIsLoading = true
-      await this.$store.dispatch('loadLocalBudgetRoot')
-      await this.$store.dispatch('createBudget', {name: this.budgetName, use_default: this.useDefaultCategories})
-      this.createBudgetIsLoading = false
-      if (
-        await this.$root.$confirm('Budget Created!', `A budget named ${this.budgetName} has been created!`, {
-          onlyShowAgreeBtn: true,
-          agreeBtnColor: 'accent',
-          agreeBtnText: 'Ok'
-        })
-      ) {
-        if(!this.$router.history.current.path.startsWith('/budget')) {
-          const year_month =  moment(new Date()).format('YYYY-MM')
-          this.$router.push({ path: `/budget/${year_month}` })
-        }
-      }
-    }
-  }
 }
 </script>
 

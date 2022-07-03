@@ -27,12 +27,12 @@ describe("vuex budget module", () => {
     store.state.pouchdb.categories = data
       .filter(row => row._id.includes("_category_"))
       .filter(row => !row._id.includes("monthCategory"));
-    store.state.pouchdb.budgetRoots = data.filter(row => row._id.includes("budget_"));
+    store.state.pouchdb.allBudgets = data.filter(row => row._id.includes("budget_"));
     
   });
 
   it("deleteEntireBudget", async () => {
-    await store.dispatch('deleteEntireBudget', store.state.pouchdb.budgetRoots[0])
+    await store.dispatch('deleteEntireBudget', store.state.pouchdb.allBudgets[0])
     expect(store.getters.transactions.length).toBe(563)
   
   });

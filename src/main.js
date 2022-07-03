@@ -66,19 +66,19 @@ Vue.use(Vuelidate)
 Vue.config.productionTip = false
 Vue.use(VueRouter)
 
-const ifAnyBudgetExists = (to, from, next) => {
-  if (store.getters.budgetRoots.length > 0 || from.path === '/create') {
-    console.log('root', store.getters.budgetRoots.length)
-    next()
-    return
-  }
-  Vue.prototype.$swal({
-    title: 'Create Budget',
-    text: 'Time to create a budget!',
-    confirmButtonText: 'Lets Get Started'
-  })
-  next('/create')
-}
+// const ifAnyBudgetExists = (to, from, next) => {
+//   if (store.getters.allBudgets.length > 0 || from.path === '/create') {
+//     console.log('root', store.getters.allBudgets.length)
+//     next()
+//     return
+//   }
+//   Vue.prototype.$swal({
+//     title: 'Create Budget',
+//     text: 'Time to create a budget!',
+//     confirmButtonText: 'Lets Get Started'
+//   })
+//   next('/create')
+// }
 
 
 

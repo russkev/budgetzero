@@ -71,7 +71,7 @@
         dark
         class="mb-3"
         small
-        @click="$store.dispatch('loadLocalBudgetRoot')"
+        @click="$store.dispatch('loadLocalBudget')"
       >
         Refresh Database
       </v-btn>
@@ -141,7 +141,7 @@
             </v-btn>
 
             <br />
-            <v-btn color="grey darken-2" dark class="mb-2" small @click="$store.dispatch('loadLocalBudgetRoot')">
+            <v-btn color="grey darken-2" dark class="mb-2" small @click="$store.dispatch('loadLocalBudget')">
               Reload Budget
             </v-btn>
             <span class="pl-2">Reload Budget Root (for debugging purposes)</span>

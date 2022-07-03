@@ -10,120 +10,13 @@ import {
   validateSchema
 } from '../validation'
 import _ from 'lodash'
-import { ID_LENGTH, ID_NAME, DEFAULT_ACCOUNT_BALANCE,  } from '../../constants'
-import { databaseExists, docTypeFromId, extractMonthCategoryMonth } from '../../helper'
-import Vue from 'vue'
+import { ID_NAME, } from '../../constants'
+import { databaseExists, docTypeFromId } from '../../helper'
 /**
  * This pouchdb vuex module contains code that interacts with the pouchdb database.
  */
 
-// const DEFAULT_STATE = {
-//   // accountBalances: {},
-
-// }
-
 export default {
-  // state: {
-  //   ...DEFAULT_STATE
-  // },
-  // getters: {
-  //   //Plain getters for main doc types
-
-  //   // masterCategories: (state) => state.masterCategories,
-
-
-  //   // listOfImportIds: (state) => state.transactions.map((transaction) => _.get(transaction, 'importID', '')),
-
-
-  //   // category_map: (state, getters) =>
-  //   //   getters.categories.reduce((map, obj) => {
-  //   //     const id = obj._id ? obj._id.slice(-ID_LENGTH.category) : null
-  //   //     map[id] = obj.name
-  //   //     return map
-  //   //   }, {}),
-
-
-
-  // },
-  // mutations: {
-
-
-
-
-    // DELETE_LOCAL_DB(state) {
-    //   const default_state = JSON.parse(JSON.stringify(DEFAULT_STATE))
-    //   Object.keys(default_state).forEach((key) => {
-    //     state[key] = default_state[key]
-    //   })
-    // },
-
-
-  //   UPDATE_VUE_DOCUMENT(state, { payload, index, docType }) {
-  //     switch (docType) {
-  //       case ID_NAME.transaction:
-  //         if (isNaN(index)) {
-  //           state.transactions = [...state.transactions, payload]
-  //         } else {
-  //           Object.assign(state.transactions[index], payload)
-  //         }
-  //         break
-  //       case ID_NAME.category:
-  //         if (isNaN(index)) {
-  //           state.categories.push(payload)
-  //         } else {
-  //           Object.assign(state.categories[index], payload)
-  //         }
-  //         break
-  //       case ID_NAME.masterCategory:
-  //         if (isNaN(index)) {
-  //           state.masterCategories.push(payload)
-  //           console.log('masterCategory no index...', payload)
-  //         } else {
-  //           Object.assign(state.masterCategories[index], payload)
-  //         }
-  //         break
-  //       case ID_NAME.account:
-  //         if (isNaN(index)) {
-  //           this.commit('SET_ACCOUNTS', state.accounts.concat(payload))
-  //           // state.accounts.push(payload)
-  //           console.log('account no index...', payload)
-  //         } else {
-  //           Object.assign(state.accounts[index], payload)
-  //         }
-  //         break
-  //       case ID_NAME.monthCategory:
-  //         if (isNaN(index)) {
-  //           state.monthCategoryBudgets.push(payload)
-  //         } else {
-  //           Object.assign(state.monthCategoryBudgets[index], payload)
-  //         }
-  //         break
-  //       case ID_NAME.payee:
-  //         if (isNaN(index)) {
-  //           state.payees.push(payload)
-  //         } else {
-  //           Object.assign(state.payees[index], payload)
-  //         }
-  //         break
-  //       case ID_NAME.budget:
-  //         //TODO: validate
-  //         if (isNaN(index)) {
-  //           state.budgetRoots.push(payload)
-  //         } else {
-  //           Object.assign(state.budgetRoots[index], payload)
-  //         }
-  //         break
-  //       case ID_NAME.budgetOpened:
-  //         //TODO: validate
-  //         if (isNaN(index)) {
-  //         } else {
-  //         }
-  //         break
-  //       default:
-  //         console.error("doesn't recognize doc type ", docType)
-  //     }
-  //   },
-  // },
   actions: {
     /**
      * Bulk commits list of documents to pouchdb.
@@ -160,13 +53,15 @@ export default {
           return partial
         }, {})
 
-        return Promise.all(valid_documents.map((valid_document) => {
-          const id = valid_document.current ? valid_document.current._id : valid_document.previous._id
-          if (results_by_id[id] !== undefined && results_by_id[id].ok){
-            valid_document._rev = results_by_id[id].rev
-            return context.dispatch('commitDocToVuex', valid_document)
-          }
-        }))
+        return Promise.all(
+          valid_documents.map((valid_document) => {
+            const id = valid_document.current ? valid_document.current._id : valid_document.previous._id
+            if (results_by_id[id] !== undefined && results_by_id[id].ok) {
+              valid_document._rev = results_by_id[id].rev
+              return context.dispatch('commitDocToVuex', valid_document)
+            }
+          })
+        )
       } catch (error) {
         console.log('ACTION: commitBulkDocsToPouchAndVuex failed')
         return context.commit('API_FAILURE', error)
@@ -185,22 +80,19 @@ export default {
       }
       const doc_type = validateDocument(current, previous)
       if (doc_type) {
-        return context
-          .dispatch('commitDocToPouch', { current, previous, doc_type })
-          .then((result) => {
-            if (result.ok) {
-              if (current) {
-                current._rev = result.rev
-              } 
-              return context.dispatch('commitDocToVuex', { current, previous, doc_type })
-            } else {
-              console.log(result)
-              Promise.reject(`Pouch update failed`)
+        return context.dispatch('commitDocToPouch', { current, previous, doc_type }).then((result) => {
+          if (result.ok) {
+            if (current) {
+              current._rev = result.rev
             }
-          })
-      }
-      else {
-        Promise.reject("Invalid document type")
+            return context.dispatch('commitDocToVuex', { current, previous, doc_type })
+          } else {
+            console.log(result)
+            Promise.reject(`Pouch update failed`)
+          }
+        })
+      } else {
+        Promise.reject('Invalid document type')
       }
     },
 
@@ -211,23 +103,22 @@ export default {
           // New transaction date requires a new ID which means the old transaction has to be deleted
           const transaction_id = this._vm.generateId(current.date)
           const for_db_previous = {
-            ...current, 
+            ...current,
             _deleted: true
           }
           const for_db_current = {
-            ...current, 
+            ...current,
             _id: `b_${context.getters.selectedBudgetId}${ID_NAME.transaction}${transaction_id}`
           }
           delete for_db_current._rev
           return db.bulkDocs([for_db_current, for_db_previous]).then((results) => {
-            const all_successful = results
-              .reduce((partial, result) => {
-                if (!result.ok) {
-                  return false
-                } else {
-                  return partial
-                }
-              }, true)
+            const all_successful = results.reduce((partial, result) => {
+              if (!result.ok) {
+                return false
+              } else {
+                return partial
+              }
+            }, true)
             if (all_successful) {
               // Return first result because it is the one with the correct _rev
               return results[0]
@@ -252,7 +143,7 @@ export default {
     commitDocToVuex(context, { current, previous, doc_type }) {
       switch (doc_type) {
         case ID_NAME.transaction:
-          return context.dispatch('commitTransactionToVuex', {current, previous})
+          return context.dispatch('commitTransactionToVuex', { current, previous })
         case ID_NAME.category:
           return
         case ID_NAME.masterCategory:
@@ -260,11 +151,11 @@ export default {
         case ID_NAME.account:
           return context.dispatch('fetchAccounts')
         case ID_NAME.monthCategory:
-          return context.dispatch('commitMonthCategoryToVuex', {current, previous})
+          return context.dispatch('commitMonthCategoryToVuex', { current, previous })
         case ID_NAME.payee:
           return
         case ID_NAME.budget:
-          return
+          return context.dispatch('commitBudgetToVuex', { current, previous })
         case ID_NAME.budgetOpened:
           return
         default:
@@ -300,38 +191,33 @@ export default {
         })
     },
 
-    getAllDocsFromPouchDB(context) {
-      return (
-        Promise.all([
-          context.dispatch('fetchAccounts'),
-          context.dispatch('fetchPayees')
-          // context.dispatch('fetchMasterCategories'),
-          // context.dispatch('fetchCategories'),
-          // context.dispatch('fetchMonthCategories'),
-          // context.dispatch('fetchBudgetBalances')
-          // TODO: Use web worker to do the expensive lookups
-          // Maybe this: https://github.com/pouchdb-community/worker-pouch
-        ])
-          // .then(() => {
-          //   context.dispatch('calculateMonthlyCategoryData')
-          // })
-          .then(() => {
-            return context.dispatch('calculateAllValues')
-          })
-          .catch((err) => {
-            console.log(err)
-          })
-      )
+    resetAllCurrentBudgetData(context) {
+      context.commit('RESET_ACCOUNT_STATE')
+      context.commit('RESET_CATEGORY_STATE')
+      context.commit('RESET_PAYEES_STATE')
     },
 
-    loadLocalBudgetRoot(context) {
-      context.commit('GET_REMOTE_SYNC_URL')
-      const db = this._vm.$pouch
-      context.dispatch('fetchAllBudgetRoots').then(() => {
+    getAllDocsFromPouchDB(context) {
+      return Promise.all([context.dispatch('fetchAccounts'), context.dispatch('fetchPayees')]).then(() => {
+        return context.dispatch('calculateAllValues')
+      })
+    },
+
+    async loadLocalBudget(context) {
+      try {
+        await context.dispatch('resetAllCurrentBudgetData')
+        context.commit('GET_REMOTE_SYNC_URL')
+        await context.dispatch('fetchAllBudgets')
         context.dispatch('getAllDocsFromPouchDB')
         context.dispatch('fetchBudgetOpened')
-        return
-      })
+      } catch (error) {
+        console.log(error)
+        message = error.msg ? error.msg : error
+        context.commit('SET_SNACKBAR_MESSAGE', {
+          snackbarMessage: message,
+          snackbarColor: 'error'
+        })
+      }
     }
   }
 }

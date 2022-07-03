@@ -10,12 +10,13 @@
     stateless
     hide-overlay
   >
+    <budget-add-modal v-model="budget_add_modal_is_visible" />
     <BaseDialogModalComponent v-model="manageBudgetsModalVisible">
       <template #title> Budgets </template>
       <template #body>
         <v-select
           v-model="selectedBudget"
-          :items="budgetRoots"
+          :items="allBudgets"
           label=""
           class="pa-0 pb-1"
           item-text="name"
@@ -272,12 +273,15 @@
 import { mapGetters } from 'vuex'
 import BaseDialogModalComponent from './Modals/BaseDialogModalComponent'
 import { ID_LENGTH } from '../constants'
+import BudgetAddModal from './BudgetView/BudgetAddModal.vue'
+
 import moment from 'moment'
 
 export default {
   name: 'Sidebar',
   components: {
-    BaseDialogModalComponent
+    BaseDialogModalComponent,
+    BudgetAddModal,
   },
   data() {
     return {
@@ -287,6 +291,7 @@ export default {
       drawer: null,
       mini: false,
       manageBudgetsModalVisible: false,
+      budget_add_modal_is_visible: false,
       year_month: moment(new Date()).format('YYYY-MM')
       // accounts: [],
     }
@@ -301,7 +306,7 @@ export default {
       'accountsOnBudget',
       'accountsOffBudget',
       'selectedBudgetId',
-      'budgetRoots',
+      'allBudgets',
       'budgetRootsMap',
       'user'
     ]),
@@ -334,7 +339,7 @@ export default {
   },
   methods: {
     createBudget() {
-      this.$router.push({ path: `/create` })
+      this.budget_add_modal_is_visible = true
     },
   }
 }

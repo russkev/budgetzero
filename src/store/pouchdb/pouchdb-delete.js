@@ -12,7 +12,7 @@ export default {
         .destroy()
         .then(() => {
           context.commit('DELETE_LOCAL_DB')
-          context.commit('UPDATE_SELECTED_BUDGET', null)
+          context.commit('UPDATE_SELECTED_BUDGET_ID', null)
         })
         .catch(function (err) {
           console.log(`Error deleting database: ${err}`)

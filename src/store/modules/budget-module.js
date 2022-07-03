@@ -4,7 +4,7 @@ import moment from 'moment'
 import { ID_LENGTH, ID_NAME } from '../../constants.js'
 
 const DEFAULT_BUDGET_STATE = {
-  budgetRoots: [],
+  allBudgets: [],
   budgetBalances: {},
   budgetOpened: null,
   budgetExists: true // This opens the create budget modal when 'false'
@@ -15,9 +15,9 @@ export default {
     ...DEFAULT_BUDGET_STATE
   },
   getters: {
-    budgetRoots: (state) => state.budgetRoots,
+    allBudgets: (state) => state.allBudgets,
     budgetRootsMap: (state, getters) => {
-      return getters.budgetRoots.reduce((map, budget_root) => {
+      return getters.allBudgets.reduce((map, budget_root) => {
         if (budget_root._id) {
           map[budget_root._id.slice(-ID_LENGTH.budget)] = budget_root
           return map
@@ -42,18 +42,18 @@ export default {
   },
   mutations: {
     RESET_BUDGET_STATE(state) {
-      Object.entries({ ...DEFAULT_BUDGET_STATE }).forEach(([key, value]) => {
+      Object.entries(DEFAULT_BUDGET_STATE).forEach(([key, value]) => {
         state[key] = value
       })
     },
-    SET_BUDGET_ROOTS(state, budgets) {
+    SET_ALL_BUDGETS(state, budgets) {
       if (budgets.length == 0) {
         state.budgetExists = false
       } else {
         state.budgetExists = true
       }
       // Get budget ids
-      state.budgetRoots = budgets.map((budget) => {
+      state.allBudgets = budgets.map((budget) => {
         return budget.doc
       })
     },
@@ -62,6 +62,58 @@ export default {
     }
   },
   actions: {
+    /**
+     * Creates new budget and commits to pouchdb
+     * @param {*} context
+     * @param {string} budgetName The name of the budget to be created
+     */
+    // createBudget: async (context, { name, use_default }) => {
+    //   if (!name) {
+    //     context.commit('SET_SNACKBAR_MESSAGE', {
+    //       snackbarMessage: 'Invalid budget name',
+    //       snackbarColor: 'error'
+    //     })
+    //     Promise.reject(`Invalid budget name: ${name}`)
+    //   }
+    //   const budget_id = await context.dispatch('generateUniqueShortId', { prefix: ID_NAME.budget })
+
+    //   const budget = {
+    //     name: name,
+    //     currency: 'USD',
+    //     created: moment(new Date()).format('YYYY-MM-DD'),
+    //     checkNumber: false,
+    //     _id: `${ID_NAME.budget}${budget_id}`
+    //   }
+
+    //   var budgetOpened = {
+    //     opened: moment(new Date()).format('YYYY-MM-DD'),
+    //     _id: ID_NAME.budgetOpened + budget_id
+    //   }
+
+    //   return context
+    //     .dispatch('commitDocToPouchAndVuex', { current: budget, previous: null })
+    //     .then((result) => {
+    //       return context.dispatch('setSelectedBudgetID', result.id.slice(-ID_LENGTH.budget))
+    //     })
+    //     .then(() => {
+    //       let initialize_budget_promises = [context.dispatch('initializeIncomeCategory')]
+    //       if (use_default) {
+    //         return initialize_budget_promises.push(context.dispatch('initializeBudgetCategories'))
+    //       }
+    //       return Promise.all(initialize_budget_promises)
+    //     })
+    //     .then(() => {
+    //       return context.dispatch('commitDocToPouchAndVuex', { current: budgetOpened, previous: null })
+    //     })
+    //     .then(() => {
+    //       console.log('Created new budget')
+    //       return
+    //     })
+    //     .catch((err) => {
+    //       console.log(err)
+    //     })
+    // },
+
     /**
      * Creates new budget and commits to pouchdb
      * @param {*} context
@@ -93,8 +145,6 @@ export default {
       return context
         .dispatch('commitDocToPouchAndVuex', { current: budget, previous: null })
         .then((result) => {
-          console.log('CREATE BUDGET')
-          console.log(result)
           return context.dispatch('setSelectedBudgetID', result.id.slice(-ID_LENGTH.budget))
         })
         .then(() => {
@@ -114,6 +164,18 @@ export default {
         .catch((err) => {
           console.log(err)
         })
+    },
+
+    commitBudgetToVuex(context, {current, previous}) {
+      if ((current && !current._id) || (previous && !previous._id)) {
+        console.error(`commitBudgetToVuex called with invalid arguments, current: ${current}, previous: ${previous}`)
+        return
+      }
+      const new_budget_id = current 
+        ? current._id.slice(-ID_LENGTH.budget)
+        : previous._id.slice(-ID_LENGTH.budget)
+      
+      return context.dispatch('setSelectedBudgetID', new_budget_id)
     },
 
     getBudgetOpened(context) {

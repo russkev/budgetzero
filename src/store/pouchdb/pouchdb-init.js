@@ -110,7 +110,7 @@ export default {
       return context
         .dispatch('initializeDesignDocs')
         .then(() => {
-          return context.dispatch('loadLocalBudgetRoot')
+          return context.dispatch('loadLocalBudget')
         })
         .catch((err) => {
           console.log(err)
