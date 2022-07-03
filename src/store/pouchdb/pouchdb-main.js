@@ -208,7 +208,7 @@ export default {
         await context.dispatch('resetAllCurrentBudgetData')
         context.commit('GET_REMOTE_SYNC_URL')
         const budgets = await context.dispatch('fetchAllBudgets')
-        context.dispatch('updateSelectedBudgetId', budgets)
+        await context.dispatch('updateSelectedBudgetId', budgets)
         context.dispatch('getAllDocsFromPouchDB')
         context.dispatch('fetchBudgetOpened')
       } catch (error) {

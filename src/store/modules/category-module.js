@@ -287,8 +287,6 @@ export default {
     },
 
     async calculateAllValues({ commit, dispatch, getters }) {
-      console.log('CALCULATE ALL VALUES')
-
       let b_balances = {}
       return Promise.all([
         dispatch('fetchCategories'),
@@ -352,8 +350,6 @@ export default {
           logPerformanceTime('calculateAllValues', t1)
           commit('SET_ALL_ACCOUNT_BALANCES', a_balances)
           commit('SET_ALL_CATEGORY_BALANCES', b_balances)
-          console.log(a_balances)
-          console.log(b_balances)
           return b_balances
         })
     },

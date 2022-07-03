@@ -19,9 +19,9 @@ export default {
     budgetsById: (state) => {
       return state.allBudgets.reduce((partial, budget) => {
         if (budget._id !== undefined) {
-          partial[budget._id] = budget
+          partial[budget._id.slice(-ID_LENGTH.budget)] = budget
         }
-        return budget
+        return partial
       }, {})
     },
     budgetRootsMap: (state, getters) => {
@@ -44,9 +44,7 @@ export default {
     //     return map
     //   }, {}),
     budgetExists: (state) => state.budgetExists,
-    budgetBalances: (state, getters) => {
-      return state.budgetBalances
-    }
+    budgetBalances: (state) => state.budgetBalances
   },
   mutations: {
     RESET_BUDGET_STATE(state) {
@@ -61,9 +59,7 @@ export default {
         state.budgetExists = true
       }
       // Get budget ids
-      state.allBudgets = budgets.map((budget) => {
-        return budget.doc
-      })
+      state.allBudgets = budgets
     },
     SET_BUDGET_OPENED(state, payload) {
       state.budgetOpened = payload
@@ -166,12 +162,17 @@ export default {
     },
 
     updateSelectedBudgetId(context, budgets) {
-      let selected_budget_id = null
-      if (localStorage.budgetID && budgets.map((budget) => budget._id).contains(localStorage.BudgetID)) {
-        selected_budget_id = localStorage.budgetID
-      } else if (budgets.length > 0) {
-        selected_budget_id = budgets[0]._id.slice(-ID_LENGTH.budget)
+      let selected_budget_id = context.getters.selectedBudgetId
+
+      if (selected_budget_id === null) {
+        const local_storage_budget_id = localStorage.getItem('budgetID')
+        if (local_storage_budget_id && budgets.map((budget) => budget._id).indexOf(local_storage_budget_id) > -1) {
+          selected_budget_id = local_storage_budget_id
+        } else if (budgets.length > 0) {
+          selected_budget_id = budgets[0]._id.slice(-ID_LENGTH.budget)
+        }
       }
+
       if (selected_budget_id !== null) {
         context.commit('UPDATE_SELECTED_BUDGET_ID', selected_budget_id)
       }
@@ -184,11 +185,15 @@ export default {
       if (budget === undefined) {
         return
       }
-      db.put({
-        ...budget,
-        accessed: Math.floor(Date.now() / 1000)
-      })
-      dispatch('fetchAllBudgets')
+      return db
+        .put({
+          ...budget,
+          accessed: Math.floor(Date.now() / 1000)
+        })
+        .then(() => {
+          return dispatch('fetchAllBudgets')
+        })
+      
     },
 
     /**

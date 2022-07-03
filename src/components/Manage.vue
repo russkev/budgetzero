@@ -5,13 +5,19 @@
         Budgets
       </template>
       <template #body>
-        <v-select
+        <!-- <v-select
           v-model="selectedBudget"
           :items="allBudgets"
           label=""
           class="pa-0 pb-1"
           item-text="name"
-          item-value="short_id"
+          item-value="_id"
+        /> -->
+        <v-select
+          :items="allBudgets"
+          v-model="selectedBudget"
+          item-text="name"
+          item-value="_id"
         />
       </template>
       <template #actions>
@@ -112,7 +118,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import BaseDialogModalComponent from './Modals/BaseDialogModalComponent.vue'
-import { ID_LENGTH } from '../constants'
+import { ID_LENGTH, ID_NAME } from '../constants'
 
 export default {
   name: 'Settings',
@@ -139,8 +145,11 @@ export default {
   },
   watch: {
     selectedBudgetId: function(newBudget, oldBudget) {
-      this.selectedBudget = newBudget //Assign value from vuex to local var when loads/updates
+      this.selectedBudget = ID_NAME.budget + newBudget //Assign value from vuex to local var when loads/updates
     }
+  },
+  mounted() {
+    this.selectedBudget = ID_NAME.budget + this.selectedBudgetId
   },
   methods: {
     editItem(item) {
@@ -164,7 +173,7 @@ export default {
       }
     },
     loadSelectedBudget() {
-      this.$store.dispatch('setSelectedBudgetID', this.selectedBudget)
+      this.$store.dispatch('setSelectedBudgetID', this.selectedBudget.slice(-ID_LENGTH.budget))
       this.manageBudgetsModalVisible = false
     },
     saveBudget() {

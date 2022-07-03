@@ -38,8 +38,10 @@ export default {
         })
         .then((result) => {
           logPerformanceTime('fetchAllBudgets', t1)
-          
-          result.rows.sort((a, b) => {
+          const docs = result.rows.map((row) => row.doc)
+
+          // Sort in descending order by when it was last accessed
+          docs.sort((a, b) => {
             if (a.accessed && b.accessed) {
               return b.accessed - a.accessed
             } else if (b.accessed) {
@@ -49,8 +51,8 @@ export default {
             }
           })
 
-          context.commit('SET_ALL_BUDGETS', result.rows)
-          return result.rows
+          context.commit('SET_ALL_BUDGETS', docs)
+          return docs
         })
         .catch((err) => {
           console.log(err)
@@ -93,10 +95,10 @@ export default {
       const budget_id = context.rootState.selectedBudgetId
       // const name = ID_NAME.monthCategory + context.
       return fetchDocsByType(context, db, budget_id, ID_NAME.monthCategory, 'fetchMonthCategories')
-        // .then((result) => {
-        //   console.log(result)
-        //   return result
-        // })
+      // .then((result) => {
+      //   console.log(result)
+      //   return result
+      // })
       // .then((result) => {
       //   context.commit('SET_MONTH_CATEGORY_BUDGETS', result)
       //   return 'success'
@@ -119,7 +121,7 @@ export default {
           endkey: [budget_id, options.account_id, ''],
           limit: options.itemsPerPage,
           skip: skip_amount,
-          descending: true,
+          descending: true
         })
         .then((result) => {
           logPerformanceTime('fetchTransactionsForAccount', t1)
@@ -134,7 +136,6 @@ export default {
       // const db = Vue.prototype.$pouch
       // const t1 = performance.now()
       // const budget_id = context.rootState.selectedBudgetId
-
       // return db
       //   .query('stats/sum_transaction_by_account', {
       //     group: true,
@@ -185,13 +186,13 @@ export default {
         .allDocs({
           include_docs: true,
           startkey: `b_${budget_id}${ID_NAME.transaction}`,
-          endkey: `b_${budget_id}${ID_NAME.transaction}\ufff0`,
+          endkey: `b_${budget_id}${ID_NAME.transaction}\ufff0`
         })
         .then((result) => {
           logPerformanceTime('fetchAllTransactions', t1)
           return result
         })
-    },
+    }
   }
 }
 
@@ -206,9 +207,7 @@ const fetchDocsByType = (context, db, budget_id, id_name, function_name) => {
     })
     .then((result) => {
       logPerformanceTime(function_name, t2)
-      return result.rows.map((row) => {
-        return row.doc
-      })
+      return result.rows.map((row) => row.doc)
     })
     .catch((err) => {
       console.log(err)
