@@ -6,7 +6,7 @@ import { ID_LENGTH, ID_NAME } from '../../constants.js'
 const DEFAULT_BUDGET_STATE = {
   allBudgets: [],
   budgetBalances: {},
-  budgetOpened: null,
+  budgetOpened: {},
   budgetExists: true // This opens the create budget modal when 'false'
 }
 
@@ -16,6 +16,14 @@ export default {
   },
   getters: {
     allBudgets: (state) => state.allBudgets,
+    budgetsById: (state) => {
+      return state.allBudgets.reduce((partial, budget) => {
+        if (budget._id !== undefined) {
+          partial[budget._id] = budget
+        }
+        return budget
+      }, {})
+    },
     budgetRootsMap: (state, getters) => {
       return getters.allBudgets.reduce((map, budget_root) => {
         if (budget_root._id) {
@@ -24,17 +32,17 @@ export default {
         }
       }, {})
     },
-    budgetOpened: (state) =>
-      state.budgetOpened.map((row) => {
-        var obj = row.doc
-        return obj
-      }),
-    budgetOpenedMap: (state, getters) =>
-      getters.budgetOpened.reduce((map, obj) => {
-        const id = obj._id ? obj._id.slice(-ID_LENGTH.budget) : null
-        map[id] = obj
-        return map
-      }, {}),
+    budgetOpened: (state) => state.budgetOpened,
+      // state.budgetOpened.map((row) => {
+      //   var obj = row.doc
+      //   return obj
+      // }),
+    // budgetOpenedMap: (state, getters) =>
+    //   getters.budgetOpened.reduce((map, obj) => {
+    //     const id = obj._id ? obj._id.slice(-ID_LENGTH.budget) : null
+    //     map[id] = obj
+    //     return map
+    //   }, {}),
     budgetExists: (state) => state.budgetExists,
     budgetBalances: (state, getters) => {
       return state.budgetBalances
@@ -67,52 +75,14 @@ export default {
      * @param {*} context
      * @param {string} budgetName The name of the budget to be created
      */
-    // createBudget: async (context, { name, use_default }) => {
-    //   if (!name) {
-    //     context.commit('SET_SNACKBAR_MESSAGE', {
-    //       snackbarMessage: 'Invalid budget name',
-    //       snackbarColor: 'error'
-    //     })
-    //     Promise.reject(`Invalid budget name: ${name}`)
-    //   }
-    //   const budget_id = await context.dispatch('generateUniqueShortId', { prefix: ID_NAME.budget })
 
-    //   const budget = {
-    //     name: name,
-    //     currency: 'USD',
-    //     created: moment(new Date()).format('YYYY-MM-DD'),
-    //     checkNumber: false,
-    //     _id: `${ID_NAME.budget}${budget_id}`
-    //   }
-
-    //   var budgetOpened = {
-    //     opened: moment(new Date()).format('YYYY-MM-DD'),
-    //     _id: ID_NAME.budgetOpened + budget_id
-    //   }
-
-    //   return context
-    //     .dispatch('commitDocToPouchAndVuex', { current: budget, previous: null })
-    //     .then((result) => {
-    //       return context.dispatch('setSelectedBudgetID', result.id.slice(-ID_LENGTH.budget))
-    //     })
-    //     .then(() => {
-    //       let initialize_budget_promises = [context.dispatch('initializeIncomeCategory')]
-    //       if (use_default) {
-    //         return initialize_budget_promises.push(context.dispatch('initializeBudgetCategories'))
-    //       }
-    //       return Promise.all(initialize_budget_promises)
-    //     })
-    //     .then(() => {
-    //       return context.dispatch('commitDocToPouchAndVuex', { current: budgetOpened, previous: null })
-    //     })
-    //     .then(() => {
-    //       console.log('Created new budget')
-    //       return
-    //     })
-    //     .catch((err) => {
-    //       console.log(err)
-    //     })
-    // },
+    commitBudgetOpened(context, {current, previous}) {
+      let payload = current
+      if (!current) {
+        payload = DEFAULT_BUDGET_STATE.budgetOpened
+      }
+      context.commit('SET_BUDGET_OPENED', payload)
+    },
 
     /**
      * Creates new budget and commits to pouchdb
@@ -133,6 +103,7 @@ export default {
         name: name,
         currency: 'USD',
         created: moment(new Date()).format('YYYY-MM-DD'),
+        accessed: Math.floor(Date.now() / 1000),
         checkNumber: false,
         _id: `${ID_NAME.budget}${budget_id}`
       }
@@ -148,18 +119,17 @@ export default {
           return context.dispatch('setSelectedBudgetID', result.id.slice(-ID_LENGTH.budget))
         })
         .then(() => {
+          return context.dispatch('loadLocalBudget')
+        })
+        .then(() => {
           let initialize_budget_promises = [context.dispatch('initializeIncomeCategory')]
           if (use_default) {
-            return initialize_budget_promises.push(context.dispatch('initializeBudgetCategories'))
+            initialize_budget_promises.push(context.dispatch('initializeBudgetCategories'))
           }
           return Promise.all(initialize_budget_promises)
         })
         .then(() => {
           return context.dispatch('commitDocToPouchAndVuex', { current: budgetOpened, previous: null })
-        })
-        .then(() => {
-          console.log('Created new budget')
-          return
         })
         .catch((err) => {
           console.log(err)
@@ -193,6 +163,32 @@ export default {
           console.log(err)
           context.commit('API_FAILURE', err)
         })
+    },
+
+    updateSelectedBudgetId(context, budgets) {
+      let selected_budget_id = null
+      if (localStorage.budgetID && budgets.map((budget) => budget._id).contains(localStorage.BudgetID)) {
+        selected_budget_id = localStorage.budgetID
+      } else if (budgets.length > 0) {
+        selected_budget_id = budgets[0]._id.slice(-ID_LENGTH.budget)
+      }
+      if (selected_budget_id !== null) {
+        context.commit('UPDATE_SELECTED_BUDGET_ID', selected_budget_id)
+      }
+      return selected_budget_id
+    },
+
+    async updateBudgetAccessed({getters, dispatch}, budget_id) {
+      const db = this._vm.$pouch
+      let budget = getters.budgetsById[budget_id]
+      if (budget === undefined) {
+        return
+      }
+      db.put({
+        ...budget,
+        accessed: Math.floor(Date.now() / 1000)
+      })
+      dispatch('fetchAllBudgets')
     },
 
     /**

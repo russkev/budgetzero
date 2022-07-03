@@ -102,6 +102,7 @@ export default new Vuex.Store({
     setSelectedBudgetID(context, budget_id) {
       if (this.selectedBudgetId !== budget_id) {
         context.commit('UPDATE_SELECTED_BUDGET_ID', budget_id)
+        context.dispatch('updateBudgetAccessed', budget_id)
         return context.dispatch('loadLocalBudget')
       } else {
         return

@@ -157,7 +157,7 @@ export default {
         case ID_NAME.budget:
           return context.dispatch('commitBudgetToVuex', { current, previous })
         case ID_NAME.budgetOpened:
-          return
+          return context.dispatch('commitBudgetOpened', { current, previous })
         default:
           console.error("doesn't recognize doc type ", doc_type)
           return
@@ -207,7 +207,8 @@ export default {
       try {
         await context.dispatch('resetAllCurrentBudgetData')
         context.commit('GET_REMOTE_SYNC_URL')
-        await context.dispatch('fetchAllBudgets')
+        const budgets = await context.dispatch('fetchAllBudgets')
+        context.dispatch('updateSelectedBudgetId', budgets)
         context.dispatch('getAllDocsFromPouchDB')
         context.dispatch('fetchBudgetOpened')
       } catch (error) {

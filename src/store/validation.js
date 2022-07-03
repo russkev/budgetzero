@@ -197,14 +197,17 @@ const schema_budget = {
     created: {
       type: 'string'
     },
+    accessed: {
+      type: 'string'
+    },
     currency: {
       type: 'string'
     },
     checkNumber: {
       type: 'boolean'
-    }
+    },
   },
-  required: ['_id', 'name', 'created', 'currency', 'checkNumber']
+  required: ['_id', 'name', 'created', 'accessed', 'currency', 'checkNumber']
 }
 
 const budgetOpened_id_length = ID_NAME.budgetOpened.length + ID_LENGTH.budget
