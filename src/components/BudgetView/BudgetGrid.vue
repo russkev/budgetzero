@@ -1,82 +1,114 @@
 <template>
   <v-container class="pt-0">
     <v-row class="ma-0">
-      <v-btn small :to="{ path: `/budget/${prevMonth}`}">
+      <v-btn small :to="{ path: `/budget/${prevMonth}` }">
         <v-icon medium>mdi-chevron-left</v-icon> Previous month
       </v-btn>
-      <v-btn  :to="{ path: `/budget/${thisMonth}`}">
-        Today
-      </v-btn>
-      <v-btn small :to="{ path: `/budget/${nextMonth}`}">
-        <v-icon medium>mdi-chevron-right</v-icon> Next month
-      </v-btn>
+      <v-btn :to="{ path: `/budget/${thisMonth}` }"> Today </v-btn>
+      <v-btn small :to="{ path: `/budget/${nextMonth}` }"> <v-icon medium>mdi-chevron-right</v-icon> Next month </v-btn>
     </v-row>
     <v-row justify="space-between" class="ma-0 pt-2">
-      <v-col sm="auto"/>
+      <v-col sm="auto" />
       <v-col sm="auto">
         <BudgetHeader />
       </v-col>
     </v-row>
     <v-row>
-      <v-col/>
-      <v-col>
-        Budget
-      </v-col>
-      <v-col>
-        Spent
-      </v-col>
-      <v-col>
-        Balance
-      </v-col>
+      <v-col />
+      <v-col> Budget </v-col>
+      <v-col> Spent </v-col>
+      <v-col> Balance </v-col>
     </v-row>
-    <v-row
-      class="ma-0 pa-0"
-      v-for="master_category in masterCategoriesData" 
-      :key="master_category.id"
-    >
-      <v-container class="primary lighten-2" >
-        <v-row>
-          <v-col class="master-category-row">
-            <h3>
-              {{ masterCategoriesById[master_category.id].name}}
-            </h3>
-          </v-col>
-          <v-col>
-            {{ masterCategoriesStats[master_category.id].budget / 100 }}
-          </v-col>
-          <v-col>
-            {{ masterCategoriesStats[master_category.id].spent / 100 }}
-          </v-col>
-          <v-col>
-            {{ masterCategoriesStats[master_category.id].balance / 100 }}
-          </v-col>
-        </v-row> 
+    <draggable 
+      v-model="masterCategoriesData" handle=".handle">
+      <v-row class="ma-0 pa-0" v-for="master_category in masterCategoriesData" :key="master_category.id">
+        <v-container class="primary lighten-2">
+          <v-row class="white--text">
+            <v-col>
+              <v-text-field
+                v-model="master_category.name"
+                @click="editedMasterCategoryId = master_category.id"
+                @focus="editedMasterCategoryId = master_category.id"
+                dark
+                dense
+                flat
+                solo
+                hide-details
+                @blur="onMasterCategoryNameChange(master_category.name)"
+                @change="onMasterCategoryNameChange(master_category.name)"
+                :readonly="editedMasterCategoryId !== master_category.id"
+                :background-color="editedMasterCategoryId === master_category.id ? 'primary' : 'primary lighten-2'"
+              >
+                <template v-slot:prepend>
+                  <v-icon class="handle">mdi-drag-horizontal</v-icon>
+                </template>
+              </v-text-field>
+            </v-col>
+            <v-col>
+              {{ masterCategoriesStats[master_category.id].budget / 100 }}
+            </v-col>
+            <v-col>
+              {{ masterCategoriesStats[master_category.id].spent / 100 }}
+            </v-col>
+            <v-col>
+              {{ masterCategoriesStats[master_category.id].balance / 100 }}
+              <v-icon dark small right @click="newMasterCategory(master_category)">mdi-plus-circle-outline</v-icon>
+              <v-icon dark small right @click="deleteMasterCategory(master_category)">mdi-delete-circle-outline</v-icon>
+              <v-icon dark small right @click="newCategory(master_category)">mdi-note-plus-outline</v-icon>
+            </v-col>
+          </v-row>
         </v-container>
         <v-container>
-        <v-row 
-          class="category-row ma-0"
-          v-for="category in categoriesData[master_category.id]" 
-          :key="category.id"
-        >
-          <v-col>
-            {{ categoriesById[category.id].name}}
-          </v-col>
-          <v-col>
-            <v-text-field 
-              dense
-              v-model="category.budget"
-              @change="onCategoryBudgetChanged(category.id, $event)"
-            />
-          </v-col>
-          <v-col>
-            {{ category.spent }}
-          </v-col>
-          <v-col>
-            {{ category.balance}}
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-row>
+          <draggable
+            :class="master_category.id"
+            :group="{name: master_category.id, put: true}"
+            @end="onCategoryOrderChanged"
+            handle=".handle"
+          >
+            <v-row v-for="category in categoriesData[master_category.id]" :key="category.id">
+              <v-col>
+                <v-text-field
+                  v-model="category.name"
+                  @click="editedCategoryNameId = category.id"
+                  @focus="editedCategoryNameId = category.id"
+                  hide-details
+                  dense
+                  flat
+                  solo
+                  @blur="onCategoryNameChange(category.name)"
+                  @change="onCategoryNameChange(category.name)"
+                  :readonly="editedCategoryNameId !== category.id"
+                  :background-color="editedCategoryNameId === category.id ? 'grey lighten-3' : ''"
+                  prepend-icon="mdi-drag-horizontal"
+                >
+                  <template v-slot:prepend>
+                    <v-icon class="handle">mdi-drag-horizontal</v-icon>
+                  </template>
+                </v-text-field>
+              </v-col>
+              <v-col>
+                <v-text-field
+                  dense
+                  flat
+                  solo
+                  hide-details
+                  class="handle"
+                  v-model="category.budget"
+                  @change="onCategoryBudgetChanged(category.id, $event)"
+                />
+              </v-col>
+              <v-col>
+                {{ category.spent }}
+              </v-col>
+              <v-col>
+                {{ category.balance }}
+                <v-icon small right @click="onHideCategory(category.id)">mdi-eye-off-outline</v-icon>
+              </v-col>
+            </v-row>
+          </draggable>
+        </v-container>
+      </v-row>
+    </draggable>
   </v-container>
 </template>
 
@@ -86,7 +118,7 @@ import BaseDialogModalComponent from '../Modals/BaseDialogModalComponent.vue'
 import BudgetHeader from './BudgetHeader.vue'
 import _ from 'lodash'
 import draggable from 'vuedraggable'
-import { DEFAULT_MONTH_CATEGORY, ID_LENGTH, ID_NAME, UNCATEGORIZED } from '../../constants'
+import { DEFAULT_MONTH_CATEGORY, ID_LENGTH, ID_NAME, NONE } from '../../constants'
 import { prevMonth, nextMonth } from '../../helper'
 import moment from 'moment'
 
@@ -106,11 +138,13 @@ export default {
       isModalVisibleCategory: false,
       isModalVisibleEditCategory: false,
       isModalVisibleCreateSubCategory: false,
-      master_category_id: '',
+      masterCategoryId: '',
+      editedMasterCategoryId: '',
+      editedCategoryNameId: '',
       editedCategory: {},
-      categoriesData: [],
+      // categoriesData: [],
+      isEditing: true,
       // selectedMonth: this.$store.selectedMonth,
-
       headers: [
         {
           text: 'Category name',
@@ -145,19 +179,26 @@ export default {
         this.$store.commit('REORDER_MASTER_CATEGORIES', value)
       }
     },
-    masterCategoriesData() {
-      return this.masterCategories
-        // .sort((a, b) => a.sort - b.sort)
-        .map((master_category) => {
-          return {
-            id: master_category._id.slice(-ID_LENGTH.category)
-          }
-        })
+    masterCategoriesData: {
+      get() {
+        return (
+          this.masterCategories
+            .map((master_category) => {
+              return {
+                id: master_category._id.slice(-ID_LENGTH.category),
+                name: master_category.name
+              }
+            })
+        )
+      },
+      set(values) {
+        this.$store.dispatch('reorderMasterCategories', values)
+      }
     },
     masterCategoriesStats() {
       return this.masterCategories.reduce((partial, master_category) => {
         const master_id = master_category._id.slice(-ID_LENGTH.category)
-        partial[master_id] = {budget: 0, spent: 0, balance: 0}
+        partial[master_id] = { budget: 0, spent: 0, balance: 0 }
         const month_data = Object.values(_.get(this.allCategoryBalances, [this.selectedMonth, master_id], {}))
         month_data.map((category) => {
           const budget = _.get(category, ['doc', 'budget'], 0)
@@ -169,6 +210,46 @@ export default {
         })
         return partial
       }, {})
+    },
+    categoriesData: {
+      get() {
+        return this.masterCategories.reduce((partial, master_category) => {
+          const master_id = master_category._id.slice(-ID_LENGTH.category)
+
+          if (!Array.isArray(this.categoriesByMaster[master_id])) {
+            return partial
+          }
+
+          partial[master_id] = this.categoriesByMaster[master_id]
+            .sort((a, b) => a.sort - b.sort)
+            .map((category) => {
+              const category_id = category._id.slice(-ID_LENGTH.category)
+              const budget = _.get(
+                this.allCategoryBalances,
+                [this.selectedMonth, master_id, category_id, 'doc', 'budget'],
+                0
+              )
+              const spent = _.get(this.allCategoryBalances, [this.selectedMonth, master_id, category_id, 'spent'], 0)
+              const carryover = _.get(
+                this.allCategoryBalances,
+                [this.selectedMonth, master_id, category_id, 'carryover'],
+                0
+              )
+              const name = _.get(this.categoriesById, [category_id, 'name'], '')
+              return {
+                id: category_id,
+                name: name,
+                budget: budget / 100,
+                spent: spent / 100,
+                balance: (budget + spent + carryover) / 100
+              }
+            })
+          return partial
+        }, {})
+      },
+      set(value) {
+        console.log(value)
+      }
     },
     categories: {
       get() {
@@ -186,11 +267,11 @@ export default {
     },
     thisMonth() {
       return moment(new Date()).format('YYYY-MM')
-    },
+    }
   },
   mounted() {
     this.$store.commit('UPDATE_SELECTED_MONTH', this.$route.params.month)
-    this.getCategoriesData()
+    // this.getCategoriesData()
   },
   created() {},
   beforeRouteUpdate(to, from, next) {
@@ -200,17 +281,17 @@ export default {
   watch: {
     allCategoryBalances: {
       handler() {
-        this.getCategoriesData()
-      },
+        // this.getCategoriesData()
+      }
     },
     selectedMonth: {
       handler() {
-        this.getCategoriesData()
+        // this.getCategoriesData()
       }
     }
   },
   methods: {
-    ...mapActions(['updateMonthCategory', 'deleteDocFromPouchAndVuex']),
+    ...mapActions(['updateMonthCategory', 'deleteDocFromPouch']),
 
     onFocus(param) {
       this.$nextTick(() => {
@@ -247,49 +328,52 @@ export default {
       this.isModalVisibleEditCategory = false
     },
 
-    getCategoriesData() {
-      console.log("GET CATEGORIES DATA")
-      this.categoriesData = this.masterCategories.reduce((partial, master_category) => {
-        const master_id = master_category._id.slice(-ID_LENGTH.category)
+    // getCategoriesData() {
+    //   console.log("GET CATEGORIES DATA")
+    //   this.categoriesData = this.masterCategories.reduce((partial, master_category) => {
+    //     const master_id = master_category._id.slice(-ID_LENGTH.category)
 
-        if (!Array.isArray(this.categoriesByMaster[master_id])) {
-          return partial
-        }
+    //     if (!Array.isArray(this.categoriesByMaster[master_id])) {
+    //       return partial
+    //     }
 
-        partial[master_id] = this.categoriesByMaster[master_id]
-          .sort((a, b) => a.sort - b.sort)
-          .map((category) => {
-            const category_id = category._id.slice(-ID_LENGTH.category)
-            const budget = _.get(
-              this.allCategoryBalances,
-              [this.selectedMonth, master_id, category_id, 'doc', 'budget'],
-              0
-            )
-            const spent = _.get(
-              this.allCategoryBalances,
-              [this.selectedMonth, master_id, category_id, 'spent'],
-              0
-            )
-            const carryover = _.get(
-              this.allCategoryBalances,
-              [this.selectedMonth, master_id, category_id, 'carryover'],
-              0
-            )
-            return {
-              id: category_id,
-              budget: budget / 100,
-              spent: spent / 100,
-              balance: (budget + spent + carryover) / 100
-            }
-          })
+    //     partial[master_id] = this.categoriesByMaster[master_id]
+    //       .sort((a, b) => a.sort - b.sort)
+    //       .map((category) => {
+    //         const category_id = category._id.slice(-ID_LENGTH.category)
+    //         const budget = _.get(
+    //           this.allCategoryBalances,
+    //           [this.selectedMonth, master_id, category_id, 'doc', 'budget'],
+    //           0
+    //         )
+    //         const spent = _.get(
+    //           this.allCategoryBalances,
+    //           [this.selectedMonth, master_id, category_id, 'spent'],
+    //           0
+    //         )
+    //         const carryover = _.get(
+    //           this.allCategoryBalances,
+    //           [this.selectedMonth, master_id, category_id, 'carryover'],
+    //           0
+    //         )
+    //         return {
+    //           id: category_id,
+    //           budget: budget / 100,
+    //           spent: spent / 100,
+    //           balance: (budget + spent + carryover) / 100
+    //         }
+    //       })
 
-        return partial
-      }, {})
-    },
+    //     return partial
+    //   }, {})
+    // },
     onCategoryBudgetChanged(category_id, event) {
       const month = this.selectedMonth
-      const master_id = this.categoriesById[category_id]['masterCategory']
+      const master_id = _.get(this.categoriesById, [category_id, 'masterCategory'], '')
 
+      if (master_id === '') {
+        return
+      }
 
       let budget_value = parseInt(event)
       let current = null
@@ -314,7 +398,7 @@ export default {
         }
       }
       this.$store.dispatch('updateMonthCategory', { current, previous }).then(() => {
-        this.getCategoriesData()
+        // this.getCategoriesData()
         // console.log(this.categoriesData)
       })
     },
@@ -363,31 +447,76 @@ export default {
       const master_id = category.masterCategory ? category.masterCategory : null
       return _.get(this.allCategoryBalances, [month, master_id, category_id], {})
     },
+    onMasterCategoryNameChange(name) {
+      const doc = this.masterCategoriesById[this.editedMasterCategoryId]
+      this.editedMasterCategoryId = ''
+      if (doc !== undefined) {
+        this.$store.dispatch('commitDocToPouchAndVuex', { current: { ...doc, name: name }, previous: doc })
+      }
+    },
+    newMasterCategory(existing_master_category) {
+      console.log(existing_master_category)
+      const sort = existing_master_category.sort ? existing_master_category.sort : 1
+      this.$store.dispatch('createMasterCategory', { category_name: '', is_income: false, sort: sort })
+    },
+    deleteMasterCategory(master_category) {
+      console.log('delete master category')
+      console.log(master_category)
+    },
+    newCategory(master_category) {
+      this.$store.dispatch('createCategory', { name: '', master_id: master_category.id }).then((id) => {
+        this.editedCategoryNameId = id
+        // this.getCategoriesData()
+      })
+    },
+    onCategoryNameChange(name) {
+      const doc = this.categoriesById[this.editedCategoryNameId]
+      this.editedCategoryNameId = ''
+      if (doc !== undefined) {
+        this.$store.dispatch('commitDocToPouchAndVuex', { current: { ...doc, name: name }, previous: doc })
+      }
+    },
+    onHideCategory(category_id) {
+      const doc = this.categoriesById[category_id]
+      if (doc !== undefined) {
+        this.$store.dispatch('commitDocToPouchAndVuex', {
+          current: { ...doc, masterCategory: NONE._id },
+          previous: doc
+        })
+      }
+    },
+    onCategoryOrderChanged(event) {
+      this.$store.dispatch('reorderCategory', event)
+    },
+
+
+
+
     getOverspendingProperty(item) {
       const id = item._id ? item._id.slice(-ID_LENGTH.category) : null
 
       return _.get(this.monthCategoryBudgets, `${this.selectedMonth}.${id}.overspending`, false)
     },
-    deleteCategory(item) {
-      this.deleteDocFromPouchAndVuex(item)
-    },
-    createMasterCategory(newCategoryGroupName) {
-      if (newCategoryGroupName.length > 0) {
-        this.$store.dispatch('createMasterCategory', newCategoryGroupName)
-      }
-      this.clear()
-    },
-    createCategory() {
-      const payload = {
-        master_category_id: this.editedCategory._id.slice(-ID_LENGTH.category),
-        category_name: this.category_name
-      }
-      this.$store.dispatch('createCategory', payload)
-      this.clear()
-    },
+    // deleteCategory(item) {
+    //   this.deleteDocFromPouch(item)
+    // },
+    // createMasterCategory(newCategoryGroupName) {
+    //   if (newCategoryGroupName.length > 0) {
+    //     this.$store.dispatch('createMasterCategory', newCategoryGroupName)
+    //   }
+    //   this.clear()
+    // },
+    // createCategory() {
+    //   const payload = {
+    //     masterCategoryId: this.editedCategory._id.slice(-ID_LENGTH.category),
+    //     category_name: this.category_name
+    //   }
+    //   this.$store.dispatch('createCategory', payload)
+    //   this.clear()
+    // },
     clear() {
       this.isModalVisibleCreateSubCategory = false
-      this.master_category_id = ''
+      this.masterCategoryId = ''
       this.isModalVisibleMasterCat = false
       this.isModalVisibleCategory = false
       this.category_name = ''
@@ -432,6 +561,8 @@ export default {
 .budgeted-amount-zero >>> input {
   color: grey;
 }
+
+/* .master-category-row */
 
 .crud-actions {
   width: 200px;

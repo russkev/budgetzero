@@ -1,5 +1,5 @@
 import { result } from 'lodash'
-import { ID_NAME } from './constants'
+import { ID_NAME, NONE } from './constants'
 
 // Clean/sanitize amount input
 function sanitizeValueInput(value) {
@@ -66,11 +66,11 @@ function logPerformanceTime(name, t1) {
 }
 
 function docTypeFromId(id) {
-  // const docType = null
-  if (id.startsWith(ID_NAME.budget)) {
+  if(id === NONE._id) {
+    return ID_NAME.none
+  }
+  else if (id.startsWith(ID_NAME.budget)) {
     return ID_NAME.budget
-  // } else if (id.startsWith(ID_NAME.budgetOpened)) {
-  //   return ID_NAME.budgetOpened
   } else {
     const type_regex = /(?<=b_[0-9a-zA-Z_\-\.]{3})_[0-9a-zA-Z\-]+_(?=[0-9a-zA-Z_\-\.]+)/
     const regex_result = id.match(type_regex)

@@ -66,6 +66,9 @@ export default {
       }
     }
   },
+  mounted() {
+    this.$root.$confirm = this.$refs.confirm.open
+  }
 }
 </script>
 

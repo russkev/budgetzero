@@ -136,7 +136,7 @@ const schema_monthCategory = {
     },
     note: {
       type: ['string', 'null']
-    }
+    },
   },
   required: ['_id', 'budget', 'overspending']
 }
@@ -161,6 +161,9 @@ const schema_masterCategory = {
     },
     hidden: {
       type: ['boolean', 'null']
+    },
+    isIncome: {
+      type: 'boolean'
     }
   },
   required: ['_id', 'name', 'sort', 'collapsed']
@@ -198,7 +201,7 @@ const schema_budget = {
       type: 'string'
     },
     accessed: {
-      type: 'string'
+      type: 'number'
     },
     currency: {
       type: 'string'
@@ -210,25 +213,8 @@ const schema_budget = {
   required: ['_id', 'name', 'created', 'accessed', 'currency', 'checkNumber']
 }
 
-// const budgetOpened_id_length = ID_NAME.budgetOpened.length + ID_LENGTH.budget
-// const schema_budgetOpened = {
-//   type: 'object',
-//   properties: {
-//     _id: {
-//       type: 'string',
-//       minLength: budgetOpened_id_length,
-//       maxLength: budgetOpened_id_length
-//     },
-//     opened: {
-//       type: 'string'
-//     }
-//   },
-//   required: ['_id', 'opened']
-// }
-
 export {
   schema_budget,
-  // schema_budgetOpened,
   schema_account,
   schema_transaction,
   schema_category,

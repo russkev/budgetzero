@@ -8,9 +8,8 @@ export default {
   mutations: {},
   actions: {
     exportSelectedBudgetAsJSON: (context) => {
-      // const db = this._vm.$pouch
       const db = Vue.prototype.$pouch
-      const selected_budget_id = context.rootState.selectedBudgetId
+      const selected_budget_id = context.getters.selectedBudgetId
       return db
         .allDocs({
           include_docs: true,
@@ -19,12 +18,9 @@ export default {
           endkey: `b_${selected_budget_id}\ufff0`
         })
         .then((result) => {
-          //Add in the budget object. TODO: add in budgetOpened object?
+          //Add in the budget object.
           var b_object = context.rootGetters.budgetRootsMap[selected_budget_id]
           delete b_object['_rev']
-
-          // var b_opened_object = context.rootGetters.budgetOpenedMap[selected_budget_id]
-          // delete b_opened_object['_rev']
 
           console.log('exportBudgetAsJSON', b_object.name)
           const export_date = moment(new Date()).format('YYYY-MM-DD_hh-mm')
@@ -37,7 +33,6 @@ export default {
             })
 
           reformattedExport.push(b_object)
-          // reformattedExport.push(b_opened_object)
 
           var blob = new Blob([JSON.stringify(reformattedExport)], {
             type: 'text/plain;charset=utf-8'

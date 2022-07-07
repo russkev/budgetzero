@@ -1,6 +1,5 @@
 import {
   schema_budget,
-  // schema_budgetOpened,
   schema_account,
   schema_transaction,
   schema_category,
@@ -10,7 +9,7 @@ import {
   validateSchema
 } from '../validation'
 import _ from 'lodash'
-import { ID_NAME, } from '../../constants'
+import { ID_NAME } from '../../constants'
 import { databaseExists, docTypeFromId } from '../../helper'
 /**
  * This pouchdb vuex module contains code that interacts with the pouchdb database.
@@ -29,39 +28,43 @@ export default {
         await context.dispatch('createLocalPouchDB', context)
       }
 
-      const valid_documents = payload.map((doc) => {
+      const valid_documents = payload.reduce((partial, doc) => {
+        let doc_type = ''
+
         if (doc.current !== undefined && doc.previous !== undefined) {
-          const doc_type = validateDocument(doc.current, doc.previous)
-
-          if (doc_type) {
-            doc['doc_type'] = doc_type
-            return doc
-          }
+          doc_type = validateDocument(context, doc.current, doc.previous)
         } else {
-          console.warm('Invalid document provided to commitBulkDocsToPouchAndVuex', doc)
+          console.warn('commitBulkDocsToPouchAndVuex requires payload of type [{current, previous}]')
         }
-      })
-
-      const db_payload = valid_documents.map((doc) => {
-        return doc.current ? doc.current : doc.previous
-      })
+        if (!doc_type) {
+          console.warn('Invalid document provided to commitBulkDocsToPouchAndVuex', doc)
+        } else {
+          const current = doc.current ? { ...doc.current } : null
+          const previous = doc.previous ? { ...doc.previous } : null
+          partial.push({ current, previous, doc_type })
+        }
+        return partial
+      }, [])
 
       try {
-        const results = await context.dispatch('commitDocsToPouch', db_payload)
+        const results = await context.dispatch('commitDocsToPouch', valid_documents)
         const results_by_id = results.reduce((partial, result) => {
           partial[result.id] = result
           return partial
         }, {})
 
-        return Promise.all(
-          valid_documents.map((valid_document) => {
-            const id = valid_document.current ? valid_document.current._id : valid_document.previous._id
-            if (results_by_id[id] !== undefined && results_by_id[id].ok) {
-              valid_document._rev = results_by_id[id].rev
-              return context.dispatch('commitDocToVuex', valid_document)
+        const vuex_documents = valid_documents.reduce((partial, doc) => {
+          const id = doc.current ? doc.current._id : doc.previous ? doc.previous._id : null
+          if (id && results_by_id[id] !== undefined && results_by_id[id].ok) {
+            const rev = results_by_id[id].rev
+            if (doc.current) {
+              doc.current._rev = rev
             }
-          })
-        )
+            partial.push(doc)
+          }
+          return partial
+        }, [])
+        context.dispatch('commitDocsToVuex', vuex_documents)
       } catch (error) {
         console.log('ACTION: commitBulkDocsToPouchAndVuex failed')
         return context.commit('API_FAILURE', error)
@@ -78,7 +81,7 @@ export default {
         console.warn(`commitDocToPouchAndVuex called with invalid 'current' and 'previous'`)
         return
       }
-      const doc_type = validateDocument(current, previous)
+      const doc_type = validateDocument(context, current, previous)
       if (doc_type) {
         return context.dispatch('commitDocToPouch', { current, previous, doc_type }).then((result) => {
           if (result.ok) {
@@ -92,7 +95,7 @@ export default {
           }
         })
       } else {
-        Promise.reject('Invalid document type')
+        Promise.reject(`Invalid document type: ${doc_type}`)
       }
     },
 
@@ -137,7 +140,40 @@ export default {
 
     commitDocsToPouch(context, docs) {
       const db = this._vm.$pouch
-      return db.bulkDocs(docs)
+      const db_documents = docs.reduce((partial, doc) => {
+        if (doc.doc_type === ID_NAME.none) {
+          return partial
+        }
+        if (doc.current) {
+          partial.push(doc.current)
+        } else if (doc.previous) {
+          partial.push({ ...doc.previous, _deleted: true })
+        }
+        return partial
+      }, [])
+      return db.bulkDocs(db_documents)
+    },
+
+    commitDocsToVuex(context, payloads) {
+      const commitIndividuallyTypes = new Set([
+        ID_NAME.transaction, 
+        ID_NAME.monthCategory, 
+        ID_NAME.budget
+      ])
+
+      const documentsByType = payloads.reduce((partial, payload) => {
+        _.defaults(partial, {[payload.doc_type]: []})
+        partial[payload.doc_type].push({ current: payload.current, previous: payload.previous })
+        return partial
+      }, {})
+
+      Object.entries(documentsByType).map(([doc_type, docs]) => {
+        if (commitIndividuallyTypes.has(doc_type)) {
+          return Promise.all(docs.map((doc) => context.dispatch('commitDocToVuex', doc)))
+        } else {
+          return context.dispatch('commitDocToVuex', {current: null, previous: null, doc_type: doc_type})
+        }
+      })
     },
 
     commitDocToVuex(context, { current, previous, doc_type }) {
@@ -145,9 +181,9 @@ export default {
         case ID_NAME.transaction:
           return context.dispatch('commitTransactionToVuex', { current, previous })
         case ID_NAME.category:
-          return
+          return context.dispatch('fetchCategories')
         case ID_NAME.masterCategory:
-          return
+          return context.dispatch('fetchMasterCategories')
         case ID_NAME.account:
           return context.dispatch('fetchAccounts')
         case ID_NAME.monthCategory:
@@ -156,8 +192,8 @@ export default {
           return
         case ID_NAME.budget:
           return context.dispatch('commitBudgetToVuex', { current, previous })
-        // case ID_NAME.budgetOpened:
-        //   return context.dispatch('commitBudgetOpened', { current, previous })
+        case ID_NAME.none:
+          return
         default:
           console.error("doesn't recognize doc type ", doc_type)
           return
@@ -210,7 +246,6 @@ export default {
         const budgets = await context.dispatch('fetchAllBudgets')
         await context.dispatch('updateSelectedBudgetId', budgets)
         context.dispatch('getAllDocsFromPouchDB')
-        // context.dispatch('fetchBudgetOpened')
       } catch (error) {
         console.log(error)
         message = error.msg ? error.msg : error
@@ -223,7 +258,7 @@ export default {
   }
 }
 
-const validateDocument = (current, previous) => {
+const validateDocument = (context, current, previous) => {
   let doc_type = null
   let validation_result = {
     errors: 'Validation schema not found.'
@@ -238,12 +273,14 @@ const validateDocument = (current, previous) => {
       validation_result.errors = 'Current and previous are not of same type'
       doc_type = null
     }
-  }
-  else if (current && current._id) {
+  } else if (current && current._id) {
     doc_type = docTypeFromId(current._id)
   } else if (!current && previous && previous._id) {
     doc_type = docTypeFromId(previous._id)
     doc = previous
+  }
+  if (doc_type === ID_NAME.none) {
+    return doc_type
   }
 
   switch (doc_type) {
@@ -268,19 +305,15 @@ const validateDocument = (current, previous) => {
     case ID_NAME.budget:
       validation_result = validateSchema.validate(doc, schema_budget)
       break
-    // case ID_NAME.budgetOpened:
-    //   validation_result = validateSchema.validate(doc, schema_budgetOpened)
-    //   break
     default:
       console.error("doesn't recognize doc type ", doc_type)
   }
 
   if (validation_result.errors.length > 0) {
-    this.commit('SET_SNACKBAR_MESSAGE', {
+    context.commit('SET_SNACKBAR_MESSAGE', {
       snackbarMessage: 'Validation failed: ' + validation_result.errors.toString(),
       snackbarColor: 'error'
     })
-    console.log('failed validation:', current)
     return false
   } else {
     return doc_type

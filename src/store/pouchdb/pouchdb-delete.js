@@ -101,15 +101,36 @@ export default {
      * Deletes single document from pouchdb and then calls DELETE_DOCUMENT to remove from current list.
      * @param {doc} document The document to commit to pouchdb
      */
-    deleteDocFromPouchAndVuex: (context, document) => {
+    deleteDocFromPouch: (context, document) => {
       const db = Vue.prototype.$pouch
-      console.log('deleteDocFromPouchAndVuex', document)
-      db.remove(document)
-        // .then((result) => {
-        //   context.commit('DELETE_DOCUMENT', result)
-        // })
+      return db.remove(document)
         .catch((err) => {
           context.commit('API_FAILURE', err)
+        })
+    },
+
+    /**
+     * Delete all documents relating to a specific budget, including the budget document itself.
+     * @param {string} budget_id The ID od the budget to remove
+     */
+    deleteAllBudgetDocuments: (context, budget_id) => {
+      const db = Vue.prototype.$pouch
+
+      return db
+        .allDocs({
+          include_docs: false,
+          startkey: `b_${budget_id}_`,
+          endkey: `b_${budget_id}_\ufff0`
+        })
+        .then((result) => {
+          const documents = result.rows.map((doc) => {
+            return {
+              _id: doc.id,
+              _deleted: true,
+              _rev: doc.value.rev
+            }
+          })
+          return db.bulkDocs(documents)
         })
     },
 

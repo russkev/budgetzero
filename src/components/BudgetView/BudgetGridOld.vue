@@ -407,7 +407,7 @@ export default {
   mounted() {},
   created() {},
   methods: {
-    ...mapActions(['updateBudgetAmount', 'deleteDocFromPouchAndVuex']),
+    ...mapActions(['updateBudgetAmount', 'deleteDocFromPouch']),
     ...mapMutations(['PREVIOUS_MONTH', 'ADD_MONTH', 'GO_TO_CURRENT_MONTH']),
     onFocus(param) {
       this.$nextTick(() => {
@@ -490,7 +490,7 @@ export default {
       return _.get(this.month_category_lookup, `${this.month_selected}.${id}.overspending`, false)
     },
     deleteCategory(item) {
-      this.deleteDocFromPouchAndVuex(item)
+      this.deleteDocFromPouch(item)
     },
     createMasterCategory(newCategoryGroupName) {
       if (newCategoryGroupName.length > 0) {

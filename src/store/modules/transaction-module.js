@@ -1,5 +1,5 @@
 import { sanitizeValueInput, randomInt, randomString} from '../../helper'
-import { ID_LENGTH, ID_NAME, UNCATEGORIZED } from '../../constants'
+import { ID_LENGTH, ID_NAME, NONE } from '../../constants'
 
 const DEFAULT_TRANSACTIONS_STATE = {
   // transactions: []
@@ -68,7 +68,7 @@ export default {
       mirroredTransferTransaction.account = payload.payee
       mirroredTransferTransaction.payee = payload.account //The payee is the _id of the other account
       mirroredTransferTransaction.memo = payload.memo
-      mirroredTransferTransaction.category = UNCATEGORIZED._id
+      mirroredTransferTransaction.category = NONE._id
       mirroredTransferTransaction.date = payload.date
       mirroredTransferTransaction.cleared = payload.cleared
 
@@ -86,8 +86,8 @@ export default {
       if (current) {
         current = await processTransfer(current, context)
         current.value = sanitizeValueInput(current.value)
-        const payee = await context.dispatch('getPayeeID', current.payee)
-        current.payee = payee
+        // const payee = await context.dispatch('getPayeeID', current.payee)
+        // current.payee = payee
       }
 
       return context.dispatch('commitDocToPouchAndVuex', { current, previous })
@@ -190,6 +190,7 @@ export default {
  */
 async function processTransfer(transaction, context) {
   console.warn("PROCESS TRANSFER NOT IMPLEMENTED")
+  return transaction
   //TODO: only let this be a transfer if the account actually exists?
 
   // if (transaction && transaction.payee && transaction.payee.includes('Transfer: ')) {
@@ -202,7 +203,7 @@ async function processTransfer(transaction, context) {
   //     ...transaction,
   //     payee: destination_account_id,
   //     transfer: mirrored_transfer_id,
-  //     category: UNCATEGORIZED._id
+  //     category: NONE._id
   //   }
   // } else {
   //   return {

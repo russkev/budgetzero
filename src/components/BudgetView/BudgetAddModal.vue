@@ -18,8 +18,6 @@
 
 <script>
 import BaseDialogModalComponent from '../Modals/BaseDialogModalComponent.vue'
-// import BaseDialogModalComponent from './components/Modals/BaseDialogModalComponent.vue'
-import moment from 'moment'
 
 export default {
   name: 'BudgetAddModal',
@@ -43,25 +41,19 @@ export default {
       this.create_budget_is_loading = true
       this.$store
         .dispatch('createBudget', {name: this.budget_name, use_default: this.use_default_categories})
+        .then(() => {
+          this.create_budget_is_loading = false
+          this.$emit('input', false)
+          return this.$root.$confirm('Budget Created!', `A budget named ${this.budget_name} has been created!`, {
+            onlyShowAgreeBtn: true,
+            agreeBtnColor: 'accent',
+            agreeBtnText: 'Ok'
+          })
+        })
         .finally(() => {
           this.create_budget_is_loading = false
+          this.$emit('input', false)
         })
-      // this.createBudgetIsLoading = true
-      // await this.$store.dispatch('loadLocalBudget')
-      // await this.$store.dispatch('createBudget', {name: this.budgetName, use_default: this.useDefaultCategories})
-      // this.createBudgetIsLoading = false
-      // if (
-      //   await this.$root.$confirm('Budget Created!', `A budget named ${this.budgetName} has been created!`, {
-      //     onlyShowAgreeBtn: true,
-      //     agreeBtnColor: 'accent',
-      //     agreeBtnText: 'Ok'
-      //   })
-      // ) {
-      //   if(!this.$router.history.current.path.startsWith('/budget')) {
-      //     const year_month =  moment(new Date()).format('YYYY-MM')
-      //     this.$router.push({ path: `/budget/${year_month}` })
-      //   }
-      // }
     }
   },
   computed: {

@@ -852,7 +852,7 @@ export default {
         cancelButtonColor: '#263238'
       }).then((continueDelete) => {
         if (continueDelete.value) {
-          this.$store.dispatch('deleteDocFromPouchAndVuex', JSON.parse(JSON.stringify(item)))
+          this.$store.dispatch('deleteDocFromPouch', JSON.parse(JSON.stringify(item)))
           this.expanded = []
           this.cancel()
           return

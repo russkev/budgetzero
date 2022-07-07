@@ -44,11 +44,7 @@
 
           <!-- Date input -->
           <td v-if="item._id === editedItem._id" id="edit-date-input">
-              <!-- <v-text-field v-model="editedItem.date" :rules="[rules.date]">
-                <template v-slot:append-outer> -->
-                  <date-picker v-model="editedItem.date"/>
-                <!-- </template>
-              </v-text-field> -->
+            <date-picker v-model="editedItem.date"/>
           </td>
           <td
             v-else
@@ -142,7 +138,7 @@
 
 <script>
 import TransactionHeader from './TransactionHeader'
-import { DEFAULT_TRANSACTION, ID_LENGTH, ID_NAME, UNCATEGORIZED } from '../../constants'
+import { DEFAULT_TRANSACTION, ID_LENGTH, ID_NAME, NONE } from '../../constants'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import Vue from 'vue'
@@ -212,7 +208,7 @@ export default {
           id: master_category_id,
           label: category_label
         }
-        if (master_category_id !== UNCATEGORIZED._id) {
+        if (master_category_id !== NONE._id) {
           result['children'] = categories.map((category) => {
             return {
               id: category._id.slice(-ID_LENGTH.category),
@@ -301,7 +297,7 @@ export default {
       Vue.delete(this.editedItem, 'category_name')
 
       if (this.editedItem.category === null) {
-        this.editedItem.category = UNCATEGORIZED._id
+        this.editedItem.category = NONE._id
       }
     },
     addTransaction() {
@@ -327,7 +323,7 @@ export default {
       }
       this.$store.dispatch('deleteBulkDocumentsFromPouchAndVuex', { documents: this.selected }).then(() => {
         this.getTransactions()
-        this.$store.dispatch('updateBalances')
+        // this.$store.dispatch('updateBalances')
         this.selected = []
       })
     },
@@ -337,9 +333,9 @@ export default {
         .then(() => {
           return this.getTransactions()
         })
-        .then(() => {
-          return this.$store.dispatch('updateBalances')
-        })
+        // .then(() => {
+        //   return this.$store.dispatch('updateBalances')
+        // })
       this.cancel()
     },
     save(item) {
@@ -356,9 +352,9 @@ export default {
         .then(() => {
           this.getTransactions()
         })
-        .then(() => {
-          this.$store.dispatch('updateBalances')
-        })
+        // .then(() => {
+        //   this.$store.dispatch('updateBalances')
+        // })
       this.cancel()
     },
     cancel() {

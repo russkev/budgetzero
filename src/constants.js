@@ -14,12 +14,12 @@ export const ID_LENGTH = {
 export const ID_NAME = {
   account: '_account_',
   budget: 'budget_',
-  // budgetOpened: '_budgetOpened',
   transaction: '_transaction_',
   category: '_category_',
   monthCategory: '_monthCategory_',
   masterCategory: '_masterCategory_',
-  payee: '_payee_'
+  payee: '_payee_',
+  none: 'none',
 }
 
 export const DEFAULT_ACCOUNT_BALANCE = {
@@ -37,7 +37,7 @@ export const DEFAULT_MONTH_CATEGORY = {
   note: ''
 }
 
-export const UNCATEGORIZED = {
+export const NONE = {
   _id: '~~~', // '~' Is never used in an id and is URL safe
   name: 'Uncategorized',
   masterCategory: '~~~',

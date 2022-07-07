@@ -1,5 +1,5 @@
-import {  logPerformanceTime, extractMonthCategoryMonth } from '../../helper'
-import { ID_LENGTH, ID_NAME, UNCATEGORIZED } from '../../constants'
+import { logPerformanceTime, extractMonthCategoryMonth } from '../../helper'
+import { ID_LENGTH, ID_NAME, NONE } from '../../constants'
 import { compareAscii } from './id-module'
 import _ from 'lodash'
 import Vue from 'vue'
@@ -31,7 +31,7 @@ export default {
     // monthCategoryBudgets: (state) => state.monthCategoryBudgets,
     categories: (state) => state.categories,
     // categories: (state) => {
-    //   return [UNCATEGORIZED, ...state.categories]
+    //   return [NONE, ...state.categories]
     // },
     categoriesById: (state) => {
       return state.categories.reduce((partial, category) => {
@@ -42,12 +42,6 @@ export default {
     categoriesByMaster: (state) => _.groupBy(state.categories, 'masterCategory')
   },
   mutations: {
-    REORDER_MASTER_CATEGORIES(state, payload) {
-      payload.forEach((master, i) => {
-        master.sort = i
-        this.dispatch('commitDocToPouchAndVuex', { current: master, previous: null })
-      })
-    },
     SET_ALL_CATEGORY_BALANCES(state, payload) {
       state.allCategoryBalances = payload
     },
@@ -59,7 +53,7 @@ export default {
       state.masterCategories = master_categories.sort((a, b) => a.sort - b.sort)
     },
     SET_CATEGORIES(state, categories) {
-      state.categories = [UNCATEGORIZED, ...categories]
+      state.categories = [NONE, ...categories]
     },
     // UPDATE_MONTH_CATEGORY(state, doc) {
     //   const month = extractMonthCategoryMonth(doc._id)
@@ -124,11 +118,18 @@ export default {
         isIncome: is_income
       }
 
-      return context.dispatch('commitDocToPouchAndVuex', { current: payload, previous: null })
+      try {
+        return context.dispatch('commitDocToPouchAndVuex', { current: payload, previous: null }).then(() => {
+          return payload
+        })
+      } catch (error) {
+        console.log(error)
+        return null
+      }
     },
 
-    createCategory: async (context, payload) => {
-      const categoriesGroup = context.getters.categoriesByMaster[payload.master_category_id]
+    createCategory: async (context, { name, master_id }) => {
+      const categoriesGroup = context.getters.categoriesByMaster[master_id]
 
       const sort_length = categoriesGroup ? categoriesGroup.length : 0
 
@@ -136,14 +137,34 @@ export default {
       const id = await context.dispatch('generateUniqueShortId', { prefix: prefix })
       const category = {
         _id: `b_${context.rootState.selectedBudgetId}${ID_NAME.category}${id}`,
-        name: payload.category_name,
+        name: name,
         sort: sort_length,
         hidden: false,
-        masterCategory: payload.master_category_id,
-        isIncome: payload.isIncome ? payload.isIncome : false
+        masterCategory: master_id
       }
-      return context.dispatch('commitDocToPouchAndVuex', { current: category, previous: null })
+      await context.dispatch('commitDocToPouchAndVuex', { current: category, previous: null })
+      return id
     },
+    reorderMasterCategories(context, master_categories) {
+      const docs = master_categories.reduce((partial, master_category, i) => {
+        const previous = _.get(context.getters.masterCategoriesById, [master_category.id], null)
+        if (previous) {
+          const current = { ...previous, sort: i }
+          partial.push({ current, previous })
+        }
+        return partial
+      }, [])
+
+      // Temporarily set the master categories state for faster feedback while documents are sent
+      // and retrieved from database
+      console.log('DOCS', docs)
+      context.commit(
+        'SET_MASTER_CATEGORIES',
+        docs.map((doc) => doc.current)
+      )
+      return context.dispatch('commitBulkDocsToPouchAndVuex', docs)
+    },
+
     updateCategory(context, payload) {
       context.dispatch('commitDocToPouchAndVuex', { current: payload, previous: null })
     },
@@ -175,42 +196,57 @@ export default {
           return this.commit('UPDATE_CATEGORY_BALANCES', category_balances_update)
         })
     },
-    reorderMasterCategories(context, payload) {
-      payload.forEach((master, i) => {
-        master.sort = i
-        context.dispatch('commitDocToPouchAndVuex', { current: master, previous: null })
-      })
-    },
-    reorderSubCategory(context, payload) {
+
+    reorderCategory(context, payload) {
       //Get the category that was moved
       const old_index = payload.oldIndex
       const new_index = payload.newIndex
-      const from_master_category_id = payload.from.className
-      const to_master_category_id = payload.to.className
+      const master_id_from = payload.from.className
+      const master_id_to = payload.to.className
 
-      const item = {
-        ...context.getters.categoriesByMaster[from_master_category_id][old_index],
-        sort: new_index > old_index ? new_index + 0.5 : new_index - 0.5,
-        masterCategory: to_master_category_id
-      }
+      let updated_by_master = {}
 
-      //First, we update the subcategory to it's correct mastercategory
-      context.dispatch('commitDocToPouchAndVuex', { current: item, previous: null }).then((result) => {
-        let categoriesByMaster = JSON.parse(JSON.stringify(context.getters.categoriesByMaster))
-        // Then iterate through them and re-set all their sort values
-        for (const [key, masterArray] of Object.entries(categoriesByMaster)) {
-          if (key !== 'undefined') {
-            //Skip undefined master categories (income, incomeNextMonth, etc)
-            masterArray.sort((a, b) => (a.sort > b.sort ? 1 : -1))
-            masterArray.forEach((category, i) => {
-              if (category.sort !== i) {
-                category.sort = i
-                context.dispatch('commitDocToPouchAndVuex', { current: category, previous: null })
-              }
-            })
+      const temp_index = new_index > old_index ? new_index + 0.5 : new_index - 0.5
+      updated_by_master[master_id_from] = context.getters.categoriesByMaster[master_id_from].map(
+        (category, i) => {
+          const sort = i === old_index ? temp_index : i
+          const master_id = sort === temp_index ? master_id_to : category.masterCategory
+          return {
+            ...category,
+            masterCategory: master_id,
+            sort: sort
           }
         }
-      })
+      )
+      if (master_id_to !== master_id_from) {
+        updated_by_master[master_id_to] = context.getters.categoriesByMaster[master_id_to].map(
+          (category, i) => {
+            return {
+              ...category,
+              sort: i
+            }
+          }
+        )
+        updated_by_master[master_id_to].push(updated_by_master[master_id_from][old_index])
+        updated_by_master[master_id_from].splice(old_index, 1)
+      }
+
+
+      const updated_payload = Object.values(updated_by_master).reduce((partial, categories) => {
+        categories.sort((a, b) => a.sort - b.sort)
+        const updated_categories = categories.map((category, i) => {
+          return {
+            previous: context.getters.categoriesById[category._id.slice(-ID_LENGTH.category)],
+            current: {
+              ...category,
+              sort: i,
+            }
+          }
+        })
+        partial = partial.concat(updated_categories)  
+        return partial
+      }, [])
+      context.dispatch('commitBulkDocsToPouchAndVuex', updated_payload)
     },
 
     initializeIncomeCategory(context) {
@@ -223,8 +259,7 @@ export default {
       return context.dispatch('createMasterCategory', master_category_payload).then((response) => {
         const payload = {
           category_name: 'Paycheck 1',
-          master_category_id: response.id.slice(-ID_LENGTH.category),
-          isIncome: true
+          master_id: response._id.slice(-ID_LENGTH.category)
         }
         return context.dispatch('createCategory', payload)
       })
@@ -275,8 +310,7 @@ export default {
               starter_categories[master_category].map((subcategory) => {
                 const payload = {
                   category_name: subcategory,
-                  master_category_id: response.id.slice(-ID_LENGTH.category),
-                  isIncome: false
+                  master_id: response.id.slice(-ID_LENGTH.category)
                 }
                 return context.dispatch('createCategory', payload)
               })
@@ -308,10 +342,6 @@ export default {
                 getters.monthCategories
               )
             }
-
-            // TODO make it so that monthCategories come from one location
-            // In fact, make it so that all derived categories aren't stored (or as much as possible)
-            // Take heed from how accounts are done
 
             b_balances[month] = updateSingleCategory(b_balances[month], master_id, category_id, { doc: month_category })
           })
@@ -445,7 +475,7 @@ const initCategoryBalancesMonth = (current_balances, month, categories, monthCat
     if (prev_month) {
       prev_balance = getCategoryBalance(current_balances, prev_month, master_id, category_id)
     }
-    return updateSingleCategory(partial, master_id, category_id, {carryover: prev_balance})
+    return updateSingleCategory(partial, master_id, category_id, { carryover: prev_balance })
   }, {})
 }
 
@@ -468,7 +498,7 @@ const getCategoryBalance = (current_balances, month, master_id, category_id, def
  * @param {object|null} doc The monthCategory document. Null if this is not being updated
  * Note: Use null for carryover if not intending to update this value
  */
-const updateSingleCategory = (prev_month_balances, master_id, category_id, {spent, carryover, doc}) => {
+const updateSingleCategory = (prev_month_balances, master_id, category_id, { spent, carryover, doc }) => {
   prev_month_balances = prev_month_balances === undefined ? {} : prev_month_balances
 
   const default_balance = defaultCategoryBalance(master_id, category_id)
@@ -479,7 +509,7 @@ const updateSingleCategory = (prev_month_balances, master_id, category_id, {spen
     carryover_difference = carryover - month_balances[master_id][category_id].carryover
   }
 
-  if (typeof(doc) === 'object') {
+  if (typeof doc === 'object') {
     month_balances[master_id][category_id].doc = doc
   }
 
@@ -491,13 +521,13 @@ const updateSingleCategory = (prev_month_balances, master_id, category_id, {spen
 
 const defaultCategoryBalance = (master_id, category_id) => {
   return {
-      [master_id]: {
-        [category_id]: {
-          doc: null,
-          spent: 0,
-          carryover: 0
-        }
+    [master_id]: {
+      [category_id]: {
+        doc: null,
+        spent: 0,
+        carryover: 0
       }
+    }
   }
 }
 

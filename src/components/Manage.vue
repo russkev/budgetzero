@@ -156,7 +156,7 @@ export default {
       this.item = JSON.parse(JSON.stringify(item))
       this.dialog = true
     },
-    async deleteItem(item) {
+    async deleteItem(budget_document) {
       if (
         await this.$root.$confirm(
           'Delete Entire Budget?',
@@ -164,10 +164,14 @@ export default {
           { cancelBtnColor: 'grey', agreeBtnColor: 'accent', agreeBtnText: 'Delete Entire Budget'}
         )
       ) {
-        this.item = JSON.parse(JSON.stringify(item))
-        await this.$store.dispatch('deleteEntireBudget', item)
-        this.$store.dispatch('loadLocalBudget')
-        
+        const budget_id = budget_document._id.slice(-ID_LENGTH.budget)
+
+        const delete_result = await this.$store.dispatch('deleteEntireBudget', {...budget_document})
+        if (delete_result && budget_id === this.selectedBudgetId) {
+          return this.$store.dispatch('loadLocalBudget')
+        } else {
+          return this.$store.dispatch('fetchAllBudgets')
+        }        
       } else {
         // cancel
       }

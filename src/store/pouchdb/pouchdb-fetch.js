@@ -1,4 +1,4 @@
-import { ID_NAME, ID_LENGTH, UNCATEGORIZED } from '../../constants'
+import { ID_NAME, ID_LENGTH, NONE } from '../../constants'
 import { logPerformanceTime, prevMonth } from '../../helper'
 import Vue from 'vue'
 
@@ -7,25 +7,6 @@ export default {
   getters: {},
   mutations: {},
   actions: {
-    // fetchBudgetOpened: (context) => {
-    //   const db = Vue.prototype.$pouch
-    //   const t1 = performance.now()
-    //   return db
-    //     .allDocs({
-    //       include_docs: true,
-    //       attachments: false,
-    //       startkey: ID_NAME.budgetOpened,
-    //       endkey: ID_NAME.budgetOpened + '\ufff0'
-    //     })
-    //     .then((result) => {
-    //       logPerformanceTime('loadBudgetOpened', t1)
-    //       return context.commit('SET_BUDGET_OPENED', result.rows)
-    //     })
-    //     .catch((err) => {
-    //       console.log(err)
-    //       context.commit('API_FAILURE', err)
-    //     })
-    // },
     fetchAllBudgets: (context) => {
       const db = Vue.prototype.$pouch
       const t1 = performance.now()
@@ -63,14 +44,16 @@ export default {
       const db = Vue.prototype.$pouch
       const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.account, 'fetchAccounts').then((result) => {
-        return context.commit('SET_ACCOUNTS', result)
+        context.commit('SET_ACCOUNTS', result)
+        return result
       })
     },
     fetchPayees: (context) => {
       const db = Vue.prototype.$pouch
       const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.payee, 'fetchPayees').then((result) => {
-        return context.commit('SET_PAYEES', result)
+        context.commit('SET_PAYEES', result)
+        return result
       })
     },
     fetchCategories: (context) => {
@@ -78,31 +61,22 @@ export default {
       const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.category, 'fetchCategories').then((result) => {
         context.commit('SET_CATEGORIES', result)
-        return 'success'
+        return result
       })
     },
     fetchMasterCategories: (context) => {
       const db = Vue.prototype.$pouch
       const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.masterCategory, 'fetchMasterCategories').then((result) => {
-        result.push(UNCATEGORIZED)
+        result.push(NONE)
         context.commit('SET_MASTER_CATEGORIES', result)
-        return 'success'
+        return result
       })
     },
     fetchMonthCategories: (context) => {
       const db = Vue.prototype.$pouch
       const budget_id = context.rootState.selectedBudgetId
-      // const name = ID_NAME.monthCategory + context.
       return fetchDocsByType(context, db, budget_id, ID_NAME.monthCategory, 'fetchMonthCategories')
-      // .then((result) => {
-      //   console.log(result)
-      //   return result
-      // })
-      // .then((result) => {
-      //   context.commit('SET_MONTH_CATEGORY_BUDGETS', result)
-      //   return 'success'
-      // })
     },
     fetchTransactionsForAccount: async (context, options) => {
       const t1 = performance.now()
