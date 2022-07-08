@@ -162,6 +162,10 @@ export default {
         })
     },
 
+    resetBudget(context) {
+      context.commit('RESET_BUDGET_STATE')
+    },
+
     /**
      * Turn the right-red-arrow on/off
      */

@@ -107,17 +107,8 @@ export default {
     }
   },
   actions: {
-    createMasterCategory: async (context, { category_name, is_income = false, sort = 1 }) => {
-      const prefix = `b_${context.rootState.selectedBudgetId}${ID_NAME.masterCategory}`
-      const id = await context.dispatch('generateUniqueShortId', { prefix, sort })
-      const payload = {
-        _id: prefix + id,
-        name: category_name,
-        sort: sort,
-        collapsed: false,
-        isIncome: is_income
-      }
-
+    createMasterCategory: async (context, { name, is_income, sort }) => {
+      const payload = await context.dispatch('masterCategoryDocument', { name, is_income, sort })
       try {
         return context.dispatch('commitDocToPouchAndVuex', { current: payload, previous: null }).then(() => {
           return payload
@@ -132,18 +123,37 @@ export default {
       const categoriesGroup = context.getters.categoriesByMaster[master_id]
 
       const sort_length = categoriesGroup ? categoriesGroup.length : 0
+      const category = await context.dispatch('categoryDocument', {
+        name: name,
+        master_id: master_id,
+        sort: sort_length
+      })
+      await context.dispatch('commitDocToPouchAndVuex', { current: category, previous: null })
+      return category._id
+    },
 
+    masterCategoryDocument: async (context, { name, is_income, sort }) => {
+      const prefix = `b_${context.rootState.selectedBudgetId}${ID_NAME.masterCategory}`
+      const id = await context.dispatch('generateUniqueShortId', { prefix, sort })
+      return {
+        _id: prefix + id,
+        name: name,
+        sort: sort,
+        collapsed: false,
+        isIncome: is_income
+      }
+    },
+
+    categoryDocument: async (context, { name, master_id, sort }) => {
       const prefix = `b_${context.rootState.selectedBudgetId}${ID_NAME.category}`
       const id = await context.dispatch('generateUniqueShortId', { prefix: prefix })
-      const category = {
+      return {
         _id: `b_${context.rootState.selectedBudgetId}${ID_NAME.category}${id}`,
         name: name,
-        sort: sort_length,
+        sort: sort,
         hidden: false,
         masterCategory: master_id
       }
-      await context.dispatch('commitDocToPouchAndVuex', { current: category, previous: null })
-      return id
     },
     reorderMasterCategories(context, master_categories) {
       const docs = master_categories.reduce((partial, master_category, i) => {
@@ -207,30 +217,25 @@ export default {
       let updated_by_master = {}
 
       const temp_index = new_index > old_index ? new_index + 0.5 : new_index - 0.5
-      updated_by_master[master_id_from] = context.getters.categoriesByMaster[master_id_from].map(
-        (category, i) => {
-          const sort = i === old_index ? temp_index : i
-          const master_id = sort === temp_index ? master_id_to : category.masterCategory
+      updated_by_master[master_id_from] = context.getters.categoriesByMaster[master_id_from].map((category, i) => {
+        const sort = i === old_index ? temp_index : i
+        const master_id = sort === temp_index ? master_id_to : category.masterCategory
+        return {
+          ...category,
+          masterCategory: master_id,
+          sort: sort
+        }
+      })
+      if (master_id_to !== master_id_from) {
+        updated_by_master[master_id_to] = context.getters.categoriesByMaster[master_id_to].map((category, i) => {
           return {
             ...category,
-            masterCategory: master_id,
-            sort: sort
+            sort: i
           }
-        }
-      )
-      if (master_id_to !== master_id_from) {
-        updated_by_master[master_id_to] = context.getters.categoriesByMaster[master_id_to].map(
-          (category, i) => {
-            return {
-              ...category,
-              sort: i
-            }
-          }
-        )
+        })
         updated_by_master[master_id_to].push(updated_by_master[master_id_from][old_index])
         updated_by_master[master_id_from].splice(old_index, 1)
       }
-
 
       const updated_payload = Object.values(updated_by_master).reduce((partial, categories) => {
         categories.sort((a, b) => a.sort - b.sort)
@@ -239,26 +244,26 @@ export default {
             previous: context.getters.categoriesById[category._id.slice(-ID_LENGTH.category)],
             current: {
               ...category,
-              sort: i,
+              sort: i
             }
           }
         })
-        partial = partial.concat(updated_categories)  
+        partial = partial.concat(updated_categories)
         return partial
       }, [])
       context.dispatch('commitBulkDocsToPouchAndVuex', updated_payload)
     },
 
-    initializeIncomeCategory(context) {
+    async initializeIncomeCategory(context) {
       console.log('Init base budget categories')
       const master_category_payload = {
-        category_name: 'Income',
+        name: 'Income',
         is_income: true,
         sort: 0
       }
       return context.dispatch('createMasterCategory', master_category_payload).then((response) => {
         const payload = {
-          category_name: 'Paycheck 1',
+          name: 'Paycheck 1',
           master_id: response._id.slice(-ID_LENGTH.category)
         }
         return context.dispatch('createCategory', payload)
@@ -268,7 +273,7 @@ export default {
     /**
      * Initialize categories in a new budget
      */
-    initializeBudgetCategories(context) {
+    async initializeBudgetCategories(context) {
       console.log('Init default budget categories')
       const starter_categories = {
         Giving: ['Tithing', 'Charitable'],
@@ -298,26 +303,46 @@ export default {
           'Vacation'
         ]
       }
-      return Promise.all(
-        Object.keys(starter_categories).map((master_category, index) => {
-          const master_category_payload = {
-            category_name: master_category,
+      const master_category_docs = await Promise.all(
+        Object.keys(starter_categories).map((category_name, i) => {
+          return context.dispatch('masterCategoryDocument', {
+            name: category_name,
             is_income: false,
-            sort: index
-          }
-          return context.dispatch('createMasterCategory', master_category_payload).then((response) => {
-            return Promise.all(
-              starter_categories[master_category].map((subcategory) => {
-                const payload = {
-                  category_name: subcategory,
-                  master_id: response.id.slice(-ID_LENGTH.category)
-                }
-                return context.dispatch('createCategory', payload)
-              })
-            )
+            sort: i
           })
         })
       )
+      const category_docs = await Promise.all(
+        master_category_docs.reduce((partial, master_category) => {
+          const category_names = starter_categories[master_category.name]
+          const master_id = master_category._id.slice(-ID_LENGTH.category)
+          const categories = Promise.all(
+            category_names.map((category_name, i) => {
+              return context.dispatch('categoryDocument', {
+                name: category_name,
+                master_id: master_id,
+                sort: i
+              })
+            })
+          )
+          partial = partial.concat(categories)
+          return partial
+        }, [])
+      )
+      return Promise.all([
+        context.dispatch(
+          'commitBulkDocsToPouchAndVuex',
+          master_category_docs.map((doc) => {
+            return { current: doc, previous: null }
+          })
+        ),
+        context.dispatch(
+          'commitBulkDocsToPouchAndVuex',
+          category_docs.flat().map((doc) => {
+            return { current: doc, previous: null }
+          })
+        )
+      ])
     },
 
     async calculateAllValues({ commit, dispatch, getters }) {

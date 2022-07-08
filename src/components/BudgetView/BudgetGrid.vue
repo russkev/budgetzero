@@ -457,7 +457,7 @@ export default {
     newMasterCategory(existing_master_category) {
       console.log(existing_master_category)
       const sort = existing_master_category.sort ? existing_master_category.sort : 1
-      this.$store.dispatch('createMasterCategory', { category_name: '', is_income: false, sort: sort })
+      this.$store.dispatch('createMasterCategory', { name: '', is_income: false, sort: sort })
     },
     deleteMasterCategory(master_category) {
       console.log('delete master category')
@@ -553,8 +553,8 @@ export default {
 .budgeted-amount >>> input {
   text-align: right !important;
 }
-.budgeted-amount-neg >>> input {
-}
+/* .budgeted-amount-neg >>> input {
+} */
 .budgeted-amount-pos >>> input {
   color: var(--v-primary-base);
 }

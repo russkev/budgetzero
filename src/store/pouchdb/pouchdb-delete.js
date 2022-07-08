@@ -11,8 +11,8 @@ export default {
       db
         .destroy()
         .then(() => {
-          context.commit('DELETE_LOCAL_DB')
-          context.commit('UPDATE_SELECTED_BUDGET_ID', null)
+          context.dispatch('resetAllCurrentBudgetData')
+          context.dispatch('resetBudgets')
         })
         .catch(function (err) {
           console.log(`Error deleting database: ${err}`)

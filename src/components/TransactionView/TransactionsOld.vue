@@ -431,7 +431,7 @@
                 </td>
                 <td v-else align="right" id="outflow">
                   <div>
-                    {{ item.value < 0 ? -(item.value / 100) : '' | currency }}
+                    {{ item.value > 0 ? '' :  -(item.value / 100) | currency }}
                   </div>
                 </td>
 
@@ -976,9 +976,9 @@ export default {
 </script>
 
 <style>
-.transaction-toolbar {
-  /* background-color: var(--v-header_background-base) !important; */
-}
+/* .transaction-toolbar {
+  background-color: var(--v-header_background-base) !important;
+} */
 
 .selectedRow {
   background-color: var(--v-header_background-base) !important; /*Overrides the hover color*/
@@ -988,9 +988,9 @@ export default {
 /* tr.selectedRow {
   height: 20px !important;
 } */
-.editing-cell-element {
-  /* background-color: var(--v-header_background-base) !important; */
-}
+/* .editing-cell-element {
+  background-color: var(--v-header_background-base) !important;
+} */
 .editing-cell-container {
   height: 40px;
   margin: auto;
