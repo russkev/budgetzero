@@ -133,6 +133,22 @@
     <v-btn @click="addTransaction"> Create </v-btn>
     <v-btn @click="deleteSelectedTransactions"> Delete selected </v-btn>
     <v-btn @click="onClickMe"> Click Me </v-btn>
+    <v-menu bottom offset-x close-on-content-click close-on-click>
+      <template #activator="{ on, attrs }">
+        <!-- <v-list-item v-bind="attrs" left v-on="on">Categorize as:</v-list-item> -->
+        <v-btn v-bind="attrs" v-on="on">Categorize as:</v-btn>
+      </template>
+      <v-list>
+        <v-list-item
+          v-for="category in categoriesForDropdown"
+          :key="category._id"
+          dense
+          @click="categorizeSelectedTransactions(category)"
+        >
+          <v-list-item-title> {{ category.name }} </v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
   </div>
 </template>
 
@@ -198,7 +214,7 @@ export default {
   },
   computed: {
     // Re-configure categoriesByMaster to be in correct format for treeselect
-    ...mapGetters(['dataTableHeaders', 'selectedBudgetId', 'categoriesById']),
+    ...mapGetters(['dataTableHeaders', 'selectedBudgetId', 'categoriesById', 'categoriesByMaster']),
     selectedAccount() {},
     categoryOptions() {
       const key_values = Object.entries(this.$store.getters.categoriesByMaster)
@@ -218,6 +234,9 @@ export default {
         }
         return result
       })
+    },
+    categoriesForDropdown() {
+      return Object.values(this.categoriesByMaster).flat()
     },
     numTransactionsTotal() {
       return this.creatingNewTransactions ? this.numServerTransactions + 1 : this.numServerTransactions
@@ -317,13 +336,32 @@ export default {
       this.editedIndex = this.transactions.indexOf(this.editedItem)
       this.expanded.push(this.editedItem)
     },
+    categorizeSelectedTransactions(category) {
+      if (this.selected.length < 1) {
+        return
+      }
+      const documents = this.selected.map((doc) => {
+        return {
+          current: {
+            ...doc,
+            category: category._id.slice(-ID_LENGTH.category)
+          },
+          previous: doc
+        }
+      })
+      this.$store.dispatch('commitBulkDocsToPouchAndVuex', documents).then(() => {
+        this.getTransactions()
+        
+        // At the moment this is required because otherwise checkboxes remain checked but this.selected is stale
+        this.selected = []
+      })
+    },
     deleteSelectedTransactions() {
       if (this.selected.length < 1) {
         return
       }
       this.$store.dispatch('deleteBulkDocumentsFromPouchAndVuex', { documents: this.selected }).then(() => {
         this.getTransactions()
-        // this.$store.dispatch('updateBalances')
         this.selected = []
       })
     },

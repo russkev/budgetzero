@@ -87,8 +87,6 @@ export default {
     //   }, {})
     // },
     UPDATE_CATEGORY_BALANCES(state, { month, master_id, category_id, spent, doc }) {
-      const existing_month_balances = state.allCategoryBalances[month]
-
       let month_balances = initCategoryBalancesMonth(state.allCategoryBalances, month, state.categories)
       month_balances = updateSingleCategory(month_balances, master_id, category_id, {
         spent: spent,

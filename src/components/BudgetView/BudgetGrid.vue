@@ -195,20 +195,6 @@ export default {
       }
     },
     masterCategoriesStats() {
-      // return this.masterCategories.reduce((partial, master_category) => {
-      //   const master_id = master_category._id.slice(-ID_LENGTH.category)
-      //   partial[master_id] = { budget: 0, spent: 0, balance: 0 }
-      //   const month_data = Object.values(_.get(this.allCategoryBalances, [this.selectedMonth, master_id], {}))
-      //   month_data.map((category) => {
-      //     const budget = _.get(category, ['doc', 'budget'], 0)
-      //     const spent = _.get(category, ['spent'], 0)
-      //     const carryover = _.get(category, ['carryover'], 0)
-      //     partial[master_id].budget += budget
-      //     partial[master_id].spent += spent
-      //     partial[master_id].balance += budget + spent + carryover
-      //   })
-      //   return partial
-      // }, {})
       return Object.entries(this.categoriesData).reduce((partial, [master_id, categories]) => {
         partial[master_id] = categories.reduce((sum_partial, category) => {
           sum_partial.budget += category.budget
@@ -239,11 +225,6 @@ export default {
                 0
               )
               const spent = _.get(this.allCategoryBalances, [this.selectedMonth, master_id, category_id, 'spent'], 0)
-              // const carryover = _.get(
-              //   this.allCategoryBalances,
-              //   [this.selectedMonth, master_id, category_id, 'carryover'],
-              //   0
-              // )
               const carryover = this.getCarryover(this.allCategoryBalances, this.selectedMonth, master_id, category_id)
               const name = _.get(this.categoriesById, [category_id, 'name'], '')
               return {
