@@ -1,29 +1,17 @@
 <template>
   <v-row class="px-3 pt-2">
     <BaseDialogModalComponent v-model="mockTransactionsModalIsVisible">
-      <template #title>
-        Create mock transactions
-      </template>
+      <template #title> Create mock transactions </template>
       <template #body>
         <span>Number of transactions to create:</span>
         <v-text-field v-model="mockTransactionsAmount" type="number" />
         <v-row justify="space-around">
-          <v-date-picker
-            v-model="mockTransactionsStartMonth"
-            :show-current="true"
-            type="month"
-          />
-          <v-date-picker
-            v-model="mockTransactionsEndMonth"
-            :show-current="true"
-            type="month"
-          />
+          <v-date-picker v-model="mockTransactionsStartMonth" :show-current="true" type="month" />
+          <v-date-picker v-model="mockTransactionsEndMonth" :show-current="true" type="month" />
         </v-row>
       </template>
       <template #actions>
-        <v-btn color='grey' @click.stop="mockTransactionsModalIsVisible = false">
-          Cancel
-        </v-btn>
+        <v-btn color="grey" @click.stop="mockTransactionsModalIsVisible = false"> Cancel </v-btn>
         <v-btn color="accent" @click="onMockTransactionCreate()" :loading="mockTransactionsCreateIsLoading">
           Create
         </v-btn>
@@ -136,7 +124,14 @@
               databases.</span
             >
             <br />
-            <v-btn color="red" dark class="mb-2" small @click="onDeleteTransactions" :loading="deleteTransactionsIsLoading">
+            <v-btn
+              color="red"
+              dark
+              class="mb-2"
+              small
+              @click="onDeleteTransactions"
+              :loading="deleteTransactionsIsLoading"
+            >
               Delete Transactions
             </v-btn>
 
@@ -157,25 +152,6 @@
               Generate Mock Transactions
             </v-btn>
             <span class="pl-2">Loads fake data for testing purposes.</span>
-
-          </v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
-
-      <v-expansion-panels>
-        <v-expansion-panel class="grey lighten-3">
-          <v-expansion-panel-header>
-            <h3>Raw Database Data</h3>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content>
-            <p>
-              Transactions:
-              <tree-view :data="transactions" :options="{ maxDepth: 0 }" />
-            </p>
-            <p>
-              Accounts:
-              <tree-view :data="accounts" :options="{ maxDepth: 0 }" />
-            </p>
           </v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
@@ -194,7 +170,7 @@ import BaseDialogModalComponent from './Modals/BaseDialogModalComponent.vue'
 
 export default {
   name: 'Settings',
-  components: {BaseDialogModalComponent},
+  components: { BaseDialogModalComponent },
   data() {
     return {
       remoteSyncURLInput: null,
@@ -210,22 +186,15 @@ export default {
       isProd: process.env.NODE_ENV === 'production',
       mockTransactionsModalIsVisible: false,
       mockTransactionsAmount: 1000,
-      mockTransactionsStartMonth: "2020-01",
-      mockTransactionsEndMonth: "2021-12",
+      mockTransactionsStartMonth: '2020-01',
+      mockTransactionsEndMonth: '2021-12',
       mockTransactionsCreateIsLoading: false,
       deleteTransactionsIsLoading: false,
       panel: 0
     }
   },
   computed: {
-    ...mapGetters([
-      'transactions',
-      'accounts',
-      'payees',
-      'selectedBudgetId',
-      'remoteSyncURL',
-      'sync_state'
-    ]),
+    ...mapGetters(['transactions', 'accounts', 'payees', 'selectedBudgetId', 'remoteSyncURL', 'sync_state']),
     packageVersion() {
       return process.env.PACKAGE_VERSION || '0'
     }
@@ -260,7 +229,7 @@ export default {
           const vm = this
           let data = JSON.parse(e.target.result)
           vm.backupFileParsed = data
-        } catch(error) {
+        } catch (error) {
           this.$store.commit('SET_SNACKBAR_MESSAGE', {
             snackbarMessage: `Invalid file selected`,
             snackbarColor: `error`
@@ -277,21 +246,25 @@ export default {
       this.mockTransactionsCreateIsLoading = true
       this.$store
         .dispatch('createMockTransactions', {
-          amount: this.mockTransactionsAmount, 
-          start: this.mockTransactionsStartMonth, 
+          amount: this.mockTransactionsAmount,
+          start: this.mockTransactionsStartMonth,
           end: this.mockTransactionsEndMonth
         })
         .then((result) => {
+          console.log('mock transaction create result')
+          console.log(result)
           this.$store.commit('SET_SNACKBAR_MESSAGE', {
-            snackbarMessage: `Created ${result} mock transactions`,
+            snackbarMessage: 
+              `Created ${result[0].length} mock transactions and ${result[1].length} mock category budget values.`,
             color: 'success'
           })
           this.mockTransactionsModalIsVisible = false
+          return this.$store.dispatch('loadLocalBudget')
         })
         .catch((error) => {
           this.$store.commit('SET_SNACKBAR_MESSAGE', {
             snackbarMessage: error,
-            snackbarColor: 'error',
+            snackbarColor: 'error'
           })
           console.log(error)
         })
@@ -301,7 +274,8 @@ export default {
     },
     onDeleteTransactions() {
       this.deleteTransactionsIsLoading = true
-      this.$store.dispatch('deleteTransactions')
+      this.$store
+        .dispatch('deleteTransactions')
         .then(() => {
           this.$store.commit('SET_SNACKBAR_MESSAGE', {
             snackbarMessage: `Successfully deleted transactions`,

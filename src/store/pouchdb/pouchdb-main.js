@@ -10,7 +10,9 @@ import {
 } from '../validation'
 import _ from 'lodash'
 import { ID_NAME } from '../../constants'
-import { databaseExists, docTypeFromId } from '../../helper'
+import { databaseExists, docTypeFromId, logPerformanceTime } from '../../helper'
+import { parseAllMonthCategories } from '../modules/category-module'
+import { parseAllTransactions } from '../modules/transaction-module'
 /**
  * This pouchdb vuex module contains code that interacts with the pouchdb database.
  */
@@ -22,32 +24,11 @@ export default {
      * The calling component is responsible for updating current list to be in sync with store.
      * @param {array} payload [{current, previous}] The  documents to commit to pouchdb
      */
-    async commitBulkDocsToPouchAndVuex(context, payload) {
-      const database_exists = await databaseExists(this._vm.$pouch)
-      if (!database_exists) {
-        await context.dispatch('createLocalPouchDB', context)
-      }
-
-      const valid_documents = payload.reduce((partial, doc) => {
-        let doc_type = ''
-
-        if (doc.current !== undefined && doc.previous !== undefined) {
-          doc_type = validateDocument(context, doc.current, doc.previous)
-        } else {
-          console.warn('commitBulkDocsToPouchAndVuex requires payload of type [{current, previous}]')
-        }
-        if (!doc_type) {
-          console.warn('Invalid document provided to commitBulkDocsToPouchAndVuex', doc)
-        } else {
-          const current = doc.current ? { ...doc.current } : null
-          const previous = doc.previous ? { ...doc.previous } : null
-          partial.push({ current, previous, doc_type })
-        }
-        return partial
-      }, [])
+    async commitBulkDocsToPouchAndVuex(context, bulk_docs) {
+      const valid_documents = await context.dispatch('validBulkDocs', bulk_docs)
 
       try {
-        const results = await context.dispatch('commitDocsToPouch', valid_documents)
+        const results = await context.dispatch('commitBulkDocsToPouch', valid_documents)
         const results_by_id = results.reduce((partial, result) => {
           partial[result.id] = result
           return partial
@@ -69,6 +50,31 @@ export default {
         console.log('ACTION: commitBulkDocsToPouchAndVuex failed')
         return context.commit('API_FAILURE', error)
       }
+    },
+
+    async validBulkDocs(context, bulk_docs) {
+      const database_exists = await databaseExists(this._vm.$pouch)
+      if (!database_exists) {
+        await context.dispatch('createLocalPouchDB', context)
+      }
+
+      return bulk_docs.reduce((partial, doc) => {
+        let doc_type = ''
+
+        if (doc.current !== undefined && doc.previous !== undefined) {
+          doc_type = validateDocument(context, doc.current, doc.previous)
+        } else {
+          console.warn('commitBulkDocsToPouchAndVuex requires payload of type [{current, previous}]')
+        }
+        if (!doc_type) {
+          console.warn('Invalid document provided to commitBulkDocsToPouchAndVuex', doc)
+        } else {
+          const current = doc.current ? { ...doc.current } : null
+          const previous = doc.previous ? { ...doc.previous } : null
+          partial.push({ current, previous, doc_type })
+        }
+        return partial
+      }, [])
     },
 
     /**
@@ -138,7 +144,7 @@ export default {
       }
     },
 
-    commitDocsToPouch(context, docs) {
+    commitBulkDocsToPouch(context, docs) {
       const db = this._vm.$pouch
       const db_documents = docs.reduce((partial, doc) => {
         if (doc.doc_type === ID_NAME.none) {
@@ -155,23 +161,23 @@ export default {
     },
 
     commitDocsToVuex(context, payloads) {
-      const commitIndividuallyTypes = new Set([
-        ID_NAME.transaction, 
-        ID_NAME.monthCategory, 
-        ID_NAME.budget
-      ])
+      const commitIndividuallyTypes = new Set([ID_NAME.transaction, ID_NAME.monthCategory, ID_NAME.budget])
 
       const documentsByType = payloads.reduce((partial, payload) => {
-        _.defaults(partial, {[payload.doc_type]: []})
-        partial[payload.doc_type].push({ current: payload.current, previous: payload.previous })
+        _.defaults(partial, { [payload.doc_type]: [] })
+        partial[payload.doc_type].push(payload)
         return partial
       }, {})
 
       Object.entries(documentsByType).map(([doc_type, docs]) => {
         if (commitIndividuallyTypes.has(doc_type)) {
-          return Promise.all(docs.map((doc) => context.dispatch('commitDocToVuex', doc)))
+          return Promise.all(
+            docs.map((doc) => {
+              context.dispatch('commitDocToVuex', doc)
+            })
+          )
         } else {
-          return context.dispatch('commitDocToVuex', {current: null, previous: null, doc_type: doc_type})
+          return context.dispatch('commitDocToVuex', { current: null, previous: null, doc_type: doc_type })
         }
       })
     },
@@ -233,12 +239,6 @@ export default {
       context.commit('RESET_PAYEES_STATE')
     },
 
-    getAllDocsFromPouchDB(context) {
-      return Promise.all([context.dispatch('fetchAccounts'), context.dispatch('fetchPayees')]).then(() => {
-        return context.dispatch('calculateAllValues')
-      })
-    },
-
     async loadLocalBudget(context) {
       try {
         await context.dispatch('resetAllCurrentBudgetData')
@@ -254,6 +254,36 @@ export default {
           snackbarColor: 'error'
         })
       }
+    },
+
+    getAllDocsFromPouchDB(context) {
+      return Promise.all([context.dispatch('fetchAccounts'), context.dispatch('fetchPayees')]).then(() => {
+        return context.dispatch('calculateAllValues')
+      })
+    },
+
+    async calculateAllValues({ commit, dispatch, getters }) {
+      let month_category_balances = {} // Month Category Balances
+      return Promise.all([
+        dispatch('fetchCategories'),
+        dispatch('fetchMasterCategories'),
+        dispatch('fetchMonthCategories')
+      ])
+        .then((results) => {
+          month_category_balances = parseAllMonthCategories(results, getters)
+        })
+        .then(() => {
+          return dispatch('fetchAllTransactions')
+        })
+        .then((result) => {
+          const t1 = performance.now()
+          const balances = parseAllTransactions(result.rows, month_category_balances, getters)
+
+          logPerformanceTime('calculateAllValues', t1)
+          commit('SET_ALL_ACCOUNT_BALANCES', balances.account)
+          commit('SET_ALL_CATEGORY_BALANCES', balances.category)
+          return balances.category
+        })
     }
   }
 }

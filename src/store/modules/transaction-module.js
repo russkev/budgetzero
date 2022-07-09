@@ -1,5 +1,8 @@
-import { sanitizeValueInput, randomInt, randomString} from '../../helper'
 import { ID_LENGTH, ID_NAME, NONE } from '../../constants'
+import { sanitizeValueInput, randomInt, randomString } from '../../helper'
+import { defaultAccountBalance, updateAccountBalances } from './account-module'
+import { initCategoryBalancesMonth, updateSingleCategory } from './category-module'
+import { compareAscii } from './id-module'
 
 const DEFAULT_TRANSACTIONS_STATE = {
   // transactions: []
@@ -115,69 +118,83 @@ export default {
       context.dispatch('commitBulkDocsToPouchAndVuex', transactionsToLock)
     },
 
-    createMockTransactions(context, { amount, start, end }) {
-      return new Promise((resolve, reject) => {
-        const num_transactions = parseInt(amount)
-        if (!num_transactions) {
-          reject('Invalid amount')
-        }
-        if (context.getters.accounts.length < 1) {
-          reject('At least one account is required')
-        }
+    async createMockTransactions(context, { amount, start, end }) {
+      // return new Promise((resolve, reject) => {
+      const num_transactions = parseInt(amount)
+      if (!num_transactions) {
+        throw 'Invalid amount'
+      }
+      if (context.getters.accounts.length < 1) {
+        throw 'At least one account is required'
+      }
 
-        const month_array = monthArray(start, end)
-        const categories = context.getters.categories
-        const accounts = context.getters.accounts
+      const month_array = monthArray(start, end)
+      const categories = context.getters.categories
+      const accounts = context.getters.accounts
 
-        const mock_transactions = Array(num_transactions)
-          .fill(0)
-          .map(() => {
-            const year_month = month_array[randomInt(0, month_array.length - 1)]
-            const day = randomInt(1, 28).toString().padStart(2, '0')
-            const date = `${year_month}-${day}`
-            const transaction_id = this._vm.generateId(date)
+      const mock_transactions = Array(num_transactions)
+        .fill(0)
+        .map(() => {
+          const year_month = month_array[randomInt(0, month_array.length - 1)]
+          const day = randomInt(1, 28).toString().padStart(2, '0')
+          const date = `${year_month}-${day}`
+          const transaction_id = this._vm.generateId(date)
 
-            const category = categories[randomInt(3, categories.length - 1)]
-            const category_id = category._id.slice(-ID_LENGTH.category)
-            const account_id = accounts[randomInt(0, accounts.length - 1)]._id.slice(-ID_LENGTH.account)
-            return {
-              account: account_id,
-              category: category_id,
-              cleared: true,
-              approved: true,
-              value: randomInt(-20000, 30000),
-              date: date,
-              memo: randomString(randomInt(0, 250)),
-              reconciled: false,
-              flag: '#ffffff',
-              payee: null,
-              transfer: null,
-              splits: [],
-              _id: `b_${context.getters.selectedBudgetId}${ID_NAME.transaction}${transaction_id}`,
-              _rev: ''
-            }
-          })
-
-        let mock_budget_data = []
-        month_array.forEach((year_month) => {
-          categories.forEach((category) => {
-            const category_id = category._id.slice(-ID_LENGTH.category)
-            if (category_id) {
-              const budget_amount_item = {
-                budget: randomInt(-20000, 30000),
-                overspending: null,
-                note: randomString(randomInt(0, 100)),
-                _id: `b_${context.getters.selectedBudgetId}${ID_NAME.monthCategory}${year_month}_${category_id}`
-              }
-              mock_budget_data.push(budget_amount_item)
-            }
-          })
+          const category = categories[randomInt(3, categories.length - 1)]
+          const category_id = category._id.slice(-ID_LENGTH.category)
+          const account_id = accounts[randomInt(0, accounts.length - 1)]._id.slice(-ID_LENGTH.account)
+          return {
+            account: account_id,
+            category: category_id,
+            cleared: true,
+            approved: true,
+            value: randomInt(-20000, 30000),
+            date: date,
+            memo: randomString(randomInt(0, 250)),
+            reconciled: false,
+            flag: '#ffffff',
+            payee: null,
+            transfer: null,
+            splits: [],
+            _id: `b_${context.getters.selectedBudgetId}${ID_NAME.transaction}${transaction_id}`,
+            _rev: ''
+          }
         })
 
-        context.dispatch('commitBulkDocsToPouchAndVuex', mock_budget_data.concat(mock_transactions)).then(() => {
-          resolve(mock_transactions.length)
+      let mock_category_data = []
+      month_array.forEach((year_month) => {
+        categories.forEach((category) => {
+          const category_id = category._id.slice(-ID_LENGTH.category)
+          if (category_id) {
+            const budget_amount_item = {
+              budget: randomInt(-20000, 30000),
+              overspending: null,
+              note: randomString(randomInt(0, 100)),
+              _id: `b_${context.getters.selectedBudgetId}${ID_NAME.monthCategory}${year_month}_${category_id}`
+            }
+            mock_category_data.push(budget_amount_item)
+          }
         })
       })
+
+      const valid_mock_transactions = await context.dispatch(
+        'validBulkDocs',
+        mock_transactions.map((doc) => {
+          return { current: doc, previous: null }
+        })
+      )
+      const valid_category_data = await context.dispatch(
+        'validBulkDocs',
+        mock_category_data.map((doc) => {
+          return { current: doc, previous: null }
+        })
+      )
+
+      return Promise.all([
+        context.dispatch('commitBulkDocsToPouch', valid_mock_transactions),
+        context.dispatch('commitBulkDocsToPouch', valid_category_data)
+      ])
+      // })
     }
   }
 }
@@ -185,11 +202,11 @@ export default {
 /**
  * Check if this is a transfer transaction. if so, get the account ID
  * @param {*} transaction The transaction document to process
- * @param {*} context The Vue context 
+ * @param {*} context The Vue context
  * @returns The updated transaction document
  */
 async function processTransfer(transaction, context) {
-  console.warn("PROCESS TRANSFER NOT IMPLEMENTED")
+  console.warn('PROCESS TRANSFER NOT IMPLEMENTED')
   return transaction
   //TODO: only let this be a transfer if the account actually exists?
 
@@ -234,54 +251,112 @@ function monthArray(start, end) {
 }
 
 const calculateTransactionBalanceUpdate = (current, previous) => {
-    // Note that 'cleared' in a document (like current and previous) is the isCleared boolean value.
-    // 'cleared' in a transaction_payload is the dollar amount that has been cleared
-    if (previous === null) {
-      previous = {
-        cleared: current.cleared,
-        value: 0,
-      }
+  // Note that 'cleared' in a document (like current and previous) is the isCleared boolean value.
+  // 'cleared' in a transaction_payload is the dollar amount that has been cleared
+  if (previous === null) {
+    previous = {
+      cleared: current.cleared,
+      value: 0
     }
-    if (current === null) {
-      current = {
-        cleared: previous.cleared,
-        value: 0
-      }
+  }
+  if (current === null) {
+    current = {
+      cleared: previous.cleared,
+      value: 0
     }
+  }
 
-    let transaction_payload = {
-      account_id: current.account,
-      cleared: 0,
-      uncleared: 0,
-      working: current.value - previous.value
-    }
+  let transaction_payload = {
+    account_id: current.account,
+    cleared: 0,
+    uncleared: 0,
+    working: current.value - previous.value
+  }
 
-    if (current.cleared && previous.cleared) {
-      transaction_payload.cleared = transaction_payload.working
-    } else if (current.cleared && !previous.cleared) {
-      transaction_payload.cleared = current.value
-      transaction_payload.uncleared = -current.value
-    } else if (!current.cleared && previous.cleared) {
-      transaction_payload.cleared = -current.value
-      transaction_payload.uncleared = current.value
-    } else {
-      transaction_payload.uncleared = transaction_payload.working
-    }
-    return transaction_payload
+  if (current.cleared && previous.cleared) {
+    transaction_payload.cleared = transaction_payload.working
+  } else if (current.cleared && !previous.cleared) {
+    transaction_payload.cleared = current.value
+    transaction_payload.uncleared = -current.value
+  } else if (!current.cleared && previous.cleared) {
+    transaction_payload.cleared = -current.value
+    transaction_payload.uncleared = current.value
+  } else {
+    transaction_payload.uncleared = transaction_payload.working
+  }
+  return transaction_payload
 }
 
-export { calculateTransactionBalanceUpdate }
+const parseAllTransactions = (allTransactions, month_category_balances, getters) => {
+  const month_category_months = Object.keys(month_category_balances)
+  let month_category_index = 0
+  let balances = { account: {}, category: {} }
+
+  allTransactions.map((row) => {
+    const account_id = row.doc.account
+    const working = row.doc.value
+    const month = row.doc.date.slice(0, 7)
+    const category_id = row.doc.category
+    const master_id = _.get(getters.categoriesById, [category_id, 'masterCategory'], 'null')
+    const cleared = row.doc.cleared ? working : 0
+    const uncleared = row.doc.cleared ? 0 : working
+
+    _.defaultsDeep(balances.account, defaultAccountBalance(account_id))
+    updateAccountBalances(balances.account, account_id, cleared, uncleared, working)
+
+    initFromMonthCategory(month)
+
+    if (balances.category[month] === undefined) {
+      balances.category[month] = initCategoryBalancesMonth(balances.category, month, getters.categories)
+    }
+    balances.category[month] = updateSingleCategory(balances.category[month], master_id, category_id, {
+      spent: working
+    })
+  })
+  initFromMonthCategory('9999-99')
+
+  function initFromMonthCategory(month) {
+    if (balances.category[month] !== undefined) {
+      return
+    }
+    while (
+      month_category_index < month_category_months.length &&
+      compareAscii(month_category_months[month_category_index], month) <= 0
+    ) {
+      const current_month = month_category_months[month_category_index]
+      balances.category[current_month] = initCategoryBalancesMonth(
+        balances.category,
+        current_month,
+        getters.categories
+      )
+      Object.entries(month_category_balances[current_month]).forEach(([master_id, categories]) => {
+        Object.keys(categories).forEach((category_id) => {
+          balances.category[current_month][master_id][category_id].doc = _.get(
+            month_category_balances,
+            [current_month, master_id, category_id, 'doc'],
+            {}
+          )
+        })
+      })
+      month_category_index += 1
+    }
+  }
+
+  return balances
+}
+
+export { calculateTransactionBalanceUpdate, parseAllTransactions }
 
 const dataTableHeaders = [
   {
     text: '',
     class: 'transaction-table-header',
-    value: 'data-table-select',
+    value: 'data-table-select'
   },
   {
     text: '',
     class: 'transaction-table-header',
-    value: 'cleared',
+    value: 'cleared'
   },
   {
     text: 'Date',
@@ -305,12 +380,12 @@ const dataTableHeaders = [
     text: 'Outflow',
     class: 'transaction-table-header',
     value: 'outflow',
-    align: 'left',
+    align: 'left'
   },
   {
     text: 'Inflow',
     class: 'transaction-table-header',
     value: 'inflow',
-    align: 'left',
+    align: 'left'
   }
 ]

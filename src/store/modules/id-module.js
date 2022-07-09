@@ -153,9 +153,12 @@ function generateShortId() {
  * @returns 
  *  -1 if a <  b
  *   0 if a == b
- *   1 if 1 >  b 
+ *   1 if a >  b 
  */
 function compareAscii(a, b) {
+  if (typeof(a) !== 'string' || typeof(b) !== 'string') {
+    console.error(`compareAscii expected strings but got a: ${typeof(a)}, b: ${typeof(b)}` )
+  }
   const length = Math.min(a.length, b.length)
   for(let i = 0; i < length; i++) {
     if (a.charCodeAt(i) < b.charCodeAt(i)) {
