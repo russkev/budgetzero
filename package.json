@@ -20,7 +20,6 @@
   "dependencies": {
     "@riophae/vue-treeselect": "^0.4.0",
     "@sweetalert2/theme-borderless": "^4.0.5",
-    "banking": "^1.2.0",
     "chart.js": "^3.3.2",
     "core-js": "^3.14.0",
     "electron-updater": "^4.3.9",
@@ -32,6 +31,7 @@
     "lodash": "^4.17.21",
     "material-design-icons-iconfont": "^6.1.0",
     "moment": "^2.29.1",
+    "node-ofx-parser": "^0.5.1",
     "number-to-base64": "^1.0.5",
     "pouch-vue": "^0.3.5",
     "pouchdb": "^7.2.2",

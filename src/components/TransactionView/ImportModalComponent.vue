@@ -39,7 +39,7 @@
                     <tr v-for="item in selectedAccount" :key="item.FITID">
                       <td>{{ transactionDate(item.DTPOSTED) }}</td>
                       <td>{{ item.NAME }}</td>
-                      <td>{{ item.MEMO}}
+                      <td>{{ item.MEMO }}</td>
                       <td>{{ item.TRNAMT }}</td>
                     </tr>
                   </tbody>
@@ -65,25 +65,26 @@
             <vue-csv-import
               v-model="parseCsv"
               button-class="v-btn"
-              table-select-class="map-fields-select"
               auto-match-fields
               auto-match-ignore-case
-              :map-fields="['date', 'payee', 'amount', 'memo']"
+              table-select-class="map-fields-select"
+              :map-fields="['date', 'amount', 'memo', ]"
             >
-              <template slot="hasHeaders" slot-scope="{ headers, toggle }">
+              <!-- <template slot="hasHeaders" slot-scope="{ headers, toggle }">
+              :map-fields="{Date: {required: false, label: 'Date'}}"
                 <label>
                   <v-checkbox id="hasHeaders" type="checkbox" :value="headers" label="Headers?" @change="toggle"
                 /></label>
-              </template>
+              </template> -->
 
               <template slot="error"> File type is invalid </template>
 
-              <template slot="thead">
+              <!-- <template slot="thead">
                 <tr>
                   <th>My Fields</th>
                   <th>Column</th>
                 </tr>
-              </template>
+              </template> -->
 
               <template slot="next" slot-scope="{ load }">
                 <v-btn class="my-3" @click.prevent="load"> parse csv file </v-btn>
@@ -107,7 +108,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="item in parseCsv" :key="item.date">
+                  <tr v-for="item in parseCsv" :key="item.date+item.memo+item.amount">
                     <td>{{ item.date }}</td>
                     <td>{{ item.payee }}</td>
                     <td>{{ item.amount }}</td>
@@ -131,13 +132,21 @@
 
 <script>
 import Vue from 'vue'
-import Banking from 'banking'
+// import Banking from 'banking'
 import { mapGetters } from 'vuex'
 import _ from 'lodash'
 import { VueCsvImport } from 'vue-csv-import'
 import moment from 'moment'
-import {getAccountId, getAccountType, getAccountBankId, getAccountTransactions, getDate, cyrb53Hash } from '../../ofxParse'
+import {
+  getAccountId,
+  getAccountType,
+  getAccountBankId,
+  getAccountTransactions,
+  getDate,
+  cyrb53Hash
+} from '../../ofxParse'
 import { ID_NAME } from '../../constants'
+import ofx from 'node-ofx-parser'
 
 export default {
   name: 'ImportFile',
@@ -145,6 +154,10 @@ export default {
   props: ['visible', 'account'],
   data() {
     return {
+      csvFields: {
+        name: { required: false, label: 'Name'},
+        age: {required: true, label: 'Age'}
+      },
       tab: null,
       parseCsv: null,
       selectedAccount: null,
@@ -153,7 +166,7 @@ export default {
         imported: 0,
         skipped: 0
       },
-      chosenFile: null,
+      chosenFile: null
     }
   },
   computed: {
@@ -182,7 +195,7 @@ export default {
       this.selectedAccount = {}
 
       reader.onload = (e) => {
-        Banking.parse(e.target.result, (res) => {
+        ofx.parse(e.target.result, (res) => {
           const potentialBankAccounts = _.get(res, 'body.OFX.BANKMSGSRSV1.STMTTRNRS', [])
           const potentialCreditAccounts = _.get(res, 'body.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS', [])
           var creditAccountsForImport = []
@@ -237,8 +250,8 @@ export default {
       const transactionListToImport = []
       this.selectedAccount.forEach((trn) => {
         //Create a custom importID that appends account to the FITID
-        const importID = `${this.account}_${trn.FITID}`
-        if (this.$store.getters.listOfImportIds.includes(importID) && trn.FITID !== '' && trn.FITID !== null) {
+        const import_id = `${this.account}_${trn.FITID}`
+        if (this.$store.getters.listOfImportIds.includes(import_id) && trn.FITID !== '' && trn.FITID !== null) {
           console.log('import skipped')
           this.importCount.skipped++
         } else {
@@ -254,7 +267,7 @@ export default {
             reconciled: false,
             flag: '#ffffff',
             payee: trn.NAME ? trn.NAME : null,
-            importID: importID,
+            importID: import_id,
             transfer: null,
             splits: [],
             _id: `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId(date, trn.FITID)}`
@@ -290,6 +303,8 @@ export default {
 
         const date = moment(trn.date).format('YYYY-MM-DD')
         //Create a custom importID that appends account to the FITID
+        // TODO make import IDs so that existing entries can be discarded
+        // const import_id = `${this.account}_${date}-${val}-${trn.memo}`
         const jsonData = {
           account: this.account,
           category: null,
@@ -331,7 +346,7 @@ export default {
       for (const transaction of transactionListToImport) {
         console.log('import transaction', transaction)
 
-        await this.$store.dispatch('createOrUpdateTransaction', {current: transaction, previous: null})
+        await this.$store.dispatch('createOrUpdateTransaction', { current: transaction, previous: null })
       }
 
       return Promise.resolve()

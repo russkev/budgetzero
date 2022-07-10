@@ -149,6 +149,15 @@
         </v-list-item>
       </v-list>
     </v-menu>
+    <v-btn @click.stop="importModalIsVisible = true">
+      <v-icon left>mdi-cloud-upload</v-icon>
+      <span>Import</span>
+    </v-btn>
+    <import-modal-component
+      :visible="importModalIsVisible"
+      :account="this.$route.params.account_id"
+      @close="importModalIsVisible = false"
+    />
   </div>
 </template>
 
@@ -161,10 +170,14 @@ import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 import _ from 'lodash'
-import DatePicker from './DatePicker'
+// import DatePicker from './DatePicker'
+import ImportModalComponent from './ImportModalComponent.vue'
+// import Banking from 'banking'
+// import ofx from 'node-ofx-parser'
+
 
 export default {
-  components: { Treeselect, TransactionHeader, DatePicker },
+  components: { Treeselect, TransactionHeader, ImportModalComponent },
   data() {
     return {
       selected: [],
@@ -184,6 +197,7 @@ export default {
         date: moment(new Date()).format('YYYY-MM-DD')
       },
       editedItemInitialDate: moment(new Date()).format('YYYY-MM-DD'),
+      importModalIsVisible: false,
       rules: {
         // date: (value) => {
         //   return this.$vm.validateDate(value) || 'Invalid date.'
@@ -351,7 +365,7 @@ export default {
       })
       this.$store.dispatch('commitBulkDocsToPouchAndVuex', documents).then(() => {
         this.getTransactions()
-        
+
         // At the moment this is required because otherwise checkboxes remain checked but this.selected is stale
         this.selected = []
       })
