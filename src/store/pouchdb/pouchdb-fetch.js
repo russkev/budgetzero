@@ -78,6 +78,23 @@ export default {
       const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.monthCategory, 'fetchMonthCategories')
     },
+    fetchTransactionsWithImportId: async (context, options) => {
+      const db = Vue.prototype.$pouch
+      const budget_id = context.getters.selectedBudgetId
+      if(!budget_id) {
+        return []
+      }
+
+      return db
+        .query('stats/transactions_by_import_id', {
+          include_docs: false,
+          startkey: [budget_id, options.account_id, options.import_id],
+          endkey: [budget_id, options.account_id, options.import_id],
+        })
+        .then((result) => {
+          return result.rows
+        })
+    },
     fetchTransactionsForAccount: async (context, options) => {
       const t1 = performance.now()
 

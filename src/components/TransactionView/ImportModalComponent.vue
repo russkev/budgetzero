@@ -15,13 +15,13 @@
           <v-card-text>
             <v-file-input v-model="chosenFile" label="Upload OFX file" @change="onFileChange" />
 
-            <div v-if="selectedAccount">
+            <div v-if="selectedOfxTransactions">
               <span> Select Account to Import: </span>
-              <v-select v-model="selectedAccount" :items="accountsForImport" item-text="id" item-value="transactions" />
+              <v-select v-model="selectedOfxTransactions" :items="accountsForImport" item-text="id" item-value="transactions" />
 
               <span class="heading"
                 >Preview
-                <strong>{{ selectedAccount ? selectedAccount.length : 0 }}</strong>
+                <strong>{{ selectedOfxTransactions ? selectedOfxTransactions.length : 0 }}</strong>
                 transactions for import:</span
               >
 
@@ -36,7 +36,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="item in selectedAccount" :key="item.FITID">
+                    <tr v-for="item in selectedOfxTransactions" :key="item.FITID">
                       <td>{{ transactionDate(item.DTPOSTED) }}</td>
                       <td>{{ item.NAME }}</td>
                       <td>{{ item.MEMO }}</td>
@@ -145,7 +145,7 @@ import {
   getDate,
   cyrb53Hash
 } from '../../ofxParse'
-import { ID_NAME } from '../../constants'
+import { ID_NAME, NONE } from '../../constants'
 import ofx from 'node-ofx-parser'
 
 export default {
@@ -160,7 +160,7 @@ export default {
       },
       tab: null,
       parseCsv: null,
-      selectedAccount: null,
+      selectedOfxTransactions: null,
       accountsForImport: [],
       importCount: {
         imported: 0,
@@ -192,9 +192,10 @@ export default {
     readOFXfile(file) {
       const reader = new FileReader()
       this.accountsForImport = []
-      this.selectedAccount = {}
+      this.selectedOfxTransactions = {}
 
       reader.onload = (e) => {
+        // TODO: Get this new ofx parser to work, possibly different arguments required
         ofx.parse(e.target.result, (res) => {
           const potentialBankAccounts = _.get(res, 'body.OFX.BANKMSGSRSV1.STMTTRNRS', [])
           const potentialCreditAccounts = _.get(res, 'body.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS', [])
@@ -233,7 +234,7 @@ export default {
 
           this.accountsForImport = this.accountsForImport.concat(bankAccountsForImport, creditAccountsForImport)
           if (this.accountsForImport.length > 0 && this.accountsForImport[0]) {
-            this.selectedAccount = this.accountsForImport[0].transactions
+            this.selectedOfxTransactions = this.accountsForImport[0].transactions
           }
 
           // TODO: Make import button enabled here
@@ -247,83 +248,129 @@ export default {
       return getDate(value)
     },
     async pushTransactionsToBackend() {
-      const transactionListToImport = []
-      this.selectedAccount.forEach((trn) => {
-        //Create a custom importID that appends account to the FITID
-        const import_id = `${this.account}_${trn.FITID}`
-        if (this.$store.getters.listOfImportIds.includes(import_id) && trn.FITID !== '' && trn.FITID !== null) {
-          console.log('import skipped')
-          this.importCount.skipped++
-        } else {
-          const date = getDate(trn.DTPOSTED)
-          const jsonData = {
-            account: this.account,
-            category: null,
-            cleared: false,
-            approved: false,
-            value: Math.round(trn.TRNAMT * 100),
-            date: date,
-            memo: trn.MEMO,
-            reconciled: false,
-            flag: '#ffffff',
-            payee: trn.NAME ? trn.NAME : null,
-            importID: import_id,
-            transfer: null,
-            splits: [],
-            _id: `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId(date, trn.FITID)}`
-          }
+      // const transactionListToImport = []
+      // this.selectedOfxTransactions.forEach((trn) => {
+      //   //Create a custom imprtId that appends account to the FITID
+      //   const import_id = `${this.account}_${trn.FITID}`
+      //   if (this.$store.getters.listOfImportIds.includes(import_id) && trn.FITID !== '' && trn.FITID !== null) {
+      //     console.log('import skipped')
+      //     this.importCount.skipped++
+      //   } else {
+      //     const date = getDate(trn.DTPOSTED)
+      //     const jsonData = {
+      //       account: this.account,
+      //       category: NONE._id,
+      //       cleared: false,
+      //       approved: false,
+      //       value: Math.round(trn.TRNAMT * 100),
+      //       date: date,
+      //       memo: trn.MEMO,
+      //       reconciled: false,
+      //       flag: '#ffffff',
+      //       payee: trn.NAME ? trn.NAME : null,
+      //       imprtId: import_id,
+      //       transfer: null,
+      //       splits: [],
+      //       _id: `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId(date, trn.FITID)}`
+      //     }
 
-          this.importCount.imported++
-          transactionListToImport.push(jsonData)
-        }
+      //     this.importCount.imported++
+      //     transactionListToImport.push(jsonData)
+      //   }
+      // })
+
+      const import_promises = this.selectedOfxTransactions.map((transaction) => {
+        const import_id = `${this.account}_${transaction.FITID}`
+        return this.$store
+          .dispatch(
+            'fetchTransactionsWithImportId',
+            { account_id: this.account, import_id: import_id}
+          ).then((results) => {
+            if (results && results.length > 0) {
+              this.importCount.skipped++
+              return null
+            }
+            this.importCount.imported++
+            const date = getDate(transaction.DTPOSTED)
+
+            return {
+              account: this.account,
+              category: NONE._id,
+              cleared: false,
+              approved: false,
+              value: Math.round(transaction.TRNAMT * 100),
+              date: date,
+              memo: transaction.MEMO,
+              reconciled: false,
+              flag: '#ffffff',
+              payee: transaction.NAME ? transaction.NAME : null,
+              imprtId: import_id,
+              transfer: null,
+              splits: [],
+              _id: `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId(date, transaction.FITID)}`
+            }
+
+          })
       })
 
-      this.$swal({
-        title: 'Loading...',
-        html: 'Importing transactions. Please wait...',
-        didOpen: () => {
-          Vue.prototype.$swal.showLoading()
-        },
-        showConfirmButton: false,
-        showCancelButton: false
-      })
+      return this.doImport(import_promises)
 
-      await this.commitTransactions(transactionListToImport)
+      // this.$swal({
+      //   title: 'Loading...',
+      //   html: 'Importing transactions. Please wait...',
+      //   didOpen: () => {
+      //     Vue.prototype.$swal.showLoading()
+      //   },
+      //   showConfirmButton: false,
+      //   showCancelButton: false
+      // })
 
-      this.importComplete()
-      this.$emit('close')
+      // await this.commitTransactions(transactionListToImport)
+
+      // this.importComplete()
+      // this.$emit('close')
     },
     async importCSVTransactions() {
-      const transactionListToImport = []
+      const import_promises = this.parseCsv.map((transaction) => {
+        // Strip commas
+        const value = transaction.amount.toString().replace(/[^0-9.-]/g, '')
+        const date = moment(transaction.date).format('YYYY-MM-DD')
 
-      this.parseCsv.forEach((trn) => {
-        //This should probably go somewhere else.
-        //Necessary to ensure we strip commas from soon-to-be imported transactions
-        const val = trn.amount.toString().replace(/[^0-9.-]/g, '')
+        // Create a custom import ID to prevent repeat imports
+        const import_id = `${this.account}_${date}-${value}-${transaction.memo}`
+        return this.$store
+          .dispatch(
+            'fetchTransactionsWithImportId', 
+            { account_id: this.account, import_id: import_id }
+          ).then((results) => {
+            if (results && results.length > 0) {
+              this.importCount.skipped++
+              return null
+            }
 
-        const date = moment(trn.date).format('YYYY-MM-DD')
-        //Create a custom importID that appends account to the FITID
-        // TODO make import IDs so that existing entries can be discarded
-        // const import_id = `${this.account}_${date}-${val}-${trn.memo}`
-        const jsonData = {
-          account: this.account,
-          category: null,
-          cleared: false,
-          approved: false,
-          value: Math.round(val * 100),
-          date: date,
-          memo: trn.memo,
-          reconciled: false,
-          flag: '#ffffff',
-          payee: trn.payee,
-          transfer: null,
-          splits: [],
-          _id: `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId(date)}`
-        }
-        this.importCount.imported++
-        transactionListToImport.push(jsonData)
+            this.importCount.imported++
+            return {
+              account: this.account,
+              category: NONE._id,
+              cleared: false,
+              approved: false,
+              value: Math.round(value * 100),
+              date: date,
+              memo: transaction.memo,
+              reconciled: false,
+              flag: '#ffffff',
+              payee: transaction.payee ? transaction.payee : NONE._id,
+              importId: import_id,
+              transfer: null,
+              splits: [],
+              _id: `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId(date)}`
+            }
+          })
       })
 
+      return this.doImport(import_promises)
+    },
+    async doImport(import_promises) {
       this.$swal({
         title: 'Loading...',
         html: 'Importing transactions. Please wait...',
@@ -334,18 +381,20 @@ export default {
         showCancelButton: false
       })
 
-      await this.commitTransactions(transactionListToImport)
+      const import_promise_result = await Promise.all(import_promises)
+      const transaction_list_to_import = import_promise_result
+        .filter((transaction) => transaction !== null)
 
-      this.parseCsv = null
-      this.importComplete()
-      this.$emit('close')
+      try {
+        await this.commitTransactions(transaction_list_to_import)
+      } finally {
+        this.parseCsv = null
+        this.importComplete()
+        this.$emit('close')
+      }
     },
-    async commitTransactions(transactionListToImport) {
-      var asyncFunctions = []
-
-      for (const transaction of transactionListToImport) {
-        console.log('import transaction', transaction)
-
+    async commitTransactions(transaction_list_to_import) {
+      for (const transaction of transaction_list_to_import) {
         await this.$store.dispatch('createOrUpdateTransaction', { current: transaction, previous: null })
       }
 
@@ -358,13 +407,13 @@ export default {
       this.resetData()
     },
     resetData() {
-      this.selectedAccount = null
+      this.selectedOfxTransactions = null
       this.accountsForImport = null
-      ;(this.importCount = {
+      this.importCount = {
         imported: 0,
         skipped: 0
-      }),
-        (this.chosenFile = null)
+      },
+      this.chosenFile = null
     }
   }
 }

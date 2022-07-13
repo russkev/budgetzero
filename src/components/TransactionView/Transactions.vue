@@ -156,8 +156,9 @@
     <import-modal-component
       :visible="importModalIsVisible"
       :account="this.$route.params.account_id"
-      @close="importModalIsVisible = false"
+      @close="onImportModalClose"
     />
+      <!-- @close="importModalIsVisible = false" -->
   </div>
 </template>
 
@@ -389,6 +390,11 @@ export default {
         //   return this.$store.dispatch('updateBalances')
         // })
       this.cancel()
+    },
+    onImportModalClose() {
+      console.log("ON IMPORT MODAL CLOSED")
+      this.importModalIsVisible = false
+      this.getTransactions()
     },
     save(item) {
       // let payload = {}

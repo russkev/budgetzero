@@ -71,6 +71,18 @@ export default {
                   }
                 }`
               },
+              transactions_by_import_id: {
+                map: `function(doc) {
+                  const id = doc._id
+                  if (${is_transaction}) {
+                    emit([
+                      id.slice(${budget_id_start}, ${budget_id_end}), 
+                      doc.account,
+                      doc.importId,
+                    ])
+                  }
+                }`
+              }
               // all_transactions: {
               //   map: `const id = doc._id {
               //     if (${id_transaction}) {
@@ -87,7 +99,7 @@ export default {
               //       )
               //     }
               //   }
-                
+
               //   `
               // }
             }
