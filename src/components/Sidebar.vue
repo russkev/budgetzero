@@ -323,7 +323,7 @@ export default {
       return this.accounts.reduce((partial, account) => {
         const account_id = account._id.slice(-ID_LENGTH.account)
         const account_total = _.get(this.allAccountBalances, [account_id, 'working'], 0)
-        // TODO: When a new account is created and a new transaction is made, this.allAccountNalances
+        // TODO: When a new account is created and a new transaction is made, this.allAccountBalances
         // updates correctly but this computed value doesn't for some reason. Find out why.
         const account_on_budget = account.onBudget
         partial[account_id] = account_total

@@ -1,10 +1,12 @@
 import { sanitizeValueInput } from '../../helper'
 import moment from 'moment'
-import { ID_LENGTH, ID_NAME } from '../../constants'
+import { DEFAULT_ACCOUNT_BALANCE, ID_LENGTH, ID_NAME } from '../../constants'
+import _ from 'lodash'
+import Vue from 'vue'
 
 const DEFAULT_ACCOUNT_STATE = {
   allAccountBalances: {},
-  accounts: [],
+  accounts: []
 }
 
 export default {
@@ -30,20 +32,27 @@ export default {
   mutations: {
     SET_ACCOUNTS(state, accounts) {
       state.accounts = accounts
+      accounts.forEach((account) => {
+        const id = account._id.slice(-ID_LENGTH.account)
+        if (state.allAccountBalances[id] === undefined) {
+          Vue.set(state.allAccountBalances, id, DEFAULT_ACCOUNT_BALANCE)
+        }
+      })
     },
-    SET_ALL_ACCOUNT_BALANCES(state, payload) {
-      state.allAccountBalances = payload
+    SET_ALL_ACCOUNT_BALANCES(state, accountBalances) {
+      Object.entries(accountBalances).forEach(([account_id, balances]) => {
+        Vue.set(state.allAccountBalances, account_id, balances)
+      })
     },
-    // UPDATE_ACCOUNT(state, { index, value }) {
-    //   state.accounts[index] = value
-    // },
     UPDATE_ACCOUNT_BALANCES(state, { account, account_id, cleared, uncleared, working }) {
-      _.defaultsDeep(state.allAccountBalances, defaultAccountBalance(account_id))
+      if (state.allAccountBalances[account_id] === undefined) {
+        Vue.set(state.allAccountBalances, account_id, DEFAULT_ACCOUNT_BALANCE)
+      }
       updateAccountBalances(state.allAccountBalances, account, account_id, cleared, uncleared, working)
     },
     RESET_ACCOUNT_STATE(state) {
       Object.entries(DEFAULT_ACCOUNT_STATE).forEach(([key, value]) => {
-        state[key] = value
+        Vue.set(state, key, value)
       })
     }
   },
@@ -90,7 +99,7 @@ export default {
               reject(result2.total_rows)
             } else {
               // Dispatch account for deletion
-              context.dispatch('commitDocToPouchAndVuex', {current: null, previous: payload})
+              context.dispatch('commitDocToPouchAndVuex', { current: null, previous: payload })
               resolve('Success')
             }
           })
@@ -104,18 +113,17 @@ export default {
 }
 
 const updateAccountBalances = (current_balances, account, account_id, cleared, uncleared, working) => {
-  current_balances[account_id].cleared += cleared * account.sign
-  current_balances[account_id].uncleared += uncleared * account.sign
-  current_balances[account_id].working += working * account.sign
+  let updated_balances = {...current_balances[account_id]}
+  updated_balances.cleared += cleared * account.sign
+  updated_balances.uncleared += uncleared * account.sign
+  updated_balances.working += working * account.sign
+
+  Vue.set(current_balances, account_id, updated_balances)
 }
 
 const defaultAccountBalance = (account_id) => {
   return {
-    [account_id]: {
-      cleared: 0,
-      uncleared: 0,
-      working: 0
-    }
+    [account_id]: DEFAULT_ACCOUNT_BALANCE
   }
 }
 export { updateAccountBalances, defaultAccountBalance }

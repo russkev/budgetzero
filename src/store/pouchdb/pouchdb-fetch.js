@@ -43,9 +43,9 @@ export default {
     fetchAccounts: (context) => {
       const db = Vue.prototype.$pouch
       const budget_id = context.rootState.selectedBudgetId
-      return fetchDocsByType(context, db, budget_id, ID_NAME.account, 'fetchAccounts').then((result) => {
-        context.commit('SET_ACCOUNTS', result)
-        return result
+      return fetchDocsByType(context, db, budget_id, ID_NAME.account, 'fetchAccounts').then((accounts) => {
+        context.commit('SET_ACCOUNTS', accounts)
+        return accounts
       })
     },
     fetchPayees: (context) => {
