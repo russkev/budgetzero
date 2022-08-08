@@ -51,7 +51,8 @@ const DEFAULT_ACCOUNT_ITEM = {
   note: null,
   sort: 0,
   onBudget: true,
-  balanceIsNegative: false,
+  // balanceIsNegative: false,
+  sign: 1,
   initialBalance: 0,
 }
 /*
@@ -97,7 +98,7 @@ export default {
         },
         { text: 'Type', value: 'type' },
         { text: 'On Budget', value: 'onBudget' },
-        { text: 'Invert Balance', value: 'balanceIsNegative' },
+        { text: 'Invert Balance', value: 'sign' },
         { text: 'Closed', value: 'closed' },
         { text: 'Actions', value: 'action', sortable: false }
       ],
@@ -175,13 +176,18 @@ export default {
         }
         this.$store
           .dispatch('commitDocToPouchAndVuex', { current: payload, previous: this.previousItem})
+          .then(() => {
+            this.$store.dispatch('calculateAllValues')
+          })
       } else {
         const payload = {
           ...this.editedItem,
           _id: `b_${this.selectedBudgetId}${ID_NAME.account}${this.generateShortId()}`
         }
-        this.$store.dispatch('commitDocToPouchAndVuex', {current: payload, previous: null})
+        this.$store
+          .dispatch('commitDocToPouchAndVuex', {current: payload, previous: null})
       }
+      
     },
     resetItems() {
       this.editedIndex = -1

@@ -86,9 +86,10 @@ export default {
     //     return partial
     //   }, {})
     // },
-    UPDATE_CATEGORY_BALANCES(state, { month, master_id, category_id, spent, doc }) {
+    UPDATE_CATEGORY_BALANCES(state, { account, month, master_id, category_id, spent, doc }) {
       let month_balances = initCategoryBalancesMonth(state.allCategoryBalances, month, state.categories)
       month_balances = updateSingleCategory(month_balances, master_id, category_id, {
+        account: account,
         spent: spent,
         doc: doc
       })
@@ -359,6 +360,9 @@ export default {
         console.warn('calculateCategoryBalanceUpdate called with no current or previous data')
         return
       }
+      const account_id = current 
+        ? current.account.slice(-ID_LENGTH.account) 
+        : previous.account.slice(-ID_LENGTH.account)
       const current_month = current ? current.date.slice(0, 7) : null
       const previous_month = previous ? previous.date.slice(0, 7) : null
       const current_master_id = current ? getters.categoriesById[current.category]['masterCategory'] : null
@@ -386,6 +390,7 @@ export default {
       }
 
       const transaction_payload = {
+        account: getters.accountsById[account_id],
         month: current ? current_month : previous_month,
         master_id: current ? current_master_id : previous_master_id,
         category_id: current ? current.category : previous.category,
@@ -507,15 +512,12 @@ const getCategoryBalance = (current_balances, month, master_id, category_id, def
  * Note: Use null for carryover if not intending to update this value
  */
 const updateSingleCategory = (
-  existing_month_balances, master_id, category_id, { spent, carryover, doc }
+  existing_month_balances, master_id, category_id, { spent, carryover, doc, account }
 ) => {
-  //TODO call this method with correct arguments
-
   let month_balances = existing_month_balances === undefined ? {} : existing_month_balances
-  // let month_balances = existing_balances[month]
-  // if (month_balances === undefined) {
-  //   month_balances = initCategoryBalancesMonth(existing_balances, month, categories)
-  // }
+  const sign = account ? account.sign : 1
+  // const sign = 1
+  // spent *= sign
 
   const default_balance = defaultCategoryBalance(master_id, category_id)
   month_balances = _.defaultsDeep(month_balances, default_balance)
@@ -529,7 +531,7 @@ const updateSingleCategory = (
     month_balances[master_id][category_id].doc = doc
   }
 
-  month_balances[master_id][category_id].spent += spent === undefined ? 0 : spent
+  month_balances[master_id][category_id].spent += spent === undefined ? 0 : spent * sign
   month_balances[master_id][category_id].carryover += carryover_difference
 
   return month_balances

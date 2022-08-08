@@ -26,9 +26,6 @@ export default {
     accountsOffBudget: (state) => {
       return state.accounts.filter((account) => !account.onBudget)
     }
-    // accountBalances: (state, getters) => {
-    //   return state.accountBalances
-    // },
   },
   mutations: {
     SET_ACCOUNTS(state, accounts) {
@@ -40,9 +37,9 @@ export default {
     // UPDATE_ACCOUNT(state, { index, value }) {
     //   state.accounts[index] = value
     // },
-    UPDATE_ACCOUNT_BALANCES(state, { account_id, cleared, uncleared, working }) {
+    UPDATE_ACCOUNT_BALANCES(state, { account, account_id, cleared, uncleared, working }) {
       _.defaultsDeep(state.allAccountBalances, defaultAccountBalance(account_id))
-      updateAccountBalances(state.allAccountBalances, account_id, cleared, uncleared, working)
+      updateAccountBalances(state.allAccountBalances, account, account_id, cleared, uncleared, working)
     },
     RESET_ACCOUNT_STATE(state) {
       Object.entries(DEFAULT_ACCOUNT_STATE).forEach(([key, value]) => {
@@ -106,10 +103,10 @@ export default {
   }
 }
 
-const updateAccountBalances = (current_balances, account_id, cleared, uncleared, working) => {
-  current_balances[account_id].cleared += cleared
-  current_balances[account_id].uncleared += uncleared
-  current_balances[account_id].working += working
+const updateAccountBalances = (current_balances, account, account_id, cleared, uncleared, working) => {
+  current_balances[account_id].cleared += cleared * account.sign
+  current_balances[account_id].uncleared += uncleared * account.sign
+  current_balances[account_id].working += working * account.sign
 }
 
 const defaultAccountBalance = (account_id) => {

@@ -37,7 +37,7 @@
               />
             </v-col>
             <v-col cols="4">
-              <v-switch id="balanceIsNegativeSwitch" v-model="editedItem.balanceIsNegative" label="Invert Balance" />
+              <v-switch id="balanceIsNegativeSwitch" v-model="isNegative" label="Invert Balance" />
               <span>(generally for credit card accounts)</span>
             </v-col>
 
@@ -109,15 +109,23 @@ export default {
       set(value) {
         this.$emit('input', value)
       }
+    },
+    isNegative: {
+      get() {
+        return this.editedItem.sign < 0 ? true : false
+      },
+      set(value) {
+        this.editedItem.sign = value ? -1 : 1
+      }
     }
   },
 
   methods: {
     accountTypeChanged() {
       if (this.editedItem.type == 'CREDIT') {
-        this.editedItem.balanceIsNegative = true
+        this.editedItem.sign = -1
       } else {
-        this.editedItem.balanceIsNegative = false
+        this.editedItem.sign = 1
       }
     },
     close() {

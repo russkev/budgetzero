@@ -108,6 +108,10 @@ export default {
     commitDocToPouch(context, { current, previous, doc_type }) {
       const db = this._vm.$pouch
       if (current) {
+        const current_account = context.getters.accountsById[current.account]
+        if (doc_type === ID_NAME.transaction && current_account) {
+          current = {...current, value: current.value * current_account.sign}
+        }
         if (doc_type === ID_NAME.transaction && previous && current.date !== previous.date) {
           // New transaction date requires a new ID which means the old transaction has to be deleted
           const transaction_id = this._vm.generateId(current.date)
@@ -213,7 +217,9 @@ export default {
     },
 
     async commitTransactionToVuex(context, { current, previous }) {
-      const transaction_payload = this._vm.calculateTransactionBalanceUpdate(current, previous)
+      const account = context.getters.accountsById[current.account]
+      const transaction_payload = this._vm.calculateTransactionBalanceUpdate(current, previous, account)
+      // transaction_payload.account = context.getters.accountsById[transaction_payload.account_id]
       this.commit('UPDATE_ACCOUNT_BALANCES', transaction_payload)
 
       const category_balances = await context.dispatch('calculateCategoryBalanceUpdate', { current, previous })

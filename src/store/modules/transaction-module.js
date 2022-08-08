@@ -250,7 +250,7 @@ function monthArray(start, end) {
   return month_array
 }
 
-const calculateTransactionBalanceUpdate = (current, previous) => {
+const calculateTransactionBalanceUpdate = (current, previous, account) => {
   // Note that 'cleared' in a document (like current and previous) is the isCleared boolean value.
   // 'cleared' in a transaction_payload is the dollar amount that has been cleared
   if (previous === null) {
@@ -267,10 +267,11 @@ const calculateTransactionBalanceUpdate = (current, previous) => {
   }
 
   let transaction_payload = {
-    account_id: current.account,
+    account_id: account._id.slice(-ID_LENGTH.account),
+    account: account,
     cleared: 0,
     uncleared: 0,
-    working: current.value - previous.value
+    working: (current.value - previous.value) * account.sign
   }
 
   if (current.cleared && previous.cleared) {
@@ -294,6 +295,7 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters)
 
   allTransactions.map((row) => {
     const account_id = row.doc.account
+    const account_doc = getters.accountsById[account_id]
     const working = row.doc.value
     const month = row.doc.date.slice(0, 7)
     const category_id = row.doc.category
@@ -302,7 +304,7 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters)
     const uncleared = row.doc.cleared ? 0 : working
 
     _.defaultsDeep(balances.account, defaultAccountBalance(account_id))
-    updateAccountBalances(balances.account, account_id, cleared, uncleared, working)
+    updateAccountBalances(balances.account, account_doc, account_id, cleared, uncleared, working)
 
     initFromMonthCategory(month)
 
@@ -310,7 +312,8 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters)
       balances.category[month] = initCategoryBalancesMonth(balances.category, month, getters.categories)
     }
     balances.category[month] = updateSingleCategory(balances.category[month], master_id, category_id, {
-      spent: working
+      spent: working,
+      account: account_doc,
     })
   })
   initFromMonthCategory('9999-99')

@@ -171,14 +171,14 @@ import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 import _ from 'lodash'
-// import DatePicker from './DatePicker'
+import DatePicker from './DatePicker'
 import ImportModalComponent from './ImportModalComponent.vue'
 // import Banking from 'banking'
 // import ofx from 'node-ofx-parser'
 
 
 export default {
-  components: { Treeselect, TransactionHeader, ImportModalComponent },
+  components: { Treeselect, TransactionHeader, ImportModalComponent, DatePicker },
   data() {
     return {
       selected: [],
@@ -229,7 +229,16 @@ export default {
   },
   computed: {
     // Re-configure categoriesByMaster to be in correct format for treeselect
-    ...mapGetters(['dataTableHeaders', 'selectedBudgetId', 'categoriesById', 'categoriesByMaster']),
+    ...mapGetters([
+      'dataTableHeaders', 
+      'selectedBudgetId', 
+      'categoriesById', 
+      'categoriesByMaster',
+      'accountsById',
+    ]),
+    account() {
+      return this.accountsById[this.$route.params.account_id]
+    },
     selectedAccount() {},
     categoryOptions() {
       const key_values = Object.entries(this.$store.getters.categoriesByMaster)
@@ -258,7 +267,9 @@ export default {
     },
     outflowAmount: {
       get() {
-        return this.editedItem.value < 0 ? Math.round(this.parseCurrencyValue(this.editedItem.value)) / 100 : ''
+        return this.editedItem.value < 0 
+          ? Math.round(this.parseCurrencyValue(this.editedItem.value)) / 100 
+          : ''
       },
       set(new_value) {
         this.editedItem.value = -Math.round(this.parseCurrencyValue(new_value) * 100)
@@ -266,7 +277,9 @@ export default {
     },
     inflowAmount: {
       get() {
-        return this.editedItem.value > 0 ? Math.round(this.parseCurrencyValue(this.editedItem.value)) / 100 : ''
+        return this.editedItem.value > 0 
+          ? Math.round(this.parseCurrencyValue(this.editedItem.value)) / 100 
+          : ''
       },
       set(new_value) {
         this.editedItem.value = Math.round(this.parseCurrencyValue(new_value) * 100)
@@ -281,6 +294,7 @@ export default {
           const category_name = _.get(this.categoriesById, [row.doc.category, 'name'], '')
           return {
             ...row.doc,
+            value: row.doc.value * this.account.sign,
             ['category_name']: category_name
           }
         })
@@ -333,6 +347,7 @@ export default {
       if (this.editedItem.category === null) {
         this.editedItem.category = NONE._id
       }
+      // this.editedItem.value *= this.account.sign
     },
     addTransaction() {
       if (this.creatingNewTransactions) {
