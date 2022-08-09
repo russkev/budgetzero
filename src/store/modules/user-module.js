@@ -20,25 +20,35 @@ export default {
   mutations: {
     SET_USER(state, data) {
       if (data) {
-        state.user.email = data.email
-        state.user.uid = data.uid
-        state.user.loggedIn = true
-        state.user.displayName = data.displayName
-        state.user.emailVerified = data.emailVerified
+        Vue.set(state.user, 'email', data.email)
+        // state.user.email = data.email
+        Vue.set(state.user, 'uid', data.uid)
+        // state.user.uid = data.uid
+        Vue.set(state.user, 'loggedIn', true)
+        // state.user.loggedIn = true
+        Vue.set(state.user, 'displayName', data.displayName)
+        // state.user.displayName = data.displayName
+        Vue.set(state.user, 'emailVerified', data.emailVerified)
+        // state.user.emailVerified = data.emailVerified
       } else {
-        state.user.loggedIn = false
-        state.user = {
-          loggedIn: false,
-          email: null,
-          userData: null
-        }
+        Vue.set(state.user, 'loggedIn', false)
+        // state.user.loggedIn = false
+        Vue.set(state.user, 'email', null)
+        Vue.set(state.user, 'userData', null)
+        // state.user = {
+        //   loggedIn: false,
+        //   email: null,
+        //   userData: null
+        // }
       }
     },
     SET_USER_DATA(state, data) {
-      state.user.userData = data
+      Vue.set(state.user, 'userData', data)
+      // state.user.userData = data
     },
     API_FAILURE(state, error) {
-      state.error_msg = `API Failed: ${error}`
+      Vue.set(state, 'error_msg', `API Failed: ${error}`)
+      // state.error_msg = `API Failed: ${error}`
       console.log(error)
     }
   },

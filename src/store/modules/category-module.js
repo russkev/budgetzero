@@ -52,40 +52,19 @@ export default {
   },
   mutations: {
     SET_ALL_CATEGORY_BALANCES(state, payload) {
-      state.allCategoryBalances = payload
+      Vue.set(state, 'allCategoryBalances', payload)
     },
     INIT_CATEGORY_BALANCES_MONTH(state, { month, categories, monthCategories }) {
       const month_balances = initCategoryBalancesMonth(state.allCategoryBalances, month, categories, monthCategories)
       Vue.set(state.allCategoryBalances, month, month_balances)
     },
     SET_MASTER_CATEGORIES(state, master_categories) {
-      state.masterCategories = master_categories.sort((a, b) => a.sort - b.sort)
+      const sorted_categories = master_categories.sort((a, b) => a.sort - b.sort)
+      Vue.set(state, 'masterCategories', sorted_categories)
     },
     SET_CATEGORIES(state, categories) {
-      state.categories = [NONE, ...categories]
+      Vue.set(state, categories, [NONE, ...categories])
     },
-    // UPDATE_MONTH_CATEGORY(state, doc) {
-    //   const month = extractMonthCategoryMonth(doc._id)
-    //   const category_id = doc._id.slice(-ID_LENGTH.category)
-
-    //   if (state.monthCategoryBudgets[month] === undefined) {
-    //     Vue.set(state.monthCategoryBudgets, month, {})
-    //   }
-    //   Vue.set(state.monthCategoryBudgets[month], category_id, doc)
-    // },
-    // SET_MONTH_CATEGORY_BUDGETS(state, month_category_budgets) {
-    //   state.monthCategoryBudgets = month_category_budgets.reduce((partial, row) => {
-    //     const row_id = row._id
-    //     const category_id = row_id.slice(-ID_LENGTH.category)
-    //     const month = extractMonthCategoryMonth(row_id)
-
-    //     if (partial[month] === undefined) {
-    //       partial[month] = {}
-    //     }
-    //     partial[month][category_id] = row
-    //     return partial
-    //   }, {})
-    // },
     UPDATE_CATEGORY_BALANCES(state, { account, month, master_id, category_id, spent, doc }) {
       let month_balances = initCategoryBalancesMonth(state.allCategoryBalances, month, state.categories)
       month_balances = updateSingleCategory(month_balances, master_id, category_id, {
@@ -112,7 +91,7 @@ export default {
     },
     RESET_CATEGORY_STATE(state) {
       Object.entries(DEFAULT_CATEGORY_STATE).forEach(([key, value]) => {
-        state[key] = value
+        Vue.set(state, key, value)
       })
     }
   },

@@ -1,5 +1,6 @@
 import _ from 'lodash'
 import moment from 'moment'
+import Vue from 'vue'
 
 import { ID_LENGTH, ID_NAME } from '../../constants.js'
 
@@ -29,17 +30,16 @@ export default {
   mutations: {
     RESET_BUDGET_STATE(state) {
       Object.entries(DEFAULT_BUDGET_STATE).forEach(([key, value]) => {
-        state[key] = value
+        Vue.set(state, key, value)
       })
     },
     SET_ALL_BUDGETS(state, budgets) {
       if (budgets.length == 0) {
-        state.budgetExists = false
+        Vue.set(state, 'budgetExists', false)
       } else {
-        state.budgetExists = true
+        Vue.set(state, 'budgetExists', true)
       }
-      // Get budget ids
-      state.allBudgets = budgets
+      Vue.set(state, 'allBudgets', budgets)
     },
   },
   actions: {

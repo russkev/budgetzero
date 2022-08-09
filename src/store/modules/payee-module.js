@@ -1,3 +1,4 @@
+import Vue from "vue"
 import { ID_LENGTH, NONE } from "../../constants"
 
 const DEFAULT_PAYEES_STATE = {
@@ -54,11 +55,12 @@ export default {
         id: NONE._id,
         name: 'Payee not selected'
       }]
-      state.payees = no_payee.concat(payees)
+      // state.payees = no_payee.concat(payees)
+      Vue.set(state, 'payees', no_payee.concat(payees))
     },
     RESET_PAYEES_STATE(state) {
       Object.entries(DEFAULT_PAYEES_STATE).forEach(([key, value]) => {
-        state[key] = value
+        Vue.set(state, key, value)
       })
     },
   },

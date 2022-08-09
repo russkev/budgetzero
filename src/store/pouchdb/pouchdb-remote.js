@@ -18,24 +18,28 @@ export default {
     GET_REMOTE_SYNC_URL(state) {
       const remote_sync_url = localStorage.remoteSyncURL
       if (remote_sync_url) {
-        state.remoteSyncURL = remote_sync_url
+        Vue.set(state, 'remoteSyncURL', remote_sync_url)
+        // state.remoteSyncURL = remote_sync_url
         this.dispatch('startRemoteSyncToCustomURL', remote_sync_url)
       }
     },
     SET_REMOTE_SYNC_URL(state, url) {
-      state.remoteSyncURL = url
+      Vue.set(state, 'remoteSyncURL', url)
+      // state.remoteSyncURL = url
       localStorage.remoteSyncURL = url
     },
     CLEAR_REMOTE_SYNC_URL(state) {
       localStorage.removeItem('remoteSyncURL')
-      state.remoteSyncURL = ''
+      Vue.set(state, 'remoteSyncURL', '')
+      // state.remoteSyncURL = ''
     },
     SET_SYNC_HANDLER(state, syncHandler) {
-      state.syncHandle = syncHandler
+      Vue.set(state, 'syncHandle', syncHandler)
+      // state.syncHandle = syncHandler
     },
     RESET_REMOTE_STATE(state) {
       Object.entries(DEFAULT_STATE).forEach(([key, value]) => {
-        state[key] = value
+        Vue.set(state, key, value)
       })
     }
   },
