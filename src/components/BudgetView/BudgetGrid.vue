@@ -283,7 +283,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['updateMonthCategory', 'deleteDocFromPouch']),
+    ...mapActions(['updateMonthCategory', 'deleteDocFromPouch', 'deleteMasterCategory']),
 
     onFocus(param) {
       this.$nextTick(() => {
@@ -454,6 +454,7 @@ export default {
     deleteMasterCategory(master_category) {
       console.log('delete master category')
       console.log(master_category)
+      this.$store.dispatch('deleteMasterCategory', master_category.id)
     },
     newCategory(master_category) {
       this.$store.dispatch('createCategory', { name: '', master_id: master_category.id }).then((id) => {

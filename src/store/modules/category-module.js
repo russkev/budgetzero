@@ -43,8 +43,8 @@ export default {
       let groups = _.groupBy(state.categories, 'masterCategory')
       state.masterCategories.forEach((master_category) => {
         const master_id = master_category._id.slice(-ID_LENGTH.category)
-        if(groups[master_id] === undefined) {
-          groups[master_id] = [] 
+        if (groups[master_id] === undefined) {
+          groups[master_id] = []
         }
       })
       return groups
@@ -63,7 +63,7 @@ export default {
       Vue.set(state, 'masterCategories', sorted_categories)
     },
     SET_CATEGORIES(state, categories) {
-      Vue.set(state, categories, [NONE, ...categories])
+      Vue.set(state, 'categories', [NONE, ...categories])
     },
     UPDATE_CATEGORY_BALANCES(state, { account, month, master_id, category_id, spent, doc }) {
       let month_balances = initCategoryBalancesMonth(state.allCategoryBalances, month, state.categories)
@@ -194,6 +194,30 @@ export default {
           console.log('commitMonthCategoryToVuex')
           return this.commit('UPDATE_CATEGORY_BALANCES', category_balances_update)
         })
+    },
+
+    deleteMasterCategory(context, master_id) {
+      const categories = context.getters.categoriesByMaster[master_id]
+      if (categories !== undefined) {
+        const bulk_categories = categories.map((category) => {
+          return {
+            current: {
+              ...category,
+              masterCategory: NONE.masterCategory
+            },
+            previous: category
+          }
+          // return
+          //   {
+          //     current: {
+          //       ...category,
+          //       masterCategory: NONE.masterCategory
+          //     },
+          //     previous: category
+          //   }
+        })
+        context.dispatch('commitBulkDocsToPouchAndVuex', bulk_categories)
+      }
     },
 
     reorderCategory(context, payload) {
@@ -339,8 +363,8 @@ export default {
         console.warn('calculateCategoryBalanceUpdate called with no current or previous data')
         return
       }
-      const account_id = current 
-        ? current.account.slice(-ID_LENGTH.account) 
+      const account_id = current
+        ? current.account.slice(-ID_LENGTH.account)
         : previous.account.slice(-ID_LENGTH.account)
       const current_month = current ? current.date.slice(0, 7) : null
       const previous_month = previous ? previous.date.slice(0, 7) : null
@@ -423,15 +447,15 @@ const parseAllMonthCategories = (results, getters) => {
     const category_id = month_category._id.slice(-ID_LENGTH.category)
     const master_id = getters.categoriesById[category_id]['masterCategory']
 
-    month_category_balances[month] = updateSingleCategory(
-      month_category_balances[month], master_id, category_id, { doc: month_category},
-    )
+    month_category_balances[month] = updateSingleCategory(month_category_balances[month], master_id, category_id, {
+      doc: month_category
+    })
   })
   return month_category_balances
 }
 
 const initCategoryBalancesMonth = (current_balances, month, categories) => {
-  if(current_balances[month] !== undefined) {
+  if (current_balances[month] !== undefined) {
     return current_balances[month]
   }
 
@@ -490,9 +514,7 @@ const getCategoryBalance = (current_balances, month, master_id, category_id, def
  * @param {object|null} doc The monthCategory document. Null if this is not being updated
  * Note: Use null for carryover if not intending to update this value
  */
-const updateSingleCategory = (
-  existing_month_balances, master_id, category_id, { spent, carryover, doc, account }
-) => {
+const updateSingleCategory = (existing_month_balances, master_id, category_id, { spent, carryover, doc, account }) => {
   let month_balances = existing_month_balances === undefined ? {} : existing_month_balances
   const sign = account ? account.sign : 1
   // const sign = 1
