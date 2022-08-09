@@ -207,16 +207,10 @@ export default {
             },
             previous: category
           }
-          // return
-          //   {
-          //     current: {
-          //       ...category,
-          //       masterCategory: NONE.masterCategory
-          //     },
-          //     previous: category
-          //   }
         })
         context.dispatch('commitBulkDocsToPouchAndVuex', bulk_categories)
+        const master_category = context.getters.masterCategoriesById[master_id]
+        context.dispatch('commitDocToPouchAndVuex', {current: null, previous: master_category})
       }
     },
 

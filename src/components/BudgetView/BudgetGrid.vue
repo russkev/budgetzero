@@ -19,8 +19,7 @@
       <v-col> Spent </v-col>
       <v-col> Balance </v-col>
     </v-row>
-    <draggable 
-      v-model="masterCategoriesData" handle=".handle">
+    <draggable v-model="masterCategoriesData" handle=".handle">
       <v-row class="ma-0 pa-0" v-for="master_category in masterCategoriesData" :key="master_category.id">
         <v-container class="primary lighten-2">
           <v-row class="white--text">
@@ -199,7 +198,6 @@ export default {
         partial[master_id] = categories.reduce((sum_partial, category) => {
           sum_partial.budget += category.budget
           sum_partial.spent += category.spent
-          sum_partial.budget += category.budget
           sum_partial.balance += category.balance
           return sum_partial
         }, {budget: 0, spent: 0, carryover: 0, balance: 0})
@@ -367,13 +365,13 @@ export default {
         return
       }
 
-      let budget_value = parseInt(event)
+      let budget_value = parseInt(parseFloat(event) * 100)
       let current = null
       if (isNaN(budget_value)) {
         console.warn('Budget value is NaN')
         return
       }
-      budget_value *= 100
+      // budget_value *= 100
 
       const previous = _.get(this.allCategoryBalances, [this.selectedMonth, master_id, category_id, 'doc'], null)
 
