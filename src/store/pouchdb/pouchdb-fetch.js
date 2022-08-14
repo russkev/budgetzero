@@ -123,25 +123,95 @@ export default {
       //   return context.commit('SET_TRANSACTIONS', result)
       // })
     },
-    fetchAccountBalances: (context) => {
-      // const db = Vue.prototype.$pouch
-      // const t1 = performance.now()
-      // const budget_id = context.rootState.selectedBudgetId
-      // return db
-      //   .query('stats/sum_transaction_by_account', {
-      //     group: true,
-      //     // group_level: 3,
-      //     startkey: [`${budget_id}`, '', ''],
-      //     endkey: [`${budget_id}`, '\ufff0', '\ufff0']
-      //   })
-      //   .then((result) => {
-      //     logPerformanceTime('fetchAccountBalances', t1)
-      //     return result.rows
-      //   })
-      //   .then((result) => {
-      //     return context.commit('SET_ACCOUNT_BALANCES', result)
-      //   })
+    // fetchTransactionsFrom
+
+    fetchSucceedingTransaction: async (context, transaction) => {
+      const t1 = performance.now()
+
+      const db = Vue.prototype.$pouch
+      const budget_id = transaction._id.slice(2, 2 + ID_LENGTH.budget)
+
+      return db
+        .query(`stats/transactions_by_account`, {
+          include_docs: true,
+          startkey: [budget_id, transaction.account, transaction._id.slice(-ID_LENGTH.transaction)],
+          endkey: [budget_id, transaction.account, '\ufff0'],
+          limit: 2,
+          descending: false
+        })
+        .then((result) => {
+          logPerformanceTime('fetchSucceedingTransaction', t1)
+          console.log(result)
+          if (result.rows.length > 1) {
+            return result.rows[1]
+          }
+        })
     },
+    fetchPrecedingTransaction: async (context, transaction) => {
+      const t1 = performance.now()
+
+      const db = Vue.prototype.$pouch
+      const budget_id = transaction._id.slice(2, 2 + ID_LENGTH.budget)
+
+      return db
+        .query(`stats/transactions_by_account`, {
+          include_docs: true,
+          startkey: [budget_id, transaction.account, transaction._id.slice(-ID_LENGTH.transaction)],
+          endkey: [budget_id, transaction.account, ''],
+          limit: 2,
+          descending: true
+        }).then((result) => {
+          logPerformanceTime('fetchPrecedingTransaction', t1)
+          console.log(result)
+          if(result.rows.length > 1) {
+            return result.rows[1]
+          } else {
+            return null
+          }
+        })
+    },
+    /**
+     * 
+     * @param {*} context 
+     * @param {*} transaction Start transaction
+     * @returns All transactions including and later than start transaction 
+     */
+    fetchAllSucceedingTransactions: async (context, transaction) => {
+      const t1 = performance.now()
+      // logPerformanceTime('fetchAllSucceedingTransactions', t1)
+      const db = Vue.prototype.$pouch
+      const budget_id = transaction._id.slice(2, 2 + ID_LENGTH.budget)
+
+      return db
+        .query(`stats/transactions_by_account`, {
+          include_docs: true,
+          startkey: [budget_id, transaction.account, transaction._id.slice(-ID_LENGTH.transaction)],
+          endkey: [budget_id, transaction.account, '\ufff0'],
+          descending: false
+        }).then((result) => {
+          logPerformanceTime('fetchAllSucceedingTransactions', t1)
+          return result.rows
+        })
+    },
+    // fetchAccountBalances: (context) => {
+    //   // const db = Vue.prototype.$pouch
+    //   // const t1 = performance.now()
+    //   // const budget_id = context.rootState.selectedBudgetId
+    //   // return db
+    //   //   .query('stats/sum_transaction_by_account', {
+    //   //     group: true,
+    //   //     // group_level: 3,
+    //   //     startkey: [`${budget_id}`, '', ''],
+    //   //     endkey: [`${budget_id}`, '\ufff0', '\ufff0']
+    //   //   })
+    //   //   .then((result) => {
+    //   //     logPerformanceTime('fetchAccountBalances', t1)
+    //   //     return result.rows
+    //   //   })
+    //   //   .then((result) => {
+    //   //     return context.commit('SET_ACCOUNT_BALANCES', result)
+    //   //   })
+    // },
     fetchBudgetBalances: (context) => {
       const db = Vue.prototype.$pouch
       const t1 = performance.now()

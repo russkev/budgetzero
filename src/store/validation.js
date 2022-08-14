@@ -69,6 +69,9 @@ const schema_transaction = {
     splits: {
       type: ['null', 'array', 'object']
     },
+    balance: {
+      type: 'integer'
+    },
     _id: {
       type: 'string',
       minimum: transaction_id_length,

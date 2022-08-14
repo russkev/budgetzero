@@ -7,6 +7,7 @@
     "test:unit": "vue-cli-service test:unit --silent",
     "test:e2e": "vue-cli-service test:e2e",
     "lint": "vue-cli-service lint",
+    "production": "vue-cli-service serve --mode production",
     "electron:build": "vue-cli-service electron:build --publish always",
     "electron:generate-icons": "electron-icon-builder --input=./public/icon.png --output=build --flatten",
     "electron:serve": "vue-cli-service electron:serve",

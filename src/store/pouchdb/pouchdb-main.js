@@ -89,17 +89,19 @@ export default {
       }
       const doc_type = validateDocument(context, current, previous)
       if (doc_type) {
-        return context.dispatch('commitDocToPouch', { current, previous, doc_type }).then((result) => {
-          if (result.ok) {
-            if (current) {
-              current._rev = result.rev
+        return context
+          .dispatch('commitDocToPouch', { current, previous, doc_type })
+          .then((result) => {
+            if (result.ok) {
+              if (current) {
+                current._rev = result.rev
+              }
+              return context.dispatch('commitDocToVuex', { current, previous, doc_type }).then(() => result)
+            } else {
+              console.log(result)
+              Promise.reject(`Pouch update failed`)
             }
-            return context.dispatch('commitDocToVuex', { current, previous, doc_type })
-          } else {
-            console.log(result)
-            Promise.reject(`Pouch update failed`)
-          }
-        })
+          })
       } else {
         Promise.reject(`Invalid document type: ${doc_type}`)
       }
@@ -124,21 +126,23 @@ export default {
             _id: `b_${context.getters.selectedBudgetId}${ID_NAME.transaction}${transaction_id}`
           }
           delete for_db_current._rev
-          return db.bulkDocs([for_db_current, for_db_previous]).then((results) => {
-            const all_successful = results.reduce((partial, result) => {
-              if (!result.ok) {
-                return false
+          return db
+            .bulkDocs([for_db_current, for_db_previous])
+            .then((results) => {
+              const all_successful = results.reduce((partial, result) => {
+                if (!result.ok) {
+                  return false
+                } else {
+                  return partial
+                }
+              }, true)
+              if (all_successful) {
+                // Return first result because it is the one with the correct _rev
+                return results[0]
               } else {
-                return partial
+                Promise.reject(`Pouch update failed`)
+                console.log(results)
               }
-            }, true)
-            if (all_successful) {
-              // Return first result because it is the one with the correct _rev
-              return results[0]
-            } else {
-              Promise.reject(`Pouch update failed`)
-              console.log(results)
-            }
           })
         } else {
           return db.put(current)
@@ -226,18 +230,19 @@ export default {
       category_balances.map((result) => {
         this.commit('UPDATE_CATEGORY_BALANCES', result)
       })
+      return true
     },
 
-    updateBalances(context) {
-      return Promise.all([context.dispatch('fetchAccountBalances'), context.dispatch('fetchBudgetBalances')])
-        .then((response) => {
-          return response
-          // return context.dispatch('calculateMonthlyCategoryData')
-        })
-        .catch((error) => {
-          context.commit('API_FAILURE', error)
-        })
-    },
+    // updateBalances(context) {
+    //   return Promise.all([context.dispatch('fetchAccountBalances'), context.dispatch('fetchBudgetBalances')])
+    //     .then((response) => {
+    //       return response
+    //       // return context.dispatch('calculateMonthlyCategoryData')
+    //     })
+    //     .catch((error) => {
+    //       context.commit('API_FAILURE', error)
+    //     })
+    // },
 
     resetAllCurrentBudgetData(context) {
       context.commit('RESET_ACCOUNT_STATE')
@@ -283,7 +288,7 @@ export default {
         })
         .then((result) => {
           const t1 = performance.now()
-          const balances = parseAllTransactions(result.rows, month_category_balances, getters)
+          const balances = parseAllTransactions(result.rows, month_category_balances, getters, dispatch)
 
           logPerformanceTime('calculateAllValues', t1)
           commit('SET_ALL_ACCOUNT_BALANCES', balances.account)

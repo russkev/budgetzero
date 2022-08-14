@@ -86,10 +86,6 @@ export default {
       return accountBalance ? accountBalance : DEFAULT_ACCOUNT_BALANCE
     },
     accountName() {
-      console.log("selectedAccount")
-      console.log(this.accountsById)
-
-      // return this.accountsById[this.selected_account_id].name || ''
       return _.get(this.accountsById, [this.selected_account_id, 'name'], '')
     }
   },

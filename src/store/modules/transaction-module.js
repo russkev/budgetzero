@@ -96,6 +96,36 @@ export default {
       return context.dispatch('commitDocToPouchAndVuex', { current, previous })
     },
 
+    updateRunningBalance(context, transaction) {
+      console.log('updateRunningBalance')
+      let running_balance = 0
+      return context.dispatch('fetchPrecedingTransaction', transaction)
+        .then((result) => {
+          running_balance = result === null ? 0 : result.doc.balance
+          return
+        })
+        .then(() => {
+          return context.dispatch('fetchAllSucceedingTransactions', transaction)
+        })
+        .then((rows) => {
+          const updated_docs = rows.map((row) => {
+            running_balance += row.doc.value
+            return {
+              current: {
+                ...row.doc,
+                balance: running_balance
+              },
+              previous: row.doc
+            }
+          })
+          let result_promise = null
+          if (updated_docs.length > 0) {
+            result_promise = context.dispatch('commitBulkDocsToPouch', updated_docs)
+          } 
+          return result_promise
+        })
+    },
+
     /**
      * Completes Reconciliation
      * @param {doc} payload Any difference to that needs and adjustment transaction
@@ -288,10 +318,17 @@ const calculateTransactionBalanceUpdate = (current, previous, account) => {
   return transaction_payload
 }
 
-const parseAllTransactions = (allTransactions, month_category_balances, getters) => {
+const parseAllTransactions = (allTransactions, month_category_balances, getters, dispatch) => {
   const month_category_months = Object.keys(month_category_balances)
   let month_category_index = 0
   let balances = { account: {}, category: {} }
+  let updated_transaction_docs = []
+
+  let running_balances = getters.accounts.reduce((partial, account) => {
+    const account_id = account._id.slice(-ID_LENGTH.account)
+    partial[account_id] = 0
+    return partial
+  }, {})
 
   allTransactions.map((row) => {
     const account_id = row.doc.account
@@ -306,6 +343,18 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters)
     _.defaultsDeep(balances.account, defaultAccountBalance(account_id))
     updateAccountBalances(balances.account, account_doc, account_id, cleared, uncleared, working)
 
+    const running_balance = running_balances[account_id] + working
+    running_balances[account_id] = running_balance
+    if (row.doc.balance !== running_balance) {
+      updated_transaction_docs.push({
+        current: {
+          ...row.doc,
+          balance: running_balance,
+        },
+        previous: row.doc
+      })
+    }
+
     initFromMonthCategory(month)
 
     if (balances.category[month] === undefined) {
@@ -315,7 +364,14 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters)
       spent: working,
       account: account_doc,
     })
+
   })
+
+  if (updated_transaction_docs.length > 0) {
+    "UPDATING TRANSACTION DOX"
+    dispatch('commitBulkDocsToPouchAndVuex', updated_transaction_docs)
+  }
+
   initFromMonthCategory('9999-99')
 
   function initFromMonthCategory(month) {
@@ -390,5 +446,11 @@ const dataTableHeaders = [
     class: 'transaction-table-header',
     value: 'inflow',
     align: 'left'
+  },
+  {
+    text: 'Balance',
+    class: 'transaction-table-header',
+    value: 'balance',
+    align: 'right'
   }
 ]
