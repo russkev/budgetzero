@@ -35,35 +35,8 @@ exports[`accounts table account renders correct snapshot 1`] = `
           </tr>
         </thead>
         <tbody>
-          <tr class="">
-            <td class="text-left">Savings</td>
-            <td class="text-start">CHECKING</td>
-            <td class="text-start">true</td>
-            <td class="text-start">false</td>
-            <td class="text-start">false</td>
-            <td class="text-start">
-              <div class="crud-actions"><button type="button" icon="" class="v-icon notranslate v-icon--link material-icons theme--dark primary--text">edit</button> <button type="button" icon="" class="v-icon notranslate ml-1 v-icon--link material-icons theme--dark accent--text">delete</button></div>
-            </td>
-          </tr>
-          <tr class="">
-            <td class="text-left">Chase</td>
-            <td class="text-start">CREDIT</td>
-            <td class="text-start">true</td>
-            <td class="text-start">true</td>
-            <td class="text-start">false</td>
-            <td class="text-start">
-              <div class="crud-actions"><button type="button" icon="" class="v-icon notranslate v-icon--link material-icons theme--dark primary--text">edit</button> <button type="button" icon="" class="v-icon notranslate ml-1 v-icon--link material-icons theme--dark accent--text">delete</button></div>
-            </td>
-          </tr>
-          <tr class="">
-            <td class="text-left">Vanguard</td>
-            <td class="text-start">INVESTMENT</td>
-            <td class="text-start">false</td>
-            <td class="text-start">false</td>
-            <td class="text-start">false</td>
-            <td class="text-start">
-              <div class="crud-actions"><button type="button" icon="" class="v-icon notranslate v-icon--link material-icons theme--dark primary--text">edit</button> <button type="button" icon="" class="v-icon notranslate ml-1 v-icon--link material-icons theme--dark accent--text">delete</button></div>
-            </td>
+          <tr class="v-data-table__empty-wrapper">
+            <td colspan="6">No data available</td>
           </tr>
         </tbody>
       </table>

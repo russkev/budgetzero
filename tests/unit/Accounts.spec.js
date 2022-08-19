@@ -2,26 +2,33 @@ import { shallowMount, mount, createLocalVue } from "@vue/test-utils";
 import Vuex from "vuex";
 import Accounts from "@/components/AccountView/Accounts.vue";
 import Vuetify from "vuetify";
-import mock_budget from "@/../tests/__mockdata__/mock_budget.json";
+import mock_budget from "@/../tests/__mockdata__/mock_budget_2.json";
 import store from "@/store";
 import Vue from "vue";
+import { generateShortId } from '@/store/modules/id-module'
+
 Vue.use(Vuetify);
 
 const localVue = createLocalVue();
 localVue.use(Vuex);
 
 const $route = {
-  path: "/fake/path",
+  path: '/fake/path',
   params: {
-    account_id: "38e690f8-198f-4735-96fb-3a2ab15081c2"
-  }
-};
-
-const $uuid = {
-  v4() {
-    return '3528ac0b-19fe-4735-a2e7-9bb91d54b6ba'
+    account_id: '6JK'
   }
 }
+
+// const $uuid = {
+//   v4() {
+//     return '6YK'
+//   }
+// }
+// function generateShortId() {
+//   return "zzz"
+// }
+
+
 
 const data = mock_budget.rows.map(row => row.doc);
 let numberOfAccounts = null;
@@ -37,14 +44,14 @@ describe("accounts table", () => {
     store.state.pouchdb.accounts = data.filter(row => row._id.includes("_account_"));
     store.state.pouchdb.transactions = data.filter(row => row._id.includes("_transaction_"));
     store.state.pouchdb.masterCategories = data.filter(row =>
-      row._id.includes("_master-category_")
+      row._id.includes("_masterCategory_")
     );
     store.state.pouchdb.categories = data
       .filter(row => row._id.includes("_category_"))
-      .filter(row => !row._id.includes("monthCategory"));
+      .filter(row => !row._id.includes("_monthCategory_"));
     store.state.pouchdb.month_selected = "2020-12";
-    store.state.selectedBudgetId = "cc28ac0b-19fe-4735-a2e7-9bb91d54b6cc";
-    numberOfAccounts = data.filter(row => row._id.includes("_account_")).length;
+    store.state.selectedBudgetId = 'jxN'
+    numberOfAccounts = store.state.pouchdb.accounts.length
   });
 
   beforeEach(() => {
@@ -56,14 +63,14 @@ describe("accounts table", () => {
       store,
       localVue,
       vuetify,
+      generateShortId,
       mocks: {
         $route,
-        $uuid,
       },
       stubs: {
         ImportModalComponent: true
       }
-    });
+    })
   });
 
   it("account renders correct snapshot", () => {
@@ -92,6 +99,7 @@ describe("accounts table", () => {
 
     //Mocks & setup
     wrapper.vm.$store.dispatch = jest.fn();
+    jest.spyOn(wrapper.vm, 'generateShortId').mockReturnValue('a3-');
 
     await wrapper.find("#nameField").setValue("nameofnewAccount");
     await wrapper.find("#typeField").setValue("CHECKING");
@@ -100,19 +108,20 @@ describe("accounts table", () => {
     await wrapper.find("#saveAccountBtn").trigger("click");
 
     expect(wrapper.vm.$store.dispatch).toBeCalled()
-    expect(wrapper.vm.$store.dispatch).toBeCalledWith("createUpdateAccount", {
-      account: {
-        _id: "b_cc28ac0b-19fe-4735-a2e7-9bb91d54b6cc_account_3528ac0b-19fe-4735-a2e7-9bb91d54b6ba",
-        type: "CHECKING",
+    expect(wrapper.vm.$store.dispatch).toBeCalledWith('commitDocToPouchAndVuex', {
+      current: {
+        _id: 'b_jxN_account_a3-',
+        type: 'CHECKING',
         checkNumber: true,
         closed: false,
-        name: "nameofnewAccount",
-        note: "test note",
+        name: 'nameofnewAccount',
+        note: 'test note',
         sort: 0,
         onBudget: true,
-        balanceIsNegative: false
+        sign: 1,
+        initialBalance: 0,
       },
-      initialBalance: 0
-    });
+      previous: null
+    })
   });
 });

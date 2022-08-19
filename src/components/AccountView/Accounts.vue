@@ -42,6 +42,7 @@
 import { mapGetters } from 'vuex'
 import AccountAddModal from './AccountAddModal'
 import { ID_NAME } from '../../constants'
+// import { generateShortId } from "@/store/modules/id-module"
 
 const DEFAULT_ACCOUNT_ITEM = {
   type: '',

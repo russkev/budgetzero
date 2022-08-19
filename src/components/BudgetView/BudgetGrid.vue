@@ -20,9 +20,9 @@
       <v-col> Balance </v-col>
     </v-row>
     <draggable v-model="masterCategoriesData" handle=".handle">
-      <v-row class="ma-0 pa-0" v-for="master_category in masterCategoriesData" :key="master_category.id">
+      <v-row class="master-category-row ma-0 pa-0" v-for="(master_category, master_index) in masterCategoriesData" :key="master_category.id">
         <v-container class="primary lighten-2">
-          <v-row class="white--text">
+          <v-row class="master-row white--text">
             <v-col>
               <v-text-field
                 v-model="master_category.name"
@@ -39,7 +39,9 @@
                 :background-color="editedMasterCategoryId === master_category.id ? 'primary' : 'primary lighten-2'"
               >
                 <template v-slot:prepend>
-                  <v-icon class="handle">mdi-drag-horizontal</v-icon>
+                  <v-icon class="handle" :id="`drag-master-category-${master_category.id}`">
+                    mdi-drag-horizontal
+                  </v-icon>
                 </template>
               </v-text-field>
             </v-col>
@@ -51,9 +53,24 @@
             </v-col>
             <v-col>
               {{ masterCategoriesStats[master_category.id].balance / 100 }}
-              <v-icon dark small right @click="newMasterCategory(master_category)">mdi-plus-circle-outline</v-icon>
-              <v-icon dark small right @click="deleteMasterCategory(master_category)">mdi-delete-circle-outline</v-icon>
-              <v-icon dark small right @click="newCategory(master_category)">mdi-note-plus-outline</v-icon>
+                <v-icon dark small right 
+                  :id="`btn-new-master-category-${master_category.id}`" 
+                  @click="newMasterCategory(master_index)"
+                >
+                  mdi-plus-circle-outline
+                </v-icon>
+                <v-icon dark small right 
+                  :id="`btn-delete-master-category-${master_category.id}`"
+                  @click="deleteMasterCategory(master_category)"
+                >
+                  mdi-delete-circle-outline
+                </v-icon>
+                <v-icon dark small right
+                  :id="`btn-new-category-${master_category.id}`"
+                  @click="newCategory(master_category)"
+                >
+                  mdi-note-plus-outline
+                </v-icon>
             </v-col>
           </v-row>
         </v-container>
@@ -64,9 +81,10 @@
             @end="onCategoryOrderChanged"
             handle=".handle"
           >
-            <v-row v-for="category in categoriesData[master_category.id]" :key="category.id">
+            <v-row class='category-row' v-for="category in categoriesData[master_category.id]" :key="category.id">
               <v-col>
                 <v-text-field
+                  :id="`category-name-input-${category.id}`"
                   v-model="category.name"
                   @click="editedCategoryNameId = category.id"
                   @focus="editedCategoryNameId = category.id"
@@ -81,19 +99,24 @@
                   prepend-icon="mdi-drag-horizontal"
                 >
                   <template v-slot:prepend>
-                    <v-icon class="handle">mdi-drag-horizontal</v-icon>
+                    <v-icon class="handle" :id="`drag-category-${category.id}`">
+                      mdi-drag-horizontal
+                    </v-icon>
                   </template>
                 </v-text-field>
               </v-col>
               <v-col>
                   <!-- v-model="category.budget" -->
                 <v-text-field
+                  class="category-budget-input"
+                  :id="`category-budget-input-${category.id}`"
                   dense
                   flat
                   solo
                   hide-details
                   :value="category.budget / 100"
                   @change="onCategoryBudgetChanged(category.id, $event)"
+                  @blur="onCategoryBudgetChanged(category.id, $event)"
                 />
               </v-col>
               <v-col>
@@ -101,7 +124,9 @@
               </v-col>
               <v-col>
                 {{ category.balance / 100 }}
-                <v-icon small right @click="onHideCategory(category.id)">mdi-eye-off-outline</v-icon>
+                <v-icon small right :id="`btn-hide-category-${category.id}`" @click="onHideCategory(category.id)">
+                  mdi-eye-off-outline
+                </v-icon>
               </v-col>
             </v-row>
           </draggable>
@@ -119,6 +144,7 @@ import _ from 'lodash'
 import draggable from 'vuedraggable'
 import { DEFAULT_MONTH_CATEGORY, ID_LENGTH, ID_NAME, NONE } from '../../constants'
 import { prevMonth, nextMonth } from '../../helper'
+import { getCarryover } from "@/store/modules/category-module";
 import moment from 'moment'
 
 export default {
@@ -223,7 +249,7 @@ export default {
                 0
               )
               const spent = _.get(this.allCategoryBalances, [this.selectedMonth, master_id, category_id, 'spent'], 0)
-              const carryover = this.getCarryover(this.allCategoryBalances, this.selectedMonth, master_id, category_id)
+              const carryover = getCarryover(this.allCategoryBalances, this.selectedMonth, master_id, category_id)
               const name = _.get(this.categoriesById, [category_id, 'name'], '')
               return {
                 id: category_id,
@@ -444,14 +470,10 @@ export default {
         this.$store.dispatch('commitDocToPouchAndVuex', { current: { ...doc, name: name }, previous: doc })
       }
     },
-    newMasterCategory(existing_master_category) {
-      console.log(existing_master_category)
-      const sort = existing_master_category.sort ? existing_master_category.sort : 1
-      this.$store.dispatch('createMasterCategory', { name: '', is_income: false, sort: sort })
+    newMasterCategory(index) {
+      this.$store.dispatch('createMasterCategory', { name: '', is_income: false, sort: index })
     },
     deleteMasterCategory(master_category) {
-      console.log('delete master category')
-      console.log(master_category)
       this.$store.dispatch('deleteMasterCategory', master_category.id)
     },
     newCategory(master_category) {
@@ -594,14 +616,14 @@ tr:hover .crud-actions {
 .header {
   text-align: right;
 }
-.category-row {
-  /* border-bottom: 1px solid rgb(182, 182, 182); */
+/* .category-row {
+  border-bottom: 1px solid rgb(182, 182, 182);
   height: 30px;
-}
+} */
 
-.masterCategory-row {
+/* .masterCategory-row {
   padding: 5px 0px 5px 5px;
-}
+} */
 
 .uncategorized-row {
   border-top: 1px solid rgb(182, 182, 182);

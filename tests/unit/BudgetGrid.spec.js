@@ -1,46 +1,68 @@
-import BudgetGrid from "@/components/BudgetView/BudgetGrid.vue";
-import { shallowMount, mount, createLocalVue } from "@vue/test-utils";
-import Vuex from "vuex";
-import Vuetify from "vuetify";
-import mock_budget from "@/../tests/__mockdata__/mock_budget.json";
-import store from "@/store";
+import BudgetGrid from '@/components/BudgetView/BudgetGrid.vue'
+import { shallowMount, mount, createLocalVue } from '@vue/test-utils'
+import Vuex from 'vuex'
+import Vuetify from 'vuetify'
+import mock_budget from '@/../tests/__mockdata__/mock_budget_2.json'
+import { getCarryover } from '@/store/modules/category-module'
+import _ from 'lodash'
+import Vue from 'vue'
+import { NONE } from '@/constants'
 
-import Vue from "vue";
-Vue.use(Vuetify);
-Vue.config.productionTip = false;
+global._ = _
+Vue.use(Vuetify)
+Vue.config.productionTip = false
 
-const localVue = createLocalVue();
+const localVue = createLocalVue()
 
+const month = '2020-12'
 const $route = {
-  path: "/fake/path",
+  path: '/budget',
   params: {
-    account_id: "38e690f8-198f-4735-96fb-3a2ab15081c2"
+    month: month
   }
-};
+}
 
 // Load mock budget file and parse into vuex state
-const data = mock_budget.rows.map(row => row.doc);
-// state.monthCategoryBudgets = data.filter(row => row._id.includes("_monthCategory_"));
-// state.payees = data.filter(row => row._id.includes("_payee_"));
-store.state.pouchdb.accounts = data.filter(row => row._id.includes("_account_"));
-store.state.pouchdb.transactions = data.filter(row => row._id.includes("_transaction_"));
-store.state.pouchdb.masterCategories = data.filter(row => row._id.includes("_master-category_"));
-store.state.pouchdb.categories = data
-  .filter(row => row._id.includes("_category_"))
-  .filter(row => !row._id.includes("monthCategory"));
-// store.state.pouchdb.month_selected = "2020-12",
-// store.state.pouchdb.selectedBudgetId = "79de488f-448e-4b4d-97ad-61e5e4f5df31",
+// Created by calling backup on test database and copying over from the console log
+const data = mock_budget.rows.map((row) => row.doc)
 
-describe("Category group button", () => {
-  let vuetify;
-  let wrapper;
+describe('CRUD elements', () => {
+  let vuetify
+  let wrapper
+  let getters
+  let store
 
   beforeEach(() => {
-    vuetify = new Vuetify();
-    localVue.use(vuetify);
-    localVue.use(Vuex);
+    vuetify = new Vuetify()
+    localVue.use(vuetify)
+    localVue.use(Vuex)
 
-    store.state.month_selected = "2020-12";
+    getters = {
+      selectedBudgetId: () => 'rkW',
+      categoriesById: () => mock_budget.getters.categoriesById,
+      masterCategories: () =>
+        data
+          .filter((row) => row._id.includes('_masterCategory_'))
+          .sort((a, b) => a.sort - b.sort)
+          .concat([NONE]),
+      masterCategoriesById: () => mock_budget.getters.masterCategoriesById,
+      allCategoryBalances: () => mock_budget.getters.allCategoryBalances,
+      selectedMonth: () => month,
+      monthsInUse: () => mock_budget.getters.monthsInUse,
+      categoriesByMaster: () => mock_budget.getters.categoriesByMaster,
+      categories: () =>
+        data
+          .filter((row) => row._id.includes('_category_'))
+          .filter((row) => !row._id.includes('_monthCategory_'))
+          .concat([NONE])
+    }
+
+    store = new Vuex.Store({
+      getters,
+      getCarryover
+    })
+
+    store.state.month_selected = month
     wrapper = mount(BudgetGrid, {
       store,
       localVue,
@@ -51,58 +73,134 @@ describe("Category group button", () => {
       stubs: {
         ImportModalComponent: true
       }
-    });
+    })
+  })
 
-    //Open modal for each test
-    wrapper.find("#btn-add-category-group").trigger("click");
-  });
+  it('newMasterCategory button exists', () => {
+    expect(wrapper.find('#btn-new-master-category-1of').exists()).toBeTruthy()
+  })
 
-  it("should exist", () => {
-    expect(wrapper.find("#btn-add-category-group").exists()).toBeTruthy();
-  });
+  it('deleteMasterCategory button exists', () => {
+    expect(wrapper.find('#btn-delete-master-category-1of').exists()).toBeTruthy()
+  })
 
-  it("modal displays correct title", () => {
-    expect(wrapper.find(".v-dialog .title").text()).toEqual("Create a Category Group:");
-  });
+  it('newCategory button exists', () => {
+    expect(wrapper.find('#btn-new-category-1of').exists()).toBeTruthy()
+  })
 
-  it("clicking create button calls createMasterCategory function", () => {
-    const spy123 = spyOn(wrapper.vm, "createMasterCategory");
+  it('hideCategory button exists', () => {
+    expect(wrapper.find('#btn-hide-category-K31').exists()).toBeTruthy()
+  })
 
-    // Find text element and input new category name
-    var input = wrapper.find("#txt_field_category_name");
-    input.element.value = "my test category gp name";
-    input.trigger("input");
+  it('draggable masterCategory exists', () => {
+    expect(wrapper.find('#drag-master-category-1of').exists()).toBeTruthy()
+  })
 
-    //Click the create button in modal
-    wrapper.find("#btn-createMasterCategory").trigger("click");
+  it('draggable category exists', () => {
+    expect(wrapper.find('#drag-category-K31').exists()).toBeTruthy()
+  })
 
-    expect(spy123).toBeCalledWith("my test category gp name");
-  });
+  it('clicking addMasterCategory button calls newMasterCategory function', () => {
+    const spyNewMasterCategory = jest.spyOn(wrapper.vm, 'newMasterCategory')
+    wrapper.find('#btn-new-master-category-1of').trigger('click')
+    expect(spyNewMasterCategory).toBeCalledWith(3)
+  })
 
-  it("creating with empty category name does NOT call vuex action", () => {
-    wrapper.vm.$store.dispatch = jest.fn();
-    wrapper.vm.category_name = "";
-    wrapper.find("#btn-createMasterCategory").trigger("click");
-    expect(wrapper.vm.$store.dispatch).not.toBeCalled();
-  });
+  it('clicking deleteMasterCategory button calls deleteMasterCategory function', () => {
+    const spyDeleteMasterCategory = jest.spyOn(wrapper.vm, 'deleteMasterCategory')
+    wrapper.find('#btn-delete-master-category-1of').trigger('click')
+    expect(spyDeleteMasterCategory).toBeCalledWith({ id: '1of', name: 'Monthly Bills' })
+  })
 
-  it("create new category function dispatchs vuex action", () => {
-    wrapper.vm.$store.dispatch = jest.fn();
-    wrapper.vm.createMasterCategory("new category");
-    expect(wrapper.vm.$store.dispatch).toBeCalledWith("createMasterCategory", "new category");
-  });
-});
+  it('clicking addCategory button calls newCategory function', () => {
+    const spyNewCategory = jest.spyOn(wrapper.vm, 'newCategory')
+    wrapper.find('#btn-new-category-1of').trigger('click')
+    expect(spyNewCategory).toBeCalledWith({ id: '1of', name: 'Monthly Bills' })
+  })
 
-describe("Modify button", () => {
-  let vuetify;
-  let wrapper;
+  it('clicking hideCategory button calls onHideCategory function', () => {
+    const spyHideCategory = jest.spyOn(wrapper.vm, 'onHideCategory')
+    wrapper.find('#btn-hide-category-K31').trigger('click')
+    expect(spyHideCategory).toBeCalledWith('K31')
+  })
+
+  it('newMasterCategory function dispatches vuex action', () => {
+    wrapper.vm.$store.dispatch = jest.fn()
+    wrapper.vm.newMasterCategory(2)
+    expect(wrapper.vm.$store.dispatch).toBeCalledWith('createMasterCategory', { name: '', is_income: false, sort: 2 })
+  })
+
+  it('deleteMasterCategory function dispatches vuex action', () => {
+    wrapper.vm.$store.dispatch = jest.fn()
+    wrapper.vm.deleteMasterCategory({ id: '1of', name: 'Monthly Bills' })
+    expect(wrapper.vm.$store.dispatch).toBeCalledWith('deleteMasterCategory', '1of')
+  })
+
+  it('newCategory function dispatches vuex action', () => {
+    wrapper.vm.$store.dispatch = jest.fn().mockImplementation(() => Promise.resolve())
+    wrapper.vm.newCategory({ id: '1of', name: 'Monthly Bills' })
+    expect(wrapper.vm.$store.dispatch).toBeCalledWith('createCategory', { name: '', master_id: '1of' })
+  })
+
+  it('onHideCategory function dispatches vuex action', () => {
+    wrapper.vm.$store.dispatch = jest.fn().mockImplementation(() => Promise.resolve())
+    wrapper.vm.onHideCategory('K31')
+    expect(wrapper.vm.$store.dispatch).toBeCalledWith('commitDocToPouchAndVuex', {
+      current: {
+        name: 'Groceries',
+        sort: 1,
+        hidden: false,
+        masterCategory: '~~~',
+        _id: 'b_rkW_category_K31',
+        _rev: '1-ad8e4a89a4d1d550377b070ec923c81c'
+      },
+      previous: {
+        name: 'Groceries',
+        sort: 1,
+        hidden: false,
+        masterCategory: 'MpQ',
+        _id: 'b_rkW_category_K31',
+        _rev: '1-ad8e4a89a4d1d550377b070ec923c81c'
+      }
+    })
+  })
+})
+
+describe('budgetgrid component', () => {
+  let vuetify
+  let wrapper
+  let getters
+  let store
 
   beforeEach(() => {
-    vuetify = new Vuetify();
-    localVue.use(vuetify);
-    localVue.use(Vuex);
+    vuetify = new Vuetify()
+    localVue.use(vuetify)
+    localVue.use(Vuex)
 
-    store.state.month_selected = "2020-12";
+    getters = {
+      selectedBudgetId: () => 'rkW',
+      categoriesById: () => mock_budget.getters.categoriesById,
+      masterCategories: () =>
+        data
+          .filter((row) => row._id.includes('_masterCategory_'))
+          .sort((a, b) => a.sort - b.sort)
+          .concat([NONE]),
+      masterCategoriesById: () => mock_budget.getters.masterCategoriesById,
+      allCategoryBalances: () => mock_budget.getters.allCategoryBalances,
+      selectedMonth: () => month,
+      monthsInUse: () => mock_budget.getters.monthsInUse,
+      categoriesByMaster: () => mock_budget.getters.categoriesByMaster,
+      categories: () =>
+        data
+          .filter((row) => row._id.includes('_category_'))
+          .filter((row) => !row._id.includes('_monthCategory_'))
+          .concat([NONE])
+    }
+    store = new Vuex.Store({
+      getters,
+      getCarryover
+    })
+    // store.state.month_selected = "2020-12";
     wrapper = mount(BudgetGrid, {
       store,
       localVue,
@@ -113,142 +211,131 @@ describe("Modify button", () => {
       stubs: {
         ImportModalComponent: true
       }
-    });
+    })
+  })
 
-    wrapper.find("#btn-modify").trigger("click");
-  });
+  it('budget grid renders correct snapshot', () => {
+    expect(wrapper.html()).toMatchSnapshot()
+  })
 
-  it("should exist", () => {
-    expect(wrapper.find("#btn-modify").exists()).toBeTruthy();
-  });
+  it('renders correct number of category rows', () => {
+    expect(wrapper.findAll('.category-row')).toHaveLength(wrapper.vm.$store.getters.categories.length)
+  })
 
-  it("button displays correct title when clicked", async () => {
-    expect(wrapper.find("#btn-modify > span").text()).toEqual("Done");
+  it('renders correct number of master category rows', () => {
+    expect(wrapper.findAll('.master-category-row')).toHaveLength(7)
+    expect(wrapper.findAll('.master-category-row')).toHaveLength(wrapper.vm.$store.getters.masterCategories.length)
+  })
 
-    wrapper.find("#btn-modify").trigger("click");
-    await localVue.nextTick();
-    expect(wrapper.find("#btn-modify > span").text()).toEqual("Modify");
-  });
-
-  it("edit category group buttons appear with modify btn clicked", () => {
-    expect(wrapper.findAll("#btn-editCategoryGroup").length).toEqual(
-      store.state.pouchdb.masterCategories.length
-    );
-  });
-
-  it("edit category buttons appear with modify btn clicked", () => {
-    expect(wrapper.findAll("#btn-editCategory").length).toEqual(
-      store.state.pouchdb.categories.length
-    );
-  });
-
-  it("edit category group shows modal", async () => {
-    expect(wrapper.find("#btn-modify > span").text()).toEqual("Done");
-
-    // Open modal
-    wrapper.find("#btn-editCategoryGroup:first-of-type").trigger("click");
-    await localVue.nextTick();
-
-    // Verify modal is open
-    expect(wrapper.find(".v-dialog .title").text()).toEqual("Edit Category Name:");
-
-    // Verify category name is prepopulated
-    var input = wrapper.find("#txt-categoryName");
-    
-    expect(input.element.value).toEqual(store.state.pouchdb.masterCategories[0].name);
-  });
-
-  it("edit category group calls function", async () => {
-    // Open modal
-    wrapper.find("#btn-editCategoryGroup:first-of-type").trigger("click");
-    await localVue.nextTick();
-
-    //Edit category name
-    var input = wrapper.find("#txt-categoryName");
-    input.element.value = "my test category name";
-    input.trigger("input");
-
-    // Trigger save
-    const spy123 = spyOn(wrapper.vm, "saveCategory");
-    wrapper.find("#btn-save").trigger("click");
-    expect(wrapper.vm.editedCategory.name).toEqual("my test category name");
-    expect(spy123).toBeCalledWith();
-  });
- 
-});
-
-describe("budgetgrid component", () => {
-  let vuetify;
-  let wrapper;
-
-  beforeEach(() => {
-    vuetify = new Vuetify();
-    localVue.use(vuetify);
-    localVue.use(Vuex);
-
-    store.state.month_selected = "2020-12";
-    wrapper = mount(BudgetGrid, {
-      store,
-      localVue,
-      vuetify,
-      mocks: {
-        $route
-      },
-      stubs: {
-        ImportModalComponent: true
-      }
-    });
-  });
-
-  it("renders correct snapshot", () => {
-    expect(wrapper.html()).toMatchSnapshot();
-    // expect(wrapper.vm.transactionListForTable.length).toBe(22);
-  });
-
-  it("renders correct number of category rows", () => {
-    expect(wrapper.findAll(".category-row")).toHaveLength(
-      wrapper.vm.$store.state.pouchdb.categories.length
-    );
-  });
-
-  it("renders correct number of master category rows", () => {
-    expect(wrapper.findAll(".master-category-row")).toHaveLength(5);
-    expect(wrapper.findAll(".master-category-row")).toHaveLength(
-      wrapper.vm.$store.getters.masterCategories.length
-    );
-  });
-
-  it("renders available-to-budget-amount", () => {
-    expect(wrapper.find("#available-to-budget-amount").exists()).toBeTruthy();
+  it('renders available-to-budget-amount', () => {
+    expect(wrapper.find('#available-to-budget-amount').exists()).toBeTruthy()
     // expect(wrapper.find("#available-to-budget-amount").text()).toEqual("36978.38");
-  });
+  })
 
-  it("renders budget-input for each category", () => {
-    expect(wrapper.findAll("#budget-input")).toHaveLength(
-      wrapper.vm.$store.state.pouchdb.categories.length
-    );
-  });
+  it('renders budget-input for each category', () => {
+    expect(wrapper.findAll('.category-budget-input')).toHaveLength(wrapper.vm.$store.getters.categories.length)
+  })
 
-  it("renders budget-input for each category", async () => {
-    const spy123 = spyOn(wrapper.vm, "budgetValueChanged");
+  it('calls onCategoryNameChange correctly when new name is input', async () => {
+    const spyCategoryNameChanged = jest.spyOn(wrapper.vm, 'onCategoryNameChange')
+    const name_input = wrapper.find('#category-name-input-x2A')
+    expect(name_input.exists()).toBeTruthy()
+    expect(name_input.element.readOnly).toEqual(true)
 
-    const budget_input = wrapper.find("#budget-input");
-    budget_input.element.value = 500;
-    // await budget_input.trigger("input");
-    // await budget_input.trigger("keypress", { key: "Enter" });
-    budget_input.trigger("change");
+    await name_input.trigger('click')
+    expect(name_input.element.readOnly).toEqual(false)
 
-    // const item123 = {
-    //   budget: 4400,
-    //   overspending: null,
-    //   note: "",
-    //   _id:
-    //     "b_79de488f-448e-4b4d-97ad-61e5e4f5df31_monthCategory_2020-12-01_a937afd4-17f0-48a8-b5a9-2a21e5ec2869",
-    //   _rev: "2-30c16c9cf6446e71ca31111dda0e966e",
-    //   date: "2020-12-01"
-    // };
-    // wrapper.vm.budgetValueChanged(item123, 55555);
-    // expect(wrapper.html()).toMatchSnapshot();
-    // expect(spy123).toHaveBeenCalledWith();
-  });
-});
+    name_input.setValue('Candy')
+    name_input.trigger('blur')
+    await wrapper.vm.$nextTick()
+    expect(spyCategoryNameChanged).toBeCalled()
+    expect(spyCategoryNameChanged).toBeCalledWith('Candy')
+  })
+
+  it('calls onCategoryBudgetChanged correctly when new value is input', async () => {
+    const spyCategoryBudgetChanged = jest.spyOn(wrapper.vm, 'onCategoryBudgetChanged')
+    const budget_input = wrapper.find('#category-budget-input-x2A')
+    expect(budget_input.exists()).toBeTruthy()
+
+    await budget_input.trigger('click')
+    expect(budget_input.element.readOnly).toEqual(false)
+
+    budget_input.setValue(500)
+    budget_input.trigger('blur')
+    await wrapper.vm.$nextTick()
+    expect(spyCategoryBudgetChanged).toBeCalled()
+  })
+
+  it('onMasterCategoryNameChange function dispatches vuex action', async () => {
+    wrapper.vm.$store.dispatch = jest.fn().mockImplementation(() => Promise.resolve())
+
+    await wrapper.setData({ editedMasterCategoryId: '1of' })
+    wrapper.vm.onMasterCategoryNameChange('New Name')
+    expect(wrapper.vm.$store.dispatch).toBeCalledWith('commitDocToPouchAndVuex', {
+      current: {
+        name: 'New Name',
+        sort: 2,
+        collapsed: false,
+        isIncome: false,
+        _id: 'b_rkW_masterCategory_1of',
+        _rev: '1-781cb3f10d5d327198ab0650d5be1b64'
+      },
+      previous: {
+        name: 'Monthly Bills',
+        sort: 2,
+        collapsed: false,
+        isIncome: false,
+        _id: 'b_rkW_masterCategory_1of',
+        _rev: '1-781cb3f10d5d327198ab0650d5be1b64'
+      }
+    })
+  })
+
+  it('onCategoryNameChange function dispatches vuex action', async () => {
+    wrapper.vm.$store.dispatch = jest.fn().mockImplementation(() => Promise.resolve())
+
+    await wrapper.setData({ editedCategoryNameId: 'K31' })
+    wrapper.vm.onCategoryNameChange('New Name')
+    expect(wrapper.vm.$store.dispatch).toBeCalledWith('commitDocToPouchAndVuex', {
+      current: {
+        name: 'New Name',
+        sort: 1,
+        hidden: false,
+        masterCategory: 'MpQ',
+        _id: 'b_rkW_category_K31',
+        _rev: '1-ad8e4a89a4d1d550377b070ec923c81c'
+      },
+      previous: {
+        name: 'Groceries',
+        sort: 1,
+        hidden: false,
+        masterCategory: 'MpQ',
+        _id: 'b_rkW_category_K31',
+        _rev: '1-ad8e4a89a4d1d550377b070ec923c81c'
+      }
+    })
+  })
+
+  it('onCategoryBudgetChange function dispatches vuex action', async () => {
+    wrapper.vm.$store.dispatch = jest.fn().mockImplementation(() => Promise.resolve())
+
+    // await wrapper.setData({ selectedBudgetId: 'K31'})
+    wrapper.vm.onCategoryBudgetChanged('K31', '34.78')
+    expect(wrapper.vm.$store.dispatch).toBeCalledWith('updateMonthCategory', {
+      current: {
+        budget: 3478,
+        overspending: null,
+        note: 'H0QhU[?EE}ZA`)T%z[Mf{ 4XS|T3xmu/,q4r55m83AnQ ',
+        _id: 'b_rkW_monthCategory_2020-12_K31',
+        _rev: '1-20854132ded405ea7bf30e1b7f3571f8'
+      },
+      previous: {
+        budget: 18529,
+        overspending: null,
+        note: 'H0QhU[?EE}ZA`)T%z[Mf{ 4XS|T3xmu/,q4r55m83AnQ ',
+        _id: 'b_rkW_monthCategory_2020-12_K31',
+        _rev: '1-20854132ded405ea7bf30e1b7f3571f8'
+      }
+    })
+  })
+})
