@@ -8,7 +8,6 @@ import payee from './modules/payee-module'
 import pouchdb from './pouchdb/pouchdb-main'
 import reports from './modules/reports-module'
 import transaction from './modules/transaction-module'
-import user from './modules/user-module'
 import pouchdbDelete from './pouchdb/pouchdb-delete'
 import pouchdbExport from './pouchdb/pouchdb-export'
 import pouchdbFetch from './pouchdb/pouchdb-fetch'
@@ -42,7 +41,7 @@ Vue.mixin({
 Vue.use(Vuex)
 
 export default new Vuex.Store({
-  strict: process.env.NODE_ENV !== 'production',
+  strict: import.meta.env.NODE_ENV !== 'production',
   modules: {
     account,
     budget,
@@ -52,7 +51,6 @@ export default new Vuex.Store({
     pouchdb,
     reports,
     transaction,
-    user,
     pouchdbDelete,
     pouchdbExport,
     pouchdbFetch,

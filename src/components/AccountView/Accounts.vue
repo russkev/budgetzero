@@ -40,7 +40,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import AccountAddModal from './AccountAddModal'
+import AccountAddModal from './AccountAddModal.vue'
 import { ID_NAME } from '../../constants'
 // import { generateShortId } from "@/store/modules/id-module"
 

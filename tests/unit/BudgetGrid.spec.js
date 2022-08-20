@@ -8,7 +8,7 @@ import _ from 'lodash'
 import Vue from 'vue'
 import { NONE } from '@/constants'
 
-global._ = _
+// global._ = _
 Vue.use(Vuetify)
 Vue.config.productionTip = false
 

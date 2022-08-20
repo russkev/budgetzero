@@ -111,7 +111,17 @@ npm install
 
 ### To start a development web server:
 ```
+npm run dev
+```
+
+### Preview production server
+```
 npm run serve
+```
+
+### Lints and fixes files
+```
+npm run lint
 ```
 
 ### Run tests

@@ -5,7 +5,7 @@ import path from 'path'
 import url from 'url'
 import installExtension, { VUEJS_DEVTOOLS } from 'electron-devtools-installer'
 
-const isDevelopment = process.env.NODE_ENV !== 'production'
+const isDevelopment = import.meta.env.NODE_ENV !== 'production'
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -29,10 +29,10 @@ function createWindow() {
   })
   win.removeMenu()
 
-  if (process.env.WEBPACK_DEV_SERVER_URL) {
+  if (import.meta.env.WEBPACK_DEV_SERVER_URL) {
     // Load the url of the dev server if in development mode
-    win.loadURL(process.env.WEBPACK_DEV_SERVER_URL)
-    if (!process.env.IS_TEST) win.webContents.openDevTools()
+    win.loadURL(import.meta.env.WEBPACK_DEV_SERVER_URL)
+    if (!import.meta.env.IS_TEST) win.webContents.openDevTools()
   } else {
     createProtocol('app')
     // Load the index.html when not in development
@@ -69,7 +69,7 @@ app.on('activate', () => {
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', async () => {
-  if (isDevelopment && !process.env.IS_TEST) {
+  if (isDevelopment && !import.meta.env.IS_TEST) {
     // Install Vue Devtools
     // Devtools extensions are broken in Electron 6.0.0 and greater
     // See https://github.com/nklayman/vue-cli-plugin-electron-builder/issues/378 for more info

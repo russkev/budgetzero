@@ -1,5 +1,5 @@
 import Vue from 'vue'
-var FileSaver = require('file-saver')
+import FileSaver from 'file-saver'
 import moment from 'moment'
 
 export default {

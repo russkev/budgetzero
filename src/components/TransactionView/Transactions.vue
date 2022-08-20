@@ -193,7 +193,7 @@
 </template>
 
 <script>
-import TransactionHeader from './TransactionHeader'
+import TransactionHeader from './TransactionHeader.vue'
 import { DEFAULT_TRANSACTION, ID_LENGTH, ID_NAME, NONE } from '../../constants'
 import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
@@ -201,7 +201,7 @@ import Vue from 'vue'
 import { mapGetters } from 'vuex'
 import moment from 'moment'
 import _ from 'lodash'
-import DatePicker from './DatePicker'
+import DatePicker from './DatePicker.vue'
 import ImportModalComponent from './ImportModalComponent.vue'
 // import Banking from 'banking'
 // import ofx from 'node-ofx-parser'

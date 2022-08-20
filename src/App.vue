@@ -23,6 +23,7 @@
 </template>
 
 <script>
+window.global ||= window;
 import Sidebar from './components/Sidebar.vue'
 import BaseDialogModalComponent from './components/Modals/BaseDialogModalComponent.vue'
 import ConfirmDialog from './components/Modals/ConfirmDialog.vue'

@@ -17,19 +17,23 @@ import Vuelidate from 'vuelidate'
 import VueRouter from 'vue-router' // prints 'idb'
 
 import store from './store'
-import Settings from './components/Settings'
-import Transactions from './components/TransactionView/Transactions'
+import Settings from './components/Settings.vue'
+import Transactions from './components/TransactionView/Transactions.vue'
 
-import Accounts from './components/AccountView/Accounts'
-import BudgetGrid from './components/BudgetView/BudgetGrid'
-import Login from './components/Auth/Login.vue'
-import Profile from './components/Auth/Profile.vue'
+import Accounts from './components/AccountView/Accounts.vue'
+import BudgetGrid from './components/BudgetView/BudgetGrid.vue'
 import CreateBudget from './components/CreateBudget.vue'
 import Manage from './components/Manage.vue'
 import Reports from './components/Reports.vue'
 import moment from 'moment'
 
-import 'firebaseui/dist/firebaseui.css'
+import VueMoment from 'vue-moment'
+import pouchdb_find from 'pouchdb-find'
+import pouchdb_live_find from 'pouchdb-live-find'
+import pouchdb_authentication from 'pouchdb-authentication'
+import pouchdb_erase from 'pouchdb-erase'
+
+
 
 /**
  * Sweet Alert
@@ -52,12 +56,12 @@ import TreeView from 'vue-json-tree-view'
 Vue.use(TreeView)
 /** */
 
-Vue.use(require('vue-moment'))
+Vue.use(VueMoment)
 
-PouchDB.plugin(require('pouchdb-find'))
-PouchDB.plugin(require('pouchdb-live-find'))
-PouchDB.plugin(require('pouchdb-authentication'))
-PouchDB.plugin(require('pouchdb-erase'))
+PouchDB.plugin(pouchdb_find)
+PouchDB.plugin(pouchdb_live_find)
+PouchDB.plugin(pouchdb_authentication)
+PouchDB.plugin(pouchdb_erase)
 
 Vue.use(Vue2Filters)
 Vue.component('VSelect', vSelect)
@@ -68,7 +72,7 @@ Vue.use(VueRouter)
 
 // eslint-disable-next-line vars-on-top
 export var router = new VueRouter({
-  mode: process.env.IS_ELECTRON ? 'hash' : 'history',
+  mode: import.meta.env.IS_ELECTRON ? 'hash' : 'history',
   routes: [
     {
       path: '*',
@@ -77,50 +81,32 @@ export var router = new VueRouter({
     {
       path: '/settings',
       component: Settings
-      // beforeEnter: ifAuthenticated,
     },
     {
       path: '/manage',
       component: Manage
-      // beforeEnter: ifAnyBudgetExists,
     },
     {
       path: '/accounts',
       component: Accounts
-      // beforeEnter: ifAnyBudgetExists,
     },
     {
       path: '/reports',
       component: Reports
-      // beforeEnter: ifAnyBudgetExists,
     },
     {
       path: '/transactions',
       name: 'all_transactions',
       component: Transactions
-      // beforeEnter: ifAnyBudgetExists,
     },
     {
       path: '/transactions/:account_id',
       name: 'transactions',
       component: Transactions
-      // beforeEnter: ifAnyBudgetExists,
     },
     {
       path: '/budget/:month',
       component: BudgetGrid
-      // redirect: '/budget',
-      // beforeEnter: ifAnyBudgetExists,
-    },
-    {
-      path: '/login',
-      component: Login
-      // beforeEnter: ifNotAuthenticated
-    },
-    {
-      path: '/profile',
-      component: Profile
-      // beforeEnter: ifNotAuthenticated
     },
     {
       path: '/create',

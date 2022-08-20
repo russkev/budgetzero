@@ -1,7 +1,7 @@
-const fs = require('fs')
+import fs from 'fs'
+import webpack from 'webpack'
 const packageJson = fs.readFileSync('./package.json')
 const version = JSON.parse(packageJson).version || 0
-const webpack = require('webpack')
 
 module.exports = {
   pluginOptions: {
@@ -12,7 +12,7 @@ module.exports = {
       //Necessary for electron to render properly
       chainWebpackRendererProcess(config) {
         config.plugin('define').tap(args => {
-          delete args[0]['process.env'].BASE_URL
+          delete args[0]['import.meta.env'].BASE_URL
           return args
         })
       }
@@ -24,7 +24,7 @@ module.exports = {
     devtool: 'source-map',
     plugins: [
       new webpack.DefinePlugin({
-        'process.env.PACKAGE_VERSION': '"' + version + '"'
+        'import.meta.env.PACKAGE_VERSION': '"' + version + '"'
       })
     ]
   },

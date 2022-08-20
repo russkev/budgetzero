@@ -36,7 +36,7 @@
     <v-list-item class="pl-0">
       <v-list-item-content v-if="!mini" class="py-1">
         <v-list-item-title class="title pl-4">
-          <v-img max-height="120" max-width="250" src="../../public/logo3.png" />
+          <v-img max-height="120" max-width="250" src="/logo3.png" />
         </v-list-item-title>
       </v-list-item-content>
       <v-list-item-icon v-if="mini" class="my-1 pb-2 ml-2">
@@ -224,44 +224,6 @@
         </v-menu>
 
       </v-list>
-
-      <!-- Logged-in Menu -->
-      <v-menu v-if="user.loggedIn" offset-x max-width="150">
-        <template #activator="{ on }">
-          <v-list-item>
-            <v-list-item-icon class="mr-3">
-              <v-btn icon class="primary lighten-2" v-on="on">
-                <v-icon color="grey lighten-1"> mdi-account </v-icon>
-              </v-btn>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title class="subtitle-2 font-weight-bold">
-                {{ user.email }}
-              </v-list-item-title>
-              <v-list-item-subtitle class="font-weight-bold">
-                {{ sync_state }}
-              </v-list-item-subtitle>
-            </v-list-item-content>
-          </v-list-item>
-        </template>
-
-        <v-list dense color="grey lighten-4">
-          <v-list-item>
-            <v-list-item-content>
-              <v-btn class="blue-grey darken-5" :to="{ path: '/profile' }">
-                <v-icon left color="white"> mdi-account </v-icon>
-                <span class="white--text">Profile</span>
-              </v-btn>
-            </v-list-item-content>
-          </v-list-item>
-
-          <v-list-item v-if="user.loggedIn">
-            <v-btn block class="accent" @click="$store.dispatch('LOGOUT')">
-              <v-icon left color="white"> mdi-logout </v-icon>Logout
-            </v-btn>
-          </v-list-item>
-        </v-list>
-      </v-menu>
       <v-btn @click="onClick()">
         Click me
       </v-btn>
@@ -271,7 +233,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import BaseDialogModalComponent from './Modals/BaseDialogModalComponent'
+import BaseDialogModalComponent from './Modals/BaseDialogModalComponent.vue'
 import { ID_LENGTH } from '../constants'
 import BudgetAddModal from './BudgetView/BudgetAddModal.vue'
 
@@ -308,8 +270,6 @@ export default {
       'selectedBudgetId',
       'allBudgets',
       'budgetsById',
-      // 'budgetRootsMap',
-      'user'
     ]),
     budgetName() {
       if (this.selectedBudget) {

@@ -143,7 +143,6 @@ import {
   getAccountBankId,
   getAccountTransactions,
   getDate,
-  cyrb53Hash
 } from '../../ofxParse'
 import { ID_NAME, NONE } from '../../constants'
 import ofx from 'node-ofx-parser'

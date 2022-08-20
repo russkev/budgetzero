@@ -183,7 +183,7 @@ export default {
         { text: 'Name', value: 'name' },
         { text: 'id', value: '_id' }
       ],
-      isProd: process.env.NODE_ENV === 'production',
+      isProd: import.meta.env.NODE_ENV === 'production',
       mockTransactionsModalIsVisible: false,
       mockTransactionsAmount: 1000,
       mockTransactionsStartMonth: '2020-01',
@@ -196,7 +196,7 @@ export default {
   computed: {
     ...mapGetters(['transactions', 'accounts', 'payees', 'selectedBudgetId', 'remoteSyncURL', 'sync_state']),
     packageVersion() {
-      return process.env.PACKAGE_VERSION || '0'
+      return import.meta.env.PACKAGE_VERSION || '0'
     }
   },
   watch: {

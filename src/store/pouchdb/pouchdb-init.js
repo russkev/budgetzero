@@ -2,6 +2,7 @@ import Vue from 'vue'
 import PouchDB from 'pouchdb'
 import { documentExists } from '../../helper'
 import { ID_LENGTH, ID_NAME } from '../../constants'
+import WorkerPouch from 'worker-pouch'
 
 export default {
   state: {},
@@ -115,7 +116,7 @@ export default {
         })
     },
     createLocalPouchDB(context) {    
-      PouchDB.adapter('worker', require('worker-pouch'))
+      PouchDB.adapter('worker', WorkerPouch)
       const db = new PouchDB('budgetzero_local_db')
       Vue.prototype.$pouch = db
 
