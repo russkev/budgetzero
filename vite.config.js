@@ -16,21 +16,16 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src')
-      // find: /^@\/(.+)/,
-      // replacement: path.resolve(__dirname, 'src') + '/$1'
     }
+  },
+  test: {
+    globals: true,
+    environment: 'jsdom',
   },
   server: {
     port: 8080
   },
   preview: {
     port: 8080
-  },
-  // build: {
-  //   rollupOptions: {
-  //     input: {
-  //       app: 'public/index.html'
-  //     }
-  //   }
-  // }
+  }
 })

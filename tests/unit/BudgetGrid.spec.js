@@ -8,7 +8,7 @@ import _ from 'lodash'
 import Vue from 'vue'
 import { NONE } from '@/constants'
 
-// global._ = _
+global._ = _
 Vue.use(Vuetify)
 Vue.config.productionTip = false
 
@@ -101,49 +101,49 @@ describe('CRUD elements', () => {
   })
 
   it('clicking addMasterCategory button calls newMasterCategory function', () => {
-    const spyNewMasterCategory = jest.spyOn(wrapper.vm, 'newMasterCategory')
+    const spyNewMasterCategory = vi.spyOn(wrapper.vm, 'newMasterCategory')
     wrapper.find('#btn-new-master-category-1of').trigger('click')
     expect(spyNewMasterCategory).toBeCalledWith(3)
   })
 
   it('clicking deleteMasterCategory button calls deleteMasterCategory function', () => {
-    const spyDeleteMasterCategory = jest.spyOn(wrapper.vm, 'deleteMasterCategory')
+    const spyDeleteMasterCategory = vi.spyOn(wrapper.vm, 'deleteMasterCategory')
     wrapper.find('#btn-delete-master-category-1of').trigger('click')
     expect(spyDeleteMasterCategory).toBeCalledWith({ id: '1of', name: 'Monthly Bills' })
   })
 
   it('clicking addCategory button calls newCategory function', () => {
-    const spyNewCategory = jest.spyOn(wrapper.vm, 'newCategory')
+    const spyNewCategory = vi.spyOn(wrapper.vm, 'newCategory')
     wrapper.find('#btn-new-category-1of').trigger('click')
     expect(spyNewCategory).toBeCalledWith({ id: '1of', name: 'Monthly Bills' })
   })
 
   it('clicking hideCategory button calls onHideCategory function', () => {
-    const spyHideCategory = jest.spyOn(wrapper.vm, 'onHideCategory')
+    const spyHideCategory = vi.spyOn(wrapper.vm, 'onHideCategory')
     wrapper.find('#btn-hide-category-K31').trigger('click')
     expect(spyHideCategory).toBeCalledWith('K31')
   })
 
   it('newMasterCategory function dispatches vuex action', () => {
-    wrapper.vm.$store.dispatch = jest.fn()
+    wrapper.vm.$store.dispatch = vi.fn()
     wrapper.vm.newMasterCategory(2)
     expect(wrapper.vm.$store.dispatch).toBeCalledWith('createMasterCategory', { name: '', is_income: false, sort: 2 })
   })
 
   it('deleteMasterCategory function dispatches vuex action', () => {
-    wrapper.vm.$store.dispatch = jest.fn()
+    wrapper.vm.$store.dispatch = vi.fn()
     wrapper.vm.deleteMasterCategory({ id: '1of', name: 'Monthly Bills' })
     expect(wrapper.vm.$store.dispatch).toBeCalledWith('deleteMasterCategory', '1of')
   })
 
   it('newCategory function dispatches vuex action', () => {
-    wrapper.vm.$store.dispatch = jest.fn().mockImplementation(() => Promise.resolve())
+    wrapper.vm.$store.dispatch = vi.fn().mockImplementation(() => Promise.resolve())
     wrapper.vm.newCategory({ id: '1of', name: 'Monthly Bills' })
     expect(wrapper.vm.$store.dispatch).toBeCalledWith('createCategory', { name: '', master_id: '1of' })
   })
 
   it('onHideCategory function dispatches vuex action', () => {
-    wrapper.vm.$store.dispatch = jest.fn().mockImplementation(() => Promise.resolve())
+    wrapper.vm.$store.dispatch = vi.fn().mockImplementation(() => Promise.resolve())
     wrapper.vm.onHideCategory('K31')
     expect(wrapper.vm.$store.dispatch).toBeCalledWith('commitDocToPouchAndVuex', {
       current: {
@@ -237,7 +237,7 @@ describe('budgetgrid component', () => {
   })
 
   it('calls onCategoryNameChange correctly when new name is input', async () => {
-    const spyCategoryNameChanged = jest.spyOn(wrapper.vm, 'onCategoryNameChange')
+    const spyCategoryNameChanged = vi.spyOn(wrapper.vm, 'onCategoryNameChange')
     const name_input = wrapper.find('#category-name-input-x2A')
     expect(name_input.exists()).toBeTruthy()
     expect(name_input.element.readOnly).toEqual(true)
@@ -253,7 +253,7 @@ describe('budgetgrid component', () => {
   })
 
   it('calls onCategoryBudgetChanged correctly when new value is input', async () => {
-    const spyCategoryBudgetChanged = jest.spyOn(wrapper.vm, 'onCategoryBudgetChanged')
+    const spyCategoryBudgetChanged = vi.spyOn(wrapper.vm, 'onCategoryBudgetChanged')
     const budget_input = wrapper.find('#category-budget-input-x2A')
     expect(budget_input.exists()).toBeTruthy()
 
@@ -272,7 +272,7 @@ describe('budgetgrid component', () => {
   })
 
   it('onMasterCategoryNameChange function dispatches vuex action', async () => {
-    wrapper.vm.$store.dispatch = jest.fn().mockImplementation(() => Promise.resolve())
+    wrapper.vm.$store.dispatch = vi.fn().mockImplementation(() => Promise.resolve())
 
     await wrapper.setData({ editedMasterCategoryId: '1of' })
     wrapper.vm.onMasterCategoryNameChange('New Name')
@@ -297,7 +297,7 @@ describe('budgetgrid component', () => {
   })
 
   it('onCategoryNameChange function dispatches vuex action', async () => {
-    wrapper.vm.$store.dispatch = jest.fn().mockImplementation(() => Promise.resolve())
+    wrapper.vm.$store.dispatch = vi.fn().mockImplementation(() => Promise.resolve())
 
     await wrapper.setData({ editedCategoryNameId: 'K31' })
     wrapper.vm.onCategoryNameChange('New Name')
@@ -322,7 +322,7 @@ describe('budgetgrid component', () => {
   })
 
   it('onCategoryBudgetChange function dispatches vuex action', async () => {
-    wrapper.vm.$store.dispatch = jest.fn().mockImplementation(() => Promise.resolve())
+    wrapper.vm.$store.dispatch = vi.fn().mockImplementation(() => Promise.resolve())
 
     // await wrapper.setData({ selectedBudgetId: 'K31'})
     wrapper.vm.onCategoryBudgetChanged('K31', '34.78')

@@ -6,7 +6,7 @@ module.exports = {
     browser: true,
     es2021: true,
   },
-  plugins: ["jest", "prettier"],
+  plugins: ["prettier"],
   extends: [
     // use the recommended rule set for both plain javascript and vue
     "eslint:recommended",
