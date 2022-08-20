@@ -81,7 +81,7 @@ exports[`budgetgrid component budget grid renders correct snapshot 1`] = `
               <div class="v-input__prepend-outer"><i aria-hidden="true" id="drag-master-category-JEs" class="v-icon notranslate handle mdi mdi-drag-horizontal theme--dark"></i></div>
               <div class="v-input__control">
                 <div class="v-input__slot primary lighten-2">
-                  <div class="v-text-field__slot"><input id="input-15" readonly="readonly" type="text"></div>
+                  <div class="v-text-field__slot"><input id="input-2437" readonly="readonly" type="text"></div>
                 </div>
               </div>
             </div>
@@ -139,7 +139,7 @@ exports[`budgetgrid component budget grid renders correct snapshot 1`] = `
               <div class="v-input__prepend-outer"><i aria-hidden="true" id="drag-master-category-vzu" class="v-icon notranslate handle mdi mdi-drag-horizontal theme--dark"></i></div>
               <div class="v-input__control">
                 <div class="v-input__slot primary lighten-2">
-                  <div class="v-text-field__slot"><input id="input-25" readonly="readonly" type="text"></div>
+                  <div class="v-text-field__slot"><input id="input-2447" readonly="readonly" type="text"></div>
                 </div>
               </div>
             </div>
@@ -225,7 +225,7 @@ exports[`budgetgrid component budget grid renders correct snapshot 1`] = `
               <div class="v-input__prepend-outer"><i aria-hidden="true" id="drag-master-category-MpQ" class="v-icon notranslate handle mdi mdi-drag-horizontal theme--dark"></i></div>
               <div class="v-input__control">
                 <div class="v-input__slot primary lighten-2">
-                  <div class="v-text-field__slot"><input id="input-39" readonly="readonly" type="text"></div>
+                  <div class="v-text-field__slot"><input id="input-2461" readonly="readonly" type="text"></div>
                 </div>
               </div>
             </div>
@@ -367,7 +367,7 @@ exports[`budgetgrid component budget grid renders correct snapshot 1`] = `
               <div class="v-input__prepend-outer"><i aria-hidden="true" id="drag-master-category-1of" class="v-icon notranslate handle mdi mdi-drag-horizontal theme--dark"></i></div>
               <div class="v-input__control">
                 <div class="v-input__slot primary lighten-2">
-                  <div class="v-text-field__slot"><input id="input-61" readonly="readonly" type="text"></div>
+                  <div class="v-text-field__slot"><input id="input-2483" readonly="readonly" type="text"></div>
                 </div>
               </div>
             </div>
@@ -733,7 +733,7 @@ exports[`budgetgrid component budget grid renders correct snapshot 1`] = `
               <div class="v-input__prepend-outer"><i aria-hidden="true" id="drag-master-category-tut" class="v-icon notranslate handle mdi mdi-drag-horizontal theme--dark"></i></div>
               <div class="v-input__control">
                 <div class="v-input__slot primary lighten-2">
-                  <div class="v-text-field__slot"><input id="input-115" readonly="readonly" type="text"></div>
+                  <div class="v-text-field__slot"><input id="input-2537" readonly="readonly" type="text"></div>
                 </div>
               </div>
             </div>
@@ -819,7 +819,7 @@ exports[`budgetgrid component budget grid renders correct snapshot 1`] = `
               <div class="v-input__prepend-outer"><i aria-hidden="true" id="drag-master-category-816" class="v-icon notranslate handle mdi mdi-drag-horizontal theme--dark"></i></div>
               <div class="v-input__control">
                 <div class="v-input__slot primary lighten-2">
-                  <div class="v-text-field__slot"><input id="input-129" readonly="readonly" type="text"></div>
+                  <div class="v-text-field__slot"><input id="input-2551" readonly="readonly" type="text"></div>
                 </div>
               </div>
             </div>
@@ -1045,7 +1045,7 @@ exports[`budgetgrid component budget grid renders correct snapshot 1`] = `
               <div class="v-input__prepend-outer"><i aria-hidden="true" id="drag-master-category-~~~" class="v-icon notranslate handle mdi mdi-drag-horizontal theme--dark"></i></div>
               <div class="v-input__control">
                 <div class="v-input__slot primary lighten-2">
-                  <div class="v-text-field__slot"><input id="input-163" readonly="readonly" type="text"></div>
+                  <div class="v-text-field__slot"><input id="input-2585" readonly="readonly" type="text"></div>
                 </div>
               </div>
             </div>

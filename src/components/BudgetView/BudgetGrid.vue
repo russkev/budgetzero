@@ -106,7 +106,6 @@
                 </v-text-field>
               </v-col>
               <v-col>
-                  <!-- v-model="category.budget" -->
                 <v-text-field
                   class="category-budget-input"
                   :id="`category-budget-input-${category.id}`"
@@ -122,7 +121,7 @@
               <v-col>
                 {{ category.spent / 100 }}
               </v-col>
-              <v-col>
+              <v-col :id="`category-balance-${category.id}`">
                 {{ category.balance / 100 }}
                 <v-icon small right :id="`btn-hide-category-${category.id}`" @click="onHideCategory(category.id)">
                   mdi-eye-off-outline
@@ -263,18 +262,16 @@ export default {
           return partial
         }, {})
       },
-      set(value) {
-        console.log(value)
-      }
+      set(value) {}
     },
-    categories: {
-      get() {
-        return this.$store.getters.categories
-      },
-      set(value) {
-        this.$store.commit('setPages', value)
-      }
-    },
+    // categories: {
+    //   get() {
+    //     return this.$store.getters.categories
+    //   },
+    //   set(value) {
+    //     this.$store.commit('setPages', value)
+    //   }
+    // },
     prevMonth() {
       return prevMonth(this.selectedMonth)
     },
@@ -287,102 +284,26 @@ export default {
   },
   mounted() {
     this.$store.commit('UPDATE_SELECTED_MONTH', this.$route.params.month)
-    // this.getCategoriesData()
   },
-  created() {},
   beforeRouteUpdate(to, from, next) {
     this.$store.commit('UPDATE_SELECTED_MONTH', to.params.month)
     next()
   },
-  watch: {
-    allCategoryBalances: {
-      handler() {
-        // this.getCategoriesData()
-      }
-    },
-    selectedMonth: {
-      handler() {
-        // this.getCategoriesData()
-      }
-    }
-  },
+  // watch: {
+  //   allCategoryBalances: {
+  //     handler() {
+  //       // this.getCategoriesData()
+  //     }
+  //   },
+  //   selectedMonth: {
+  //     handler() {
+  //       // this.getCategoriesData()
+  //     }
+  //   }
+  // },
   methods: {
     ...mapActions(['updateMonthCategory', 'deleteDocFromPouch', 'deleteMasterCategory']),
 
-    onFocus(param) {
-      this.$nextTick(() => {
-        param.target.select()
-      })
-    },
-    log(value) {
-      console.log('LOGGING')
-      console.log(value)
-    },
-    collapseMasterCategory(category) {
-      this.$store.dispatch('flipMasterCategoryCollapsed', category)
-    },
-    hideCategory(category) {
-      this.$store.dispatch('flipCategoryHidden', category)
-    },
-    subCategoryMoveEnd(event) {
-      this.$store.dispatch('reorderSubCategory', event)
-    },
-    editCategory(category) {
-      this.editedCategory = JSON.parse(JSON.stringify(category))
-      this.isModalVisibleEditCategory = true
-    },
-    addSubCategory(category) {
-      this.editedCategory = JSON.parse(JSON.stringify(category))
-      this.isModalVisibleCreateSubCategory = true
-    },
-    saveCategory() {
-      this.$store.dispatch('updateCategory', this.editedCategory)
-      this.doneEditing()
-    },
-    doneEditing() {
-      this.editedCategory = {}
-      this.isModalVisibleEditCategory = false
-    },
-
-    // getCategoriesData() {
-    //   console.log("GET CATEGORIES DATA")
-    //   this.categoriesData = this.masterCategories.reduce((partial, master_category) => {
-    //     const master_id = master_category._id.slice(-ID_LENGTH.category)
-
-    //     if (!Array.isArray(this.categoriesByMaster[master_id])) {
-    //       return partial
-    //     }
-
-    //     partial[master_id] = this.categoriesByMaster[master_id]
-    //       .sort((a, b) => a.sort - b.sort)
-    //       .map((category) => {
-    //         const category_id = category._id.slice(-ID_LENGTH.category)
-    //         const budget = _.get(
-    //           this.allCategoryBalances,
-    //           [this.selectedMonth, master_id, category_id, 'doc', 'budget'],
-    //           0
-    //         )
-    //         const spent = _.get(
-    //           this.allCategoryBalances,
-    //           [this.selectedMonth, master_id, category_id, 'spent'],
-    //           0
-    //         )
-    //         const carryover = _.get(
-    //           this.allCategoryBalances,
-    //           [this.selectedMonth, master_id, category_id, 'carryover'],
-    //           0
-    //         )
-    //         return {
-    //           id: category_id,
-    //           budget: budget / 100,
-    //           spent: spent / 100,
-    //           balance: (budget + spent + carryover) / 100
-    //         }
-    //       })
-
-    //     return partial
-    //   }, {})
-    // },
     onCategoryBudgetChanged(category_id, event) {
       const month = this.selectedMonth
       const master_id = _.get(this.categoriesById, [category_id, 'masterCategory'], '')
@@ -397,7 +318,6 @@ export default {
         console.warn('Budget value is NaN')
         return
       }
-      // budget_value *= 100
 
       const previous = _.get(this.allCategoryBalances, [this.selectedMonth, master_id, category_id, 'doc'], null)
 
@@ -413,55 +333,7 @@ export default {
           budget: budget_value
         }
       }
-      this.$store.dispatch('updateMonthCategory', { current, previous }).then(() => {
-        // this.getCategoriesData()
-        // console.log(this.categoriesData)
-      })
-    },
-    categoryCarryover(category) {
-      if (category._id === null) {
-        return partial
-      }
-
-      const category_id = category._id.slice(-ID_LENGTH.category)
-      const master_id = category.masterCategory
-      const all_months = this.monthsInUse
-      let carryover = _.get(
-        this.allCategoryBalances,
-        [this.selectedMonth, master_id, category_id, 'carryover'],
-        undefined
-      )
-
-      if (carryover === undefined && all_months && all_months.length > 0) {
-        const month_index = all_months.indexOf(this.selectedMonth)
-        let existing_month = all_months[0]
-        const target_month = this.selectedMonth
-        if (month_index > 0) {
-          const prev_month = all_months[month_index - 1]
-          carryover = this.getCategoryBalance(this.allCategoryBalances, prev_month, master_id, category_id)
-        } else if (this.compareAscii(existing_month, target_month) < 0) {
-          // let prev_month = this.monthsInUse[0]
-          for (let i = 0; i < all_months.length; i++) {
-            if (this.compareAscii(existing_month, target_month) < 0) {
-              existing_month = all_months[i]
-            } else {
-              break
-            }
-          }
-          carryover = this.getCategoryBalance(this.allCategoryBalances, existing_month, master_id, category_id)
-        } else {
-          carryover = 0
-        }
-      } else if (carryover === undefined) {
-        carryover = 0
-      }
-      return carryover
-    },
-    categoryValue(category) {
-      const month = this.selectedMonth
-      const category_id = category._id ? category._id.slice(-ID_LENGTH.category) : null
-      const master_id = category.masterCategory ? category.masterCategory : null
-      return _.get(this.allCategoryBalances, [month, master_id, category_id], {})
+      this.$store.dispatch('updateMonthCategory', { current, previous })
     },
     onMasterCategoryNameChange(name) {
       const doc = this.masterCategoriesById[this.editedMasterCategoryId]
@@ -501,63 +373,6 @@ export default {
     onCategoryOrderChanged(event) {
       this.$store.dispatch('reorderCategory', event)
     },
-
-
-
-
-    // getOverspendingProperty(item) {
-    //   const id = item._id ? item._id.slice(-ID_LENGTH.category) : null
-
-    //   return _.get(this.monthCategoryBudgets, `${this.selectedMonth}.${id}.overspending`, false)
-    // },
-    // deleteCategory(item) {
-    //   this.deleteDocFromPouch(item)
-    // },
-    // createMasterCategory(newCategoryGroupName) {
-    //   if (newCategoryGroupName.length > 0) {
-    //     this.$store.dispatch('createMasterCategory', newCategoryGroupName)
-    //   }
-    //   this.clear()
-    // },
-    // createCategory() {
-    //   const payload = {
-    //     masterCategoryId: this.editedCategory._id.slice(-ID_LENGTH.category),
-    //     category_name: this.category_name
-    //   }
-    //   this.$store.dispatch('createCategory', payload)
-    //   this.clear()
-    // },
-    clear() {
-      this.isModalVisibleCreateSubCategory = false
-      this.masterCategoryId = ''
-      this.isModalVisibleMasterCat = false
-      this.isModalVisibleCategory = false
-      this.category_name = ''
-    },
-    flipOverspending(item) {
-      this.$store.dispatch('flipOverspending', item)
-    },
-    async renameCategory(item) {
-      let newItem = JSON.parse(JSON.stringify(item))
-      const { value: newCategoryName } = await this.$swal({
-        title: 'Rename category',
-        input: 'text',
-        inputValue: item.name,
-        inputAttributes: {
-          autocapitalize: 'off',
-          autocorrect: 'off'
-        },
-        inputValidator: (value) => {
-          if (!value) {
-            return 'You need to write something!'
-          }
-        }
-      })
-      if (newCategoryName) {
-        newItem.name = newCategoryName
-        this.$store.dispatch('commitDocToPouchAndVuex', { current: newItem, previous: null })
-      }
-    }
   }
 }
 </script>

@@ -266,6 +266,11 @@ describe('budgetgrid component', () => {
     expect(spyCategoryBudgetChanged).toBeCalled()
   })
 
+  it('category balance displays correct value', async () => {
+    const balance_amount_element = wrapper.find('#category-balance-x2A')
+    expect(balance_amount_element.text()).toEqual('1.57')
+  })
+
   it('onMasterCategoryNameChange function dispatches vuex action', async () => {
     wrapper.vm.$store.dispatch = jest.fn().mockImplementation(() => Promise.resolve())
 
