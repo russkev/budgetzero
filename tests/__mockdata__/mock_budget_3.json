@@ -1,0 +1,736 @@
+{
+  "total_rows": 44,
+  "offset": 0,
+  "rows": [
+    {
+      "id": "_design/stats",
+      "key": "_design/stats",
+      "value": { "rev": "3-f6d7f3933ded96e1e8d02c2b70010a58" },
+      "doc": {
+        "views": {
+          "sum_transaction_by_account": {
+            "map": "function (doc) {\n                const id = doc._id \n                if (id.slice(5, 18) == '_transaction_') {\n                  emit(\n                    [\n                      id.slice(2, 5), \n                      doc.account, \n                      doc.cleared\n                    ], \n                    doc.value\n                  )\n                }\n              }",
+            "reduce": "_sum"
+          },
+          "sum_transaction_by_budget": {
+            "map": "function (doc) {\n                const id = doc._id\n                if (id.slice(5, 18) == '_transaction_') {\n                  emit(\n                    [\n                      id.slice(2, 5), \n                      doc.date.slice(0, 7),\n                      doc.category\n                    ], \n                    doc.value\n                  )\n                }\n              }",
+            "reduce": "_sum"
+          },
+          "transactions_by_account": {
+            "map": "function (doc) {\n                  const id = doc._id\n                  if (id.slice(5, 18) == '_transaction_') {\n                    emit([\n                      id.slice(2, 5), \n                      doc.account,\n                      id.slice(-12)\n                    ]) \n                  }\n                }"
+          },
+          "transactions_by_import_id": {
+            "map": "function(doc) {\n                  const id = doc._id\n                  if (id.slice(5, 18) == '_transaction_') {\n                    emit([\n                      id.slice(2, 5), \n                      doc.account,\n                      doc.importId,\n                    ])\n                  }\n                }"
+          }
+        },
+        "_id": "_design/stats",
+        "_rev": "3-f6d7f3933ded96e1e8d02c2b70010a58"
+      }
+    },
+    {
+      "id": "b_N8Q_account_7kW",
+      "key": "b_N8Q_account_7kW",
+      "value": { "rev": "1-f485b5ff2394bf94e38a176e19aab3e8" },
+      "doc": {
+        "type": "SAVING",
+        "checkNumber": true,
+        "closed": false,
+        "name": "Savings",
+        "note": null,
+        "sort": 0,
+        "onBudget": true,
+        "sign": 1,
+        "initialBalance": 0,
+        "_id": "b_N8Q_account_7kW",
+        "_rev": "1-f485b5ff2394bf94e38a176e19aab3e8"
+      }
+    },
+    {
+      "id": "b_N8Q_account_ELC",
+      "key": "b_N8Q_account_ELC",
+      "value": { "rev": "1-27b283bc08b3402b67060c13468fad7b" },
+      "doc": {
+        "type": "CREDIT",
+        "checkNumber": true,
+        "closed": false,
+        "name": "Credit",
+        "note": null,
+        "sort": 0,
+        "onBudget": true,
+        "sign": -1,
+        "initialBalance": 0,
+        "_id": "b_N8Q_account_ELC",
+        "_rev": "1-27b283bc08b3402b67060c13468fad7b"
+      }
+    },
+    {
+      "id": "b_N8Q_account_v6A",
+      "key": "b_N8Q_account_v6A",
+      "value": { "rev": "1-90fd70849ed88159e814a8234ca89d61" },
+      "doc": {
+        "type": "INVESTMENT",
+        "checkNumber": true,
+        "closed": false,
+        "name": "Investment",
+        "note": null,
+        "sort": 0,
+        "onBudget": true,
+        "sign": 1,
+        "initialBalance": 0,
+        "_id": "b_N8Q_account_v6A",
+        "_rev": "1-90fd70849ed88159e814a8234ca89d61"
+      }
+    },
+    {
+      "id": "b_N8Q_category_2aW",
+      "key": "b_N8Q_category_2aW",
+      "value": { "rev": "2-3e400e3ca4796d1835fcd315b12d42b0" },
+      "doc": {
+        "name": "Water",
+        "sort": 3,
+        "hidden": false,
+        "masterCategory": "3ks",
+        "_id": "b_N8Q_category_2aW",
+        "_rev": "2-3e400e3ca4796d1835fcd315b12d42b0"
+      }
+    },
+    {
+      "id": "b_N8Q_category_6b2",
+      "key": "b_N8Q_category_6b2",
+      "value": { "rev": "2-c52aa5c8156150f369d974bf3f3e9134" },
+      "doc": {
+        "name": "Electricity",
+        "sort": 1,
+        "hidden": false,
+        "masterCategory": "3ks",
+        "_id": "b_N8Q_category_6b2",
+        "_rev": "2-c52aa5c8156150f369d974bf3f3e9134"
+      }
+    },
+    {
+      "id": "b_N8Q_category_ATi",
+      "key": "b_N8Q_category_ATi",
+      "value": { "rev": "2-e3bfe4fc119a1a450a728195bbc23164" },
+      "doc": {
+        "name": "Groceries",
+        "sort": 0,
+        "hidden": false,
+        "masterCategory": "3ks",
+        "_id": "b_N8Q_category_ATi",
+        "_rev": "2-e3bfe4fc119a1a450a728195bbc23164"
+      }
+    },
+    {
+      "id": "b_N8Q_category_Lx7",
+      "key": "b_N8Q_category_Lx7",
+      "value": { "rev": "2-77f7f96ef32c1fba770101fee4ae48cc" },
+      "doc": {
+        "name": "Vacation",
+        "sort": 0,
+        "hidden": false,
+        "masterCategory": "ggJ",
+        "_id": "b_N8Q_category_Lx7",
+        "_rev": "2-77f7f96ef32c1fba770101fee4ae48cc"
+      }
+    },
+    {
+      "id": "b_N8Q_category_gpe",
+      "key": "b_N8Q_category_gpe",
+      "value": { "rev": "1-b07eed15d0df486a365ead642f7afb41" },
+      "doc": {
+        "name": "Paycheck 1",
+        "sort": 0,
+        "hidden": false,
+        "masterCategory": "fVM",
+        "_id": "b_N8Q_category_gpe",
+        "_rev": "1-b07eed15d0df486a365ead642f7afb41"
+      }
+    },
+    {
+      "id": "b_N8Q_category_n00",
+      "key": "b_N8Q_category_n00",
+      "value": { "rev": "2-e9e9d8ea059048865033fde5cbd3bd43" },
+      "doc": {
+        "name": "Gas",
+        "sort": 2,
+        "hidden": false,
+        "masterCategory": "3ks",
+        "_id": "b_N8Q_category_n00",
+        "_rev": "2-e9e9d8ea059048865033fde5cbd3bd43"
+      }
+    },
+    {
+      "id": "b_N8Q_masterCategory_3ks",
+      "key": "b_N8Q_masterCategory_3ks",
+      "value": { "rev": "3-ca523f3da22d44bdf4d596d958f0de3c" },
+      "doc": {
+        "name": "Spending",
+        "sort": 1,
+        "collapsed": false,
+        "isIncome": false,
+        "_id": "b_N8Q_masterCategory_3ks",
+        "_rev": "3-ca523f3da22d44bdf4d596d958f0de3c"
+      }
+    },
+    {
+      "id": "b_N8Q_masterCategory_fVM",
+      "key": "b_N8Q_masterCategory_fVM",
+      "value": { "rev": "2-66d6c50a86cb07e2c47c16615749663d" },
+      "doc": {
+        "name": "Income",
+        "sort": 0,
+        "collapsed": false,
+        "isIncome": true,
+        "_id": "b_N8Q_masterCategory_fVM",
+        "_rev": "2-66d6c50a86cb07e2c47c16615749663d"
+      }
+    },
+    {
+      "id": "b_N8Q_masterCategory_ggJ",
+      "key": "b_N8Q_masterCategory_ggJ",
+      "value": { "rev": "2-42292a58519922913eed95dab1434fa7" },
+      "doc": {
+        "name": "Misc",
+        "sort": 1,
+        "collapsed": false,
+        "isIncome": false,
+        "_id": "b_N8Q_masterCategory_ggJ",
+        "_rev": "2-42292a58519922913eed95dab1434fa7"
+      }
+    },
+    {
+      "id": "b_N8Q_monthCategory_2022-07_2aW",
+      "key": "b_N8Q_monthCategory_2022-07_2aW",
+      "value": { "rev": "3-f357b007a66088fe84a860b9c71f7611" },
+      "doc": {
+        "budget": 1500,
+        "overspending": null,
+        "note": "UO;xKOak; `.:Rs@vu",
+        "_id": "b_N8Q_monthCategory_2022-07_2aW",
+        "_rev": "3-f357b007a66088fe84a860b9c71f7611"
+      }
+    },
+    {
+      "id": "b_N8Q_monthCategory_2022-07_6b2",
+      "key": "b_N8Q_monthCategory_2022-07_6b2",
+      "value": { "rev": "3-df38a6f52261344df286a590b491a1e1" },
+      "doc": {
+        "budget": 5000,
+        "overspending": null,
+        "note": "dG]z$M/d/o_x [8 !L!2Z,i GMoqc!v #dJ2Jqh|p%R)x_DGb}8m &X{x`4|8A h(gb{@AO #fHX. ,-Nb)ZX$8o?AZ",
+        "_id": "b_N8Q_monthCategory_2022-07_6b2",
+        "_rev": "3-df38a6f52261344df286a590b491a1e1"
+      }
+    },
+    {
+      "id": "b_N8Q_monthCategory_2022-07_ATi",
+      "key": "b_N8Q_monthCategory_2022-07_ATi",
+      "value": { "rev": "4-40db3ae74b9a42ecc25f4ae2f7bbcd9f" },
+      "doc": {
+        "budget": 10000,
+        "overspending": null,
+        "note": "E",
+        "_id": "b_N8Q_monthCategory_2022-07_ATi",
+        "_rev": "4-40db3ae74b9a42ecc25f4ae2f7bbcd9f"
+      }
+    },
+    {
+      "id": "b_N8Q_monthCategory_2022-07_Lx7",
+      "key": "b_N8Q_monthCategory_2022-07_Lx7",
+      "value": { "rev": "2-f598fb9a376b180be38eb46ad10d9a08" },
+      "doc": {
+        "budget": 43000,
+        "overspending": null,
+        "note": "0jb3(Rx)",
+        "_id": "b_N8Q_monthCategory_2022-07_Lx7",
+        "_rev": "2-f598fb9a376b180be38eb46ad10d9a08"
+      }
+    },
+    {
+      "id": "b_N8Q_monthCategory_2022-07_gpe",
+      "key": "b_N8Q_monthCategory_2022-07_gpe",
+      "value": { "rev": "4-4babb023d78d007d183f01103735d0b4" },
+      "doc": {
+        "budget": -150000,
+        "overspending": null,
+        "note": "2[ajBX ;M^iz$VKOrCT13=zY[DeS:rHrzJ6uk ?   gl[q_ht-2D]F>zY KVr0xfMQmQ& j~iX3^1] c>-N4^ r A",
+        "_id": "b_N8Q_monthCategory_2022-07_gpe",
+        "_rev": "4-4babb023d78d007d183f01103735d0b4"
+      }
+    },
+    {
+      "id": "b_N8Q_monthCategory_2022-07_n00",
+      "key": "b_N8Q_monthCategory_2022-07_n00",
+      "value": { "rev": "3-fd0ddeafa867e466906145558013585a" },
+      "doc": {
+        "budget": 42000,
+        "overspending": null,
+        "note": "m31  jt8",
+        "_id": "b_N8Q_monthCategory_2022-07_n00",
+        "_rev": "3-fd0ddeafa867e466906145558013585a"
+      }
+    },
+    {
+      "id": "b_N8Q_monthCategory_2022-07_~~~",
+      "key": "b_N8Q_monthCategory_2022-07_~~~",
+      "value": { "rev": "3-400301ecdf6eb508a5842c8ec5d7ea93" },
+      "doc": {
+        "budget": 0,
+        "overspending": null,
+        "note": "E>6>5#``l&B t#>c?jE xWcC T+S 8dOZM S@s@!EbaWe= w^/$7>ao]NR:01f>5zD3Go-t]",
+        "_id": "b_N8Q_monthCategory_2022-07_~~~",
+        "_rev": "3-400301ecdf6eb508a5842c8ec5d7ea93"
+      }
+    },
+    {
+      "id": "b_N8Q_monthCategory_2022-08_2aW",
+      "key": "b_N8Q_monthCategory_2022-08_2aW",
+      "value": { "rev": "1-28b539b81a687afb23010a196c98a205" },
+      "doc": {
+        "budget": 16225,
+        "overspending": null,
+        "note": ")g @Nfj-B^ssbAyI,EcR60fe0:9=? V Dfw?eBC:iaVtFXyh P 5Z,58B2b% isY*q:B?~x#FGF<ay",
+        "_id": "b_N8Q_monthCategory_2022-08_2aW",
+        "_rev": "1-28b539b81a687afb23010a196c98a205"
+      }
+    },
+    {
+      "id": "b_N8Q_monthCategory_2022-08_6b2",
+      "key": "b_N8Q_monthCategory_2022-08_6b2",
+      "value": { "rev": "1-c432a46cd2dcc525f43e031e3af06f21" },
+      "doc": {
+        "budget": -4184,
+        "overspending": null,
+        "note": "P 2d s@d2,C _&$F=o X]`| fqNh2Hzeo  fl =^c<#h(B N~2A`1Kc9%",
+        "_id": "b_N8Q_monthCategory_2022-08_6b2",
+        "_rev": "1-c432a46cd2dcc525f43e031e3af06f21"
+      }
+    },
+    {
+      "id": "b_N8Q_monthCategory_2022-08_ATi",
+      "key": "b_N8Q_monthCategory_2022-08_ATi",
+      "value": { "rev": "1-ba652d0605a0313b418da3d42325aaef" },
+      "doc": {
+        "budget": 24233,
+        "overspending": null,
+        "note": "iD%y=q-T?IUZ!`R8M]3jbko>7cu$L4UY50)oYAm0Ws]UBP9zrY$l;~G.D3qC",
+        "_id": "b_N8Q_monthCategory_2022-08_ATi",
+        "_rev": "1-ba652d0605a0313b418da3d42325aaef"
+      }
+    },
+    {
+      "id": "b_N8Q_monthCategory_2022-08_Lx7",
+      "key": "b_N8Q_monthCategory_2022-08_Lx7",
+      "value": { "rev": "1-f0a06f6484f3807be6454f23465cd430" },
+      "doc": {
+        "budget": -2534,
+        "overspending": null,
+        "note": "%%r^Le]_$Dg6G=,of+(41 WMAd.o8}yB`jIKRk-;!n ?yN 4(",
+        "_id": "b_N8Q_monthCategory_2022-08_Lx7",
+        "_rev": "1-f0a06f6484f3807be6454f23465cd430"
+      }
+    },
+    {
+      "id": "b_N8Q_monthCategory_2022-08_gpe",
+      "key": "b_N8Q_monthCategory_2022-08_gpe",
+      "value": { "rev": "1-f71fefd98501e253c0d3295a375d0548" },
+      "doc": {
+        "budget": -17090,
+        "overspending": null,
+        "note": "R",
+        "_id": "b_N8Q_monthCategory_2022-08_gpe",
+        "_rev": "1-f71fefd98501e253c0d3295a375d0548"
+      }
+    },
+    {
+      "id": "b_N8Q_monthCategory_2022-08_n00",
+      "key": "b_N8Q_monthCategory_2022-08_n00",
+      "value": { "rev": "1-c67cf23017dc1cf72c2436f9b10667de" },
+      "doc": {
+        "budget": -6190,
+        "overspending": null,
+        "note": "3p`$q`.pIB]{Li_R%/Y;@% l 3/vW%",
+        "_id": "b_N8Q_monthCategory_2022-08_n00",
+        "_rev": "1-c67cf23017dc1cf72c2436f9b10667de"
+      }
+    },
+    {
+      "id": "b_N8Q_monthCategory_2022-08_~~~",
+      "key": "b_N8Q_monthCategory_2022-08_~~~",
+      "value": { "rev": "3-79c7a4a52b75a11ae5edd89512776a8d" },
+      "doc": {
+        "budget": 0,
+        "overspending": null,
+        "note": "-VF&3gb@V2BiWr  xr.i4Qo^eJY`YXoLhC &.yMm;j HO  +]$D#SE(Q#IfBD:k$`s38 z:m&vY4ISo,eo~_qNS]",
+        "_id": "b_N8Q_monthCategory_2022-08_~~~",
+        "_rev": "3-79c7a4a52b75a11ae5edd89512776a8d"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6fS-40KQd7C",
+      "key": "b_N8Q_transaction_.B6fS-40KQd7C",
+      "value": { "rev": "8-631fe8372f0404a44532f133c79f5297" },
+      "doc": {
+        "account": "7kW",
+        "category": "n00",
+        "cleared": true,
+        "approved": true,
+        "value": -16050,
+        "date": "2022-07-02",
+        "memo": " Shell",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": -16050,
+        "_id": "b_N8Q_transaction_.B6fS-40KQd7C",
+        "_rev": "8-631fe8372f0404a44532f133c79f5297"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6fU-40KFTT3",
+      "key": "b_N8Q_transaction_.B6fU-40KFTT3",
+      "value": { "rev": "4-5c9336ea0913d33bab22e339b6fb7812" },
+      "doc": {
+        "account": "v6A",
+        "category": "gpe",
+        "cleared": true,
+        "approved": true,
+        "value": -521,
+        "date": "2022-07-04",
+        "memo": "Black Rock Fees",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": -521,
+        "_id": "b_N8Q_transaction_.B6fU-40KFTT3",
+        "_rev": "4-5c9336ea0913d33bab22e339b6fb7812"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6fa-40KRhuh",
+      "key": "b_N8Q_transaction_.B6fa-40KRhuh",
+      "value": { "rev": "7-cacd102cf62162f7dc26612100880af0" },
+      "doc": {
+        "account": "v6A",
+        "category": "gpe",
+        "cleared": true,
+        "approved": true,
+        "value": 34200,
+        "date": "2022-07-11",
+        "memo": "Vanguard",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": 33679,
+        "_id": "b_N8Q_transaction_.B6fa-40KRhuh",
+        "_rev": "7-cacd102cf62162f7dc26612100880af0"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6fa-40KYjUh",
+      "key": "b_N8Q_transaction_.B6fa-40KYjUh",
+      "value": { "rev": "11-d4c180972984bbc7e6112f356976b664" },
+      "doc": {
+        "account": "7kW",
+        "category": "gpe",
+        "cleared": true,
+        "approved": true,
+        "value": 125000,
+        "date": "2022-07-11",
+        "memo": "Big Agra",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": 108950,
+        "_id": "b_N8Q_transaction_.B6fa-40KYjUh",
+        "_rev": "11-d4c180972984bbc7e6112f356976b664"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6fa-40KyWh8",
+      "key": "b_N8Q_transaction_.B6fa-40KyWh8",
+      "value": { "rev": "4-a9303c9bfc0a9dd9bb1982f14ebf421b" },
+      "doc": {
+        "account": "ELC",
+        "category": "Lx7",
+        "cleared": true,
+        "approved": true,
+        "value": 42000,
+        "date": "2022-07-11",
+        "memo": "Rental Car",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": 42000,
+        "_id": "b_N8Q_transaction_.B6fa-40KyWh8",
+        "_rev": "4-a9303c9bfc0a9dd9bb1982f14ebf421b"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6fi-40KBZMV",
+      "key": "b_N8Q_transaction_.B6fi-40KBZMV",
+      "value": { "rev": "5-d98fbec4ee6543a3fefe0e0803394c7f" },
+      "doc": {
+        "account": "ELC",
+        "category": "n00",
+        "cleared": true,
+        "approved": true,
+        "value": 8132,
+        "date": "2022-07-19",
+        "memo": "Mobil",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": 50132,
+        "_id": "b_N8Q_transaction_.B6fi-40KBZMV",
+        "_rev": "5-d98fbec4ee6543a3fefe0e0803394c7f"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6fp-40K-g5w",
+      "key": "b_N8Q_transaction_.B6fp-40K-g5w",
+      "value": { "rev": "6-661f6b10db4f2f49829bb919fb7a5948" },
+      "doc": {
+        "account": "ELC",
+        "category": "ATi",
+        "cleared": true,
+        "approved": true,
+        "value": 6000,
+        "date": "2022-07-26",
+        "memo": "Hotel Buffet",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": 56132,
+        "_id": "b_N8Q_transaction_.B6fp-40K-g5w",
+        "_rev": "6-661f6b10db4f2f49829bb919fb7a5948"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6fr-40KnF93",
+      "key": "b_N8Q_transaction_.B6fr-40KnF93",
+      "value": { "rev": "14-478a19341366c419b51bae03e2fb6afa" },
+      "doc": {
+        "account": "7kW",
+        "category": "n00",
+        "cleared": true,
+        "approved": true,
+        "value": -17376,
+        "date": "2022-07-28",
+        "memo": "Shell",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": 91574,
+        "_id": "b_N8Q_transaction_.B6fr-40KnF93",
+        "_rev": "14-478a19341366c419b51bae03e2fb6afa"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6h0-40KJqME",
+      "key": "b_N8Q_transaction_.B6h0-40KJqME",
+      "value": { "rev": "19-054c60cd644df05c3a98a0a17efb1080" },
+      "doc": {
+        "account": "7kW",
+        "category": "ATi",
+        "cleared": true,
+        "approved": true,
+        "value": -17476,
+        "date": "2022-08-02",
+        "memo": "Supermarket",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": 74098,
+        "_id": "b_N8Q_transaction_.B6h0-40KJqME",
+        "_rev": "19-054c60cd644df05c3a98a0a17efb1080"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6h3-40KVn0-",
+      "key": "b_N8Q_transaction_.B6h3-40KVn0-",
+      "value": { "rev": "7-1880699b221ad8c633fad56a33176675" },
+      "doc": {
+        "account": "ELC",
+        "category": "Lx7",
+        "cleared": true,
+        "approved": true,
+        "value": 52000,
+        "date": "2022-08-05",
+        "memo": "Hotel",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": 108132,
+        "_id": "b_N8Q_transaction_.B6h3-40KVn0-",
+        "_rev": "7-1880699b221ad8c633fad56a33176675"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6h7-40KwLno",
+      "key": "b_N8Q_transaction_.B6h7-40KwLno",
+      "value": { "rev": "23-361a62860bb0d6b948ef9b3c6eb0baae" },
+      "doc": {
+        "account": "7kW",
+        "category": "gpe",
+        "cleared": true,
+        "approved": true,
+        "value": 230000,
+        "date": "2022-08-09",
+        "memo": "Big Agra",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": 304098,
+        "_id": "b_N8Q_transaction_.B6h7-40KwLno",
+        "_rev": "23-361a62860bb0d6b948ef9b3c6eb0baae"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6hB-40KLH2C",
+      "key": "b_N8Q_transaction_.B6hB-40KLH2C",
+      "value": { "rev": "23-b3af31dda37fa7811788f88b49879865" },
+      "doc": {
+        "account": "7kW",
+        "category": "ATi",
+        "cleared": true,
+        "approved": true,
+        "value": -18944,
+        "date": "2022-08-13",
+        "memo": "Supermarket",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": 285154,
+        "_id": "b_N8Q_transaction_.B6hB-40KLH2C",
+        "_rev": "23-b3af31dda37fa7811788f88b49879865"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6hG-40Ke6M9",
+      "key": "b_N8Q_transaction_.B6hG-40Ke6M9",
+      "value": { "rev": "7-e698646adc4d09b66299c6cdb290df4f" },
+      "doc": {
+        "account": "v6A",
+        "category": "gpe",
+        "cleared": true,
+        "approved": true,
+        "value": -236,
+        "date": "2022-08-18",
+        "memo": "Vanguard Fees",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": 33443,
+        "_id": "b_N8Q_transaction_.B6hG-40Ke6M9",
+        "_rev": "7-e698646adc4d09b66299c6cdb290df4f"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6hI-40KyFhZ",
+      "key": "b_N8Q_transaction_.B6hI-40KyFhZ",
+      "value": { "rev": "8-6b37e0a877f3d18f1837ae8875943c2b" },
+      "doc": {
+        "account": "v6A",
+        "category": "gpe",
+        "cleared": true,
+        "approved": true,
+        "value": 26400,
+        "date": "2022-08-20",
+        "memo": "Vanguard",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": 59843,
+        "_id": "b_N8Q_transaction_.B6hI-40KyFhZ",
+        "_rev": "8-6b37e0a877f3d18f1837ae8875943c2b"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6hK-40KYvWB",
+      "key": "b_N8Q_transaction_.B6hK-40KYvWB",
+      "value": { "rev": "25-40ad1490bcff51bb6b0da6f87d900ae7" },
+      "doc": {
+        "account": "7kW",
+        "category": "ATi",
+        "cleared": true,
+        "approved": true,
+        "value": -1544,
+        "date": "2022-08-22",
+        "memo": "Woolworths",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": 283610,
+        "_id": "b_N8Q_transaction_.B6hK-40KYvWB",
+        "_rev": "25-40ad1490bcff51bb6b0da6f87d900ae7"
+      }
+    },
+    {
+      "id": "b_N8Q_transaction_.B6hL-40KyTiq",
+      "key": "b_N8Q_transaction_.B6hL-40KyTiq",
+      "value": { "rev": "9-deed00ce69781ed33a6bce8787ac02b6" },
+      "doc": {
+        "account": "v6A",
+        "category": "gpe",
+        "cleared": true,
+        "approved": true,
+        "value": 32000,
+        "date": "2022-08-23",
+        "memo": "Black Rock",
+        "reconciled": false,
+        "flag": "#ffffff",
+        "payee": null,
+        "transfer": null,
+        "splits": [],
+        "balance": 91843,
+        "_id": "b_N8Q_transaction_.B6hL-40KyTiq",
+        "_rev": "9-deed00ce69781ed33a6bce8787ac02b6"
+      }
+    },
+    {
+      "id": "budget_N8Q",
+      "key": "budget_N8Q",
+      "value": { "rev": "1-06808561a399493756ada0897da13693" },
+      "doc": {
+        "name": "Jest2",
+        "currency": "USD",
+        "created": "2022-08-21",
+        "accessed": 1661028468,
+        "checkNumber": false,
+        "_id": "budget_N8Q",
+        "_rev": "1-06808561a399493756ada0897da13693"
+      }
+    }
+  ]
+}

@@ -25,8 +25,8 @@
 
       <template #item.action="{ item }">
         <div class="crud-actions">
-          <v-icon icon dark class="" color="primary" @click="editItem(item)"> edit </v-icon>
-          <v-icon icon dark class="ml-1" color="accent" @click="deleteItem(item)"> delete </v-icon>
+          <v-icon :id="`edit-${item._id}`" icon dark class="" color="primary" @click="editItem(item)"> edit </v-icon>
+          <v-icon :id="`delete-${item._id}`" icon dark class="ml-1" color="accent" @click="deleteItem(item)"> delete </v-icon>
         </div>
       </template>
       <template #no-data>
@@ -117,11 +117,33 @@ export default {
   computed: {
     ...mapGetters(['accounts', 'selectedBudgetId']),
     budgetExists() {
+    // const month_from_params =  this.$route.params.month
+    // console.log("ON MOUNTED")
+    // const db = this.$pouch
+    // console.log("DB", db)
+    // console.log(this.$pouch.allDocs())
+    this.$pouch.allDocs().then((result) => {
+      console.log("ALL DOCS RESULT", result)
+    })
+    // console.log(this.selectedBudgetId)
+    // console.log("MONTH FROM PARAMS", month_from_params)
+    // const docs = this.$pouch.get("b_N8Q_account_ELC")
+    //   .then((result) => {
+    //     console.log("ALL DOCS RESULT", result)
+    //     return 3
+    //   }).catch((err) => {
+    //     console.log("ALL DOCS ERROR", err)
+    //     return 2
+    //   })
+
+    // console.log("DOCS", docs)
       return this.selectedBudgetId != "null"
     }
   },
   mounted() {},
-  created() {},
+  created() {
+
+  },
   methods: {
     create() {
       this.editedIndex = -1
@@ -130,6 +152,20 @@ export default {
       this.showModal = true
     },
     editItem(item) {
+      this.$store.dispatch('fetchAccounts')
+      // console.log("EDIT ITEM")
+      // // console.log(this.$pouch)
+      // this.$pouch.get('b_N8Q_account_7kW').then(() => {
+      //   console.log("DOC FOUND")
+      // }).catch(() => {
+      //   console.log("DOCUMENT NOT FOUND")
+      // }).finally(() => {
+      //   console.log("FINALLY")
+      // })
+      // setTimeout(() => {
+      //   console.log("AFTER TIMEOUT")
+      // }, 100)
+
       this.editedIndex = this.accounts.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.previousItem = item

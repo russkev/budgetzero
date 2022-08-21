@@ -1,5 +1,5 @@
 import BudgetGrid from '@/components/BudgetView/BudgetGrid.vue'
-import { shallowMount, mount, createLocalVue } from '@vue/test-utils'
+import { mount, createLocalVue } from '@vue/test-utils'
 import Vuex from 'vuex'
 import Vuetify from 'vuetify'
 import mock_budget from '@/../tests/__mockdata__/mock_budget_2.json'

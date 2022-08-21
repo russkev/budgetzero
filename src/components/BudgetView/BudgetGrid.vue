@@ -264,14 +264,6 @@ export default {
       },
       set(value) {}
     },
-    // categories: {
-    //   get() {
-    //     return this.$store.getters.categories
-    //   },
-    //   set(value) {
-    //     this.$store.commit('setPages', value)
-    //   }
-    // },
     prevMonth() {
       return prevMonth(this.selectedMonth)
     },
@@ -289,22 +281,11 @@ export default {
     this.$store.commit('UPDATE_SELECTED_MONTH', to.params.month)
     next()
   },
-  // watch: {
-  //   allCategoryBalances: {
-  //     handler() {
-  //       // this.getCategoriesData()
-  //     }
-  //   },
-  //   selectedMonth: {
-  //     handler() {
-  //       // this.getCategoriesData()
-  //     }
-  //   }
-  // },
   methods: {
     ...mapActions(['updateMonthCategory', 'deleteDocFromPouch', 'deleteMasterCategory']),
 
     onCategoryBudgetChanged(category_id, event) {
+      console.log(event)
       const month = this.selectedMonth
       const master_id = _.get(this.categoriesById, [category_id, 'masterCategory'], '')
 

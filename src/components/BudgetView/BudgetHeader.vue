@@ -3,7 +3,7 @@
     <v-row cols="12" class="pr-4">
       <v-card style="width: 300px" outlined>
         <v-card-title id="selected-month" class="headline grey lighten-4 py-2">
-          {{ selectedMonth | moment('MMMM YYYY') }}
+          {{ new Intl.DateTimeFormat('en-GB', {year: 'numeric', month: 'long'}).format(new Date(selectedMonth)) }}
         </v-card-title>
         <v-card-subtitle v-if="!monthDataExists" id="data-doesnt-exist-msg" class="grey lighten-4 pt-2 pb-1">
           <span>Data does not exist for this month</span>
@@ -14,31 +14,31 @@
             <p style="text-align: left" class="subtitle-2 mb-0">
               Leftover Last Month
               <span id="leftover-amount" style="float: right">
-                {{ (monthStats.leftover_last_month / 100) | currency }}
+                {{  intlCurrency.format(monthStats.leftover_last_month / 100) }}
               </span>
             </p>
             <p style="text-align: left" class="subtitle-2 mb-0">
               Income This Month
               <span id="income-amount" style="float: right">
-                {{ (monthStats.income_this_month / 100) | currency }}
+                {{  intlCurrency.format(monthStats.income_this_month / 100) }}
               </span>
             </p>
             <p style="text-align: left" class="subtitle-2 mb-0">
               Overspent Last Month
               <span id="overspent-amount" style="float: right">
-                {{ (monthStats.overspent_last_month / 100) | currency }}
+                {{  intlCurrency.format(monthStats.overspent_last_month / 100) }}
               </span>
             </p>
             <p style="text-align: left" class="subtitle-2 mb-2">
               Budgeted This Month
               <span id="budgeted-amount" style="float: right">
-                {{ (monthStats.budgeted_this_month / 100) | currency }}
+                {{  intlCurrency.format(monthStats.budgeted_this_month / 100) }}
               </span>
             </p>
             <p style="text-align: left" class="subtitle-2 mb-2">
               Spent This Month
               <span id="budgeted-amount" style="float: right">
-                {{ (monthStats.spent_this_month / 100) | currency }}
+                {{  intlCurrency.format(monthStats.spent_this_month / 100) }}
               </span>
             </p>
           </div>
@@ -49,7 +49,7 @@
           </div>
 
           <div id="available-to-budget-amount" class="title text-center mb-0">
-            {{ (availableToBudget / 100) | currency }}
+            {{ intlCurrency.format(availableToBudget / 100) }}
           </div>
         </v-card-text>
       </v-card>
@@ -63,7 +63,9 @@ import { mapGetters } from 'vuex'
 export default {
   props: {},
   data() {
-    return {}
+    return {
+      intlCurrency: new Intl.NumberFormat('en-us', { style: 'currency', currency: 'USD' }),
+    }
   },
   computed: {
     ...mapGetters(['selectedMonth', 'allCategoryBalances', 'masterCategoriesById']),

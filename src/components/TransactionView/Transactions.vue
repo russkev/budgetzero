@@ -92,7 +92,7 @@
 
             <!-- Balance -->
             <td align="right">
-              {{ new Intl.NumberFormat('en-us', { style: 'currency', currency: 'USD' }).format(item.balance / 100) }}
+              {{ intlCurrency.format(item.balance / 100) }}
             </td>
           <!-- </form> -->
         </tr>
@@ -378,6 +378,7 @@ export default {
     },
     editItem(item) {
       this.creatingNewTransactions = false
+      this.resetEditedItem()
       this.editedIndex = this.transactions.indexOf(item)
       this.editedItem = { ...this.transactions[this.editedIndex] }
     },
@@ -442,6 +443,8 @@ export default {
       }
       this.inflowDisplayValue = ''
       this.outflowDisplayValue = ''
+      this.inflowAmount = ''
+      this.outflowAmount = ''
     },
     prepareEditedItem() {
       if (this.creatingNewTransactions && this.editedItemInitialDate !== this.editedItem.date) {
@@ -546,10 +549,9 @@ export default {
         .catch((error) => {
           console.log(error)
         })
-      // .then(() => {
-      //   this.$store.dispatch('updateBalances')
-      // })
-      this.cancel()
+        .finally(() => {
+          this.cancel()
+        })
     },
     cancel() {
       this.selected = []

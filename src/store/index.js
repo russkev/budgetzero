@@ -40,7 +40,8 @@ Vue.mixin({
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+  
+const storeData = {
   strict: import.meta.env.NODE_ENV !== 'production',
   modules: {
     account,
@@ -108,4 +109,8 @@ export default new Vuex.Store({
       }
     }
   }
-})
+}
+
+export default new Vuex.Store(storeData)
+
+export { storeData }

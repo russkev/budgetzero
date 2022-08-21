@@ -42,6 +42,10 @@ export default {
     },
     fetchAccounts: (context) => {
       const db = Vue.prototype.$pouch
+      console.log('DDDDDBBBBB')
+      console.log("Route", Vue.prototype.$route)
+      console.log("Pouch", Vue.prototype.$pouch)
+      console.log(Vue.prototype)
       const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.account, 'fetchAccounts').then((accounts) => {
         context.commit('SET_ACCOUNTS', accounts)
@@ -260,6 +264,8 @@ export default {
 const fetchDocsByType = (context, db, budget_id, id_name, function_name) => {
   const t2 = performance.now()
   const id_prefix = `b_${budget_id}${id_name}`
+
+
   return db
     .allDocs({
       include_docs: true,
