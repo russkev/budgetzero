@@ -4,12 +4,12 @@
       Let's get started!
     </template>
     <template #body>
-      <v-text-field v-model="budget_name" required label="Budget name"/>
-      <v-checkbox v-model="use_default_categories" label="Use default categories?" />
+      <v-text-field id="budget-name-field" v-model="budget_name" required label="Budget name"/>
+      <v-checkbox id="budget-use-default-categories" v-model="use_default_categories" label="Use default categories?" />
     </template>
     <template #actions>
       <v-spacer />
-      <v-btn @click="createBudget()" :loading="create_budget_is_loading">
+      <v-btn id="budget-create" @click="createBudget()" :loading="create_budget_is_loading">
         Create Budget
       </v-btn>
     </template>

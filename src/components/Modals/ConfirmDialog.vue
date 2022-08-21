@@ -7,10 +7,10 @@
       <div class="mb-4 subtitle-1 font-weight-medium">{{ message }}</div>
     </template>
     <template #actions>
-      <v-btn id="cancelBtn" v-if="!options.onlyShowAgreeBtn" :color="options.cancelBtnColor" @click.native="cancel">
+      <v-btn id="cancel-button" v-if="!options.onlyShowAgreeBtn" :color="options.cancelBtnColor" @click.native="cancel">
         Cancel
       </v-btn>
-      <v-btn id="agreeBtn" :color="options.agreeBtnColor" @click.native="agree">
+      <v-btn id="agree-button" :color="options.agreeBtnColor" @click.native="agree">
         {{ options.agreeBtnText }}
       </v-btn>
     </template>
