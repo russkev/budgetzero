@@ -16,7 +16,7 @@
 
           <AccountAddModal v-model="showModal" :edited-item="editedItem" @save="save()" />
 
-          <v-btn id="addAccountBtn" color="accent" :dark="budgetExists" :disabled="!budgetExists" class="mb-2" @click="create()" >
+          <v-btn id="add-account-button" color="accent" :dark="budgetExists" :disabled="!budgetExists" class="mb-2" @click="create()" >
             Add Account
           </v-btn>
         </v-toolbar>
@@ -122,9 +122,9 @@ export default {
     // const db = this.$pouch
     // console.log("DB", db)
     // console.log(this.$pouch.allDocs())
-    this.$pouch.allDocs().then((result) => {
-      console.log("ALL DOCS RESULT", result)
-    })
+    // this.$pouch.allDocs().then((result) => {
+    //   console.log("ALL DOCS RESULT", result)
+    // })
     // console.log(this.selectedBudgetId)
     // console.log("MONTH FROM PARAMS", month_from_params)
     // const docs = this.$pouch.get("b_N8Q_account_ELC")

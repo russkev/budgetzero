@@ -23,3 +23,19 @@
 //
 // -- This is will overwrite an existing command --
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
+
+import PouchDB from 'pouchdb'
+import mock_budget from '../../__mockdata__/mock_budget_3.json'
+
+Cypress.Commands.add('loadMockDB', () => {
+  const data = mock_budget.rows
+    .map((row) => {
+      delete row.doc._rev
+      return row.doc
+    })
+    .filter((row) => {
+      return row._id[0] == 'b'
+    })
+  const pouch = new PouchDB('budgetzero_local_db')
+  return pouch.bulkDocs(data)
+})

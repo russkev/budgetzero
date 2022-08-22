@@ -1,23 +1,28 @@
-// https://docs.cypress.io/api/introduction/api.html
-
-const { it } = require("vitest")
-
 describe('My First Test', () => {
-  it('Create new budget', () => {
-    // cy.visit('http://localhost:8082/settings')
-    cy.visit('https://www.cypress.io/')
-    cy.get('#budget-name-field').type('Cy1')
-    // cy.get('#budget-create').click()
-    // cy.get('#agree-button').click()
-
-    // // cy.get('.v-chip').should('have.text', 'Cy1')
-    // cy.contains('.v-chip', 'Cy1')
+  context("Initial experience", () => {
+    beforeEach(() => {
+      cy.visit('http://localhost:8082/settings')
+    })
+    it('Create new budget', () => {
+      cy.get('#budget-name-field').type('Cy1')
+      cy.get('#budget-create').click()
+      cy.get('#agree-button').click()
+  
+      cy.contains('.v-chip', 'Cy1')
+    })
+  
   })
-
-  // it('Adds new account', () => {
-  //   cy.visit('http://localhost:8082/accounts')
-  //   cy.get('#add-account-button').click()
-  // })
+  context.only("Accounts page", () => {
+    beforeEach(() => {
+      cy.visit('http://localhost:8082/accounts')
+      cy.loadMockDB()
+    })
+    it('Adds new account', () => {
+      cy.get('.crud-actions').should('have.length', 3)
+      cy.get('#add-account-button').click()
+      // cy.get('[data-cy="account-name"]')
+    })
+  })
 
   // it('Add account and it shows in table', () => {
   //   cy.get('#accountsSidebarBtn').click()

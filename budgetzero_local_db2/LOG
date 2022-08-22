@@ -1,0 +1,14 @@
+2022/08/23-07:36:36.876 4330 Recovering log #25
+2022/08/23-07:36:36.876 4330 Level-0 table #27: started
+2022/08/23-07:36:37.234 4330 Level-0 table #27: 237 bytes OK
+2022/08/23-07:36:37.715 4330 Delete type=0 #25
+2022/08/23-07:36:37.716 4330 Delete type=3 #23
+2022/08/23-07:36:37.731 dac Compacting 4@0 + 1@1 files
+2022/08/23-07:36:37.934 dac Generated table #29@0: 89 keys, 9523 bytes
+2022/08/23-07:36:37.934 dac Compacted 4@0 + 1@1 files => 9523 bytes
+2022/08/23-07:36:38.034 dac compacted to: files[ 0 1 0 0 0 0 0 ]
+2022/08/23-07:36:38.035 dac Delete type=2 #16
+2022/08/23-07:36:38.035 dac Delete type=2 #18
+2022/08/23-07:36:38.036 dac Delete type=2 #21
+2022/08/23-07:36:38.037 dac Delete type=2 #24
+2022/08/23-07:36:38.037 dac Delete type=2 #27
