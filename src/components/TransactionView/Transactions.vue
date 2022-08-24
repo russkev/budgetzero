@@ -2,6 +2,7 @@
   <div>
     <TransactionHeader :selected_account_id="accountOptions.account_id" />
     <v-data-table
+      id="transactions-table"
       v-model="selected"
       :headers="dataTableHeaders"
       :items="transactions"
@@ -19,10 +20,10 @@
       refs="items"
     >
       <template #item="{ item, expand, select, isSelected }">
-        <tr v-if="item._id === editedItem._id" :key="item._id">
+        <tr id="transaction-edit-row" v-if="item._id === editedItem._id" :key="item._id">
           <!-- <form> -->
             <!-- Checkbox -->
-            <td class="pr-0">
+            <td id="edit-row-checkbox" class="expanded-checkbox pr-0">
               <v-simple-checkbox
                 color="accent"
                 :value="isSelected"
@@ -33,7 +34,7 @@
             </td>
 
             <!-- Cleared input -->
-            <td class="pa-0">
+            <td id="edit-row-cleared" class="pa-0">
               <v-btn icon @click="toggleCleared(item)">
                 <v-icon v-if="editedItem.cleared" color="primary">mdi-alpha-c-circle</v-icon>
                 <v-icon v-if="!editedItem.cleared" color="grey">mdi-alpha-c-circle-outline</v-icon>
@@ -41,13 +42,14 @@
             </td>
 
             <!-- Date input -->
-            <td id="edit-date-input">
+            <td id="edit-row-date">
               <date-picker v-model="editedItem.date" />
             </td>
 
             <!-- Category input -->
-            <td>
+            <td id="edit-row-category">
               <treeselect
+                id="edit-row-category-select"
                 :multiple="false"
                 :options="categoryOptions"
                 v-model="editedItem.category"
@@ -57,12 +59,12 @@
             </td>
 
             <!-- Memo input -->
-            <td>
+            <td id="edit-row-memo">
               <v-text-field v-model="editedItem.memo" />
             </td>
 
             <!-- Outflow -->
-            <td align="right">
+            <td id="edit-row-outflow" align="right">
                 <!-- ref="outflow" -->
               <v-text-field 
                 :value="outflowAmount"
@@ -77,7 +79,7 @@
             </td>
 
             <!-- Inflow -->
-            <td align="right">
+            <td id="edit-row-inflow" align="right">
               <v-text-field 
                 :value="inflowAmount"
                 suffix="$"
@@ -91,15 +93,15 @@
             </td>
 
             <!-- Balance -->
-            <td align="right">
+            <td id="edit-row-balance" align="right">
               {{ intlCurrency.format(item.balance / 100) }}
             </td>
           <!-- </form> -->
         </tr>
 
-        <tr v-else>
+        <tr class="transaction-row" v-else>
           <!-- Checkbox -->
-          <td class="pr-0">
+          <td class="row-checkbox pr-0">
             <v-simple-checkbox
               color="accent"
               :value="isSelected"
@@ -110,7 +112,7 @@
           </td>
 
           <!-- Cleared -->
-          <td>
+          <td class="row-cleared">
             <v-btn icon @click="toggleCleared(item)">
               <v-icon v-if="item.cleared" color="primary">mdi-alpha-c-circle</v-icon>
               <v-icon v-if="!item.cleared" color="grey">mdi-alpha-c-circle-outline</v-icon>
@@ -118,32 +120,32 @@
           </td>
 
           <!-- Date -->
-          <td @click="editItem(item); expand(item)">
+          <td class="row-date" @click="editItem(item); expand(item)">
             {{ item.date }}
           </td>
 
           <!-- Category -->
-          <td @click="editItem(item); expand(item)">
+          <td class="row-category" @click="editItem(item); expand(item)">
             {{ item.category_name }}
           </td>
 
           <!-- Memo -->
-          <td class="memo" @click="editItem(item); expand(item)">
+          <td class="row-memo" @click="editItem(item); expand(item)">
             {{ item.memo }}
           </td>
 
           <!-- Outflow -->
-          <td align="right" @click="editItem(item); expand(item)">
+          <td class="row-outflow" align="right" @click="editItem(item); expand(item)">
             {{ item.value > 0 ? '' : intlCurrency.format(-item.value / 100)}}
           </td>
 
           <!-- Inflow -->
-          <td align="right" @click="editItem(item); expand(item)">
+          <td class="row-inflow" align="right" @click="editItem(item); expand(item)">
             {{ item.value > 0 ? intlCurrency.format(item.value / 100) : '' }}
           </td>
 
           <!-- Balance -->
-          <td align="right">
+          <td class="row-balance" align="right">
             {{ intlCurrency.format(item.balance / 100) }}
           </td>
         </tr>
@@ -151,22 +153,20 @@
 
       <template #expanded-item="{ item }">
         <td :colspan="dataTableHeaders.length" class="mr-0 pr-0 grey lighten-2">
-          <v-btn small @click="cancel()"> Cancel </v-btn>
-          <v-btn small @click="save(item)"> Save </v-btn>
+          <v-btn id="cancel-edit-button" small @click="cancel()"> Cancel </v-btn>
+          <v-btn id="save-edit-button" small @click="save(item)"> Save </v-btn>
         </td>
       </template>
     </v-data-table>
-    <v-btn @click="addTransaction"> Create </v-btn>
-    <v-btn @click="deleteSelectedTransactions"> Delete selected </v-btn>
-    <v-btn @click="clearSelectedTransactions"> Clear Selected </v-btn>
-    <v-btn @click="unclearSelectedTransactions"> Unclear Selected </v-btn>
-    <v-btn @click="onFetchSucceeding">Fetch Succeeding</v-btn>
-    <v-btn @click="onFetchPreceding">Fetch Preceding</v-btn>
-    <v-btn @click="getTransactions">Get Transactions</v-btn>
+    <v-btn id="create-transaction-button" @click="addTransaction"> Create </v-btn>
+    <v-btn id="delete-selected-transactions-button" @click="deleteSelectedTransactions"> Delete selected </v-btn>
+    <v-btn id="clear-selected-button" @click="clearSelectedTransactions"> Clear Selected </v-btn>
+    <v-btn id="unclear-selected-button" @click="unclearSelectedTransactions"> Unclear Selected </v-btn>
+    <v-btn id="get-transactions-button" @click="getTransactions">Get Transactions</v-btn>
     <v-menu bottom offset-x close-on-content-click close-on-click>
       <template #activator="{ on, attrs }">
         <!-- <v-list-item v-bind="attrs" left v-on="on">Categorize as:</v-list-item> -->
-        <v-btn v-bind="attrs" v-on="on">Categorize as:</v-btn>
+        <v-btn id="categorize-as-button" v-bind="attrs" v-on="on">Categorize as:</v-btn>
       </template>
       <v-list>
         <v-list-item
@@ -363,18 +363,31 @@ export default {
       }
     },
     getTransactions() {
-      this.$store.dispatch('fetchTransactionsForAccount', this.accountOptions).then((result) => {
-        this.numServerTransactions = result.total_rows
-        this.transactions = result.rows.map((row) => {
-          const category_name = _.get(this.categoriesById, [row.doc.category, 'name'], '')
-          return {
-            ...row.doc,
-            value: row.doc.value * this.account.sign,
-            ['category_name']: category_name,
-            balance: row.doc.balance * this.account.sign
-          }
+      console.log("GETTING TRANSACTIONS")
+      console.log(this.options)
+      this.$store
+        .dispatch('fetchTransactionsForAccount', this.accountOptions)
+        .then((result) => {
+          console.log("TRANSACTIONS RESULT:", result)
+          this.numServerTransactions = result.total_rows
+          this.transactions = result.rows.map((row) => {
+            const doc = row.doc
+            
+            console.log("DOC")
+            console.log(doc)
+            const category_name = _.get(this.categoriesById, [doc.category, 'name'], '')
+            return {
+              ...doc,
+              value: doc.value * this.account.sign,
+              ['category_name']: category_name,
+              balance: doc.balance * this.account.sign
+            }
+          })
         })
-      })
+        .catch((error) => {
+          console.log("Row from fetchTransactionsForAccount doesn't contain 'doc' object")
+          console.log(error)
+        })
     },
     editItem(item) {
       this.creatingNewTransactions = false
@@ -591,7 +604,7 @@ div.vue-treeselect__menu-container {
   width: 400px;
 }
 
-td.memo {
+td.row-memo {
   max-width: 150px;
   white-space: nowrap;
   overflow: hidden;

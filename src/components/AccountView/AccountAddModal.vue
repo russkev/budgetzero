@@ -10,7 +10,7 @@
           <v-row>
             <v-col cols="12">
               <v-text-field
-                id="nameField"
+                id="name-field"
                 v-model="editedItem.name"
                 label="Account Name"
                 :rules="nameRules"
@@ -19,25 +19,31 @@
             </v-col>
             <v-col cols="4">
               <v-select
-                id="typeField"
+                id="type-field"
                 v-model="editedItem.type"
                 :items="['CHECKING', 'CREDIT', 'SAVING', 'MORTGAGE', 'CASH', 'INVESTMENT', 'OTHER']"
                 label="Type"
                 data-cy="account-type"
                 :rules="typeRules"
                 @change="accountTypeChanged"
-              />
+              >
+                <template #item="{item}">
+                  <span :id="`type-${item}`">
+                    {{item}}
+                  </span>
+                </template>
+              </v-select>
             </v-col>
             <v-col cols="4">
               <v-switch
-                id="onBudgetSwitch"
+                id="on-budget-switch"
                 v-model="editedItem.onBudget"
                 label="On Budget?"
                 data-cy="account-on-budget"
               />
             </v-col>
             <v-col cols="4">
-              <v-switch id="balanceIsNegativeSwitch" v-model="isNegative" label="Invert Balance" />
+              <v-switch id="invert-balance-switch" v-model="isNegative" label="Invert Balance" />
               <span>(generally for credit card accounts)</span>
             </v-col>
 
@@ -55,7 +61,7 @@
             <v-col cols="12" sm="6" md="4">
               <v-text-field
                 v-if="!editedItem.hasOwnProperty('_id')"
-                id="startingBalanceField"
+                id="starting-balance-field"
                 v-model="editedItem.initialBalance"
                 label="Starting Balance"
                 prefix="$"
@@ -66,10 +72,10 @@
         </v-form>
       </template>
       <template #actions>
-        <v-btn text id="cancelAccountBtn" @click="close()">
+        <v-btn text id="cancel-account-button" @click="close()">
           Cancel
         </v-btn>
-        <v-btn id="saveAccountBtn" color="accent" @click="save()">
+        <v-btn id="save-account-button" color="accent" @click="save()">
           Save
         </v-btn>
       </template>

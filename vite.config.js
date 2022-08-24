@@ -23,7 +23,8 @@ export default defineConfig({
     environment: 'jsdom',
   },
   server: {
-    port: 8082
+    port: 8082 // cypress
+    // port: 8080
   },
   preview: {
     port: 8080

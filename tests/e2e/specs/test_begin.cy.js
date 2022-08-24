@@ -15,12 +15,42 @@ describe('My First Test', () => {
   context.only("Accounts page", () => {
     beforeEach(() => {
       cy.visit('http://localhost:8082/accounts')
-      cy.loadMockDB()
     })
     it('Adds new account', () => {
       cy.get('.crud-actions').should('have.length', 3)
       cy.get('#add-account-button').click()
-      // cy.get('[data-cy="account-name"]')
+      cy.get('[data-cy="account-name"]').type('Emergency')
+      cy.get('.v-select__selections').click()
+      cy.get('div').contains('CHECKING').click()
+      cy.get('[data-cy="account-notes"]').type("e1")
+      cy.get('#save-account-button').click()
+
+      cy.contains('#accounts-table', 'Emergency')
+      cy.contains('#accounts-table', 'CHECKING')
+    })
+  })
+
+  context.only("Transactions page", () => {
+    beforeEach(() => {
+      cy.visit('http://localhost:8082/transactions/7kW')
+    })
+    it('Adds new transaction', () => {
+      cy.get(".transaction-row").should("have.length", 7)
+
+      cy.get('#create-transaction-button').click()
+      cy.get('#edit-row-cleared').click()
+      cy.get('#edit-row-date input').clear().type('2022-08-20')
+      cy.get('#edit-row-category-select input').type('Groceries')
+        .type('{downArrow}')
+        .type('{downArrow}')
+        .type('{enter}')
+      cy.get('#edit-row-memo input').type('Supermarket')
+      cy.get('#edit-row-outflow').type('56.23')
+      cy.get('#save-edit-button').click()
+      cy.wait(600)
+      cy.get('.transaction-row').should('have.length', 8)
+
+
     })
   })
 

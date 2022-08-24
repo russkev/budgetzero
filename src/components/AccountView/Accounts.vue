@@ -1,7 +1,7 @@
 <template>
   <v-card elevation="0" class="mx-auto">
     <v-data-table
-      id="accountsTable"
+      id="accounts-table"
       :headers="headers"
       :items="accounts"
       sort-by="calories"
@@ -23,7 +23,7 @@
         <v-divider class="pb-4" />
       </template>
 
-      <template #item.action="{ item }">
+      <template #item.action="item">
         <div class="crud-actions">
           <v-icon :id="`edit-${item._id}`" icon dark class="" color="primary" @click="editItem(item)"> edit </v-icon>
           <v-icon :id="`delete-${item._id}`" icon dark class="ml-1" color="accent" @click="deleteItem(item)"> delete </v-icon>
