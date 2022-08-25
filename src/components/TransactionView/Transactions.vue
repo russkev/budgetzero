@@ -363,8 +363,7 @@ export default {
       }
     },
     getTransactions() {
-      console.log("GETTING TRANSACTIONS")
-      console.log(this.options)
+      console.log("OPTIONS:", this.accountOptions)
       this.$store
         .dispatch('fetchTransactionsForAccount', this.accountOptions)
         .then((result) => {
@@ -372,10 +371,7 @@ export default {
           this.numServerTransactions = result.total_rows
           this.transactions = result.rows.map((row) => {
             const doc = row.doc
-            
-            console.log("DOC")
-            console.log(doc)
-            const category_name = _.get(this.categoriesById, [doc.category, 'name'], '')
+                        const category_name = _.get(this.categoriesById, [doc.category, 'name'], '')
             return {
               ...doc,
               value: doc.value * this.account.sign,

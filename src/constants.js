@@ -59,3 +59,5 @@ export const DEFAULT_TRANSACTION = {
   _id: '',
   _rev: ''
 }
+
+export const LOCAL_DB_NAME = 'budgetzero_local_db'
