@@ -23,7 +23,7 @@ describe('My First Test', () => {
       })
     })
     it('Create new budget', () => {
-      cy.get('#budget-name-field').type('Cy1')
+      cy.get('#budget-name-field', { timeout: 6000 }).type('Cy1')
       cy.get('#budget-create').click()
       cy.get('#agree-button').click()
 
@@ -42,7 +42,7 @@ describe('My First Test', () => {
       })
     })
     it('Adds new account', () => {
-      cy.get('.crud-actions').should('have.length', 3)
+      cy.get('.crud-actions', { timeout: 6000 }).should('have.length', 3)
       cy.get('#add-account-button').click()
       cy.get('[data-cy="account-name"]').type('Emergency')
       cy.get('.v-select__selections').click()
@@ -55,7 +55,7 @@ describe('My First Test', () => {
     })
   })
 
-  context('Transactions page', () => {
+  context.only('Transactions page', () => {
     beforeEach(()  => {
       cy.visit('http://localhost:8082/transactions/7kW')
       cy.on('window:before:load', async () => {
@@ -67,7 +67,7 @@ describe('My First Test', () => {
       })
     })
     it('Adds new transaction', () => {
-      cy.get('.transaction-row').should('have.length', 7)
+      cy.get('.transaction-row', {timeout: 6000}).should('have.length', 7)
 
       cy.get('#create-transaction-button').click()
       cy.get('#edit-row-cleared').click()
@@ -78,10 +78,14 @@ describe('My First Test', () => {
         .type('{downArrow}')
         .type('{enter}')
       cy.get('#edit-row-memo input').type('Supermarket')
-      cy.get('#edit-row-outflow').type('56.23')
+      cy.get('#edit-row-outflow input').type('56.23').blur()
       cy.get('#save-edit-button').click()
-      cy.wait(600)
-      cy.get('.transaction-row').should('have.length', 8)
+      cy.get('.transaction-row', {timeout: 600}).should('have.length', 8)
+      cy.get(':nth-child(2) > .row-date').should('contain.text', '2022-08-20')
+      cy.get(':nth-child(2) > .row-category').should('contain.text', 'Groceries')
+      cy.get(':nth-child(2) > .row-memo').should('contain.text', 'Supermarket')
+      cy.get(':nth-child(2) > .row-outflow').should('contain.text', '$56.23')
+      cy.get(':nth-child(2) > .row-memo').should('not.contain.text', '$')
     })
   })
 

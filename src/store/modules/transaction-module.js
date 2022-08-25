@@ -368,7 +368,6 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
   })
 
   if (updated_transaction_docs.length > 0) {
-    "UPDATING TRANSACTION DOX"
     dispatch('commitBulkDocsToPouchAndVuex', updated_transaction_docs)
   }
 
