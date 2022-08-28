@@ -227,7 +227,7 @@
       "key": "b_N8Q_monthCategory_2022-07_ATi",
       "value": { "rev": "4-40db3ae74b9a42ecc25f4ae2f7bbcd9f" },
       "doc": {
-        "budget": 10000,
+        "budget": 100326,
         "overspending": null,
         "note": "E",
         "_id": "b_N8Q_monthCategory_2022-07_ATi",
@@ -271,14 +271,14 @@
       }
     },
     {
-      "id": "b_N8Q_monthCategory_2022-07_~~~",
-      "key": "b_N8Q_monthCategory_2022-07_~~~",
+      "id": "b_N8Q_monthCategory_2022-07_:::",
+      "key": "b_N8Q_monthCategory_2022-07_:::",
       "value": { "rev": "3-400301ecdf6eb508a5842c8ec5d7ea93" },
       "doc": {
         "budget": 0,
         "overspending": null,
         "note": "E>6>5#``l&B t#>c?jE xWcC T+S 8dOZM S@s@!EbaWe= w^/$7>ao]NR:01f>5zD3Go-t]",
-        "_id": "b_N8Q_monthCategory_2022-07_~~~",
+        "_id": "b_N8Q_monthCategory_2022-07_:::",
         "_rev": "3-400301ecdf6eb508a5842c8ec5d7ea93"
       }
     },
@@ -355,14 +355,14 @@
       }
     },
     {
-      "id": "b_N8Q_monthCategory_2022-08_~~~",
-      "key": "b_N8Q_monthCategory_2022-08_~~~",
+      "id": "b_N8Q_monthCategory_2022-08_:::",
+      "key": "b_N8Q_monthCategory_2022-08_:::",
       "value": { "rev": "3-79c7a4a52b75a11ae5edd89512776a8d" },
       "doc": {
         "budget": 0,
         "overspending": null,
         "note": "-VF&3gb@V2BiWr  xr.i4Qo^eJY`YXoLhC &.yMm;j HO  +]$D#SE(Q#IfBD:k$`s38 z:m&vY4ISo,eo~_qNS]",
-        "_id": "b_N8Q_monthCategory_2022-08_~~~",
+        "_id": "b_N8Q_monthCategory_2022-08_:::",
         "_rev": "3-79c7a4a52b75a11ae5edd89512776a8d"
       }
     },
@@ -482,7 +482,7 @@
       "value": { "rev": "5-d98fbec4ee6543a3fefe0e0803394c7f" },
       "doc": {
         "account": "ELC",
-        "category": "n00",
+        "category": ":::",
         "cleared": true,
         "approved": true,
         "value": 8132,
@@ -593,7 +593,7 @@
       "doc": {
         "account": "7kW",
         "category": "gpe",
-        "cleared": true,
+        "cleared": false,
         "approved": true,
         "value": 230000,
         "date": "2022-08-09",
@@ -615,7 +615,7 @@
       "doc": {
         "account": "7kW",
         "category": "ATi",
-        "cleared": true,
+        "cleared": false,
         "approved": true,
         "value": -18944,
         "date": "2022-08-13",

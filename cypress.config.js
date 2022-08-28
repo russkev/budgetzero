@@ -7,6 +7,6 @@ module.exports = defineConfig({
   e2e: {
     specPattern: 'tests/e2e/specs/**/*.cy.{js,jsx,ts,tsx}',
     supportFile: 'tests/e2e/support/index.js',
-    defaultCommandTimeout: 100,
+    // defaultCommandTimeout: 1000,
   }
 })

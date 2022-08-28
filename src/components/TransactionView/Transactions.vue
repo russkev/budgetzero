@@ -64,7 +64,7 @@
           </td>
 
           <!-- Outflow -->
-          <td id="edit-row-outflow" align="right">
+          <td id="edit-row-outflow">
             <!-- ref="outflow" -->
             <v-text-field
               :value="outflowAmount"
@@ -82,7 +82,7 @@
           </td>
 
           <!-- Inflow -->
-          <td id="edit-row-inflow" align="right">
+          <td id="edit-row-inflow">
             <v-text-field
               :value="inflowAmount"
               suffix="$"
@@ -105,7 +105,7 @@
           <!-- </form> -->
         </tr>
 
-        <tr class="transaction-row" v-else>
+        <tr class="transaction-row" data-cy="transaction-row" v-else>
           <!-- Checkbox -->
           <td class="row-checkbox pr-0">
             <v-simple-checkbox
@@ -196,21 +196,45 @@
         </td>
       </template>
     </v-data-table>
-    <v-btn id="create-transaction-button" @click="addTransaction"> Create </v-btn>
-    <v-btn id="delete-selected-transactions-button" @click="deleteSelectedTransactions">
+    <v-btn
+      id="create-transaction-button"
+      data-cy="create-transaction-button"
+      @click="addTransaction"
+    >
+      Create
+    </v-btn>
+    <v-btn
+      id="delete-selected-transactions-button"
+      data-cy="delete-selected-transactions-button"
+      @click="deleteSelectedTransactions"
+    >
       Delete selected
     </v-btn>
-    <v-btn id="clear-selected-button" @click="clearSelectedTransactions"> Clear Selected </v-btn>
-    <v-btn id="unclear-selected-button" @click="unclearSelectedTransactions">
+    <v-btn
+      id="clear-selected-button"
+      data-cy="clear-selected-button"
+      @click="clearSelectedTransactions"
+    >
+      Clear Selected
+    </v-btn>
+    <v-btn
+      id="unclear-selected-button"
+      data-cy="unclear-selected-button"
+      @click="unclearSelectedTransactions"
+    >
       Unclear Selected
     </v-btn>
-    <v-btn id="get-transactions-button" @click="getTransactions">Get Transactions</v-btn>
+    <v-btn id="get-transactions-button" data-cy="get-transactions-button" @click="getTransactions"
+      >Get Transactions</v-btn
+    >
     <v-menu bottom offset-x close-on-content-click close-on-click>
       <template #activator="{ on, attrs }">
         <!-- <v-list-item v-bind="attrs" left v-on="on">Categorize as:</v-list-item> -->
-        <v-btn id="categorize-as-button" v-bind="attrs" v-on="on">Categorize as:</v-btn>
+        <v-btn id="categorize-as-button" data-cy="categorize-as-button" v-bind="attrs" v-on="on"
+          >Categorize as:</v-btn
+        >
       </template>
-      <v-list>
+      <v-list data-cy="categorize-multiple-as-list">
         <v-list-item
           v-for="category in categoriesForDropdown"
           :key="category._id"
@@ -238,6 +262,7 @@
 import TransactionHeader from "./TransactionHeader.vue";
 import { DEFAULT_TRANSACTION, ID_LENGTH, ID_NAME, NONE } from "../../constants";
 import Treeselect from "@riophae/vue-treeselect";
+import { compareAscii } from "@/store/modules/id-module.js"
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Vue from "vue";
 import { mapGetters } from "vuex";
@@ -563,15 +588,26 @@ export default {
       this.$store
         .dispatch("deleteBulkDocumentsFromPouchAndVuex", { documents: this.selected })
         .then(() => {
+          let oldest_document = {date: "9999-99-99"}
+          for (let document of this.selected) {
+            if (compareAscii(document.date, oldest_document.date) < 0) {
+              oldest_document = document
+            }
+          }
+          if (oldest_document.date !== "9999-99-99") {
+            return this.$store.dispatch("updateRunningBalance", {transaction: oldest_document, isDeleted: true})
+          }
+          return null
+        }).then(() => {
           this.getTransactions();
           this.selected = [];
-        });
+        })
     },
     deleteTransaction(item) {
       this.$store
         .dispatch("createOrUpdateTransaction", { current: null, previous: item })
         .then(() => {
-          this.$store.dispatch("updateRunningBalance", item);
+          this.$store.dispatch("updateRunningBalance", {transaction: item, isDeleted: true});
         })
         .then(() => {
           return this.getTransactions();
@@ -602,7 +638,7 @@ export default {
           previous: previous,
         })
         .then(() => {
-          return this.$store.dispatch("updateRunningBalance", transaction);
+          return this.$store.dispatch("updateRunningBalance", {transaction: transaction, isDeleted: false});
         })
         .then(() => {
           return this.getTransactions();
@@ -618,16 +654,6 @@ export default {
       this.selected = [];
       this.expanded = [];
       this.resetEditedItem();
-    },
-    onFetchSucceeding() {
-      this.selected.map((transaction) => {
-        this.$store.dispatch("fetchSucceedingTransaction", transaction);
-      });
-    },
-    onFetchPreceding() {
-      this.selected.map((transaction) => {
-        this.$store.dispatch("fetchPrecedingTransaction", transaction);
-      });
     },
     savedItemsPerPage() {
       const saved_items_per_page = localStorage.getItem("transactionsPerPage");

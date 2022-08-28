@@ -150,7 +150,7 @@ describe('CRUD elements', () => {
         name: 'Groceries',
         sort: 1,
         hidden: false,
-        masterCategory: '~~~',
+        masterCategory: ':::',
         _id: 'b_rkW_category_K31',
         _rev: '1-ad8e4a89a4d1d550377b070ec923c81c'
       },

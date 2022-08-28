@@ -3,7 +3,7 @@
   "offset": 0,
   "getters": {
     "categoriesById": {
-      "~~~": { "_id": "~~~", "name": "Uncategorized", "masterCategory": "~~~" },
+      ":::": { "_id": ":::", "name": "Uncategorized", "masterCategory": ":::" },
       "0WD": {
         "name": "Paycheck 1",
         "sort": 0,
@@ -278,7 +278,7 @@
         "_id": "b_rkW_masterCategory_tut",
         "_rev": "1-b1702e7544e2a167594e0d2d2b27fee1"
       },
-      "~~~": { "_id": "~~~", "name": "Uncategorized", "masterCategory": "~~~" }
+      ":::": { "_id": ":::", "name": "Uncategorized", "masterCategory": ":::" }
     },
     "allCategoryBalances": {
       "2020-01": {
@@ -361,13 +361,13 @@
             "carryover": 0
           }
         },
-        "~~~": {
-          "~~~": {
+        ":::": {
+          ":::": {
             "doc": {
               "budget": 21526,
               "overspending": null,
               "note": "2y Q[N*EJn%OvtH@tl fkwCZVfF8O<iQ) SUXufR2Kp",
-              "_id": "b_rkW_monthCategory_2020-01_~~~",
+              "_id": "b_rkW_monthCategory_2020-01_:::",
               "_rev": "1-7ca27b92648ea7f928e705762dfc7dff"
             },
             "spent": 0,
@@ -696,13 +696,13 @@
             "carryover": -7133
           }
         },
-        "~~~": {
-          "~~~": {
+        ":::": {
+          ":::": {
             "doc": {
               "budget": 3778,
               "overspending": null,
               "note": "7-X2S#PM[Ah ?gxV#jT`2f*L0WC3s$K@hfWiEA&2&? l8z1!%35nxM1C X",
-              "_id": "b_rkW_monthCategory_2020-02_~~~",
+              "_id": "b_rkW_monthCategory_2020-02_:::",
               "_rev": "1-cf4b719e19cbdba48a1a125dfd47de43"
             },
             "spent": 0,
@@ -1031,13 +1031,13 @@
             "carryover": 8165
           }
         },
-        "~~~": {
-          "~~~": {
+        ":::": {
+          ":::": {
             "doc": {
               "budget": 29661,
               "overspending": null,
               "note": "H db&{-5q  @Jq{AF95$  %j+1 &U?P@F7Q< q2Ww#RHBF<+I r<Xu~W?i",
-              "_id": "b_rkW_monthCategory_2020-03_~~~",
+              "_id": "b_rkW_monthCategory_2020-03_:::",
               "_rev": "1-c6ebc5d7fc0cd5d3dd5787cba11efb1e"
             },
             "spent": 0,
@@ -1366,13 +1366,13 @@
             "carryover": 24808
           }
         },
-        "~~~": {
-          "~~~": {
+        ":::": {
+          ":::": {
             "doc": {
               "budget": -6353,
               "overspending": null,
               "note": "S@~$v{}r",
-              "_id": "b_rkW_monthCategory_2020-04_~~~",
+              "_id": "b_rkW_monthCategory_2020-04_:::",
               "_rev": "1-5517b5495a6d44ecaf458b5dd1752ca6"
             },
             "spent": 0,
@@ -1701,13 +1701,13 @@
             "carryover": 16807
           }
         },
-        "~~~": {
-          "~~~": {
+        ":::": {
+          ":::": {
             "doc": {
               "budget": -12551,
               "overspending": null,
               "note": "g<! |L2-Hv:Rn}?OFjR_+_.?L Nj!5tJ e",
-              "_id": "b_rkW_monthCategory_2020-05_~~~",
+              "_id": "b_rkW_monthCategory_2020-05_:::",
               "_rev": "1-4aa9cd450ca63e13b702a4c72a21a736"
             },
             "spent": 0,
@@ -2036,13 +2036,13 @@
             "carryover": 7350
           }
         },
-        "~~~": {
-          "~~~": {
+        ":::": {
+          ":::": {
             "doc": {
               "budget": -13872,
               "overspending": null,
               "note": "95[`b+F3F!+H:_+ftF>V{=N `I+o0Qv_72K=0 -uj @1KG[mFv^|L.,u*]@<7A=, =J:1m GHwfn`_^kog2u==F",
-              "_id": "b_rkW_monthCategory_2020-06_~~~",
+              "_id": "b_rkW_monthCategory_2020-06_:::",
               "_rev": "1-c0c22e10d930f961813de5418ac27a33"
             },
             "spent": 0,
@@ -2371,13 +2371,13 @@
             "carryover": -4433
           }
         },
-        "~~~": {
-          "~~~": {
+        ":::": {
+          ":::": {
             "doc": {
               "budget": -7779,
               "overspending": null,
               "note": "4u[D*^aJipB -R0_zb9hkPv0h0wsN D{G>fWDLKT,X+[=-cwi` ~oZ",
-              "_id": "b_rkW_monthCategory_2020-07_~~~",
+              "_id": "b_rkW_monthCategory_2020-07_:::",
               "_rev": "1-2e261d76f7ada01be48b8708b06e2615"
             },
             "spent": 0,
@@ -2706,13 +2706,13 @@
             "carryover": 8240
           }
         },
-        "~~~": {
-          "~~~": {
+        ":::": {
+          ":::": {
             "doc": {
               "budget": -5453,
               "overspending": null,
               "note": "(l  X<FKyN ;{^ z]dEO)iDPQ6VPHGNp&nDz-ogt_v~=wGiXy+g79D|",
-              "_id": "b_rkW_monthCategory_2020-08_~~~",
+              "_id": "b_rkW_monthCategory_2020-08_:::",
               "_rev": "1-cd4b8b3b9fb4abca9e05a197e3430f41"
             },
             "spent": 0,
@@ -3041,13 +3041,13 @@
             "carryover": 48632
           }
         },
-        "~~~": {
-          "~~~": {
+        ":::": {
+          ":::": {
             "doc": {
               "budget": 26205,
               "overspending": null,
               "note": "w7w<ClMCgg6 b&",
-              "_id": "b_rkW_monthCategory_2020-09_~~~",
+              "_id": "b_rkW_monthCategory_2020-09_:::",
               "_rev": "1-db3f4b6d38de21190f91378e0d38e04c"
             },
             "spent": 0,
@@ -3376,13 +3376,13 @@
             "carryover": 38472
           }
         },
-        "~~~": {
-          "~~~": {
+        ":::": {
+          ":::": {
             "doc": {
               "budget": -16874,
               "overspending": null,
               "note": "wxT:-A~ -?T&DQ(EKkp;H[<&1H: TN |7 H |!jDd.vj7l= AkS}Vs6$-g4 WU~x~S _P CGD",
-              "_id": "b_rkW_monthCategory_2020-10_~~~",
+              "_id": "b_rkW_monthCategory_2020-10_:::",
               "_rev": "1-07a3a94d2f8cd1ffdc6b9fcc9a48002f"
             },
             "spent": 0,
@@ -3711,13 +3711,13 @@
             "carryover": 5054
           }
         },
-        "~~~": {
-          "~~~": {
+        ":::": {
+          ":::": {
             "doc": {
               "budget": -15058,
               "overspending": null,
               "note": "EzX b/O,{9{v>]w%AXQ&r9! d%f q Eqj",
-              "_id": "b_rkW_monthCategory_2020-11_~~~",
+              "_id": "b_rkW_monthCategory_2020-11_:::",
               "_rev": "1-c0cff66396128c7c728a8e1ff2dcc6fe"
             },
             "spent": 0,
@@ -4046,13 +4046,13 @@
             "carryover": -9890
           }
         },
-        "~~~": {
-          "~~~": {
+        ":::": {
+          ":::": {
             "doc": {
               "budget": 10133,
               "overspending": null,
               "note": "sJ2iYrp2L0Hj-Q7~- } -|[je*{w|1L6z0@3wy{ gt,d|bQWTF|gQ~S ~ oDr=o",
-              "_id": "b_rkW_monthCategory_2020-12_~~~",
+              "_id": "b_rkW_monthCategory_2020-12_:::",
               "_rev": "1-84cad2ba0a2ac00371da3f50743eb9be"
             },
             "spent": 0,
@@ -4375,7 +4375,7 @@
           "_rev": "1-749e6146091413620b9301786d3279ba"
         }
       ],
-      "~~~": [{ "_id": "~~~", "name": "Uncategorized", "masterCategory": "~~~" }],
+      ":::": [{ "_id": ":::", "name": "Uncategorized", "masterCategory": ":::" }],
       "JEs": [
         {
           "name": "Paycheck 1",
@@ -5415,14 +5415,14 @@
       }
     },
     {
-      "id": "b_rkW_monthCategory_2020-01_~~~",
-      "key": "b_rkW_monthCategory_2020-01_~~~",
+      "id": "b_rkW_monthCategory_2020-01_:::",
+      "key": "b_rkW_monthCategory_2020-01_:::",
       "value": { "rev": "1-7ca27b92648ea7f928e705762dfc7dff" },
       "doc": {
         "budget": 21526,
         "overspending": null,
         "note": "2y Q[N*EJn%OvtH@tl fkwCZVfF8O<iQ) SUXufR2Kp",
-        "_id": "b_rkW_monthCategory_2020-01_~~~",
+        "_id": "b_rkW_monthCategory_2020-01_:::",
         "_rev": "1-7ca27b92648ea7f928e705762dfc7dff"
       }
     },
@@ -5763,14 +5763,14 @@
       }
     },
     {
-      "id": "b_rkW_monthCategory_2020-02_~~~",
-      "key": "b_rkW_monthCategory_2020-02_~~~",
+      "id": "b_rkW_monthCategory_2020-02_:::",
+      "key": "b_rkW_monthCategory_2020-02_:::",
       "value": { "rev": "1-cf4b719e19cbdba48a1a125dfd47de43" },
       "doc": {
         "budget": 3778,
         "overspending": null,
         "note": "7-X2S#PM[Ah ?gxV#jT`2f*L0WC3s$K@hfWiEA&2&? l8z1!%35nxM1C X",
-        "_id": "b_rkW_monthCategory_2020-02_~~~",
+        "_id": "b_rkW_monthCategory_2020-02_:::",
         "_rev": "1-cf4b719e19cbdba48a1a125dfd47de43"
       }
     },
@@ -6111,14 +6111,14 @@
       }
     },
     {
-      "id": "b_rkW_monthCategory_2020-03_~~~",
-      "key": "b_rkW_monthCategory_2020-03_~~~",
+      "id": "b_rkW_monthCategory_2020-03_:::",
+      "key": "b_rkW_monthCategory_2020-03_:::",
       "value": { "rev": "1-c6ebc5d7fc0cd5d3dd5787cba11efb1e" },
       "doc": {
         "budget": 29661,
         "overspending": null,
         "note": "H db&{-5q  @Jq{AF95$  %j+1 &U?P@F7Q< q2Ww#RHBF<+I r<Xu~W?i",
-        "_id": "b_rkW_monthCategory_2020-03_~~~",
+        "_id": "b_rkW_monthCategory_2020-03_:::",
         "_rev": "1-c6ebc5d7fc0cd5d3dd5787cba11efb1e"
       }
     },
@@ -6459,14 +6459,14 @@
       }
     },
     {
-      "id": "b_rkW_monthCategory_2020-04_~~~",
-      "key": "b_rkW_monthCategory_2020-04_~~~",
+      "id": "b_rkW_monthCategory_2020-04_:::",
+      "key": "b_rkW_monthCategory_2020-04_:::",
       "value": { "rev": "1-5517b5495a6d44ecaf458b5dd1752ca6" },
       "doc": {
         "budget": -6353,
         "overspending": null,
         "note": "S@~$v{}r",
-        "_id": "b_rkW_monthCategory_2020-04_~~~",
+        "_id": "b_rkW_monthCategory_2020-04_:::",
         "_rev": "1-5517b5495a6d44ecaf458b5dd1752ca6"
       }
     },
@@ -6807,14 +6807,14 @@
       }
     },
     {
-      "id": "b_rkW_monthCategory_2020-05_~~~",
-      "key": "b_rkW_monthCategory_2020-05_~~~",
+      "id": "b_rkW_monthCategory_2020-05_:::",
+      "key": "b_rkW_monthCategory_2020-05_:::",
       "value": { "rev": "1-4aa9cd450ca63e13b702a4c72a21a736" },
       "doc": {
         "budget": -12551,
         "overspending": null,
         "note": "g<! |L2-Hv:Rn}?OFjR_+_.?L Nj!5tJ e",
-        "_id": "b_rkW_monthCategory_2020-05_~~~",
+        "_id": "b_rkW_monthCategory_2020-05_:::",
         "_rev": "1-4aa9cd450ca63e13b702a4c72a21a736"
       }
     },
@@ -7155,14 +7155,14 @@
       }
     },
     {
-      "id": "b_rkW_monthCategory_2020-06_~~~",
-      "key": "b_rkW_monthCategory_2020-06_~~~",
+      "id": "b_rkW_monthCategory_2020-06_:::",
+      "key": "b_rkW_monthCategory_2020-06_:::",
       "value": { "rev": "1-c0c22e10d930f961813de5418ac27a33" },
       "doc": {
         "budget": -13872,
         "overspending": null,
         "note": "95[`b+F3F!+H:_+ftF>V{=N `I+o0Qv_72K=0 -uj @1KG[mFv^|L.,u*]@<7A=, =J:1m GHwfn`_^kog2u==F",
-        "_id": "b_rkW_monthCategory_2020-06_~~~",
+        "_id": "b_rkW_monthCategory_2020-06_:::",
         "_rev": "1-c0c22e10d930f961813de5418ac27a33"
       }
     },
@@ -7503,14 +7503,14 @@
       }
     },
     {
-      "id": "b_rkW_monthCategory_2020-07_~~~",
-      "key": "b_rkW_monthCategory_2020-07_~~~",
+      "id": "b_rkW_monthCategory_2020-07_:::",
+      "key": "b_rkW_monthCategory_2020-07_:::",
       "value": { "rev": "1-2e261d76f7ada01be48b8708b06e2615" },
       "doc": {
         "budget": -7779,
         "overspending": null,
         "note": "4u[D*^aJipB -R0_zb9hkPv0h0wsN D{G>fWDLKT,X+[=-cwi` ~oZ",
-        "_id": "b_rkW_monthCategory_2020-07_~~~",
+        "_id": "b_rkW_monthCategory_2020-07_:::",
         "_rev": "1-2e261d76f7ada01be48b8708b06e2615"
       }
     },
@@ -7851,14 +7851,14 @@
       }
     },
     {
-      "id": "b_rkW_monthCategory_2020-08_~~~",
-      "key": "b_rkW_monthCategory_2020-08_~~~",
+      "id": "b_rkW_monthCategory_2020-08_:::",
+      "key": "b_rkW_monthCategory_2020-08_:::",
       "value": { "rev": "1-cd4b8b3b9fb4abca9e05a197e3430f41" },
       "doc": {
         "budget": -5453,
         "overspending": null,
         "note": "(l  X<FKyN ;{^ z]dEO)iDPQ6VPHGNp&nDz-ogt_v~=wGiXy+g79D|",
-        "_id": "b_rkW_monthCategory_2020-08_~~~",
+        "_id": "b_rkW_monthCategory_2020-08_:::",
         "_rev": "1-cd4b8b3b9fb4abca9e05a197e3430f41"
       }
     },
@@ -8199,14 +8199,14 @@
       }
     },
     {
-      "id": "b_rkW_monthCategory_2020-09_~~~",
-      "key": "b_rkW_monthCategory_2020-09_~~~",
+      "id": "b_rkW_monthCategory_2020-09_:::",
+      "key": "b_rkW_monthCategory_2020-09_:::",
       "value": { "rev": "1-db3f4b6d38de21190f91378e0d38e04c" },
       "doc": {
         "budget": 26205,
         "overspending": null,
         "note": "w7w<ClMCgg6 b&",
-        "_id": "b_rkW_monthCategory_2020-09_~~~",
+        "_id": "b_rkW_monthCategory_2020-09_:::",
         "_rev": "1-db3f4b6d38de21190f91378e0d38e04c"
       }
     },
@@ -8547,14 +8547,14 @@
       }
     },
     {
-      "id": "b_rkW_monthCategory_2020-10_~~~",
-      "key": "b_rkW_monthCategory_2020-10_~~~",
+      "id": "b_rkW_monthCategory_2020-10_:::",
+      "key": "b_rkW_monthCategory_2020-10_:::",
       "value": { "rev": "1-07a3a94d2f8cd1ffdc6b9fcc9a48002f" },
       "doc": {
         "budget": -16874,
         "overspending": null,
         "note": "wxT:-A~ -?T&DQ(EKkp;H[<&1H: TN |7 H |!jDd.vj7l= AkS}Vs6$-g4 WU~x~S _P CGD",
-        "_id": "b_rkW_monthCategory_2020-10_~~~",
+        "_id": "b_rkW_monthCategory_2020-10_:::",
         "_rev": "1-07a3a94d2f8cd1ffdc6b9fcc9a48002f"
       }
     },
@@ -8895,14 +8895,14 @@
       }
     },
     {
-      "id": "b_rkW_monthCategory_2020-11_~~~",
-      "key": "b_rkW_monthCategory_2020-11_~~~",
+      "id": "b_rkW_monthCategory_2020-11_:::",
+      "key": "b_rkW_monthCategory_2020-11_:::",
       "value": { "rev": "1-c0cff66396128c7c728a8e1ff2dcc6fe" },
       "doc": {
         "budget": -15058,
         "overspending": null,
         "note": "EzX b/O,{9{v>]w%AXQ&r9! d%f q Eqj",
-        "_id": "b_rkW_monthCategory_2020-11_~~~",
+        "_id": "b_rkW_monthCategory_2020-11_:::",
         "_rev": "1-c0cff66396128c7c728a8e1ff2dcc6fe"
       }
     },
@@ -9243,14 +9243,14 @@
       }
     },
     {
-      "id": "b_rkW_monthCategory_2020-12_~~~",
-      "key": "b_rkW_monthCategory_2020-12_~~~",
+      "id": "b_rkW_monthCategory_2020-12_:::",
+      "key": "b_rkW_monthCategory_2020-12_:::",
       "value": { "rev": "1-84cad2ba0a2ac00371da3f50743eb9be" },
       "doc": {
         "budget": 10133,
         "overspending": null,
         "note": "sJ2iYrp2L0Hj-Q7~- } -|[je*{w|1L6z0@3wy{ gt,d|bQWTF|gQ~S ~ oDr=o",
-        "_id": "b_rkW_monthCategory_2020-12_~~~",
+        "_id": "b_rkW_monthCategory_2020-12_:::",
         "_rev": "1-84cad2ba0a2ac00371da3f50743eb9be"
       }
     },

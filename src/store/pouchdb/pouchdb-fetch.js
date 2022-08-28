@@ -151,24 +151,25 @@ export default {
           }
         })
     },
-    fetchPrecedingTransaction: async (context, transaction) => {
+    fetchPrecedingTransaction: async (context, {transaction, isDeleted}) => {
       const t1 = performance.now()
 
       const db = Vue.prototype.$pouch
       const budget_id = transaction._id.slice(2, 2 + ID_LENGTH.budget)
+      const limit = isDeleted ? 1 : 2
 
       return db
         .query(`stats/transactions_by_account`, {
           include_docs: true,
           startkey: [budget_id, transaction.account, transaction._id.slice(-ID_LENGTH.transaction)],
           endkey: [budget_id, transaction.account, ''],
-          limit: 2,
+          limit: limit,
           descending: true
         }).then((result) => {
           logPerformanceTime('fetchPrecedingTransaction', t1)
           console.log(result)
-          if(result.rows.length > 1) {
-            return result.rows[1]
+          if(result.rows.length > 0) {
+            return result.rows[result.rows.length - 1]
           } else {
             return null
           }
@@ -182,7 +183,6 @@ export default {
      */
     fetchAllSucceedingTransactions: async (context, transaction) => {
       const t1 = performance.now()
-      // logPerformanceTime('fetchAllSucceedingTransactions', t1)
       const db = Vue.prototype.$pouch
       const budget_id = transaction._id.slice(2, 2 + ID_LENGTH.budget)
 

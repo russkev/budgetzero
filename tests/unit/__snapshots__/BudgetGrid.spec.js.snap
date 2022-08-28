@@ -829,7 +829,7 @@ exports[`budgetgrid component > budget grid renders correct snapshot 1`] = `
         <div data-v-79b7e7f0=\\"\\" class=\\"row master-row white--text\\">
           <div data-v-79b7e7f0=\\"\\" class=\\"col\\">
             <div data-v-79b7e7f0=\\"\\" class=\\"v-input v-input--hide-details v-input--is-label-active v-input--is-dirty v-input--is-readonly v-input--dense theme--dark v-text-field v-text-field--single-line v-text-field--solo v-text-field--solo-flat v-text-field--enclosed\\">
-              <div class=\\"v-input__prepend-outer\\"><i data-v-79b7e7f0=\\"\\" aria-hidden=\\"true\\" id=\\"drag-master-category-~~~\\" class=\\"v-icon notranslate handle mdi mdi-drag-horizontal theme--dark\\"></i></div>
+              <div class=\\"v-input__prepend-outer\\"><i data-v-79b7e7f0=\\"\\" aria-hidden=\\"true\\" id=\\"drag-master-category-:::\\" class=\\"v-icon notranslate handle mdi mdi-drag-horizontal theme--dark\\"></i></div>
               <div class=\\"v-input__control\\">
                 <div class=\\"v-input__slot primary lighten-2\\">
                   <div class=\\"v-text-field__slot\\"><input id=\\"input-163\\" readonly=\\"readonly\\" type=\\"text\\"></div>
@@ -839,18 +839,18 @@ exports[`budgetgrid component > budget grid renders correct snapshot 1`] = `
           </div>
           <div data-v-79b7e7f0=\\"\\" class=\\"col\\"> 101.33 </div>
           <div data-v-79b7e7f0=\\"\\" class=\\"col\\"> 0 </div>
-          <div data-v-79b7e7f0=\\"\\" class=\\"col\\"> 133.63 <button data-v-79b7e7f0=\\"\\" type=\\"button\\" id=\\"btn-new-master-category-~~~\\" class=\\"v-icon notranslate v-icon--link v-icon--right mdi mdi-plus-circle-outline theme--dark\\" style=\\"font-size: 16px;\\"></button><button data-v-79b7e7f0=\\"\\" type=\\"button\\" id=\\"btn-delete-master-category-~~~\\" class=\\"v-icon notranslate v-icon--link v-icon--right mdi mdi-delete-circle-outline theme--dark\\" style=\\"font-size: 16px;\\"></button><button data-v-79b7e7f0=\\"\\" type=\\"button\\" id=\\"btn-new-category-~~~\\" class=\\"v-icon notranslate v-icon--link v-icon--right mdi mdi-note-plus-outline theme--dark\\" style=\\"font-size: 16px;\\"></button></div>
+          <div data-v-79b7e7f0=\\"\\" class=\\"col\\"> 133.63 <button data-v-79b7e7f0=\\"\\" type=\\"button\\" id=\\"btn-new-master-category-:::\\" class=\\"v-icon notranslate v-icon--link v-icon--right mdi mdi-plus-circle-outline theme--dark\\" style=\\"font-size: 16px;\\"></button><button data-v-79b7e7f0=\\"\\" type=\\"button\\" id=\\"btn-delete-master-category-:::\\" class=\\"v-icon notranslate v-icon--link v-icon--right mdi mdi-delete-circle-outline theme--dark\\" style=\\"font-size: 16px;\\"></button><button data-v-79b7e7f0=\\"\\" type=\\"button\\" id=\\"btn-new-category-:::\\" class=\\"v-icon notranslate v-icon--link v-icon--right mdi mdi-note-plus-outline theme--dark\\" style=\\"font-size: 16px;\\"></button></div>
         </div>
       </div>
       <div data-v-79b7e7f0=\\"\\" class=\\"container\\">
-        <div data-v-79b7e7f0=\\"\\" class=\\"~~~\\">
+        <div data-v-79b7e7f0=\\"\\" class=\\":::\\">
           <div data-v-79b7e7f0=\\"\\" class=\\"row category-row\\">
             <div data-v-79b7e7f0=\\"\\" class=\\"col\\">
               <div data-v-79b7e7f0=\\"\\" class=\\"v-input v-input--hide-details v-input--is-label-active v-input--is-dirty v-input--is-readonly v-input--dense theme--light v-text-field v-text-field--single-line v-text-field--solo v-text-field--solo-flat v-text-field--enclosed\\">
-                <div class=\\"v-input__prepend-outer\\"><i data-v-79b7e7f0=\\"\\" aria-hidden=\\"true\\" id=\\"drag-category-~~~\\" class=\\"v-icon notranslate handle mdi mdi-drag-horizontal theme--light\\"></i></div>
+                <div class=\\"v-input__prepend-outer\\"><i data-v-79b7e7f0=\\"\\" aria-hidden=\\"true\\" id=\\"drag-category-:::\\" class=\\"v-icon notranslate handle mdi mdi-drag-horizontal theme--light\\"></i></div>
                 <div class=\\"v-input__control\\">
                   <div class=\\"v-input__slot\\">
-                    <div class=\\"v-text-field__slot\\"><input id=\\"category-name-input-~~~\\" readonly=\\"readonly\\" type=\\"text\\"></div>
+                    <div class=\\"v-text-field__slot\\"><input id=\\"category-name-input-:::\\" readonly=\\"readonly\\" type=\\"text\\"></div>
                   </div>
                 </div>
               </div>
@@ -859,13 +859,13 @@ exports[`budgetgrid component > budget grid renders correct snapshot 1`] = `
               <div data-v-79b7e7f0=\\"\\" class=\\"v-input category-budget-input v-input--hide-details v-input--is-label-active v-input--is-dirty v-input--dense theme--light v-text-field v-text-field--single-line v-text-field--solo v-text-field--solo-flat v-text-field--enclosed\\">
                 <div class=\\"v-input__control\\">
                   <div class=\\"v-input__slot\\">
-                    <div class=\\"v-text-field__slot\\"><input id=\\"category-budget-input-~~~\\" type=\\"text\\"></div>
+                    <div class=\\"v-text-field__slot\\"><input id=\\"category-budget-input-:::\\" type=\\"text\\"></div>
                   </div>
                 </div>
               </div>
             </div>
             <div data-v-79b7e7f0=\\"\\" class=\\"col\\"> 0 </div>
-            <div data-v-79b7e7f0=\\"\\" id=\\"category-balance-~~~\\" class=\\"col\\"> 133.63 <button data-v-79b7e7f0=\\"\\" type=\\"button\\" id=\\"btn-hide-category-~~~\\" class=\\"v-icon notranslate v-icon--link v-icon--right mdi mdi-eye-off-outline theme--light\\" style=\\"font-size: 16px;\\"></button></div>
+            <div data-v-79b7e7f0=\\"\\" id=\\"category-balance-:::\\" class=\\"col\\"> 133.63 <button data-v-79b7e7f0=\\"\\" type=\\"button\\" id=\\"btn-hide-category-:::\\" class=\\"v-icon notranslate v-icon--link v-icon--right mdi mdi-eye-off-outline theme--light\\" style=\\"font-size: 16px;\\"></button></div>
           </div>
         </div>
       </div>
@@ -1916,7 +1916,7 @@ exports[`budgetgrid component budget grid renders correct snapshot 1`] = `
         <div class="row master-row white--text">
           <div class="col">
             <div class="v-input v-input--hide-details v-input--is-label-active v-input--is-dirty v-input--is-readonly v-input--dense theme--dark v-text-field v-text-field--single-line v-text-field--solo v-text-field--solo-flat v-text-field--enclosed">
-              <div class="v-input__prepend-outer"><i aria-hidden="true" id="drag-master-category-~~~" class="v-icon notranslate handle mdi mdi-drag-horizontal theme--dark"></i></div>
+              <div class="v-input__prepend-outer"><i aria-hidden="true" id="drag-master-category-:::" class="v-icon notranslate handle mdi mdi-drag-horizontal theme--dark"></i></div>
               <div class="v-input__control">
                 <div class="v-input__slot primary lighten-2">
                   <div class="v-text-field__slot"><input id="input-2585" readonly="readonly" type="text"></div>
@@ -1932,19 +1932,19 @@ exports[`budgetgrid component budget grid renders correct snapshot 1`] = `
           </div>
           <div class="col">
             133.63
-            <button type="button" id="btn-new-master-category-~~~" class="v-icon notranslate v-icon--link v-icon--right mdi mdi-plus-circle-outline theme--dark" style="font-size: 16px;"></button> <button type="button" id="btn-delete-master-category-~~~" class="v-icon notranslate v-icon--link v-icon--right mdi mdi-delete-circle-outline theme--dark" style="font-size: 16px;"></button> <button type="button" id="btn-new-category-~~~" class="v-icon notranslate v-icon--link v-icon--right mdi mdi-note-plus-outline theme--dark" style="font-size: 16px;"></button>
+            <button type="button" id="btn-new-master-category-:::" class="v-icon notranslate v-icon--link v-icon--right mdi mdi-plus-circle-outline theme--dark" style="font-size: 16px;"></button> <button type="button" id="btn-delete-master-category-:::" class="v-icon notranslate v-icon--link v-icon--right mdi mdi-delete-circle-outline theme--dark" style="font-size: 16px;"></button> <button type="button" id="btn-new-category-:::" class="v-icon notranslate v-icon--link v-icon--right mdi mdi-note-plus-outline theme--dark" style="font-size: 16px;"></button>
           </div>
         </div>
       </div>
       <div class="container">
-        <div class="~~~">
+        <div class=":::">
           <div class="row category-row">
             <div class="col">
               <div class="v-input v-input--hide-details v-input--is-label-active v-input--is-dirty v-input--is-readonly v-input--dense theme--light v-text-field v-text-field--single-line v-text-field--solo v-text-field--solo-flat v-text-field--enclosed">
-                <div class="v-input__prepend-outer"><i aria-hidden="true" id="drag-category-~~~" class="v-icon notranslate handle mdi mdi-drag-horizontal theme--light"></i></div>
+                <div class="v-input__prepend-outer"><i aria-hidden="true" id="drag-category-:::" class="v-icon notranslate handle mdi mdi-drag-horizontal theme--light"></i></div>
                 <div class="v-input__control">
                   <div class="v-input__slot">
-                    <div class="v-text-field__slot"><input id="category-name-input-~~~" readonly="readonly" type="text"></div>
+                    <div class="v-text-field__slot"><input id="category-name-input-:::" readonly="readonly" type="text"></div>
                   </div>
                 </div>
               </div>
@@ -1953,7 +1953,7 @@ exports[`budgetgrid component budget grid renders correct snapshot 1`] = `
               <div class="v-input category-budget-input v-input--hide-details v-input--is-label-active v-input--is-dirty v-input--dense theme--light v-text-field v-text-field--single-line v-text-field--solo v-text-field--solo-flat v-text-field--enclosed">
                 <div class="v-input__control">
                   <div class="v-input__slot">
-                    <div class="v-text-field__slot"><input id="category-budget-input-~~~" type="text"></div>
+                    <div class="v-text-field__slot"><input id="category-budget-input-:::" type="text"></div>
                   </div>
                 </div>
               </div>
@@ -1963,7 +1963,7 @@ exports[`budgetgrid component budget grid renders correct snapshot 1`] = `
             </div>
             <div class="col">
               133.63
-              <button type="button" id="btn-hide-category-~~~" class="v-icon notranslate v-icon--link v-icon--right mdi mdi-eye-off-outline theme--light" style="font-size: 16px;"></button>
+              <button type="button" id="btn-hide-category-:::" class="v-icon notranslate v-icon--link v-icon--right mdi mdi-eye-off-outline theme--light" style="font-size: 16px;"></button>
             </div>
           </div>
         </div>

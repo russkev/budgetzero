@@ -96,18 +96,29 @@ export default {
       return context.dispatch('commitDocToPouchAndVuex', { current, previous })
     },
 
-    updateRunningBalance(context, transaction) {
-      console.log('updateRunningBalance')
-      let running_balance = 0
-      return context.dispatch('fetchPrecedingTransaction', transaction)
+    updateRunningBalance(context, {transaction, isDeleted}) {
+      // let running_balance = 0
+      return context.dispatch('fetchPrecedingTransaction', {transaction, isDeleted})
         .then((result) => {
-          running_balance = result === null ? 0 : result.doc.balance
-          return
+          // running_balance = result === null ? 0 : result.doc.balance
+          console.log("RESULTFF:", result)
+          const return_value = result === null ? transaction : result.doc
+          return return_value
+          // return result === null ? transaction :
         })
-        .then(() => {
-          return context.dispatch('fetchAllSucceedingTransactions', transaction)
+        .then((result) => {
+          return context.dispatch('fetchAllSucceedingTransactions', result)
         })
         .then((rows) => {
+          // rows.shift() // Remove first element since it is already counted
+          if (!rows || rows.length === 0) {
+            return
+          }
+          console.log("rows", rows)
+          let running_balance = 0
+          if (compareAscii(rows[0].doc._id, transaction._id) < 0) {
+            running_balance = rows[0].doc.balance - rows[0].doc.value
+          }
           const updated_docs = rows.map((row) => {
             running_balance += row.doc.value
             return {

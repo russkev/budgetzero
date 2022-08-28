@@ -4,7 +4,6 @@
       id="accounts-table"
       :headers="headers"
       :items="accounts"
-      sort-by="calories"
       class="elevation-1 account-table"
       hide-default-footer
       disable-pagination

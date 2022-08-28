@@ -76,7 +76,7 @@ export default {
 
       // If month is not the latest month, all subsequent months need to have their carryover updated
       let prev_balance = getCategoryBalance(state.allCategoryBalances, month, master_id, category_id)
-      Object.keys(state.allCategoryBalances).map((current_month) => {
+      Object.keys(state.allCategoryBalances).forEach((current_month) => {
         if (this._vm.compareAscii(current_month, month) > 0) {
           const current_month_balances = updateSingleCategory(
             state.allCategoryBalances[current_month],
