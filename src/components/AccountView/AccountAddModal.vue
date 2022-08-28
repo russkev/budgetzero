@@ -14,7 +14,7 @@
                 v-model="editedItem.name"
                 label="Account Name"
                 :rules="nameRules"
-                data-cy="account-name"
+                data-testid="account-name"
               />
             </v-col>
             <v-col cols="4">
@@ -23,7 +23,7 @@
                 v-model="editedItem.type"
                 :items="['CHECKING', 'CREDIT', 'SAVING', 'MORTGAGE', 'CASH', 'INVESTMENT', 'OTHER']"
                 label="Type"
-                data-cy="account-type"
+                data-testid="account-type"
                 :rules="typeRules"
                 @change="accountTypeChanged"
               >
@@ -39,7 +39,7 @@
                 id="on-budget-switch"
                 v-model="editedItem.onBudget"
                 label="On Budget?"
-                data-cy="account-on-budget"
+                data-testid="account-on-budget"
               />
             </v-col>
             <v-col cols="4">
@@ -55,7 +55,7 @@
                 dense
                 label="Notes"
                 rows="3"
-                data-cy="account-notes"
+                data-testid="account-notes"
               />
             </v-col>
             <v-col cols="12" sm="6" md="4">
@@ -65,7 +65,7 @@
                 v-model="editedItem.initialBalance"
                 label="Starting Balance"
                 prefix="$"
-                data-cy="account-starting-balance"
+                data-testid="account-starting-balance"
               />
             </v-col>
           </v-row>

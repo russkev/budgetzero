@@ -105,7 +105,7 @@
           </v-expansion-panel-header>
           <v-expansion-panel-content>
             <v-alert type="warning"> Warning: Do not use these unless you know what you're doing. </v-alert>
-            <v-btn color="red" dark class="mb-2" small data-cy="delete-local-db" @click="deleteLocalDatabase">
+            <v-btn color="red" dark class="mb-2" small data-testid="delete-local-db" @click="deleteLocalDatabase">
               Erase Local Database
             </v-btn>
             <span class="pl-2"

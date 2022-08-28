@@ -2,7 +2,7 @@
   <v-row class="ma-0 header_background">
     <v-col sm="auto" class="pa-0">
       <v-card flat class="header_background">
-        <v-card-title id="transactions-account-name" class="headline font-weight-bold primary--text">
+        <v-card-title data-testid="transactions-account-name" class="headline font-weight-bold primary--text">
           {{ accountName }}
         </v-card-title>
         <v-card-subtitle>
@@ -13,7 +13,7 @@
 
     <v-col sm="auto" class="pa-0">
       <v-card flat class="header_background">
-        <v-card-title id="account-balance-cleared" class="title font-weight-bold primary--text">
+        <v-card-title data-testid="account-balance-cleared" class="title font-weight-bold primary--text">
           {{ (accountBalance.cleared / 100) | currency }}<br />
         </v-card-title>
         <v-card-subtitle>
@@ -28,7 +28,7 @@
 
     <v-col sm="auto" class="pa-0">
       <v-card flat class="header_background">
-        <v-card-title id="account-balance-uncleared" class="title font-weight-bold primary--text">
+        <v-card-title data-testid="account-balance-uncleared" class="title font-weight-bold primary--text">
           {{ (accountBalance.uncleared / 100) | currency }}<br />
         </v-card-title>
         <v-card-subtitle>
@@ -43,7 +43,7 @@
 
     <v-col sm="auto" class="pa-0">
       <v-card flat class="header_background">
-        <v-card-title id="account-balance-working" class="headline-5 font-weight-bold primary--text">
+        <v-card-title data-testid="account-balance-working" class="headline-5 font-weight-bold primary--text">
           {{ (accountBalance.cleared / 100 + accountBalance.uncleared / 100) | currency }}<br />
         </v-card-title>
         <v-card-subtitle>

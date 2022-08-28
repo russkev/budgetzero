@@ -1,11 +1,11 @@
 <template>
   <v-container class="pt-0">
     <v-row class="ma-0">
-      <v-btn id="previous-month-button" small :to="{ path: `/budget/${prevMonth}` }">
+      <v-btn data-testid="previous-month-button" small :to="{ path: `/budget/${prevMonth}` }">
         <v-icon medium>mdi-chevron-left</v-icon> Previous month
       </v-btn>
-      <v-btn id="today-month-button" :to="{ path: `/budget/${thisMonth}` }"> Today </v-btn>
-      <v-btn id="next-month-button" small :to="{ path: `/budget/${nextMonth}` }">
+      <v-btn data-testid="today-month-button" :to="{ path: `/budget/${thisMonth}` }"> Today </v-btn>
+      <v-btn data-testid="next-month-button" small :to="{ path: `/budget/${nextMonth}` }">
         <v-icon medium>mdi-chevron-right</v-icon> Next month
       </v-btn>
     </v-row>
@@ -29,9 +29,9 @@
       >
         <v-container class="primary lighten-2">
           <v-row class="master-row white--text">
-            <v-col :id="`master-category-name-${master_category.id}`" v-if="editedMasterCategoryId==master_category.id">
+            <v-col :data-testid="`master-category-name-${master_category.id}`" v-if="editedMasterCategoryId==master_category.id">
               <v-text-field
-                :id="`master-category-name-input-${master_category.id}`"
+                :data-testid="`master-category-name-input-${master_category.id}`"
                 :value="master_category.name"
                 hide-details
                 dark
@@ -49,9 +49,9 @@
                 </template>
               </v-text-field>
             </v-col>
-            <v-col :id="`master-category-name-${master_category.id}`" v-else>
+            <v-col :data-testid="`master-category-name-${master_category.id}`" v-else>
               <v-text-field
-                :id="`master-category-name-input-${master_category.id}`"
+                :data-testid="`master-category-name-input-${master_category.id}`"
                 :value="master_category.name"
                 @click="editedMasterCategoryId = master_category.id"
                 @focus="editedMasterCategoryId = master_category.id"
@@ -70,19 +70,19 @@
                 </template>
               </v-text-field>
             </v-col>
-            <v-col :id="`master-category-budget-${master_category.id}`" align="right">
+            <v-col :data-testid="`master-category-budget-${master_category.id}`" align="right">
               {{ intlCurrency.format(masterCategoriesStats[master_category.id].budget / 100) }}
             </v-col>
-            <v-col :id="`master-category-spent-${master_category.id}`" align="right">
+            <v-col :data-testid="`master-category-spent-${master_category.id}`" align="right">
               {{ intlCurrency.format(masterCategoriesStats[master_category.id].spent / 100) }}
             </v-col>
-            <v-col :id="`master-category-balance-${master_category.id}`" align="right">
+            <v-col :data-testid="`master-category-balance-${master_category.id}`" align="right">
               {{ intlCurrency.format(masterCategoriesStats[master_category.id].balance / 100) }}
               <v-icon
                 dark
                 small
                 right
-                :id="`btn-new-master-category-${master_category.id}`"
+                :data-testid="`btn-new-master-category-${master_category.id}`"
                 @click="newMasterCategory(master_index)"
               >
                 mdi-plus-circle-outline
@@ -91,7 +91,7 @@
                 dark
                 small
                 right
-                :id="`btn-delete-master-category-${master_category.id}`"
+                :data-testid="`btn-delete-master-category-${master_category.id}`"
                 @click="deleteMasterCategory(master_category)"
               >
                 mdi-delete-circle-outline
@@ -100,7 +100,7 @@
                 dark
                 small
                 right
-                :id="`btn-new-category-${master_category.id}`"
+                :data-testid="`btn-new-category-${master_category.id}`"
                 @click="newCategory(master_category)"
               >
                 mdi-note-plus-outline
@@ -120,9 +120,9 @@
               v-for="category in categoriesData[master_category.id]"
               :key="category.id"
             >
-              <v-col :id="`category-name-${category.id}`" v-if="editedCategoryNameId==category.id">
+              <v-col :data-testid="`category-name-${category.id}`" v-if="editedCategoryNameId==category.id">
                 <v-text-field
-                  :id="`category-name-input-${category.id}`"
+                  :data-testid="`category-name-input-${category.id}`"
                   :value="category.name"
                   hide-details
                   dense
@@ -133,15 +133,15 @@
                   background-color="grey lighten-3"
                 >
                   <template v-slot:prepend>
-                    <v-icon class="handle" :id="`drag-category-${category.id}`">
+                    <v-icon class="handle" :data-testid="`drag-category-${category.id}`">
                       mdi-drag-horizontal
                     </v-icon>
                   </template>
                 </v-text-field>
               </v-col>
-              <v-col :id="`category-name-${category.id}`" v-else>
+              <v-col :data-testid="`category-name-${category.id}`" v-else>
                 <v-text-field
-                  :id="`category-name-input-${category.id}`"
+                  :data-testid="`category-name-input-${category.id}`"
                   @click="editedCategoryNameId = category.id"
                   @focus="editedCategoryNameId = category.id"
                   :value="category.name"
@@ -152,7 +152,7 @@
                   solo
                 >
                   <template v-slot:prepend>
-                    <v-icon class="handle" :id="`drag-category-${category.id}`">
+                    <v-icon class="handle" :data-testid="`drag-category-${category.id}`">
                       mdi-drag-horizontal
                     </v-icon>
                   </template>
@@ -162,6 +162,7 @@
                 <v-text-field
                   class="category-budget-input"
                   :id="`category-budget-input-${category.id}`"
+                  :data-testid="`category-budget-input-${category.id}`"
                   :ref="`category-budget-input-${category.id}`"
                   :value="category.budgetDisplay"
                   hide-details
@@ -180,6 +181,7 @@
               <v-col v-else>
                 <v-text-field
                   class="category-budget-input"
+                  :data-testid="`category-budget-input-${category.id}`"
                   :id="`category-budget-input-${category.id}`"
                   :ref="`category-budget-input-${category.id}`"
                   @click="editedCategoryBudgetId = category.id"
@@ -193,16 +195,15 @@
                   reverse
                 />
               </v-col>
-                  <!-- :value="categoriesData[master_category.id][0].budgetDisplay" -->
-              <v-col :id="`category-spent-${category.id}`" align="right">
+              <v-col :data-testid="`category-spent-${category.id}`" align="right">
                 {{ intlCurrency.format(category.spent / 100) }}
               </v-col>
-              <v-col :id="`category-balance-${category.id}`" align="right">
+              <v-col :data-testid="`category-balance-${category.id}`" align="right">
                 {{ intlCurrency.format(category.balance / 100) }}
                 <v-icon
                   small
                   right
-                  :id="`btn-hide-category-${category.id}`"
+                  :data-testid="`btn-hide-category-${category.id}`"
                   @click="onHideCategory(category.id)"
                 >
                   mdi-eye-off-outline

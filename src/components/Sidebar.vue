@@ -98,7 +98,7 @@
     <v-divider />
 
     <v-list dark dense class="text-left pt-0 sidebar">
-      <v-list-item :to="{ path: `/budget/${year_month}` }" id="sidebar-button-budgets">
+      <v-list-item :to="{ path: `/budget/${year_month}` }" data-testid="sidebar-button-budgets">
         <v-list-item-icon>
           <v-icon> mdi-cash-multiple </v-icon>
         </v-list-item-icon>
@@ -107,7 +107,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item :to="{ path: '/accounts' }" id="sidebar-button-accounts">
+      <v-list-item :to="{ path: '/accounts' }" data-testid="sidebar-button-accounts">
         <v-list-item-icon>
           <v-icon>mdi-bank</v-icon>
         </v-list-item-icon>
@@ -116,7 +116,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item :to="{ path: '/reports' }" id="sidebar-button-reports">
+      <v-list-item :to="{ path: '/reports' }" data-testid="sidebar-button-reports">
         <v-list-item-icon>
           <v-icon>mdi-chart-line</v-icon>
         </v-list-item-icon>
@@ -152,7 +152,7 @@
         :to="{ path: '/transactions/' + item._id.slice(-ID_LENGTH.account) }"
         active-class="primary white--text"
         class="primary darken-1"
-        v-bind:id="`transactions-page-${item._id.slice(-ID_LENGTH.account)}`"
+        :data-testid="`transactions-page-${item._id.slice(-ID_LENGTH.account)}`"
       >
         <v-list-item-content>
           <v-list-item-title class="font-weight-regular subtitle-2">

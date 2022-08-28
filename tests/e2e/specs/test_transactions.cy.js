@@ -32,31 +32,31 @@ describe('Test transactions', () => {
     })
 
     it('Checks transactions header', () => {
-      cy.get('#transactions-account-name').should('contain.text', 'Savings')
-      cy.get('#account-balance-cleared').should('contain.text', '$725.54')
-      cy.get('#account-balance-uncleared').should('contain.text', '$2,110.56')
-      cy.get('#account-balance-working').should('contain.text', '$2,836.10')
+      cy.get('[data-testid="transactions-account-name"]').should('contain.text', 'Savings')
+      cy.get('[data-testid="account-balance-cleared"]').should('contain.text', '$725.54')
+      cy.get('[data-testid="account-balance-uncleared"]').should('contain.text', '$2,110.56')
+      cy.get('[data-testid="account-balance-working"]').should('contain.text', '$2,836.10')
     })
 
     it('Checks sidebar has correct balance', () => {
-      cy.get('#transactions-page-7kW').should('contain.text', 'Savings')
-      cy.get('#transactions-page-7kW').should('contain.text', '$2,836.10')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', 'Savings')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$2,836.10')
     })
 
     it('Adds new transaction', () => {
       cy.get('.transaction-row', { timeout: 6000 }).should('have.length', 7)
 
-      cy.get('#create-transaction-button').click()
-      cy.get('#edit-row-cleared').click()
-      cy.get('#edit-row-date input').clear().type('2022-07-30')
-      cy.get('#edit-row-category-select input')
+      cy.get('[data-testid="create-transaction-button"]').click()
+      cy.get('[data-testid="edit-row-cleared"]').click()
+      cy.get('[data-testid="edit-row-date"] input').clear().type('2022-07-30')
+      cy.get('[data-testid="edit-row-category-select"] input')
         .type('Groceries')
         .type('{downArrow}')
         .type('{downArrow}')
         .type('{enter}')
-      cy.get('#edit-row-memo input').type('Supermarket')
-      cy.get('#edit-row-outflow input').type('56.23').blur()
-      cy.get('#save-edit-button').click()
+      cy.get('[data-testid="edit-row-memo"] input').type('Supermarket')
+      cy.get('[data-testid="edit-row-outflow"] input').type('56.23').blur()
+      cy.get('[data-testid="save-edit-button"]').click()
       cy.get('.transaction-row').should('have.length', 8)
       cy.get(':nth-child(5) > .row-date').should('contain.text', '2022-07-30')
       cy.get(':nth-child(5) > .row-category').should('contain.text', 'Groceries')
@@ -75,20 +75,20 @@ describe('Test transactions', () => {
     })
 
     it('Checks that transactions header was updated correctly', () => {
-      cy.get('#account-balance-cleared').should('contain.text', '$725.54')
-      cy.get('#account-balance-uncleared').should('contain.text', '$2,054.33')
-      cy.get('#account-balance-working').should('contain.text', '$2,779.87')
+      cy.get('[data-testid="account-balance-cleared"]').should('contain.text', '$725.54')
+      cy.get('[data-testid="account-balance-uncleared"]').should('contain.text', '$2,054.33')
+      cy.get('[data-testid="account-balance-working"]').should('contain.text', '$2,779.87')
     })
 
     it('Checks that sidebar balance was updated correctly', () => {
-      cy.get('#transactions-page-7kW').should('contain.text', '$2,779.87')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$2,779.87')
     })
 
     it('Checks that budget was updated correctly', () => {
-      cy.get('#sidebar-button-budgets').click()
-      cy.get('#category-balance-ATi').should('have.text', ' $749.72 ')
-      cy.get('#master-category-balance-3ks').should('have.text', ' $958.97 ')
-      cy.get('#transactions-page-7kW').click()
+      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $749.72 ')
+      cy.get('[data-testid="master-category-balance-3ks"]').should('have.text', ' $958.97 ')
+      cy.get('[data-testid="transactions-page-7kW"]').click()
     })
   })
 
@@ -99,7 +99,7 @@ describe('Test transactions', () => {
 
     it('Updates existing transaction value', () => {
       cy.get(':nth-child(5) > .row-category').click()
-      cy.get('#edit-row-inflow input').type('5.00').type('{enter}')
+      cy.get('[data-testid="edit-row-inflow"] input').type('5.00').type('{enter}')
       cy.get(':nth-child(5) > .row-inflow').should('have.text', ' $5.00 ')
       cy.get(':nth-child(5) > .row-outflow').should('not.contain.text', '$')
     })
@@ -114,20 +114,20 @@ describe('Test transactions', () => {
     })
 
     it('Checks transactions header was updated correctly', () => {
-      cy.get('#transactions-account-name').should('contain.text', 'Savings')
-      cy.get('#account-balance-cleared').should('contain.text', '$904.30')
-      cy.get('#account-balance-uncleared').should('contain.text', '$2,110.56')
-      cy.get('#account-balance-working').should('contain.text', '$3,014.86')
+      cy.get('[data-testid="transactions-account-name"]').should('contain.text', 'Savings')
+      cy.get('[data-testid="account-balance-cleared"]').should('contain.text', '$904.30')
+      cy.get('[data-testid="account-balance-uncleared"]').should('contain.text', '$2,110.56')
+      cy.get('[data-testid="account-balance-working"]').should('contain.text', '$3,014.86')
     })
 
     it('Checks that sidebar balance was updated correctly', () => {
-      cy.get('#transactions-page-7kW').should('contain.text', '$3,014.86')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$3,014.86')
     })
 
     it('Checks that budget was updated correctly', () => {
-      cy.get('#sidebar-button-budgets').click()
-      cy.get('#category-balance-n00').should('have.text', ' $202.60 ')
-      cy.get('#master-category-balance-3ks').should('have.text', ' $1,193.96 ')
+      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $202.60 ')
+      cy.get('[data-testid="master-category-balance-3ks"]').should('have.text', ' $1,193.96 ')
     })
   })
 
@@ -138,18 +138,18 @@ describe('Test transactions', () => {
 
     it('Updates existing transaction category', () => {
       cy.get(':nth-child(4) > .row-category').click()
-      cy.get('#edit-row-category-select input').click().type('{enter}')
-      cy.get('#save-edit-button').click()
+      cy.get('[data-testid="edit-row-category-select"] input').click().type('{enter}')
+      cy.get('[data-testid="save-edit-button"]').click()
     })
 
     it('Checks that budget was updated correctly', () => {
-      cy.get('#sidebar-button-budgets').click()
+      cy.get('[data-testid="sidebar-button-budgets"]').click()
       
-      cy.get('#category-balance-ATi').should('have.text', ' $980.71 ')
-      cy.get('#master-category-balance-3ks').should('have.text', ' $1,189.96 ')
+      cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $980.71 ')
+      cy.get('[data-testid="master-category-balance-3ks"]').should('have.text', ' $1,189.96 ')
 
-      cy.get('#category-balance-\\:\\:\\:').should('have.text', ' -$256.08 ')
-      cy.get('#master-category-balance-\\:\\:\\:').should('have.text', ' -$256.08 ')
+      cy.get('[data-testid="category-balance-\\:\\:\\:"]').should('have.text', ' -$256.08 ')
+      cy.get('[data-testid="master-category-balance-\\:\\:\\:"]').should('have.text', ' -$256.08 ')
     })
   })
 
@@ -160,23 +160,23 @@ describe('Test transactions', () => {
 
     it('Updates existing transaction category', () => {
       cy.get(':nth-child(3) > .row-category').click()
-      cy.get('#edit-row-date input').clear().type('2022-07-08')
-      cy.get('#save-edit-button').click()
+      cy.get('[data-testid="edit-row-date"] input').clear().type('2022-07-08')
+      cy.get('[data-testid="save-edit-button"]').click()
     })
 
     it('Checks that budget was updated correctly', () => {
-      cy.get('#sidebar-button-budgets').click()
+      cy.get('[data-testid="sidebar-button-budgets"]').click()
 
-      cy.get('#category-balance-gpe').should('have.text', ' $2,797.53 ')
-      cy.get('#master-category-balance-fVM').should('have.text', ' $2,797.53 ')
+      cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $2,797.53 ')
+      cy.get('[data-testid="master-category-balance-fVM"]').should('have.text', ' $2,797.53 ')
 
       cy.visit('http://localhost:8082/budget/2022-07')
-      cy.get('#category-spent-gpe').should('have.text', ' $3,886.79 ')
-      cy.get('#category-balance-gpe').should('have.text', ' $2,386.79 ')
+      cy.get('[data-testid="category-spent-gpe"]').should('have.text', ' $3,886.79 ')
+      cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $2,386.79 ')
 
-      cy.get('#next-month-button').click()
-      cy.get('#category-balance-gpe').should('have.text', ' $2,797.53 ')
-      cy.get('#master-category-balance-fVM').should('have.text', ' $2,797.53 ')
+      cy.get('[data-testid="next-month-button"]').click()
+      cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $2,797.53 ')
+      cy.get('[data-testid="master-category-balance-fVM"]').should('have.text', ' $2,797.53 ')
 
     })
   })
@@ -188,8 +188,8 @@ describe('Test transactions', () => {
 
     it('Deletes last transaction', () => {
       cy.get(':nth-child(7) > .row-checkbox').click()
-      cy.get('[data-cy="delete-selected-transactions-button"]').click()
-      cy.get('[data-cy="transaction-row"]').should('have.length', 6)
+      cy.get('[data-testid="delete-selected-transactions-button"]').click()
+      cy.get('[data-testid="transaction-row"]').should('have.length', 6)
     })
 
     it('Checks tha running balance was updated properly', () => {
@@ -202,19 +202,19 @@ describe('Test transactions', () => {
     })
 
     it('Checks transactions header was updated correctly', () => {
-      cy.get('#account-balance-cleared').should('have.text', ' $886.04')
-      cy.get('#account-balance-uncleared').should('have.text', ' $2,110.56')
-      cy.get('#account-balance-working').should('have.text', ' $2,996.60')
+      cy.get('[data-testid="account-balance-cleared"]').should('have.text', ' $886.04')
+      cy.get('[data-testid="account-balance-uncleared"]').should('have.text', ' $2,110.56')
+      cy.get('[data-testid="account-balance-working"]').should('have.text', ' $2,996.60')
     })
 
     it('Checks that sidebar balance was updated correctly', () => {
-      cy.get('#transactions-page-7kW').should('contain.text', ' $2,996.60 ')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', ' $2,996.60 ')
     })
 
     it('Deletes second to last transaction', () => {
       cy.get(':nth-child(5) > .row-checkbox').click()
-      cy.get('[data-cy="delete-selected-transactions-button"]').click()
-      cy.get('[data-cy="transaction-row"]').should('have.length', 6)
+      cy.get('[data-testid="delete-selected-transactions-button"]').click()
+      cy.get('[data-testid="transaction-row"]').should('have.length', 6)
     })
 
     it('Checks tha running balance was updated properly', () => {
@@ -226,19 +226,19 @@ describe('Test transactions', () => {
     })
 
     it('Checks transactions header was updated correctly', () => {
-      cy.get('#account-balance-cleared').should('have.text', ' $1,059.80')
-      cy.get('#account-balance-uncleared').should('have.text', ' $2,110.56')
-      cy.get('#account-balance-working').should('have.text', ' $3,170.36')
+      cy.get('[data-testid="account-balance-cleared"]').should('have.text', ' $1,059.80')
+      cy.get('[data-testid="account-balance-uncleared"]').should('have.text', ' $2,110.56')
+      cy.get('[data-testid="account-balance-working"]').should('have.text', ' $3,170.36')
     })
 
     it('Checks that sidebar balance was updated correctly', () => {
-      cy.get('#transactions-page-7kW').should('contain.text', ' $3,170.36 ')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', ' $3,170.36 ')
     })
 
     it('Deletes first transaction', () => {
       cy.get(':nth-child(1) > .row-checkbox').click()
-      cy.get('[data-cy="delete-selected-transactions-button"]').click()
-      cy.get('[data-cy="transaction-row"]').should('have.length', 4)
+      cy.get('[data-testid="delete-selected-transactions-button"]').click()
+      cy.get('[data-testid="transaction-row"]').should('have.length', 4)
     })
 
     it('Checks tha running balance was updated properly', () => {
@@ -249,21 +249,21 @@ describe('Test transactions', () => {
     })
 
     it('Checks transactions header was updated correctly', () => {
-      cy.get('#account-balance-cleared').should('have.text', ' $1,075.24')
-      cy.get('#account-balance-uncleared').should('have.text', ' $2,110.56')
-      cy.get('#account-balance-working').should('have.text', ' $3,185.80')
+      cy.get('[data-testid="account-balance-cleared"]').should('have.text', ' $1,075.24')
+      cy.get('[data-testid="account-balance-uncleared"]').should('have.text', ' $2,110.56')
+      cy.get('[data-testid="account-balance-working"]').should('have.text', ' $3,185.80')
     })
 
     it('Checks that sidebar balance was updated correctly', () => {
-      cy.get('#transactions-page-7kW').should('contain.text', ' $3,185.80 ')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', ' $3,185.80 ')
     })
 
     it('Deletes 3 transactions', () => {
       cy.get(':nth-child(1) > .row-checkbox').click()
       cy.get(':nth-child(2) > .row-checkbox').click()
       cy.get(':nth-child(4) > .row-checkbox').click()
-      cy.get('[data-cy="delete-selected-transactions-button"]').click()
-      cy.get('[data-cy="transaction-row"]').should('have.length', 1)
+      cy.get('[data-testid="delete-selected-transactions-button"]').click()
+      cy.get('[data-testid="transaction-row"]').should('have.length', 1)
     })
 
     it('Checks tha running balance was updated properly', () => {
@@ -271,36 +271,36 @@ describe('Test transactions', () => {
     })
 
     it('Checks transactions header was updated correctly', () => {
-      cy.get('#account-balance-cleared').should('have.text', ' -$174.76')
-      cy.get('#account-balance-uncleared').should('have.text', ' $0.00')
-      cy.get('#account-balance-working').should('have.text', ' -$174.76')
+      cy.get('[data-testid="account-balance-cleared"]').should('have.text', ' -$174.76')
+      cy.get('[data-testid="account-balance-uncleared"]').should('have.text', ' $0.00')
+      cy.get('[data-testid="account-balance-working"]').should('have.text', ' -$174.76')
     })
 
     it('Checks that sidebar balance was updated correctly', () => {
-      cy.get('#transactions-page-7kW').should('contain.text', ' -$174.76 ')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', ' -$174.76 ')
     })
 
     it('Deletes the final transaction', () => {
       cy.get(':nth-child(1) > .row-checkbox').click()
-      cy.get('[data-cy="delete-selected-transactions-button"]').click()
-      cy.get('[data-cy="transaction-row"]').should('have.length', 0)
+      cy.get('[data-testid="delete-selected-transactions-button"]').click()
+      cy.get('[data-testid="transaction-row"]').should('have.length', 0)
     })
 
     it('Checks transactions header was updated correctly', () => {
-      cy.get('#account-balance-cleared').should('have.text', ' $0.00')
-      cy.get('#account-balance-uncleared').should('have.text', ' $0.00')
-      cy.get('#account-balance-working').should('have.text', ' $0.00')
+      cy.get('[data-testid="account-balance-cleared"]').should('have.text', ' $0.00')
+      cy.get('[data-testid="account-balance-uncleared"]').should('have.text', ' $0.00')
+      cy.get('[data-testid="account-balance-working"]').should('have.text', ' $0.00')
     })
 
     it('Checks that sidebar balance was updated correctly', () => {
-      cy.get('#transactions-page-7kW').should('contain.text', ' $0.00 ')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', ' $0.00 ')
     })
 
     it('Checks that budget was updated correctly', () => {
-      cy.get('#sidebar-button-budgets').click()
-      cy.get('#category-balance-gpe').should('have.text', ' -$752.47 ')
-      cy.get('#category-balance-ATi').should('have.text', ' $1,185.59 ')
-      cy.get('#category-balance-n00').should('have.text', ' $358.10 ')
+      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' -$752.47 ')
+      cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $1,185.59 ')
+      cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $358.10 ')
     })
 
   })
@@ -314,30 +314,41 @@ describe('Test transactions', () => {
       cy.get(':nth-child(7) > .row-checkbox').click()
       cy.get(':nth-child(6) > .row-checkbox').click()
       cy.get(':nth-child(1) > .row-checkbox').click()
-      cy.get('[data-cy="unclear-selected-button"]').click()
+      cy.get('[data-testid="unclear-selected-button"]').click()
+      // cy.wait(2000)
+    })
+
+    it('Checks that the number of cleared transactions is correct', () => {
+      cy.get('.cleared-icon').should('have.length', 2)
+      cy.get('.uncleared-icon').should('have.length', 5)
     })
 
     it('Checks that transactions header was updated correctly', () => {
-      cy.get('#account-balance-cleared').should('contain.text', '-$348.52')
-      cy.get('#account-balance-uncleared').should('contain.text', '$3,184.62')
-      cy.get('#account-balance-working').should('contain.text', '$2,836.10')
+      cy.get('[data-testid="account-balance-cleared"]').should('contain.text', '-$348.52')
+      cy.get('[data-testid="account-balance-uncleared"]').should('contain.text', '$3,184.62')
+      cy.get('[data-testid="account-balance-working"]').should('contain.text', '$2,836.10')
     })
 
     it('Clears 3 transactions', () => {
-      cy.get(':nth-child(6) > .row-checkbox').click()
+      cy.get(':nth-child(5) > .row-checkbox').click()
       cy.get(':nth-child(3) > .row-checkbox').click()
       cy.get(':nth-child(2) > .row-checkbox').click()
-      cy.get('[data-cy="clear-selected-button"]').click()
+      cy.get('[data-testid="clear-selected-button"]').click()
+    })
+
+    it('Checks that the number of cleared transactions is correct', () => {
+      cy.get('.cleared-icon').should('have.length', 4)
+      cy.get('.uncleared-icon').should('have.length', 3)
     })
 
     it('Checks that transactions header was updated correctly', () => {
-      cy.get('#account-balance-cleared', {timeout: 30000}).should('contain.text', '$3,012.04')
-      cy.get('#account-balance-uncleared').should('contain.text', '-$175.94')
-      cy.get('#account-balance-working').should('contain.text', '$2,836.10')
+      cy.get('[data-testid="account-balance-cleared"]').should('contain.text', '$1,762.04')
+      cy.get('[data-testid="account-balance-uncleared"]').should('contain.text', '$1,074.06')
+      cy.get('[data-testid="account-balance-working"]').should('contain.text', '$2,836.10')
     })
   })
 
-  context('Test categorize 3 transactions at once', () => {
+  context.only('Test categorize 3 transactions at once', () => {
     before(() => {
       cy.initPath('transactions/7kW')
     })
@@ -346,16 +357,16 @@ describe('Test transactions', () => {
       cy.get(':nth-child(7) > .row-checkbox').click()
       cy.get(':nth-child(3) > .row-checkbox').click()
       cy.get(':nth-child(2) > .row-checkbox').click()
-      cy.get('[data-cy="categorize-as-button"]').click()
-      cy.get('[data-cy="categorize-multiple-as-list"]').contains('Gas').click()
+      cy.get('[data-testid="categorize-as-button"]').click()
+      cy.get('[data-testid="categorize-multiple-as-list"]').contains('Gas').click()
     })
     
     it('Checks that budget was updated correctly', () => {
-      cy.get('#sidebar-button-budgets').click()
-      // cy.get('#category-balance-n00').should('have.text', ' $2,134.40 ') // Gas
-      // cy.get('#category-balance-ATi').should('have.text', ' $995.39 ') // Groceries
-      cy.get('#category-balance-gpe').should('have.text', ' $497.53 ') // Paycheck
-      // cy.get('#master-category-balance-3ks').should('have.text', ' $1,204.40 ')
+      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      // cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $2,134.40 ') // Gas
+      cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $995.39 ') // Groceries
+      cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $497.53 ') // Paycheck
+      // cy.get('[data-testid="master-category-balance-3ks"]').should('have.text', ' $1,204.40 ')
     })
   })
 })

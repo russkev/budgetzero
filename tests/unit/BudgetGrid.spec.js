@@ -77,15 +77,15 @@ describe('CRUD elements', () => {
   })
 
   it('newMasterCategory button exists', () => {
-    expect(wrapper.find('#btn-new-master-category-1of').exists()).toBeTruthy()
+    expect(wrapper.find('[data-testid="btn-new-master-category-1of]').exists()).toBeTruthy()
   })
 
   it('deleteMasterCategory button exists', () => {
-    expect(wrapper.find('#btn-delete-master-category-1of').exists()).toBeTruthy()
+    expect(wrapper.find('[data-testid="btn-delete-master-category-1of]').exists()).toBeTruthy()
   })
 
   it('newCategory button exists', () => {
-    expect(wrapper.find('#btn-new-category-1of').exists()).toBeTruthy()
+    expect(wrapper.find('[data-testid="btn-new-category-1of]').exists()).toBeTruthy()
   })
 
   it('hideCategory button exists', () => {
@@ -97,24 +97,24 @@ describe('CRUD elements', () => {
   })
 
   it('draggable category exists', () => {
-    expect(wrapper.find('#drag-category-K31').exists()).toBeTruthy()
+    expect(wrapper.find('[data-testid="drag-category-K31]').exists()).toBeTruthy()
   })
 
   it('clicking addMasterCategory button calls newMasterCategory function', () => {
     const spyNewMasterCategory = vi.spyOn(wrapper.vm, 'newMasterCategory')
-    wrapper.find('#btn-new-master-category-1of').trigger('click')
+    wrapper.find('[data-testid="btn-new-master-category-1of]').trigger('click')
     expect(spyNewMasterCategory).toBeCalledWith(3)
   })
 
   it('clicking deleteMasterCategory button calls deleteMasterCategory function', () => {
     const spyDeleteMasterCategory = vi.spyOn(wrapper.vm, 'deleteMasterCategory')
-    wrapper.find('#btn-delete-master-category-1of').trigger('click')
+    wrapper.find('[data-testid="btn-delete-master-category-1of]').trigger('click')
     expect(spyDeleteMasterCategory).toBeCalledWith({ id: '1of', name: 'Monthly Bills' })
   })
 
   it('clicking addCategory button calls newCategory function', () => {
     const spyNewCategory = vi.spyOn(wrapper.vm, 'newCategory')
-    wrapper.find('#btn-new-category-1of').trigger('click')
+    wrapper.find('[data-testid="btn-new-category-1of]').trigger('click')
     expect(spyNewCategory).toBeCalledWith({ id: '1of', name: 'Monthly Bills' })
   })
 
@@ -238,7 +238,7 @@ describe('budgetgrid component', () => {
 
   it('calls onCategoryNameChange correctly when new name is input', async () => {
     const spyCategoryNameChanged = vi.spyOn(wrapper.vm, 'onCategoryNameChange')
-    const name_input = wrapper.find('#category-name-input-x2A')
+    const name_input = wrapper.find('[data-testid="drag-category-input-x2A]')
     expect(name_input.exists()).toBeTruthy()
     expect(name_input.element.readOnly).toEqual(true)
 
@@ -254,7 +254,7 @@ describe('budgetgrid component', () => {
 
   it('calls onCategoryBudgetChanged correctly when new value is input', async () => {
     const spyCategoryBudgetChanged = vi.spyOn(wrapper.vm, 'onCategoryBudgetChanged')
-    const budget_input = wrapper.find('#category-budget-input-x2A')
+    const budget_input = wrapper.find('[data-testid="category-budget-input-x2A')
     expect(budget_input.exists()).toBeTruthy()
 
     await budget_input.trigger('click')

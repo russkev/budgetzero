@@ -34,7 +34,7 @@
           </td>
 
           <!-- Cleared input -->
-          <td id="edit-row-cleared" class="pa-0">
+          <td data-testid="edit-row-cleared" class="pa-0">
             <v-btn icon @click="toggleCleared(item)">
               <v-icon v-if="editedItem.cleared" color="primary">mdi-alpha-c-circle</v-icon>
               <v-icon v-if="!editedItem.cleared" color="grey">mdi-alpha-c-circle-outline</v-icon>
@@ -42,14 +42,14 @@
           </td>
 
           <!-- Date input -->
-          <td id="edit-row-date">
+          <td data-testid="edit-row-date">
             <date-picker v-model="editedItem.date" />
           </td>
 
           <!-- Category input -->
-          <td id="edit-row-category">
+          <td data-testid="edit-row-category">
             <treeselect
-              id="edit-row-category-select"
+              data-testid="edit-row-category-select"
               :multiple="false"
               :options="categoryOptions"
               v-model="editedItem.category"
@@ -59,12 +59,12 @@
           </td>
 
           <!-- Memo input -->
-          <td id="edit-row-memo">
+          <td data-testid="edit-row-memo">
             <v-text-field v-model="editedItem.memo" />
           </td>
 
           <!-- Outflow -->
-          <td id="edit-row-outflow">
+          <td data-testid="edit-row-outflow">
             <!-- ref="outflow" -->
             <v-text-field
               :value="outflowAmount"
@@ -82,7 +82,7 @@
           </td>
 
           <!-- Inflow -->
-          <td id="edit-row-inflow">
+          <td data-testid="edit-row-inflow">
             <v-text-field
               :value="inflowAmount"
               suffix="$"
@@ -105,7 +105,7 @@
           <!-- </form> -->
         </tr>
 
-        <tr class="transaction-row" data-cy="transaction-row" v-else>
+        <tr class="transaction-row" data-testid="transaction-row" v-else>
           <!-- Checkbox -->
           <td class="row-checkbox pr-0">
             <v-simple-checkbox
@@ -120,8 +120,8 @@
           <!-- Cleared -->
           <td class="row-cleared">
             <v-btn icon @click="toggleCleared(item)">
-              <v-icon v-if="item.cleared" color="primary">mdi-alpha-c-circle</v-icon>
-              <v-icon v-if="!item.cleared" color="grey">mdi-alpha-c-circle-outline</v-icon>
+              <v-icon v-if="item.cleared" class="cleared-icon" color="primary">mdi-alpha-c-circle</v-icon>
+              <v-icon v-if="!item.cleared" class="uncleared-icon" color="grey">mdi-alpha-c-circle-outline</v-icon>
             </v-btn>
           </td>
 
@@ -191,50 +191,46 @@
 
       <template #expanded-item="{ item }">
         <td :colspan="dataTableHeaders.length" class="mr-0 pr-0 grey lighten-2">
-          <v-btn id="cancel-edit-button" small @click="cancel()"> Cancel </v-btn>
-          <v-btn id="save-edit-button" small @click="save(item)"> Save </v-btn>
+          <v-btn data-testid="cancel-edit-button" small @click="cancel()"> Cancel </v-btn>
+          <v-btn data-testid="save-edit-button" small @click="save(item)"> Save </v-btn>
         </td>
       </template>
     </v-data-table>
     <v-btn
-      id="create-transaction-button"
-      data-cy="create-transaction-button"
+      data-testid="create-transaction-button"
       @click="addTransaction"
     >
       Create
     </v-btn>
     <v-btn
-      id="delete-selected-transactions-button"
-      data-cy="delete-selected-transactions-button"
+      data-testid="delete-selected-transactions-button"
       @click="deleteSelectedTransactions"
     >
       Delete selected
     </v-btn>
     <v-btn
-      id="clear-selected-button"
-      data-cy="clear-selected-button"
+      data-testid="clear-selected-button"
       @click="clearSelectedTransactions"
     >
       Clear Selected
     </v-btn>
     <v-btn
-      id="unclear-selected-button"
-      data-cy="unclear-selected-button"
+      data-testid="unclear-selected-button"
       @click="unclearSelectedTransactions"
     >
       Unclear Selected
     </v-btn>
-    <v-btn id="get-transactions-button" data-cy="get-transactions-button" @click="getTransactions"
+    <v-btn @click="getTransactions"
       >Get Transactions</v-btn
     >
     <v-menu bottom offset-x close-on-content-click close-on-click>
       <template #activator="{ on, attrs }">
         <!-- <v-list-item v-bind="attrs" left v-on="on">Categorize as:</v-list-item> -->
-        <v-btn id="categorize-as-button" data-cy="categorize-as-button" v-bind="attrs" v-on="on"
+        <v-btn data-testid="categorize-as-button" v-bind="attrs" v-on="on"
           >Categorize as:</v-btn
         >
       </template>
-      <v-list data-cy="categorize-multiple-as-list">
+      <v-list data-testid="categorize-multiple-as-list">
         <v-list-item
           v-for="category in categoriesForDropdown"
           :key="category._id"
