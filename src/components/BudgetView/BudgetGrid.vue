@@ -111,6 +111,7 @@
         <v-container>
           <draggable
             :class="master_category.id"
+            :data-testid="`categories-container-${master_category.id}`"
             :group="{ name: master_category.id, put: true }"
             @end="onCategoryOrderChanged"
             handle=".handle"

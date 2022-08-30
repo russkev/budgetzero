@@ -348,7 +348,7 @@ describe('Test transactions', () => {
     })
   })
 
-  context.only('Test categorize 3 transactions at once', () => {
+  context('Test categorize 3 transactions at once', () => {
     before(() => {
       cy.initPath('transactions/7kW')
     })
@@ -363,10 +363,11 @@ describe('Test transactions', () => {
     
     it('Checks that budget was updated correctly', () => {
       cy.get('[data-testid="sidebar-button-budgets"]').click()
-      // cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $2,134.40 ') // Gas
-      cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $995.39 ') // Groceries
-      cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $497.53 ') // Paycheck
-      // cy.get('[data-testid="master-category-balance-3ks"]').should('have.text', ' $1,204.40 ')
+      cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $2,134.40 ') // Gas
+      cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $995.39 ')   // Groceries
+      cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $497.53 ')   // Paycheck
+      cy.get('[data-testid="master-category-balance-3ks"]').should('have.text', ' $3,315.20 ')
+      cy.get('[data-testid="master-category-balance-fVM"]').should('have.text', ' $497.53 ')
     })
   })
 })

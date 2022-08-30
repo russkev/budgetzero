@@ -168,10 +168,10 @@ export default {
       return db.bulkDocs(db_documents)
     },
 
-    commitDocsToVuex(context, payloads) {
+    commitDocsToVuex(context, documents) {
       const commitIndividuallyTypes = new Set([ID_NAME.transaction, ID_NAME.monthCategory, ID_NAME.budget])
 
-      const documentsByType = payloads.reduce((partial, payload) => {
+      const documentsByType = documents.reduce((partial, payload) => {
         _.defaults(partial, { [payload.doc_type]: [] })
         partial[payload.doc_type].push(payload)
         return partial
@@ -185,6 +185,7 @@ export default {
             })
           )
         } else {
+          // Data will be refreshed from database
           return context.dispatch('commitDocToVuex', { current: null, previous: null, doc_type: doc_type })
         }
       })
@@ -223,7 +224,6 @@ export default {
     async commitTransactionToVuex(context, { current, previous }) {
       const account = context.getters.accountsById[current.account]
       const transaction_payload = this._vm.calculateTransactionBalanceUpdate(current, previous, account)
-      // transaction_payload.account = context.getters.accountsById[transaction_payload.account_id]
       this.commit('UPDATE_ACCOUNT_BALANCES', transaction_payload)
 
       const category_balances = await context.dispatch('calculateCategoryBalanceUpdate', { current, previous })

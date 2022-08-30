@@ -1,6 +1,7 @@
 import PouchDB from 'pouchdb'
 import mock_budget from '../../__mockdata__/mock_budget_3.json'
 import { LOCAL_DB_NAME } from '../../../src/constants'
+import '@4tw/cypress-drag-drop'
 
 const db_data = mock_budget.rows
   .map((row) => {

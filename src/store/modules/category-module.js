@@ -210,7 +210,7 @@ export default {
         })
         context.dispatch('commitBulkDocsToPouchAndVuex', bulk_categories)
         const master_category = context.getters.masterCategoriesById[master_id]
-        context.dispatch('commitDocToPouchAndVuex', {current: null, previous: master_category})
+        context.dispatch('commitDocToPouchAndVuex', { current: null, previous: master_category })
       }
     },
 
@@ -362,13 +362,22 @@ export default {
         : previous.account.slice(-ID_LENGTH.account)
       const current_month = current ? current.date.slice(0, 7) : null
       const previous_month = previous ? previous.date.slice(0, 7) : null
+      const current_category_id = current ? current.category : null
+      const previous_category_id = previous ? previous.category : null
       const current_master_id = current ? getters.categoriesById[current.category]['masterCategory'] : null
       const previous_master_id = previous ? getters.categoriesById[previous.category]['masterCategory'] : null
       const current_value = current ? current.value : 0
       const previous_value = previous ? previous.value : 0
       const value_difference = current_value - previous_value
       let isSameMonthCategory = true
-      if (current && previous && (current_month !== previous_month || current_master_id !== previous_master_id)) {
+      if (current 
+        && previous 
+        && (
+          current_month !== previous_month ||
+          current_master_id !== previous_master_id ||
+          current_category_id !== previous_category_id
+        )
+      ) {
         isSameMonthCategory = false
       }
 

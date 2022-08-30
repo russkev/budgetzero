@@ -66,6 +66,7 @@
     "worker-pouch": "^2.1.0"
   },
   "devDependencies": {
+    "@4tw/cypress-drag-drop": "^2.2.1",
     "@testing-library/vue": "^5.8.3",
     "@vitejs/plugin-vue2": "^1.1.2",
     "@vue/cli-plugin-e2e-cypress": "5.0.4",
