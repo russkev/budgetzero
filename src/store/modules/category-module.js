@@ -28,6 +28,24 @@ export default {
         return partial
       }, {})
     },
+    masterCategoriesByCategoryId: (state, getters) => {
+      // // categories.reduce((partial, category) => {
+      // //   if ()
+        
+      // // })
+      // return _.groupBy(state.categories,)
+      // let result = {}
+      // for(let category of state.categories)
+      return state.categories.reduce((partial, category) => {
+        partial[category._id] = _.get(getters, ['masterCategoriesById', category._id], null)
+        return partial
+      }, {})
+      // {
+      //   result[category._id] = _.get(getters, ['masterCategoriesByCategoryId', category._id], null)
+      // }
+
+      // return result
+    },
     // monthCategoryBudgets: (state) => state.monthCategoryBudgets,
     categories: (state) => state.categories,
     // categories: (state) => {
@@ -65,9 +83,9 @@ export default {
     SET_CATEGORIES(state, categories) {
       Vue.set(state, 'categories', [NONE, ...categories])
     },
-    UPDATE_CATEGORY_BALANCES(state, { account, month, master_id, category_id, spent, doc }) {
+    UPDATE_CATEGORY_BALANCES(state, { account, month, category_id, spent, doc }) {
       let month_balances = initCategoryBalancesMonth(state.allCategoryBalances, month, state.categories)
-      month_balances = updateSingleCategory(month_balances, master_id, category_id, {
+      month_balances = updateSingleCategory(month_balances, category_id, {
         account: account,
         spent: spent,
         doc: doc
@@ -75,17 +93,16 @@ export default {
       Vue.set(state.allCategoryBalances, month, month_balances)
 
       // If month is not the latest month, all subsequent months need to have their carryover updated
-      let prev_balance = getCategoryBalance(state.allCategoryBalances, month, master_id, category_id)
+      let prev_balance = getCategoryBalance(state.allCategoryBalances, month, category_id)
       Object.keys(state.allCategoryBalances).forEach((current_month) => {
         if (this._vm.compareAscii(current_month, month) > 0) {
           const current_month_balances = updateSingleCategory(
             state.allCategoryBalances[current_month],
-            master_id,
             category_id,
             { carryover: prev_balance }
           )
           Vue.set(state.allCategoryBalances, current_month, current_month_balances)
-          prev_balance = getCategoryBalance(state.allCategoryBalances, current_month, master_id, category_id)
+          prev_balance = getCategoryBalance(state.allCategoryBalances, current_month, category_id)
         }
       })
     },
@@ -97,10 +114,10 @@ export default {
   },
   actions: {
     createMasterCategory: async (context, { name, is_income, sort }) => {
-      const payload = await context.dispatch('masterCategoryDocument', { name, is_income, sort })
+      const master_category = await context.dispatch('masterCategoryDocument', { name, is_income, sort })
       try {
-        return context.dispatch('commitDocToPouchAndVuex', { current: payload, previous: null }).then(() => {
-          return payload
+        return context.dispatch('commitDocToPouchAndVuex', { current: master_category, previous: null }).then(() => {
+          return master_category._id.slice(-ID_LENGTH.category)
         })
       } catch (error) {
         console.log(error)
@@ -118,7 +135,7 @@ export default {
         sort: sort_length
       })
       await context.dispatch('commitDocToPouchAndVuex', { current: category, previous: null })
-      return category._id
+      return category._id.slice(-ID_LENGTH.category)
     },
 
     masterCategoryDocument: async (context, { name, is_income, sort }) => {
@@ -156,7 +173,6 @@ export default {
 
       // Temporarily set the master categories state for faster feedback while documents are sent
       // and retrieved from database
-      console.log('DOCS', docs)
       context.commit(
         'SET_MASTER_CATEGORIES',
         docs.map((doc) => doc.current)
@@ -222,7 +238,7 @@ export default {
       const master_id_to = payload.to.className
 
       let updated_by_master = {}
-
+      // TOTO: Old index won't be relevant if different master id 
       const temp_index = new_index > old_index ? new_index + 0.5 : new_index - 0.5
       updated_by_master[master_id_from] = context.getters.categoriesByMaster[master_id_from].map((category, i) => {
         const sort = i === old_index ? temp_index : i
@@ -450,7 +466,7 @@ const parseAllMonthCategories = (results, getters) => {
     const category_id = month_category._id.slice(-ID_LENGTH.category)
     const master_id = getters.categoriesById[category_id]['masterCategory']
 
-    month_category_balances[month] = updateSingleCategory(month_category_balances[month], master_id, category_id, {
+    month_category_balances[month] = updateSingleCategory(month_category_balances[month], category_id, {
       doc: month_category
     })
   })
@@ -465,13 +481,11 @@ const initCategoryBalancesMonth = (current_balances, month, categories) => {
   const prev_month = prevUsedMonth(current_balances, month)
   return categories.reduce((partial, category) => {
     const category_id = category._id !== null ? category._id.slice(-ID_LENGTH.category) : null
-    const master_id = category.masterCategory
-    // const category_budget = _.get(monthCategoryBudgets, [month, category_id, 'budget'], 0)
     let prev_balance = 0
     if (prev_month) {
-      prev_balance = getCategoryBalance(current_balances, prev_month, master_id, category_id)
+      prev_balance = getCategoryBalance(current_balances, prev_month, category_id)
     }
-    return updateSingleCategory(partial, master_id, category_id, { carryover: prev_balance })
+    return updateSingleCategory(partial, category_id, { carryover: prev_balance })
   }, {})
 }
 
@@ -489,20 +503,20 @@ const prevUsedMonth = (current_balances, month) => {
   }
 }
 
-const getCarryover = (current_balances, month, master_id, category_id) => {
-  const carryover = _.get(current_balances, [month, master_id, category_id, ['carryover']], null)
+const getCarryover = (current_balances, month, category_id) => {
+  const carryover = _.get(current_balances, [month, category_id, ['carryover']], null)
   if (carryover !== null) {
     return carryover
   }
   const prev_month = prevUsedMonth(current_balances, month)
-  return getCategoryBalance(current_balances, prev_month, master_id, category_id)
+  return getCategoryBalance(current_balances, prev_month, category_id)
 }
 
-const getCategoryBalance = (current_balances, month, master_id, category_id, default_carryover = 0) => {
+const getCategoryBalance = (current_balances, month, category_id, default_carryover = 0) => {
   return (
-    _.get(current_balances, [month, master_id, category_id, 'doc', 'budget'], 0) +
-    _.get(current_balances, [month, master_id, category_id, 'spent'], 0) +
-    _.get(current_balances, [month, master_id, category_id, 'carryover'], default_carryover)
+    _.get(current_balances, [month, category_id, 'doc', 'budget'], 0) +
+    _.get(current_balances, [month, category_id, 'spent'], 0) +
+    _.get(current_balances, [month, category_id, 'carryover'], default_carryover)
   )
 }
 
@@ -510,45 +524,42 @@ const getCategoryBalance = (current_balances, month, master_id, category_id, def
  *
  * @param {Object} month_balances The existing month category object to update
  * @param {string} month The month
- * @param {string} master_id Truncated Master Category ID
  * @param {string} category_id Truncated Category ID
  * @param {number} spent The value in cents to update the category spent amount with
  * @param {number|null} carryover The value to overwrite the category carryover value with.
  * @param {object|null} doc The monthCategory document. Null if this is not being updated
  * Note: Use null for carryover if not intending to update this value
  */
-const updateSingleCategory = (existing_month_balances, master_id, category_id, { spent, carryover, doc, account }) => {
+const updateSingleCategory = (existing_month_balances, category_id, { spent, carryover, doc, account }) => {
   let month_balances = existing_month_balances === undefined ? {} : existing_month_balances
   const sign = account ? account.sign : 1
   // const sign = 1
   // spent *= sign
 
-  const default_balance = defaultCategoryBalance(master_id, category_id)
+  const default_balance = defaultCategoryBalance(category_id)
   month_balances = _.defaultsDeep(month_balances, default_balance)
 
   let carryover_difference = 0
   if (carryover !== undefined) {
-    carryover_difference = carryover - month_balances[master_id][category_id].carryover
+    carryover_difference = carryover - month_balances[category_id].carryover
   }
 
   if (typeof doc === 'object') {
-    month_balances[master_id][category_id].doc = doc
+    month_balances[category_id].doc = doc
   }
 
-  month_balances[master_id][category_id].spent += spent === undefined ? 0 : spent * sign
-  month_balances[master_id][category_id].carryover += carryover_difference
+  month_balances[category_id].spent += spent === undefined ? 0 : spent * sign
+  month_balances[category_id].carryover += carryover_difference
 
   return month_balances
 }
 
-const defaultCategoryBalance = (master_id, category_id) => {
+const defaultCategoryBalance = (category_id) => {
   return {
-    [master_id]: {
-      [category_id]: {
-        doc: null,
-        spent: 0,
-        carryover: 0
-      }
+    [category_id]: {
+      doc: null,
+      spent: 0,
+      carryover: 0
     }
   }
 }

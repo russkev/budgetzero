@@ -29,8 +29,12 @@
       >
         <v-container class="primary lighten-2">
           <v-row class="master-row white--text">
-            <v-col :data-testid="`master-category-name-${master_category.id}`" v-if="editedMasterCategoryId==master_category.id">
+            <v-col
+              :data-testid="`master-category-name-${master_category.id}`"
+              v-if="editedMasterCategoryId == master_category.id"
+            >
               <v-text-field
+                :id="`master-category-name-input-${master_category.id}`"
                 :data-testid="`master-category-name-input-${master_category.id}`"
                 :value="master_category.name"
                 hide-details
@@ -121,8 +125,12 @@
               v-for="category in categoriesData[master_category.id]"
               :key="category.id"
             >
-              <v-col :data-testid="`category-name-${category.id}`" v-if="editedCategoryNameId==category.id">
+              <v-col
+                :data-testid="`category-name-${category.id}`"
+                v-if="editedCategoryNameId === category.id"
+              >
                 <v-text-field
+                  :id="`category-name-input-${category.id}`"
                   :data-testid="`category-name-input-${category.id}`"
                   :value="category.name"
                   hide-details
@@ -159,7 +167,10 @@
                   </template>
                 </v-text-field>
               </v-col>
-              <v-col :id="`category-budget-${category.id}`" v-if="editedCategoryBudgetId==category.id">
+              <v-col
+                :id="`category-budget-${category.id}`"
+                v-if="editedCategoryBudgetId == category.id"
+              >
                 <v-text-field
                   class="category-budget-input"
                   :id="`category-budget-input-${category.id}`"
@@ -219,6 +230,7 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { mapGetters, mapActions } from "vuex";
 import BaseDialogModalComponent from "../Modals/BaseDialogModalComponent.vue";
 import BudgetHeader from "./BudgetHeader.vue";
@@ -279,7 +291,7 @@ export default {
       "selectedMonth",
       "monthsInUse",
       "categoriesByMaster",
-      "categories"
+      "categories",
     ]),
     masterCategories: {
       get() {
@@ -317,7 +329,7 @@ export default {
       }, {});
     },
     categoriesData() {
-      let index = 0
+      let index = 0;
       return this.masterCategories.reduce((partial, master_category) => {
         const master_id = master_category._id.slice(-ID_LENGTH.category);
 
@@ -331,18 +343,17 @@ export default {
             const category_id = category._id.slice(-ID_LENGTH.category);
             const budget = _.get(
               this.allCategoryBalances,
-              [this.selectedMonth, master_id, category_id, "doc", "budget"],
+              [this.selectedMonth, category_id, "doc", "budget"],
               0
             );
             const spent = _.get(
               this.allCategoryBalances,
-              [this.selectedMonth, master_id, category_id, "spent"],
+              [this.selectedMonth, category_id, "spent"],
               0
             );
             const carryover = getCarryover(
               this.allCategoryBalances,
               this.selectedMonth,
-              master_id,
               category_id
             );
             const name = _.get(this.categoriesById, [category_id, "name"], "");
@@ -358,7 +369,7 @@ export default {
               index: index,
             };
             index += 1;
-            return result
+            return result;
           });
         return partial;
       }, {});
@@ -396,11 +407,6 @@ export default {
       const target_value = event.target.value;
 
       const month = this.selectedMonth;
-      const master_id = _.get(this.categoriesById, [category_id, "masterCategory"], "");
-
-      if (master_id === "") {
-        return;
-      }
 
       let budget_value = parseInt(parseFloat(target_value) * 100);
       let current = null;
@@ -411,7 +417,7 @@ export default {
 
       const previous = _.get(
         this.allCategoryBalances,
-        [this.selectedMonth, master_id, category_id, "doc"],
+        [this.selectedMonth, category_id, "doc"],
         null
       );
 
@@ -428,17 +434,17 @@ export default {
         };
       }
       this.$store.dispatch("updateMonthCategory", { current, previous });
-      this.editedCategoryBudgetId = ''
+      this.editedCategoryBudgetId = "";
     },
     onCategoryBudgetEnter(category, event) {
-      this.onCategoryBudgetChanged(category.id, event)
-      const next_id = this.categoryIdFromIndex(category.index + 1)
-      document.activeElement.blur()
+      this.onCategoryBudgetChanged(category.id, event);
+      const next_id = this.categoryIdFromIndex(category.index + 1);
+      document.activeElement.blur();
       if (next_id !== undefined) {
-        this.editedCategoryBudgetId = this.categoryIdFromIndex(category.index + 1)
-        const element_id = `category-budget-input-${next_id}`
-        this.$refs[element_id][0].focus()
-        nextTick().then(() => document.getElementById(element_id).select())
+        this.editedCategoryBudgetId = this.categoryIdFromIndex(category.index + 1);
+        const element_id = `category-budget-input-${next_id}`;
+        this.$refs[element_id][0].focus();
+        nextTick().then(() => document.getElementById(element_id).select());
       }
     },
     onMasterCategoryNameChange(name) {
@@ -453,34 +459,58 @@ export default {
     },
     categoryIdFromIndex(index) {
       if (index >= this.categories.length) {
-        return undefined
+        return undefined;
       }
-      for(let categories_from_master of Object.values(this.categoriesData)) {
-        for(let category_data of categories_from_master) {
+      for (let categories_from_master of Object.values(this.categoriesData)) {
+        for (let category_data of categories_from_master) {
           if (category_data.index === index) {
-            return category_data.id
+            return category_data.id;
           }
         }
       }
-      return undefined
+      return undefined;
     },
     newMasterCategory(index) {
-      this.$store.dispatch("createMasterCategory", { name: "", is_income: false, sort: index });
+      this.$store
+        .dispatch("createMasterCategory", { name: "Name", is_income: false, sort: index - 0.5 })
+        .then((id) => {
+          this.editedMasterCategoryId = id
+          const element_id = `master-category-name-input-${id}`
+
+          Vue.nextTick(() => {
+            const new_element = document.getElementById(element_id)
+            if (!new_element) {
+              return
+            }
+            new_element.focus()
+            new_element.select()
+          })
+        })
     },
     deleteMasterCategory(master_category) {
       this.$store.dispatch("deleteMasterCategory", master_category.id);
     },
     newCategory(master_category) {
       this.$store
-        .dispatch("createCategory", { name: "", master_id: master_category.id })
+        .dispatch("createCategory", { name: "Name", master_id: master_category.id })
         .then((id) => {
+          const element_id = `category-name-input-${id}`
           this.editedCategoryNameId = id;
-          // this.getCategoriesData()
+
+          Vue.nextTick(() => {
+            const new_element = document.getElementById(element_id)
+            if (!new_element) {
+              return
+            }
+            new_element.focus()
+            new_element.select()
+          })
+
         });
     },
     onSelectTarget(event) {
       if (event.target) {
-        event.target.select()
+        event.target.select();
       }
     },
 

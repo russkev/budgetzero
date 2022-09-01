@@ -347,7 +347,6 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     const working = row.doc.value
     const month = row.doc.date.slice(0, 7)
     const category_id = row.doc.category
-    const master_id = _.get(getters.categoriesById, [category_id, 'masterCategory'], 'null')
     const cleared = row.doc.cleared ? working : 0
     const uncleared = row.doc.cleared ? 0 : working
 
@@ -371,7 +370,7 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     if (balances.category[month] === undefined) {
       balances.category[month] = initCategoryBalancesMonth(balances.category, month, getters.categories)
     }
-    balances.category[month] = updateSingleCategory(balances.category[month], master_id, category_id, {
+    balances.category[month] = updateSingleCategory(balances.category[month], category_id, {
       spent: working,
       account: account_doc,
     })
@@ -398,14 +397,12 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
         current_month,
         getters.categories
       )
-      Object.entries(month_category_balances[current_month]).forEach(([master_id, categories]) => {
-        Object.keys(categories).forEach((category_id) => {
-          balances.category[current_month][master_id][category_id].doc = _.get(
-            month_category_balances,
-            [current_month, master_id, category_id, 'doc'],
-            {}
-          )
-        })
+      Object.entries(month_category_balances[current_month]).forEach(([category_id, category]) => {
+        balances.category[current_month][category_id].doc = _.get(
+          month_category_balances,
+          [current_month, category_id, 'doc'],
+          {}
+        )
       })
       month_category_index += 1
     }
