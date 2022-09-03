@@ -42,8 +42,8 @@
                 dense
                 flat
                 solo
-                @blur="onMasterCategoryNameChange(master_category.name)"
-                @change="onMasterCategoryNameChange(master_category.name)"
+                @blur="onMasterCategoryNameChange($event)"
+                @change="onMasterCategoryNameChange($event)"
                 background-color="primary"
               >
                 <template v-slot:prepend>
@@ -114,7 +114,7 @@
         </v-container>
         <v-container>
           <draggable
-            :class="master_category.id"
+            class="categories-container"
             :data-testid="`categories-container-${master_category.id}`"
             :group="{ name: master_category.id, put: true }"
             @end="onCategoryOrderChanged"
@@ -130,6 +130,7 @@
                 v-if="editedCategoryNameId === category.id"
               >
                 <v-text-field
+                  class="category-name-input"
                   :id="`category-name-input-${category.id}`"
                   :data-testid="`category-name-input-${category.id}`"
                   :value="category.name"
@@ -137,8 +138,8 @@
                   dense
                   flat
                   solo
-                  @blur="onCategoryNameChange(category.name)"
-                  @change="onCategoryNameChange(category.name)"
+                  @blur="onCategoryNameChange($event)"
+                  @change="onCategoryNameChange($event)"
                   background-color="grey lighten-3"
                 >
                   <template v-slot:prepend>
@@ -150,6 +151,7 @@
               </v-col>
               <v-col :data-testid="`category-name-${category.id}`" v-else>
                 <v-text-field
+                  class="category-name-input"
                   :data-testid="`category-name-input-${category.id}`"
                   @click="editedCategoryNameId = category.id"
                   @focus="editedCategoryNameId = category.id"
@@ -447,7 +449,15 @@ export default {
         nextTick().then(() => document.getElementById(element_id).select());
       }
     },
-    onMasterCategoryNameChange(name) {
+    onMasterCategoryNameChange(event) {
+      let name = ''
+      if (typeof event === 'string' || event instanceof String) {
+        name = event
+      } else if (event.target) {
+        name = event.target.value;
+      } else {
+        return
+      }
       const doc = this.masterCategoriesById[this.editedMasterCategoryId];
       this.editedMasterCategoryId = "";
       if (doc !== undefined) {
@@ -514,7 +524,15 @@ export default {
       }
     },
 
-    onCategoryNameChange(name) {
+    onCategoryNameChange(event) {
+      let name = ''
+      if (typeof event === 'string' || event instanceof String) {
+        name = event
+      } else if (event.target) {
+        name = event.target.value;
+      } else {
+        return
+      }
       const doc = this.categoriesById[this.editedCategoryNameId];
       this.editedCategoryNameId = "";
       if (doc !== undefined) {

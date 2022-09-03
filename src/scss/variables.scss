@@ -48,7 +48,17 @@ $swal2-close-button-hover-color: $swal2-close-button-color;
 $checkbox-size-px: 18;
 $checkbox-left-px: -2;
 
+
+
 @import '~sweetalert2/src/sweetalert2';
+
+$data-table-border-radius: 100px;
+
+
+// .v-table tbody tr:not(:last-child) {
+//   border-bottom: none;
+// }
+
 
 // Temporary / Permanent workarounds
 // Input validation error

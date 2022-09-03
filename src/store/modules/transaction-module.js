@@ -101,7 +101,6 @@ export default {
       return context.dispatch('fetchPrecedingTransaction', {transaction, isDeleted})
         .then((result) => {
           // running_balance = result === null ? 0 : result.doc.balance
-          console.log("RESULTFF:", result)
           const return_value = result === null ? transaction : result.doc
           return return_value
           // return result === null ? transaction :
@@ -114,7 +113,6 @@ export default {
           if (!rows || rows.length === 0) {
             return
           }
-          console.log("rows", rows)
           let running_balance = 0
           if (compareAscii(rows[0].doc._id, transaction._id) < 0) {
             running_balance = rows[0].doc.balance - rows[0].doc.value
@@ -417,12 +415,16 @@ const dataTableHeaders = [
   {
     text: '',
     class: 'transaction-table-header',
-    value: 'data-table-select'
+    value: 'data-table-select',
+    width: '46px',
+    align: 'center',
   },
   {
     text: '',
     class: 'transaction-table-header',
-    value: 'cleared'
+    value: 'cleared',
+    width: '26px',
+    align: 'center',
   },
   {
     text: 'Date',
@@ -434,30 +436,28 @@ const dataTableHeaders = [
     text: 'Category',
     class: 'transaction-table-header',
     value: 'category',
-    align: 'left'
-  },
-  {
-    text: 'Memo',
-    class: 'transaction-table-header',
-    value: 'memo',
-    align: 'left'
+    align: 'left',
+    width: '100%',
   },
   {
     text: 'Outflow',
     class: 'transaction-table-header',
     value: 'outflow',
-    align: 'left'
+    align: 'left',
+    width: '100px',
   },
   {
     text: 'Inflow',
     class: 'transaction-table-header',
     value: 'inflow',
-    align: 'left'
+    align: 'left',
+    width: '100px',
   },
   {
     text: 'Balance',
     class: 'transaction-table-header',
     value: 'balance',
-    align: 'right'
+    align: 'right',
+    width: '100px',
   }
 ]

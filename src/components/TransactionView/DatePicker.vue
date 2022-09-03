@@ -1,5 +1,5 @@
 <template>
-  <v-text-field v-model="date_picker" :rules="[rules.date]">
+  <v-text-field v-model="date_picker" :rules="[rules.date]" dense filled class="date-text-field" hide-details>
     <template v-slot:append-outer>
       <v-menu v-model="menu_is_visible" offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on }">
@@ -47,3 +47,10 @@ export default {
   }
 }
 </script>
+
+
+<style>
+.date-text-field {
+  max-width: 150px;
+}
+</style>

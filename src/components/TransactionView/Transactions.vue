@@ -1,132 +1,151 @@
 <template>
   <div>
     <TransactionHeader :selected_account_id="accountOptions.account_id" />
-    <v-data-table
-      id="transactions-table"
-      v-model="selected"
-      :headers="dataTableHeaders"
-      :items="transactions"
-      item-key="_id"
-      show-select
-      single-expand
-      :expanded.sync="expanded"
-      :options.sync="accountOptions"
-      :server-items-length="numTransactionsTotal"
-      :items-per-page="itemsPerPage"
-      :footer-props="{
-        'items-per-page-options': [2, 10, 20, 50, 100, 200],
-        'update.options': accountOptions,
-      }"
-      refs="items"
-    >
-      <template #item="{ item, expand, select, isSelected }">
-        <tr id="transaction-edit-row" v-if="item._id === editedItem._id" :key="item._id">
-          <!-- <form> -->
-          <!-- Checkbox -->
-          <td id="edit-row-checkbox" class="expanded-checkbox pr-0">
-            <v-simple-checkbox
-              color="accent"
-              :value="isSelected"
-              :ripple="false"
-              @input="select($event)"
-              :disabled="expanded.length > 0"
-            />
-          </td>
+    <v-container>
+      <v-sheet max-width="800px" justify="center">
+        <v-data-table
+          class="background darken-1"
+          id="transactions-table"
+          data-testid="transactions-table"
+          v-model="selected"
+          :headers="dataTableHeaders"
+          :items="transactions"
+          group-by="date"
+          item-key="_id"
+          show-select
+          single-expand
+          dense
+          :expanded.sync="expanded"
+          :options.sync="accountOptions"
+          :server-items-length="numTransactionsTotal"
+          :items-per-page="itemsPerPage"
+          :footer-props="{
+            'items-per-page-options': [2, 10, 20, 50, 100, 200],
+            'update.options': accountOptions,
+          }"
+          refs="items"
+        >
+          <template #group.header="{items}">
+            <!-- <td colspan="3"> -->
+            <td colspan="20" class="date-row">
+              {{ items[0].date }}
+            </td>
+            <!-- </tr> -->
+          </template>
+          <template #item="{ item, expand, select, isSelected }">
+            <tr id="transaction-edit-row" v-if="item._id === editedItem._id" :key="item._id">
+              <!-- <form> -->
+              <!-- Checkbox -->
+              <td id="edit-row-checkbox" class="expanded-checkbox">
+                <v-simple-checkbox
+                  color="accent"
+                  :value="isSelected"
+                  :ripple="false"
+                  @input="select($event)"
+                  :disabled="expanded.length > 0"
+                />
+              </td>
 
-          <!-- Cleared input -->
-          <td data-testid="edit-row-cleared" class="pa-0">
-            <v-btn icon @click="toggleCleared(item)">
-              <v-icon v-if="editedItem.cleared" color="primary">mdi-alpha-c-circle</v-icon>
-              <v-icon v-if="!editedItem.cleared" color="grey">mdi-alpha-c-circle-outline</v-icon>
-            </v-btn>
-          </td>
+              <!-- Cleared input -->
+              <td data-testid="edit-row-cleared" class="pa-0">
+                <v-btn icon @click="toggleCleared(item)">
+                  <v-icon v-if="editedItem.cleared" color="primary">mdi-alpha-c-circle</v-icon>
+                  <v-icon v-if="!editedItem.cleared" color="grey"
+                    >mdi-alpha-c-circle-outline</v-icon
+                  >
+                </v-btn>
+              </td>
 
-          <!-- Date input -->
-          <td data-testid="edit-row-date">
-            <date-picker v-model="editedItem.date" />
-          </td>
+              <!-- Category input -->
+              <td data-testid="edit-row-category">
+                <treeselect
+                  data-testid="edit-row-category-select"
+                  :multiple="false"
+                  :options="categoryOptions"
+                  v-model="editedItem.category"
+                  :disable-branch-nodes="true"
+                  required
+                  :clearable="false"
+                />
+              </td>
 
-          <!-- Category input -->
-          <td data-testid="edit-row-category">
-            <treeselect
-              data-testid="edit-row-category-select"
-              :multiple="false"
-              :options="categoryOptions"
-              v-model="editedItem.category"
-              :disable-branch-nodes="true"
-              required
-            />
-          </td>
+              <!-- Outflow -->
+              <td data-testid="edit-row-outflow">
+                <!-- ref="outflow" -->
+                <v-text-field
+                  :value="outflowAmount"
+                  suffix="$"
+                  reverse
+                  dense
+                  hide-details
+                  :rules="[rules.currency]"
+                  @blur="outflowAmountApply($event)"
+                  @change="outflowAmountApply($event)"
+                  @mousedown="outflowAmountApply($event)"
+                  @keyup.enter="
+                    outflowAmountApply($event);
+                    save(item);
+                  "
+                />
+              </td>
 
-          <!-- Memo input -->
-          <td data-testid="edit-row-memo">
-            <v-text-field v-model="editedItem.memo" />
-          </td>
+              <!-- Inflow -->
+              <td data-testid="edit-row-inflow">
+                <v-text-field
+                  :value="inflowAmount"
+                  suffix="$"
+                  reverse
+                  dense
+                  hide-details
+                  :rules="[rules.currency]"
+                  @blur="inflowAmountApply($event)"
+                  @change="inflowAmountApply($event)"
+                  @mousedown="inflowAmountApply($event)"
+                  @keyup.enter="
+                    inflowAmountApply($event);
+                    save(item);
+                  "
+                />
+              </td>
 
-          <!-- Outflow -->
-          <td data-testid="edit-row-outflow">
-            <!-- ref="outflow" -->
-            <v-text-field
-              :value="outflowAmount"
-              suffix="$"
-              reverse
-              :rules="[rules.currency]"
-              @blur="outflowAmountApply($event)"
-              @change="outflowAmountApply($event)"
-              @mousedown="outflowAmountApply($event)"
-              @keyup.enter="
-                outflowAmountApply($event);
-                save(item);
-              "
-            />
-          </td>
+              <!-- Balance -->
+              <td id="edit-row-balance" align="right">
+                {{ intlCurrency.format(item.balance / 100) }}
+              </td>
+              <!-- </form> -->
+            </tr>
+            <!-- <tr v-if="item._id === editedItem._id" >
+          <td data-testid="edit-row-memo" colspan="20">
 
-          <!-- Inflow -->
-          <td data-testid="edit-row-inflow">
-            <v-text-field
-              :value="inflowAmount"
-              suffix="$"
-              reverse
-              :rules="[rules.currency]"
-              @blur="inflowAmountApply($event)"
-              @change="inflowAmountApply($event)"
-              @mousedown="inflowAmountApply($event)"
-              @keyup.enter="
-                inflowAmountApply($event);
-                save(item);
-              "
-            />
           </td>
+        </tr> -->
 
-          <!-- Balance -->
-          <td id="edit-row-balance" align="right">
-            {{ intlCurrency.format(item.balance / 100) }}
-          </td>
-          <!-- </form> -->
-        </tr>
+            <tr class="transaction-row" data-testid="transaction-row" v-else>
+              <!-- Checkbox -->
+              <td class="row-checkbox">
+                <v-simple-checkbox
+                  color="accent"
+                  :value="isSelected"
+                  :ripple="false"
+                  @input="select($event)"
+                  :disabled="expanded.length > 0"
+                />
+              </td>
 
-        <tr class="transaction-row" data-testid="transaction-row" v-else>
-          <!-- Checkbox -->
-          <td class="row-checkbox pr-0">
-            <v-simple-checkbox
-              color="accent"
-              :value="isSelected"
-              :ripple="false"
-              @input="select($event)"
-              :disabled="expanded.length > 0"
-            />
-          </td>
+              <!-- Cleared -->
+              <td class="row-cleared pa-0">
+                <v-btn icon @click="toggleCleared(item)">
+                  <v-icon v-if="item.cleared" class="cleared-icon" color="primary"
+                    >mdi-alpha-c-circle</v-icon
+                  >
+                  <v-icon v-if="!item.cleared" class="uncleared-icon" color="grey"
+                    >mdi-alpha-c-circle-outline</v-icon
+                  >
+                </v-btn>
+              </td>
 
-          <!-- Cleared -->
-          <td class="row-cleared">
-            <v-btn icon @click="toggleCleared(item)">
-              <v-icon v-if="item.cleared" class="cleared-icon" color="primary">mdi-alpha-c-circle</v-icon>
-              <v-icon v-if="!item.cleared" class="uncleared-icon" color="grey">mdi-alpha-c-circle-outline</v-icon>
-            </v-btn>
-          </td>
-
-          <!-- Date -->
-          <td
+              <!-- Date -->
+              <!-- <td
             class="row-date"
             @click="
               editItem(item);
@@ -134,21 +153,27 @@
             "
           >
             {{ item.date }}
-          </td>
+          </td> -->
 
-          <!-- Category -->
-          <td
-            class="row-category"
-            @click="
-              editItem(item);
-              expand(item);
-            "
-          >
-            {{ item.category_name }}
-          </td>
+              <!-- Category -->
+              <td
+                class="row-category"
+                @click="
+                  editItem(item);
+                  expand(item);
+                "
+              >
+              <div class="text-truncate">
 
-          <!-- Memo -->
-          <td
+                <span class="font-weight-medium">{{ item.category_name }}</span><br/>
+                <span class="text-caption transaction-details">
+                  {{ item.note ? item.note : item.memo }}
+                </span>
+              </div>
+              </td>
+
+              <!-- Memo -->
+              <!-- <td
             class="row-memo"
             @click="
               editItem(item);
@@ -156,79 +181,116 @@
             "
           >
             {{ item.memo }}
-          </td>
+          </td> -->
 
-          <!-- Outflow -->
-          <td
-            class="row-outflow"
-            align="right"
-            @click="
-              editItem(item);
-              expand(item);
-            "
-          >
-            {{ item.value > 0 ? "" : intlCurrency.format(-item.value / 100) }}
-          </td>
+              <!-- Outflow -->
+              <td
+                class="row-outflow"
+                align="right"
+                @click="
+                  editItem(item);
+                  expand(item);
+                "
+              >
+                {{ item.value > 0 ? "" : intlCurrency.format(-item.value / 100) }}
+              </td>
 
-          <!-- Inflow -->
-          <td
-            class="row-inflow"
-            align="right"
-            @click="
-              editItem(item);
-              expand(item);
-            "
-          >
-            {{ item.value > 0 ? intlCurrency.format(item.value / 100) : "" }}
-          </td>
+              <!-- Inflow -->
+              <td
+                class="row-inflow"
+                align="right"
+                @click="
+                  editItem(item);
+                  expand(item);
+                "
+              >
+                {{ item.value > 0 ? intlCurrency.format(item.value / 100) : "" }}
+              </td>
 
-          <!-- Balance -->
-          <td class="row-balance" align="right">
-            {{ intlCurrency.format(item.balance / 100) }}
-          </td>
-        </tr>
-      </template>
+              <!-- Balance -->
+              <td class="row-balance" align="right">
+                {{ intlCurrency.format(item.balance / 100) }}
+              </td>
+            </tr>
+          </template>
 
-      <template #expanded-item="{ item }">
-        <td :colspan="dataTableHeaders.length" class="mr-0 pr-0 grey lighten-2">
-          <v-btn data-testid="cancel-edit-button" small @click="cancel()"> Cancel </v-btn>
-          <v-btn data-testid="save-edit-button" small @click="save(item)"> Save </v-btn>
-        </td>
-      </template>
-    </v-data-table>
-    <v-btn
-      data-testid="create-transaction-button"
-      @click="addTransaction"
-    >
+          <template #expanded-item="{ item }">
+            <tr class="expanded-row">
+              <td :colspan="dataTableHeaders.length">
+                <!-- <v-container> -->
+                <div class="expanded-details">
+                  <!-- <v-row> -->
+                  <!-- <v-col class="expanded-label-column text-truncate" align="right"> -->
+                  <span>Date</span>
+                  <!-- </v-col> -->
+                  <!-- <v-col> -->
+                  <!-- 28-08-02 -->
+                  <date-picker data-testid="edit-row-date" v-model="editedItem.date" />
+                  <!-- </v-col> -->
+                  <!-- </v-row> -->
+                  <!-- <v-row> -->
+                  <!-- <v-col class="expanded-label-column text-truncate"> -->
+                  <span>Details</span>
+                  <!-- </v-col> -->
+                  <!-- <v-col> -->
+                  <v-textarea
+                    data-testid="edit-row-memo"
+                    class="ma-0"
+                    v-model="editedItem.memo"
+                    rows="1"
+                    dense
+                    filled
+                    hide-details
+                  />
+                  <!-- </v-col> -->
+                  <!-- </v-row> -->
+                  <!-- <v-row> -->
+                  <!-- <v-col class="expanded-label-column text-truncate pa-0"> -->
+                  <span>Notes</span>
+                  <!-- </v-col> -->
+                  <!-- <v-col class="pa-0"> -->
+                  <v-textarea
+                    data-testid="edit-row-note"
+                    class="ma-0"
+                    v-model="editedItem.note"
+                    rows="1"
+                    dense
+                    filled
+                    hide-details
+                  />
+                  <!-- </v-col> -->
+                  <!-- </v-row> -->
+                </div>
+
+                <v-btn data-testid="cancel-edit-button" small @click="cancel()"> Cancel </v-btn>
+                <v-btn data-testid="save-edit-button" color="primary" small @click="save(item)">
+                  Save
+                </v-btn>
+                <!-- </v-container> -->
+              </td>
+            </tr>
+          </template>
+        </v-data-table>
+      </v-sheet>
+    </v-container>
+
+    <v-btn data-testid="create-transaction-button" @click="addTransaction">
       Create
     </v-btn>
-    <v-btn
-      data-testid="delete-selected-transactions-button"
-      @click="deleteSelectedTransactions"
-    >
+    <v-btn data-testid="delete-selected-transactions-button" @click="deleteSelectedTransactions">
       Delete selected
     </v-btn>
-    <v-btn
-      data-testid="clear-selected-button"
-      @click="clearSelectedTransactions"
-    >
+    <v-btn data-testid="clear-selected-button" @click="clearSelectedTransactions">
       Clear Selected
     </v-btn>
-    <v-btn
-      data-testid="unclear-selected-button"
-      @click="unclearSelectedTransactions"
-    >
+    <v-btn data-testid="unclear-selected-button" @click="unclearSelectedTransactions">
       Unclear Selected
     </v-btn>
-    <v-btn @click="getTransactions"
-      >Get Transactions</v-btn
-    >
+    <v-btn @click="getTransactions">Get Transactions</v-btn>
     <v-menu bottom offset-x close-on-content-click close-on-click>
       <template #activator="{ on, attrs }">
         <!-- <v-list-item v-bind="attrs" left v-on="on">Categorize as:</v-list-item> -->
-        <v-btn data-testid="categorize-as-button" v-bind="attrs" v-on="on"
-          >Categorize as:</v-btn
-        >
+        <v-btn data-testid="categorize-as-button" v-bind="attrs" v-on="on">Categorize as:</v-btn>
       </template>
       <v-list data-testid="categorize-multiple-as-list">
         <v-list-item
@@ -258,7 +320,7 @@
 import TransactionHeader from "./TransactionHeader.vue";
 import { DEFAULT_TRANSACTION, ID_LENGTH, ID_NAME, NONE } from "../../constants";
 import Treeselect from "@riophae/vue-treeselect";
-import { compareAscii } from "@/store/modules/id-module.js"
+import { compareAscii } from "@/store/modules/id-module.js";
 import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Vue from "vue";
 import { mapGetters } from "vuex";
@@ -454,7 +516,7 @@ export default {
           });
         })
         .catch((error) => {
-          console.log("Row from fetchTransactionsForAccount doesn't contain 'doc' object");
+          console.warn("Row from fetchTransactionsForAccount doesn't contain 'doc' object");
           console.log(error);
         });
     },
@@ -584,26 +646,30 @@ export default {
       this.$store
         .dispatch("deleteBulkDocumentsFromPouchAndVuex", { documents: this.selected })
         .then(() => {
-          let oldest_document = {date: "9999-99-99"}
+          let oldest_document = { date: "9999-99-99" };
           for (let document of this.selected) {
             if (compareAscii(document.date, oldest_document.date) < 0) {
-              oldest_document = document
+              oldest_document = document;
             }
           }
           if (oldest_document.date !== "9999-99-99") {
-            return this.$store.dispatch("updateRunningBalance", {transaction: oldest_document, isDeleted: true})
+            return this.$store.dispatch("updateRunningBalance", {
+              transaction: oldest_document,
+              isDeleted: true,
+            });
           }
-          return null
-        }).then(() => {
+          return null;
+        })
+        .then(() => {
           this.getTransactions();
           this.selected = [];
-        })
+        });
     },
     deleteTransaction(item) {
       this.$store
         .dispatch("createOrUpdateTransaction", { current: null, previous: item })
         .then(() => {
-          this.$store.dispatch("updateRunningBalance", {transaction: item, isDeleted: true});
+          this.$store.dispatch("updateRunningBalance", { transaction: item, isDeleted: true });
         })
         .then(() => {
           return this.getTransactions();
@@ -634,7 +700,10 @@ export default {
           previous: previous,
         })
         .then(() => {
-          return this.$store.dispatch("updateRunningBalance", {transaction: transaction, isDeleted: false});
+          return this.$store.dispatch("updateRunningBalance", {
+            transaction: transaction,
+            isDeleted: false,
+          });
         })
         .then(() => {
           return this.getTransactions();
@@ -680,4 +749,33 @@ td.row-memo {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+div.expanded-label-column {
+  min-width: 80px;
+  flex-grow: initial;
+}
+
+tbody td {
+  border-bottom: none !important;
+}
+
+div.expanded-details {
+  display: grid;
+  grid-template-columns: min-content auto;
+}
+
+.v-sheet {
+  margin: 0 auto;
+}
+
+
+
+table {
+  table-layout: fixed;
+}
+
+tr.v-row-group__header {
+  background: inherit !important;
+}
+
 </style>

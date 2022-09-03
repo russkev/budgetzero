@@ -167,7 +167,6 @@ export default {
           descending: true
         }).then((result) => {
           logPerformanceTime('fetchPrecedingTransaction', t1)
-          console.log(result)
           if(result.rows.length > 0) {
             return result.rows[result.rows.length - 1]
           } else {

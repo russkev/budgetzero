@@ -18,8 +18,13 @@ export default new Vuetify({
         error: '#FF5252',
         header_background: '#f5f5f5',
         table_header: '#263238'
+      },
+      dark: {
+        // primary: '#354148',
+        background: '#354148'
       }
     },
+    dark: true,
     options: {
       customProperties: true
     }

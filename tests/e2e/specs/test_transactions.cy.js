@@ -3,32 +3,32 @@ describe('Test transactions', () => {
   //   cy.initPath('transactions/7kW')
   // })
 
-  context('Test transaction create', () => {
+  context.only('Test transaction create', () => {
     before(() => {
       cy.initPath('transactions/7kW')
     })
 
     it('Check transaction values and balance displays correctly', () => {
-      cy.get(':nth-child(7) > .row-outflow', { timeout: 6000 }).should('contain.text', '$160.50')
-      cy.get(':nth-child(7) > .row-balance').should('contain.text', '-$160.50')
+      cy.get('.transaction-row > .row-outflow').eq(6).should('contain.text', '$160.50')
+      cy.get('.transaction-row > .row-balance').eq(6).should('contain.text', '-$160.50')
 
-      cy.get(':nth-child(6) > .row-inflow').should('contain.text', '$1,250.00')
-      cy.get(':nth-child(6) > .row-balance').should('contain.text', '$1,089.50')
+      cy.get('.transaction-row > .row-inflow').eq(5).should('contain.text', '$1,250.00')
+      cy.get('.transaction-row > .row-balance').eq(5).should('contain.text', '$1,089.50')
 
-      cy.get(':nth-child(5) > .row-outflow').should('contain.text', '$173.76')
-      cy.get(':nth-child(5) > .row-balance').should('contain.text', '$915.74')
+      cy.get('.transaction-row > .row-outflow').eq(4).should('contain.text', '$173.76')
+      cy.get('.transaction-row > .row-balance').eq(4).should('contain.text', '$915.74')
 
-      cy.get(':nth-child(4) > .row-outflow').should('contain.text', '$174.76')
-      cy.get(':nth-child(4) > .row-balance').should('contain.text', '$740.98')
+      cy.get('.transaction-row > .row-outflow').eq(3).should('contain.text', '$174.76')
+      cy.get('.transaction-row > .row-balance').eq(3).should('contain.text', '$740.98')
 
-      cy.get(':nth-child(3) > .row-inflow').should('contain.text', '$2,300.00')
-      cy.get(':nth-child(3) > .row-balance').should('contain.text', '$3,040.98')
+      cy.get('.transaction-row > .row-inflow').eq(2).should('contain.text', '$2,300.00')
+      cy.get('.transaction-row > .row-balance').eq(2).should('contain.text', '$3,040.98')
 
-      cy.get(':nth-child(2) > .row-outflow').should('contain.text', '$189.44')
-      cy.get(':nth-child(2) > .row-balance').should('contain.text', '$2,851.54')
+      cy.get('.transaction-row > .row-outflow').eq(1).should('contain.text', '$189.44')
+      cy.get('.transaction-row > .row-balance').eq(1).should('contain.text', '$2,851.54')
 
-      cy.get(':nth-child(1) > .row-outflow').should('contain.text', '$15.44')
-      cy.get(':nth-child(1) > .row-balance').should('contain.text', '$2,836.10')
+      cy.get('.transaction-row > .row-outflow').eq(0).should('contain.text', '$15.44')
+      cy.get('.transaction-row > .row-balance').eq(0).should('contain.text', '$2,836.10')
     })
 
     it('Checks transactions header', () => {
@@ -54,24 +54,24 @@ describe('Test transactions', () => {
         .type('{downArrow}')
         .type('{downArrow}')
         .type('{enter}')
-      cy.get('[data-testid="edit-row-memo"] input').type('Supermarket')
+      cy.get('[data-testid="edit-row-memo"]').type('Supermarket')
       cy.get('[data-testid="edit-row-outflow"] input').type('56.23').blur()
       cy.get('[data-testid="save-edit-button"]').click()
       cy.get('.transaction-row').should('have.length', 8)
-      cy.get(':nth-child(5) > .row-date').should('contain.text', '2022-07-30')
-      cy.get(':nth-child(5) > .row-category').should('contain.text', 'Groceries')
-      cy.get(':nth-child(5) > .row-memo').should('contain.text', 'Supermarket')
-      cy.get(':nth-child(5) > .row-outflow').should('contain.text', '$56.23')
-      cy.get(':nth-child(5) > .row-memo').should('not.contain.text', '$')
+      cy.get('.date-row').eq(4).should('contain.text', '2022-07-30')
+      cy.get('.transaction-row > .row-category').eq(4).should('contain.text', 'Groceries')
+      cy.get('.transaction-row .transaction-details').eq(4).should('contain.text', 'Supermarket')
+      cy.get('.transaction-row > .row-outflow').eq(4).should('contain.text', '$56.23')
+      cy.get('.transaction-row > .row-inflow').eq(4).should('not.contain.text', '$')
     })
 
     it('Checks tha running balance was updated properly', () => {
-      cy.get(':nth-child(6) > .row-balance').should('have.text', ' $915.74 ')
-      cy.get(':nth-child(5) > .row-balance').should('have.text', ' $859.51 ')
-      cy.get(':nth-child(4) > .row-balance').should('have.text', ' $684.75 ')
-      cy.get(':nth-child(3) > .row-balance').should('have.text', ' $2,984.75 ')
-      cy.get(':nth-child(2) > .row-balance').should('have.text', ' $2,795.31 ')
-      cy.get(':nth-child(1) > .row-balance').should('have.text', ' $2,779.87 ')
+      cy.get('.transaction-row > .row-balance').eq(5).should('have.text', ' $915.74 ')
+      cy.get('.transaction-row > .row-balance').eq(4).should('have.text', ' $859.51 ')
+      cy.get('.transaction-row > .row-balance').eq(3).should('have.text', ' $684.75 ')
+      cy.get('.transaction-row > .row-balance').eq(2).should('have.text', ' $2,984.75 ')
+      cy.get('.transaction-row > .row-balance').eq(1).should('have.text', ' $2,795.31 ')
+      cy.get('.transaction-row > .row-balance').eq(0).should('have.text', ' $2,779.87 ')
     })
 
     it('Checks that transactions header was updated correctly', () => {
@@ -98,19 +98,20 @@ describe('Test transactions', () => {
     })
 
     it('Updates existing transaction value', () => {
-      cy.get(':nth-child(5) > .row-category').click()
+      cy.get('.transaction-row > .row-category').eq(4).click()
       cy.get('[data-testid="edit-row-inflow"] input').type('5.00').type('{enter}')
-      cy.get(':nth-child(5) > .row-inflow').should('have.text', ' $5.00 ')
-      cy.get(':nth-child(5) > .row-outflow').should('not.contain.text', '$')
+      cy.get('.transaction-row').should('have.length', 7)
+      cy.get('.transaction-row > .row-inflow').eq(4).should('have.text', ' $5.00 ')
+      cy.get('.transaction-row > .row-outflow').eq(4).should('not.contain.text', '$')
     })
 
     it('Checks that running balance was updated correctly', () => {
-      cy.get(':nth-child(6) > .row-balance').should('have.text', ' $1,089.50 ')
-      cy.get(':nth-child(5) > .row-balance').should('have.text', ' $1,094.50 ')
-      cy.get(':nth-child(4) > .row-balance').should('have.text', ' $919.74 ')
-      cy.get(':nth-child(3) > .row-balance').should('have.text', ' $3,219.74 ')
-      cy.get(':nth-child(2) > .row-balance').should('have.text', ' $3,030.30 ')
-      cy.get(':nth-child(1) > .row-balance').should('have.text', ' $3,014.86 ')
+      cy.get('.transaction-row > .row-balance').eq(5).should('have.text', ' $1,089.50 ')
+      cy.get('.transaction-row > .row-balance').eq(4).should('have.text', ' $1,094.50 ')
+      cy.get('.transaction-row > .row-balance').eq(3).should('have.text', ' $919.74 ')
+      cy.get('.transaction-row > .row-balance').eq(2).should('have.text', ' $3,219.74 ')
+      cy.get('.transaction-row > .row-balance').eq(1).should('have.text', ' $3,030.30 ')
+      cy.get('.transaction-row > .row-balance').eq(0).should('have.text', ' $3,014.86 ')
     })
 
     it('Checks transactions header was updated correctly', () => {
@@ -136,10 +137,16 @@ describe('Test transactions', () => {
       cy.initPath('transactions/7kW')
     })
 
-    it('Updates existing transaction category', () => {
-      cy.get(':nth-child(4) > .row-category').click()
-      cy.get('[data-testid="edit-row-category-select"] input').click().type('{enter}')
+    it('Change category from Groceries to Vacation', () => {
+      cy.get('.transaction-row > .row-category').eq(3).click()
+      cy.get('[data-testid="edit-row-category-select"] input').click()
+        .type('Vacation')
+        .type('{downArrow}')
+        .type('{downArrow}')
+        .type('{enter}')
       cy.get('[data-testid="save-edit-button"]').click()
+      cy.get('.transaction-row').should('have.length', 7)
+      cy.get('.transaction-row > .row-category').eq(3).should('contain.text', 'Vacation')
     })
 
     it('Checks that budget was updated correctly', () => {
@@ -148,8 +155,32 @@ describe('Test transactions', () => {
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $980.71 ')
       cy.get('[data-testid="master-category-balance-3ks"]').should('have.text', ' $1,189.96 ')
 
-      cy.get('[data-testid="category-balance-\\:\\:\\:"]').should('have.text', ' -$256.08 ')
-      cy.get('[data-testid="master-category-balance-\\:\\:\\:"]').should('have.text', ' -$256.08 ')
+      cy.get('[data-testid="category-balance-Lx7"]').should('have.text', ' -$710.10 ')
+      cy.get('[data-testid="master-category-balance-ggJ"]').should('have.text', ' -$710.10 ')
+
+      cy.get('[data-testid="transactions-page-7kW"]').click()
+    })
+
+    it('Change category from Paycheck 1 to Uncategorized', () => {
+      cy.get('.transaction-row > .row-category').eq(2).click()
+      cy.get('[data-testid="edit-row-category-select"] input')
+        .click()
+        .type('{enter}')
+      cy.get('[data-testid="save-edit-button"]').click()
+      cy.get('.transaction-row').should('have.length', 7)
+      cy.get('.transaction-row > .row-category').eq(2).should('contain.text', 'Uncategorized')
+    })
+
+    it('Checks that budget was updated correctly', () => {
+      cy.get('[data-testid="sidebar-button-budgets"]').click()
+
+      cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $497.53 ')
+      cy.get('[data-testid="master-category-balance-fVM"]').should('have.text', ' $497.53 ')
+
+      cy.get('[data-testid="category-balance-\\:\\:\\:"]').should('have.text', ' $2,218.68 ')
+      cy.get('[data-testid="master-category-balance-\\:\\:\\:"]').should('have.text', ' $2,218.68 ')
+
+      cy.get('[data-testid="transactions-page-7kW"]').click()
     })
   })
 
@@ -159,9 +190,10 @@ describe('Test transactions', () => {
     })
 
     it('Updates existing transaction category', () => {
-      cy.get(':nth-child(3) > .row-category').click()
+      cy.get('.transaction-row > .row-category').eq(2).click()
       cy.get('[data-testid="edit-row-date"] input').clear().type('2022-07-08')
       cy.get('[data-testid="save-edit-button"]').click()
+      cy.get('.transaction-row').should('have.length', 7)
     })
 
     it('Checks that budget was updated correctly', () => {
@@ -187,18 +219,18 @@ describe('Test transactions', () => {
     })
 
     it('Deletes last transaction', () => {
-      cy.get(':nth-child(7) > .row-checkbox').click()
+      cy.get('.transaction-row > .row-checkbox').eq(6).click()
       cy.get('[data-testid="delete-selected-transactions-button"]').click()
       cy.get('[data-testid="transaction-row"]').should('have.length', 6)
     })
 
     it('Checks tha running balance was updated properly', () => {
-      cy.get(':nth-child(6) > .row-balance').should('have.text', ' $1,250.00 ')
-      cy.get(':nth-child(5) > .row-balance').should('have.text', ' $1,076.24 ')
-      cy.get(':nth-child(4) > .row-balance').should('have.text', ' $901.48 ')
-      cy.get(':nth-child(3) > .row-balance').should('have.text', ' $3,201.48 ')
-      cy.get(':nth-child(2) > .row-balance').should('have.text', ' $3,012.04 ')
-      cy.get(':nth-child(1) > .row-balance').should('have.text', ' $2,996.60 ')
+      cy.get('.transaction-row > .row-balance').eq(5).should('have.text', ' $1,250.00 ')
+      cy.get('.transaction-row > .row-balance').eq(4).should('have.text', ' $1,076.24 ')
+      cy.get('.transaction-row > .row-balance').eq(3).should('have.text', ' $901.48 ')
+      cy.get('.transaction-row > .row-balance').eq(2).should('have.text', ' $3,201.48 ')
+      cy.get('.transaction-row > .row-balance').eq(1).should('have.text', ' $3,012.04 ')
+      cy.get('.transaction-row > .row-balance').eq(0).should('have.text', ' $2,996.60 ')
     })
 
     it('Checks transactions header was updated correctly', () => {
@@ -212,17 +244,17 @@ describe('Test transactions', () => {
     })
 
     it('Deletes second to last transaction', () => {
-      cy.get(':nth-child(5) > .row-checkbox').click()
+      cy.get('.transaction-row > .row-checkbox').eq(4).click()
       cy.get('[data-testid="delete-selected-transactions-button"]').click()
       cy.get('[data-testid="transaction-row"]').should('have.length', 6)
     })
 
     it('Checks tha running balance was updated properly', () => {
-      cy.get(':nth-child(5) > .row-balance').should('have.text', ' $1,250.00 ')
-      cy.get(':nth-child(4) > .row-balance').should('have.text', ' $1,075.24 ')
-      cy.get(':nth-child(3) > .row-balance').should('have.text', ' $3,375.24 ')
-      cy.get(':nth-child(2) > .row-balance').should('have.text', ' $3,185.80 ')
-      cy.get(':nth-child(1) > .row-balance').should('have.text', ' $3,170.36 ')
+      cy.get('.transaction-row > .row-balance').eq(4).should('have.text', ' $1,250.00 ')
+      cy.get('.transaction-row > .row-balance').eq(3).should('have.text', ' $1,075.24 ')
+      cy.get('.transaction-row > .row-balance').eq(2).should('have.text', ' $3,375.24 ')
+      cy.get('.transaction-row > .row-balance').eq(1).should('have.text', ' $3,185.80 ')
+      cy.get('.transaction-row > .row-balance').eq(0).should('have.text', ' $3,170.36 ')
     })
 
     it('Checks transactions header was updated correctly', () => {
@@ -236,16 +268,16 @@ describe('Test transactions', () => {
     })
 
     it('Deletes first transaction', () => {
-      cy.get(':nth-child(1) > .row-checkbox').click()
+      cy.get('.transaction-row > .row-checkbox').eq(0).click()
       cy.get('[data-testid="delete-selected-transactions-button"]').click()
       cy.get('[data-testid="transaction-row"]').should('have.length', 4)
     })
 
     it('Checks tha running balance was updated properly', () => {
-      cy.get(':nth-child(4) > .row-balance').should('have.text', ' $1,250.00 ')
-      cy.get(':nth-child(3) > .row-balance').should('have.text', ' $1,075.24 ')
-      cy.get(':nth-child(2) > .row-balance').should('have.text', ' $3,375.24 ')
-      cy.get(':nth-child(1) > .row-balance').should('have.text', ' $3,185.80 ')
+      cy.get('.transaction-row > .row-balance').eq(3).should('have.text', ' $1,250.00 ')
+      cy.get('.transaction-row > .row-balance').eq(2).should('have.text', ' $1,075.24 ')
+      cy.get('.transaction-row > .row-balance').eq(1).should('have.text', ' $3,375.24 ')
+      cy.get('.transaction-row > .row-balance').eq(0).should('have.text', ' $3,185.80 ')
     })
 
     it('Checks transactions header was updated correctly', () => {
@@ -259,15 +291,15 @@ describe('Test transactions', () => {
     })
 
     it('Deletes 3 transactions', () => {
-      cy.get(':nth-child(1) > .row-checkbox').click()
-      cy.get(':nth-child(2) > .row-checkbox').click()
-      cy.get(':nth-child(4) > .row-checkbox').click()
+      cy.get('.transaction-row > .row-checkbox').eq(0).click()
+      cy.get('.transaction-row > .row-checkbox').eq(1).click()
+      cy.get('.transaction-row > .row-checkbox').eq(3).click()
       cy.get('[data-testid="delete-selected-transactions-button"]').click()
       cy.get('[data-testid="transaction-row"]').should('have.length', 1)
     })
 
     it('Checks tha running balance was updated properly', () => {
-      cy.get(':nth-child(1) > .row-balance').should('have.text', ' -$174.76 ')
+      cy.get('.transaction-row > .row-balance').eq(0).should('have.text', ' -$174.76 ')
     })
 
     it('Checks transactions header was updated correctly', () => {
@@ -281,7 +313,7 @@ describe('Test transactions', () => {
     })
 
     it('Deletes the final transaction', () => {
-      cy.get(':nth-child(1) > .row-checkbox').click()
+      cy.get('.transaction-row > .row-checkbox').eq(0).click()
       cy.get('[data-testid="delete-selected-transactions-button"]').click()
       cy.get('[data-testid="transaction-row"]').should('have.length', 0)
     })
@@ -311,9 +343,9 @@ describe('Test transactions', () => {
     })
 
     it('Un-clears 3 transactions', () => {
-      cy.get(':nth-child(7) > .row-checkbox').click()
-      cy.get(':nth-child(6) > .row-checkbox').click()
-      cy.get(':nth-child(1) > .row-checkbox').click()
+      cy.get('.transaction-row > .row-checkbox').eq(6).click()
+      cy.get('.transaction-row > .row-checkbox').eq(5).click()
+      cy.get('.transaction-row > .row-checkbox').eq(0).click()
       cy.get('[data-testid="unclear-selected-button"]').click()
       // cy.wait(2000)
     })
@@ -330,9 +362,9 @@ describe('Test transactions', () => {
     })
 
     it('Clears 3 transactions', () => {
-      cy.get(':nth-child(5) > .row-checkbox').click()
-      cy.get(':nth-child(3) > .row-checkbox').click()
-      cy.get(':nth-child(2) > .row-checkbox').click()
+      cy.get('.transaction-row > .row-checkbox').eq(4).click()
+      cy.get('.transaction-row > .row-checkbox').eq(2).click()
+      cy.get('.transaction-row > .row-checkbox').eq(1).click()
       cy.get('[data-testid="clear-selected-button"]').click()
     })
 
@@ -354,11 +386,14 @@ describe('Test transactions', () => {
     })
 
     it('Categorizes 3 transactions as Gas', () => {
-      cy.get(':nth-child(7) > .row-checkbox').click()
-      cy.get(':nth-child(3) > .row-checkbox').click()
-      cy.get(':nth-child(2) > .row-checkbox').click()
+      cy.get('.transaction-row > .row-checkbox').eq(6).click()
+      cy.get('.transaction-row > .row-checkbox').eq(2).click()
+      cy.get('.transaction-row > .row-checkbox').eq(1).click()
       cy.get('[data-testid="categorize-as-button"]').click()
       cy.get('[data-testid="categorize-multiple-as-list"]').contains('Gas').click()
+      cy.get('.transaction-row > .row-category').eq(6).should('have.text', ' Gas ')
+      cy.get('.transaction-row > .row-category').eq(2).should('have.text', ' Gas ')
+      cy.get('.transaction-row > .row-category').eq(1).should('have.text', ' Gas ')
     })
     
     it('Checks that budget was updated correctly', () => {
