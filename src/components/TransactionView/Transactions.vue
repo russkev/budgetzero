@@ -58,21 +58,17 @@
 
               <!-- Category input -->
               <td data-testid="edit-row-category">
-                <treeselect
-                  data-testid="edit-row-category-select"
-                  :multiple="false"
-                  :options="categoryOptions"
-                  v-model="editedItem.category"
-                  :disable-branch-nodes="true"
-                  required
-                  :clearable="false"
+                <select-category 
+                  :category-id="item.category" 
+                  @update="onEditedItemCategoryUpdate"
+                  @save="save(item)"
                 />
               </td>
 
               <!-- Outflow -->
               <td data-testid="edit-row-outflow">
                 <!-- ref="outflow" -->
-                <v-text-field
+                <!-- <v-text-field
                   :value="outflowAmount"
                   suffix="$"
                   reverse
@@ -86,12 +82,31 @@
                     outflowAmountApply($event);
                     save(item);
                   "
+                /> -->
+                <!-- <select-amount
+                  :amount="outflowAmount"
+                  :item="item"
+                  :onApply="outflowAmountApply"
+                  :onSave="save"
+                /> -->
+                <select-amount-inflow 
+                  is-outflow
+                  :item="item"
+                  :editedItem="editedItem"
+                  @update="onEditedItemValueUpdate"
+                  @save="save(item)"
                 />
               </td>
 
               <!-- Inflow -->
               <td data-testid="edit-row-inflow">
-                <v-text-field
+                <select-amount-inflow
+                  :item="item"
+                  :editedItem="editedItem"
+                  @update="onEditedItemValueUpdate"
+                  @save="save(item)"
+                />
+                <!-- <v-text-field
                   :value="inflowAmount"
                   suffix="$"
                   reverse
@@ -104,8 +119,7 @@
                   @keyup.enter="
                     inflowAmountApply($event);
                     save(item);
-                  "
-                />
+                  " -->
               </td>
 
               <!-- Balance -->
@@ -157,19 +171,19 @@
 
               <!-- Category -->
               <td
-                class="row-category"
+                class="row-details"
                 @click="
                   editItem(item);
                   expand(item);
                 "
               >
-              <div class="text-truncate">
-
-                <span class="font-weight-medium">{{ item.category_name }}</span><br/>
-                <span class="text-caption transaction-details">
-                  {{ item.note ? item.note : item.memo }}
-                </span>
-              </div>
+                <div class="text-truncate">
+                  <span class="row-category  font-weight-medium">{{ item.category_name }}</span>
+                  <br />
+                  <span class="row-memo text-caption transaction-details">
+                    {{ item.note ? item.note : item.memo }}
+                  </span>
+                </div>
               </td>
 
               <!-- Memo -->
@@ -225,7 +239,7 @@
                   <!-- </v-col> -->
                   <!-- <v-col> -->
                   <!-- 28-08-02 -->
-                  <date-picker data-testid="edit-row-date" v-model="editedItem.date" />
+                  <select-date data-testid="edit-row-date" v-model="editedItem.date" />
                   <!-- </v-col> -->
                   <!-- </v-row> -->
                   <!-- <v-row> -->
@@ -307,7 +321,7 @@
       <v-icon left>mdi-cloud-upload</v-icon>
       <span>Import</span>
     </v-btn>
-    <import-modal-component
+    <import-transactions
       :visible="importModalIsVisible"
       :account="this.$route.params.account_id"
       @close="onImportModalClose"
@@ -319,20 +333,28 @@
 <script>
 import TransactionHeader from "./TransactionHeader.vue";
 import { DEFAULT_TRANSACTION, ID_LENGTH, ID_NAME, NONE } from "../../constants";
-import Treeselect from "@riophae/vue-treeselect";
 import { compareAscii } from "@/store/modules/id-module.js";
-import "@riophae/vue-treeselect/dist/vue-treeselect.css";
 import Vue from "vue";
 import { mapGetters } from "vuex";
 import moment from "moment";
 import _ from "lodash";
-import DatePicker from "./DatePicker.vue";
-import ImportModalComponent from "./ImportModalComponent.vue";
+import SelectDate from "./SelectDate.vue";
+import SelectCategory from "./SelectCategory.vue";
+import SelectAmount from "./SelectAmount.vue";
+import SelectAmountInflow from "./SelectAmountInflow.vue";
+import ImportTransactions from "./ImportTransactions.vue";
 // import Banking from 'banking'
 // import ofx from 'node-ofx-parser'
 
 export default {
-  components: { Treeselect, TransactionHeader, ImportModalComponent, DatePicker },
+  components: {
+    TransactionHeader,
+    ImportTransactions,
+    SelectDate,
+    SelectCategory,
+    SelectAmount,
+    SelectAmountInflow,
+  },
   data() {
     return {
       selected: [],
@@ -459,6 +481,12 @@ export default {
     },
   },
   methods: {
+    onEditedItemValueUpdate(value) {
+      Vue.set(this.editedItem, "value", value)
+    },
+    onEditedItemCategoryUpdate(category_id) {
+      Vue.set(this.editedItem, "category", category_id)
+    },
     outflowAmountApply(event) {
       if (event.target) {
         const target_value = event.target.value;
@@ -692,6 +720,8 @@ export default {
       //   }
       // }
       this.prepareEditedItem();
+      console.log("SAVING", this.editedItem);
+      console.log("PREV", previous);
       // const current = JSON.parse(JSON.stringify(this.editedItem))
       const transaction = JSON.parse(JSON.stringify(this.editedItem));
       this.$store
@@ -768,8 +798,6 @@ div.expanded-details {
   margin: 0 auto;
 }
 
-
-
 table {
   table-layout: fixed;
 }
@@ -777,5 +805,4 @@ table {
 tr.v-row-group__header {
   background: inherit !important;
 }
-
 </style>
