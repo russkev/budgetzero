@@ -109,14 +109,20 @@ export default {
         budget_id = await context.dispatch('updateSelectedBudgetId', budgets)
       }
       const skip_amount = (options.page - 1) * options.itemsPerPage
+      console.log("ACCOUNT ID", options.accountId)
+      console.log("BUDGET_ID", budget_id)
       return db
         .query(`stats/transactions_by_account`, {
           include_docs: true,
-          startkey: [budget_id, options.account_id, '\ufff0'],
-          endkey: [budget_id, options.account_id, ''],
+          startkey: [budget_id, options.accountId, '\ufff0'],
+          endkey: [budget_id, options.accountId, ''],
           limit: options.itemsPerPage,
           skip: skip_amount,
-          descending: true
+          descending: true,
+          // startkey: [budget_id, options.account_id, '\ufff0'],
+          // limit: options.itemsPerPage,
+          // skip: skip_amount,
+          // descending: true
         })
         .then((result) => {
           logPerformanceTime('fetchTransactionsForAccount', t1)

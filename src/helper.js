@@ -62,7 +62,7 @@ function extractMonthCategoryMonth(month_category_id) {
 function logPerformanceTime(name, t1) {
   const t2 = performance.now()
   const seconds = ((t2 - t1) / 1000.0).toFixed(4).toString()
-  console.log(`PERFORMANCE OF: ${name} | TIME: ${seconds} seconds`)
+  console.log(`Performance of: ${name} | TIME: ${seconds} seconds`)
 }
 
 function docTypeFromId(id) {

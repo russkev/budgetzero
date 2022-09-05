@@ -1,5 +1,6 @@
 const SHORT_ID_LENGTH = 3
 const LONG_ID_LENGTH = 12
+export const DEFAULT_TRANSACTIONS_PER_PAGE = 20
 
 export const ID_LENGTH = {
   budget: SHORT_ID_LENGTH,

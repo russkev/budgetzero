@@ -24,18 +24,6 @@ export default {
       type: String,
       default: "",
     },
-    // item: {
-    //   type: Object,
-    //   default: {}
-    // },
-    // onApply: {
-    //   type: Function,
-    //   default: null,
-    // },
-    // onSave: {
-    //   type: Function,
-    //   default: null,
-    // }
   },
   data() {
     return {

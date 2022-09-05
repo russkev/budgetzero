@@ -4,40 +4,11 @@ import { defaultAccountBalance, updateAccountBalances } from './account-module'
 import { initCategoryBalancesMonth, updateSingleCategory } from './category-module'
 import { compareAscii } from './id-module'
 
-const DEFAULT_TRANSACTIONS_STATE = {
-  // transactions: []
-}
-
 export default {
-  state: {
-    ...DEFAULT_TRANSACTIONS_STATE
-  },
   getters: {
-    // transactions: (state) => state.transactions,
-    // transactions_by_account: (state, getters) => _.groupBy(getters.transactions, 'account'),
     dataTableHeaders: () => dataTableHeaders
-    // transactionsOnBudget: (state, getters) => {
-    //   //Get list of account _ids that are on budget
-    //   var accounts = getters.accountsOnBudget.map((account) => account._id.slice(-ID_LENGTH.account))
-    //   var transactionsOnBudget = []
+  },
 
-    //   //
-    //   for (let [key, value] of Object.entries(getters.transactions_by_account)) {
-    //     if (accounts.includes(key)) {
-    //       transactionsOnBudget = transactionsOnBudget.concat(value)
-    //     }
-    //   }
-    //   return transactionsOnBudget
-    // }
-  },
-  mutations: {
-    // SET_TRANSACTIONS(state, transactions) {
-    //   state.transactions = transactions
-    // }
-    // UPDATE_RECONCILED(state, transactionsToLock) {
-    //   transactionsToLock.map((transactionToLock) => (transactionToLock.reconciled = true))
-    // }
-  },
   actions: {
     /**
      * Create/update the mirrored transfer transaction
@@ -411,53 +382,4 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
 
 export { calculateTransactionBalanceUpdate, parseAllTransactions }
 
-const dataTableHeaders = [
-  {
-    text: '',
-    class: 'transaction-table-header',
-    value: 'data-table-select',
-    width: '46px',
-    align: 'center',
-  },
-  {
-    text: '',
-    class: 'transaction-table-header',
-    value: 'cleared',
-    width: '26px',
-    align: 'center',
-  },
-  {
-    text: 'Date',
-    class: 'transaction-table-header',
-    value: 'date',
-    align: 'left'
-  },
-  {
-    text: 'Category',
-    class: 'transaction-table-header',
-    value: 'category',
-    align: 'left',
-    width: '100%',
-  },
-  {
-    text: 'Outflow',
-    class: 'transaction-table-header',
-    value: 'outflow',
-    align: 'left',
-    width: '100px',
-  },
-  {
-    text: 'Inflow',
-    class: 'transaction-table-header',
-    value: 'inflow',
-    align: 'left',
-    width: '100px',
-  },
-  {
-    text: 'Balance',
-    class: 'transaction-table-header',
-    value: 'balance',
-    align: 'right',
-    width: '100px',
-  }
-]
+

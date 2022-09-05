@@ -13,6 +13,7 @@ import pouchdbExport from './pouchdb/pouchdb-export'
 import pouchdbFetch from './pouchdb/pouchdb-fetch'
 import pouchdbInit from './pouchdb/pouchdb-init'
 import pouchdbRemote from './pouchdb/pouchdb-remote'
+import accountTransactions from './modules/account-transactions-module'
 import { generateId, generateShortId, validateId, compareAscii } from './modules/id-module'
 import { updateSingleCategory, defaultCategoryBalance, getCategoryBalance, getCarryover } from './modules/category-module'
 import { updateAccountBalances, defaultAccountBalance } from './modules/account-module'
@@ -52,6 +53,7 @@ const storeData = {
     pouchdb,
     reports,
     transaction,
+    accountTransactions,
     pouchdbDelete,
     pouchdbExport,
     pouchdbFetch,

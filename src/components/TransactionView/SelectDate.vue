@@ -1,5 +1,12 @@
 <template>
-  <v-text-field v-model="date_picker" :rules="[rules.date]" dense filled class="date-text-field" hide-details>
+  <v-text-field
+    v-model="date_picker"
+    :rules="[rules.date]"
+    dense
+    filled
+    class="date-text-field"
+    hide-details
+  >
     <template v-slot:append-outer>
       <v-menu v-model="menu_is_visible" offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on }">
@@ -12,42 +19,41 @@
 </template>
 
 <script>
-import moment from 'moment'
+import moment from "moment";
 export default {
   props: {
     value: {
       type: String,
-      default: moment(new Date()).format('YYYY-MM-DD')
+      default: moment(new Date()).format("YYYY-MM-DD"),
     },
     isOpen: {
       type: Boolean,
-      default: false
-    }
+      default: false,
+    },
   },
   data() {
     return {
       menu_is_visible: false,
       rules: {
         date: (value) => {
-          return this.$vm.validateDate(value) || 'Invalid date.'
+          return this.$vm.validateDate(value) || "Invalid date.";
         },
-      }
-    }
+      },
+    };
   },
   computed: {
     date_picker: {
       get() {
-        return this.value
+        return this.value;
       },
       set(value) {
-        this.menu_is_visible = false
-        this.$emit('input', value)
-      }
-    }
-  }
-}
+        this.menu_is_visible = false;
+        this.$emit("input", value);
+      },
+    },
+  },
+};
 </script>
-
 
 <style>
 .date-text-field {
