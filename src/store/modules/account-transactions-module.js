@@ -75,6 +75,9 @@ export default {
     SET_EDITED_TRANSACTION_CATEGORY(state, category_id) {
       Vue.set(state.editedTransaction, 'category', category_id)
     },
+    SET_EDITED_TRANSACTION_CLEARED(state, value) {
+      Vue.set(state.editedTransaction, 'cleared', value)
+    },
     CLEAR_EDITED_TRANSACTION(state) {
       if (state.isCreatingNewTransaction && state.editedTransactionIndex > -1) {
         state.transactions.splice(state.editedTransactionIndex, 1)

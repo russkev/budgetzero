@@ -25,14 +25,12 @@
       </td>
     </template>
     <template #item="{ item, expand, select, isSelected }">
-      <tr id="transaction-edit-row" v-if="item._id === editedTransaction._id" :key="item._id">
+      <tr id="transaction-edit-row" :key="item._id">
         <td id="edit-row-checkbox" class="expanded-checkbox">
           <toggle-checked :is-selected="isSelected" @input="select($event)" />
         </td>
-      </tr>
-      <tr class="transaction-row" data-testid="transaction-row" v-else>
-        <td id="edit-row-checkbox" class="expanded-checkbox">
-          <toggle-checked :is-selected="isSelected" @input="select($event)" />
+        <td class="row-cleared pa-0">
+          <toggle-cleared :item="item" />
         </td>
       </tr>
     </template>
