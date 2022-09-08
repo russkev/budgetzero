@@ -105,7 +105,7 @@ export default {
     SET_EXPANDED_TRANSACTIONS(state, transactions) {
       Vue.set(state, 'expandedTransactions', transactions)
     },
-    CLEAR_EXPANDED(state) {
+    CLEAR_EXPANDED_TRANSACTIONS(state) {
       Vue.set(state, 'expandedTransactions', [])
     },
     SET_SELECTED_TRANSACTIONS(state, transactions) {
@@ -146,18 +146,51 @@ export default {
         commit('SET_TRANSACTIONS', transactions)
       })
     },
+    async save({getters, dispatch}, item) {
+      let previous = getters.isCreatingNewTransaction ? null : item
+      await dispatch('prepareEditedItem')
+      const transaction = JSON.parse(JSON.stringify(getters.editedTransaction))
+      return dispatch('createOrUpdateTransaction', {
+        current: JSON.parse(JSON.stringify(getters.editedTransaction)),
+        previous: previous,
+      }, {
+        root: true,
+      })
+        .then(() => {
+          return dispatch('updateRunningBalance', {
+            transaction: transaction,
+            isDeleted: false,
+          }, {
+            root: true,
+          })
+        .then(() => {
+          return dispatch('getTransactions');
+        })
+        .catch((error) => {
+          console.log(error)
+        })
+        .finally(() => {
+          return dispatch('cancel');
+        })
+      })      
+    },
+    cancel({commit}) {
+      commit('CLEAR_EXPANDED_TRANSACTIONS')
+      commit('CLEAR_EXPANDED_TRANSACTIONS')
+      commit('CLEAR_EDITED_TRANSACTION')
+    },
     editTransaction({commit, getters}, transaction) {
       commit('SET_IS_CREATING_NEW_TRANSACTION', false)
       commit('CLEAR_EDITED_TRANSACTION')
-      commit('SET_EDITED_TRANSACTION_INDEX', context.getters.transactions.indexOf(transaction))
+      commit('SET_EDITED_TRANSACTION_INDEX', getters.transactions.indexOf(transaction))
       commit('SET_EDITED_TRANSACTION', {
-        ...getters.transactions[context.getters.editedTransactionIndex]
+        ...getters.transactions[getters.editedTransactionIndex]
       })
     },
     prepareEditedItem({commit, getters, rootGetters}) {
       if (
         getters.isCreatingNewTransaction &&
-        getters.editedTransactionInitialDate !== context.getters.editedTransaction.date
+        getters.editedTransactionInitialDate !== getters.editedTransaction.date
       ) {
         commit(
           'SET_EDITED_TRANSACTION_ID',
@@ -227,16 +260,16 @@ export default {
       if (getters.selectedTransactions.length < 1) {
         return
       }
-      dispatch('deleteBulkDocumentsFromPouchAndVuex', { documents: context.getters.selectedTransactions }, { root: true })
+      dispatch('deleteBulkDocumentsFromPouchAndVuex', { documents: getters.selectedTransactions }, { root: true })
         .then(() => {
           let oldest_document = { date: '9999-99-99' }
-          for (let document of context.getters.selectedTransactions) {
+          for (let document of getters.selectedTransactions) {
             if (compareAscii(document.date, oldest_document.date) > 0) {
               oldest_document = document
             }
           }
           if (oldest_document.date !== '9999-99-99') {
-            return context.dispatch(
+            return dispatch(
               'updateRunningBalance',
               {
                 transaction: oldest_document,
@@ -250,6 +283,25 @@ export default {
         .then(() => {
           dispatch('getTransactions')
         })
+    },
+    setClearedSelectedTransactions({getters, dispatch, commit},  { cleared_value }) {
+      console.log("CLEARED VALUE", cleared_value)
+      if (getters.selectedTransactions.length < 1) {
+        return
+      }
+      const documents = getters.selectedTransactions.map((doc) => {
+        return {
+          current: {
+            ...doc,
+            cleared: cleared_value
+          },
+          previous: doc,
+        }
+      })
+      dispatch('commitBulkDocsToPouchAndVuex', documents, { root: true }).then(() => {
+        dispatch('getTransactions')
+        commit('CLEAR_SELECTED_TRANSACTIONS')
+      })
     }
   }
 }

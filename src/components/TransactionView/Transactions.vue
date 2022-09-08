@@ -1,12 +1,12 @@
 <template>
   <div>
-    <!-- <transactions-header :selected_account_id="accountId" /> -->
+    <transactions-header :selected_account_id="accountId" />
     <v-container>
       <v-sheet max-width="800px" justify="center">
         <transactions-table />
       </v-sheet>
     </v-container>
-    <!-- <transactions-edit-multiple /> -->
+    <transactions-edit-multiple />
   </div>
 </template>
 

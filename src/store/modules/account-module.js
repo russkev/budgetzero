@@ -6,7 +6,8 @@ import Vue from 'vue'
 
 const DEFAULT_ACCOUNT_STATE = {
   allAccountBalances: {},
-  accounts: []
+  accounts: [],
+  intlCurrency: new Intl.NumberFormat("en-us", { style: "currency", currency: "USD" }),
 }
 
 export default {
@@ -27,7 +28,8 @@ export default {
     },
     accountsOffBudget: (state) => {
       return state.accounts.filter((account) => !account.onBudget)
-    }
+    },
+    intlCurrency: (state) => state.intlCurrency,
   },
   mutations: {
     SET_ACCOUNTS(state, accounts) {

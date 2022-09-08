@@ -389,7 +389,7 @@ export default {
       } finally {
         this.parseCsv = null
         this.importComplete()
-        this.$emit('close')
+        this.$emit('apply')
       }
     },
     async commitTransactions(transaction_list_to_import) {

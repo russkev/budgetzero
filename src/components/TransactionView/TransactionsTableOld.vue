@@ -223,6 +223,11 @@ export default {
     SelectCategory,
     SelectAmountTransaction,
   },
+  props: {
+    item: {
+      type: Object
+    },
+  },
   data() {
     return {
       selected: [],
