@@ -14,6 +14,7 @@ import pouchdbFetch from './pouchdb/pouchdb-fetch'
 import pouchdbInit from './pouchdb/pouchdb-init'
 import pouchdbRemote from './pouchdb/pouchdb-remote'
 import accountTransactions from './modules/account-transactions-module'
+import categoryMonth from './modules/category-month-module'
 import { generateId, generateShortId, validateId, compareAscii } from './modules/id-module'
 import { updateSingleCategory, defaultCategoryBalance, getCategoryBalance, getCarryover } from './modules/category-module'
 import { updateAccountBalances, defaultAccountBalance } from './modules/account-module'
@@ -54,6 +55,7 @@ const storeData = {
     reports,
     transaction,
     accountTransactions,
+    categoryMonth,
     pouchdbDelete,
     pouchdbExport,
     pouchdbFetch,
@@ -66,7 +68,6 @@ const storeData = {
     snackbar: false,
     sync_state: '',
     selectedBudgetId: null,
-    selectedMonth: moment(new Date()).format('YYYY-MM')
   },
   getters: {
     snackbarMessage: (state) => state.snackbarMessage,
@@ -74,7 +75,6 @@ const storeData = {
     sync_state: (state) => state.sync_state,
     snackbar: (state) => state.snackbar,
     selectedBudgetId: (state) => state.selectedBudgetId,
-    selectedMonth: (state) => state.selectedMonth
   },
   mutations: {
     SET_STATUS_MESSAGE(state, message) {
@@ -93,9 +93,6 @@ const storeData = {
       state.selectedBudgetId = selected_budget_id
       localStorage.budgetID = selected_budget_id
     },
-    UPDATE_SELECTED_MONTH(state, year_month) {
-      state.selectedMonth = year_month
-    }
   },
   actions: {
     setSnackBarBoolean(context, snackbar) {

@@ -26,7 +26,7 @@
     </template>
     <template #item="{ item, expand, select, isSelected }">
       <tr class="transaction-row" :key="item._id">
-        <td id="edit-row-checkbox" class="expanded-checkbox">
+        <td class="row-checkbox">
           <toggle-checked :is-selected="isSelected" @input="select($event)" />
         </td>
         <td class="row-cleared pa-0">

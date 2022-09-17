@@ -47,7 +47,8 @@ describe('Test transactions', () => {
       cy.get('.transaction-row', { timeout: 6000 }).should('have.length', 7)
 
       cy.get('[data-testid="create-transaction-button"]').click()
-      cy.get('[data-testid="edit-row-cleared"]').click()
+      // cy.get('[data-testid="edit-row-cleared"]').click()
+      cy.get('.transaction-row > .row-cleared').eq(0).click()
       cy.get('[data-testid="edit-row-date"] input').clear().type('2022-07-30')
       cy.get('[data-testid="edit-row-select-category"]')
         .type('Groceries')
@@ -57,6 +58,7 @@ describe('Test transactions', () => {
       cy.get('[data-testid="edit-row-outflow"] input').type('56.23').blur()
       cy.get('[data-testid="save-edit-button"]').click()
       cy.get('.transaction-row').should('have.length', 8)
+      cy.get('.date-row').eq(0).should('not.contain.text', '2022-07-30')
       cy.get('.date-row').eq(4).should('contain.text', '2022-07-30')
       cy.get('.transaction-row .row-category').eq(4).should('contain.text', 'Groceries')
       cy.get('.transaction-row .transaction-details').eq(4).should('contain.text', 'Supermarket')
@@ -98,6 +100,7 @@ describe('Test transactions', () => {
 
     it('Updates existing transaction value', () => {
       cy.get('.transaction-row .row-category').eq(4).click()
+      cy.get('[data-testid="edit-row-inflow"]').click()
       cy.get('[data-testid="edit-row-inflow"] input').type('5.00').type('{enter}')
       cy.get('.transaction-row').should('have.length', 7)
       cy.get('.transaction-row > .row-inflow').eq(4).should('have.text', ' $5.00 ')
@@ -143,7 +146,7 @@ describe('Test transactions', () => {
         .type('{downArrow}')
         .type('{enter}')
       cy.get('[data-testid="save-edit-button"]').click()
-      cy.get('.transaction-row').should('have.length', 7)
+      cy.get('[data-testid="edit-row-memo"]').should('not.exist')
       cy.get('.transaction-row .row-category').eq(3).should('contain.text', 'Vacation')
     })
 
@@ -166,7 +169,7 @@ describe('Test transactions', () => {
         .type('{downArrow}')
         .type('{enter}')
       cy.get('[data-testid="save-edit-button"]').click()
-      cy.get('.transaction-row').should('have.length', 7)
+      cy.get('[data-testid="edit-row-memo"]').should('not.exist')
       cy.get('.transaction-row .row-category').eq(2).should('contain.text', 'Uncategorized')
     })
 
@@ -220,7 +223,8 @@ describe('Test transactions', () => {
     it('Deletes last transaction', () => {
       cy.get('.transaction-row > .row-checkbox').eq(6).click()
       cy.get('[data-testid="delete-selected-transactions-button"]').click()
-      cy.get('[data-testid="transaction-row"]').should('have.length', 6)
+      cy.get('.transaction-row').should('have.length', 6)
+      // cy.wait(1000)
     })
 
     it('Checks tha running balance was updated properly', () => {
@@ -245,7 +249,7 @@ describe('Test transactions', () => {
     it('Deletes second to last transaction', () => {
       cy.get('.transaction-row > .row-checkbox').eq(4).click()
       cy.get('[data-testid="delete-selected-transactions-button"]').click()
-      cy.get('[data-testid="transaction-row"]').should('have.length', 6)
+      cy.get('.transaction-row').should('have.length', 5)
     })
 
     it('Checks tha running balance was updated properly', () => {
@@ -269,7 +273,7 @@ describe('Test transactions', () => {
     it('Deletes first transaction', () => {
       cy.get('.transaction-row > .row-checkbox').eq(0).click()
       cy.get('[data-testid="delete-selected-transactions-button"]').click()
-      cy.get('[data-testid="transaction-row"]').should('have.length', 4)
+      cy.get('.transaction-row').should('have.length', 4)
     })
 
     it('Checks tha running balance was updated properly', () => {
@@ -294,7 +298,7 @@ describe('Test transactions', () => {
       cy.get('.transaction-row > .row-checkbox').eq(1).click()
       cy.get('.transaction-row > .row-checkbox').eq(3).click()
       cy.get('[data-testid="delete-selected-transactions-button"]').click()
-      cy.get('[data-testid="transaction-row"]').should('have.length', 1)
+      cy.get('.transaction-row').should('have.length', 1)
     })
 
     it('Checks tha running balance was updated properly', () => {
@@ -314,7 +318,7 @@ describe('Test transactions', () => {
     it('Deletes the final transaction', () => {
       cy.get('.transaction-row > .row-checkbox').eq(0).click()
       cy.get('[data-testid="delete-selected-transactions-button"]').click()
-      cy.get('[data-testid="transaction-row"]').should('have.length', 0)
+      cy.get('.transaction-row').should('have.length', 0)
     })
 
     it('Checks transactions header was updated correctly', () => {
@@ -389,10 +393,15 @@ describe('Test transactions', () => {
       cy.get('.transaction-row > .row-checkbox').eq(2).click()
       cy.get('.transaction-row > .row-checkbox').eq(1).click()
       cy.get('[data-testid="categorize-as-button"]').click()
-      cy.get('[data-testid="categorize-multiple-as-list"]').contains('Gas').click()
-      cy.get('.transaction-row .row-category').eq(6).should('have.text', 'Gas')
-      cy.get('.transaction-row .row-category').eq(2).should('have.text', 'Gas')
-      cy.get('.transaction-row .row-category').eq(1).should('have.text', 'Gas')
+      cy.get('[data-testid="edit-row-select-category"]')
+        .click()
+        .type('Gas')
+        .type('{downArrow}')
+        .type('{enter}')
+      cy.get('[data-testid="multiple-transaction-category-apply"]').click()
+      cy.get('.transaction-row .row-category').eq(6).should('contain.text', 'Gas')
+      cy.get('.transaction-row .row-category').eq(2).should('contain.text', 'Gas')
+      cy.get('.transaction-row .row-category').eq(1).should('contain.text', 'Gas')
     })
     
     it('Checks that budget was updated correctly', () => {

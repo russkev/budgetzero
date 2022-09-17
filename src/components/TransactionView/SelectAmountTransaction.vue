@@ -1,5 +1,9 @@
 <template>
-  <select-amount-base :amount="amount" @apply="amountApply" v-on="$listeners" />
+  <select-amount-base 
+    :amount="amount" 
+    @apply="amountApply" 
+    v-on="$listeners" 
+  />
 </template>
 
 <script>
@@ -52,6 +56,12 @@ export default {
       }
 
       const target_value = event.target.value;
+      if (isNaN(target_value)) {
+        // this.displayValue = this.amount
+        this.amount = this.displayValue
+        return
+      }
+
       this.displayValue = target_value;
       const sanitized_value = Math.round(this.parseCurrencyValue(target_value) * 100);
       const emit_value = this.isOutflow ? -sanitized_value : sanitized_value

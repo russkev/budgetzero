@@ -67,7 +67,7 @@ export default {
       Vue.set(state, 'editedTransaction', edited_transaction)
     },
     SET_EDITED_TRANSACTION_ID(state, id) {
-      Vue.set(state.editedTransaction, 'id', id)
+      Vue.set(state.editedTransaction, '_id', id)
     },
     SET_EDITED_TRANSACTION_VALUE(state, value) {
       Vue.set(state.editedTransaction, 'value', value)
@@ -238,7 +238,7 @@ export default {
         commit('CLEAR_SELECTED_TRANSACTIONS')
       })
     },
-    categorizeSelectedTransactions({getters, dispatch, commit}, { category }) {
+    categorizeSelectedTransactions({getters, dispatch, commit}, { categoryId }) {
       if (getters.selectedTransactions.length < 1) {
         return
       }
@@ -246,7 +246,7 @@ export default {
         return {
           current: {
             ...doc,
-            category: category._id.slice(ID_LENGTH.category)
+            category: categoryId.slice(-ID_LENGTH.category)
           },
           previous: doc
         }
@@ -264,7 +264,7 @@ export default {
         .then(() => {
           let oldest_document = { date: '9999-99-99' }
           for (let document of getters.selectedTransactions) {
-            if (compareAscii(document.date, oldest_document.date) > 0) {
+            if (compareAscii(document.date, oldest_document.date) < 0) {
               oldest_document = document
             }
           }

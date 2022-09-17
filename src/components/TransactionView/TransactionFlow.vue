@@ -5,6 +5,7 @@
   <div v-else>
     <select-amount-transaction 
       :is-outflow="isOutflow"
+      :data-testid="testId"
       :id="inputId"
       :item="item"
       :edited-item="editedTransaction"
@@ -32,7 +33,8 @@ export default {
   },
   data() {
     return {
-      inputId: this.isOutflow ? "outflow-input" : "inflow-input"
+      inputId: this.isOutflow ? "outflow-input" : "inflow-input",
+      testId: this.isOutflow ? "edit-row-outflow" : "edit-row-inflow",
     }
   },
   computed: {

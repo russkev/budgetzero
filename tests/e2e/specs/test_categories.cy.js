@@ -175,7 +175,7 @@ describe('Test categories (budget) page', () => {
     })
   })
 
-  context.only('Test drag and drop', () => {
+  context('Test drag and drop', () => {
     before(() => {
       cy.initPath('budget/2022-08')
     })
@@ -319,9 +319,6 @@ describe('Test categories (budget) page', () => {
       cy.get(name_input_selector).should('have.focus')
       cy.get(name_input_selector).type('Internet').type('{enter}')
       cy.get(name_input_selector).should('have.value', 'Internet')
-      // cy.reload()
-      // cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 5)
-      // cy.get(name_input_selector).should('have.value', 'Internet')
     })
 
     it('Creates a new master category', () => {
@@ -333,9 +330,6 @@ describe('Test categories (budget) page', () => {
       cy.get('main').find('div.master-category-row:nth-child(1) input').type('Dividends').type('{enter}')
       cy.get('main').find('div.master-category-row:nth-child(1) input').should('have.value', 'Dividends')
       cy.get('main').find('div.master-category-row:nth-child(1) .categories-container').children().should('have.length', 0)
-      // cy.reload()
-      // cy.visit('http://127.0.0.1:8082/budget/2022-07')
-      // cy.get('main').find('div.master-category-row:nth-child(1) input').should('have.value', 'Dividends')
     })
   })
 })

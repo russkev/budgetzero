@@ -234,8 +234,8 @@ export default {
       //Get the category that was moved
       const old_index = payload.oldIndex
       const new_index = payload.newIndex
-      const master_id_from = payload.from.className
-      const master_id_to = payload.to.className
+      const master_id_from = payload.from.id.slice(-ID_LENGTH.category)
+      const master_id_to = payload.to.id.slice(-ID_LENGTH.category)
 
       let updated_by_master = {}
       // TOTO: Old index won't be relevant if different master id 

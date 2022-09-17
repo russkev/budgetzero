@@ -70,18 +70,19 @@ import { mapGetters } from "vuex";
 
 export default {
   props: {},
-  data() {
-    return {
-      intlCurrency: new Intl.NumberFormat("en-us", { style: "currency", currency: "USD" }),
-    };
-  },
+  // data() {
+  //   return {
+  //     intlCurrency: new Intl.NumberFormat("en-us", { style: "currency", currency: "USD" }),
+  //   };
+  // },
   computed: {
     ...mapGetters([
-      "selectedMonth",
+      "intlCurrency",
       "allCategoryBalances",
       "masterCategoriesById",
       "masterCategoriesByCategoryId",
     ]),
+    ...mapGetters("categoryMonth", ["selectedMonth"]),
     monthDataExists() {
       return this.allCategoryBalances[this.selectedMonth] !== undefined;
     },

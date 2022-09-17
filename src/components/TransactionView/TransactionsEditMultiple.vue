@@ -13,15 +13,18 @@
       Unclear Selected
     </v-btn>
     <v-btn @click="getTransactions">Get Transactions</v-btn>
-    <v-menu 
-      bottom 
-      offset-x 
-      :close-on-content-click="false"
-      >
+    <v-menu bottom offset-x :close-on-content-click="false" :value="selectCategoryIsOpen">
       <!-- :close-on-click="false" -->
       <template #activator="{ on, attrs }">
         <!-- <v-list-item v-bind="attrs" left v-on="on">Categorize as:</v-list-item> -->
-        <v-btn data-testid="categorize-as-button" v-bind="attrs" v-on="on">Categorize as:</v-btn>
+        <v-btn
+          data-testid="categorize-as-button"
+          v-bind="attrs"
+          v-on="on"
+          @click="selectCategoryIsOpen = true"
+        >
+          Categorize as:
+        </v-btn>
       </template>
       <!-- <v-list data-testid="categorize-multiple-as-list">
         <v-list-item
@@ -34,17 +37,15 @@
         </v-list-item>
       </v-list> -->
       <v-card>
-
         <v-container>
-
-            <select-category 
-            id="select-category-selected-input" 
-            category-id=":::" 
+          <select-category
+            id="select-category-selected-input"
+            category-id=":::"
             @update="onCategoryUpdate"
-            />
-            <v-btn>
-              Apply
-            </v-btn>
+          />
+          <v-btn data-testid="multiple-transaction-category-apply" @click="onCategoryApply">
+            Apply
+          </v-btn>
         </v-container>
       </v-card>
     </v-menu>
@@ -72,30 +73,40 @@ export default {
   data() {
     return {
       importModalIsVisible: false,
-    }
+      selectedCategoryId: "",
+      selectCategoryIsOpen: false,
+    };
   },
   methods: {
     ...mapActions("accountTransactions", [
       "addTransaction",
       "deleteSelectedTransactions",
       "getTransactions",
-      "setClearedSelectedTransactions"
+      "setClearedSelectedTransactions",
+      "categorizeSelectedTransactions",
     ]),
     clearSelectedTransactions() {
-      this.setClearedSelectedTransactions({ cleared_value: true })
+      this.setClearedSelectedTransactions({ cleared_value: true });
     },
     unclearSelectedTransactions() {
-      this.setClearedSelectedTransactions({ cleared_value: false})
+      this.setClearedSelectedTransactions({ cleared_value: false });
     },
     onCategoryUpdate(category_id) {
-      console.log("On category update", category_id)
+      this.selectedCategoryId = category_id;
+      // console.log("On category update", category_id)
     },
     onImportModalClose() {
-      this.importModalIsVisible = false
+      this.importModalIsVisible = false;
     },
     onImportModalApply() {
-      this.importModalIsVisible = false,
-      this.getTransactions()
+      (this.importModalIsVisible = false), this.getTransactions();
+    },
+    onCategoryApply() {
+      if (this.selectedCategoryId != "") {
+        console.log("onCategoryApply", this.selectedCategoryId);
+        this.categorizeSelectedTransactions({ categoryId: this.selectedCategoryId });
+      }
+      this.selectCategoryIsOpen = false;
     },
     // addTransaction() {
     //   if (this.creatingNewTransactions) {

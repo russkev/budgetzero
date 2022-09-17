@@ -57,8 +57,8 @@
               <v-text-field
                 :data-testid="`master-category-name-input-${master_category.id}`"
                 :value="master_category.name"
-                @click="SET_EDITED_MASTER_CATEGORY_ID(master_category.id)"
-                @focus="SET_EDITED_MASTER_CATEGORY_ID(master_category.id)"
+                @click="editedMasterCategoryId = master_category.id"
+                @focus="editedMasterCategoryId = master_category.id"
                 dark
                 dense
                 flat
@@ -154,8 +154,8 @@
                 <v-text-field
                   class="category-name-input"
                   :data-testid="`category-name-input-${category.id}`"
-                  @click="SET_EDITED_CATEGORY_NAME_ID(category.id)"
-                  @focus="SET_EDITED_CATEGORY_NAME_ID(category.id)"
+                  @click="editedCategoryNameId = category.id"
+                  @focus="editedCategoryNameId = category.id"
                   :value="category.name"
                   readonly
                   hide-details
@@ -186,8 +186,8 @@
                   solo
                   reverse
                   @click="$event.target.select()"
-                  @change="onCategoryBudgetChanged({ category_id: category.id, event: $event })"
-                  @blur="onCategoryBudgetChanged({ category_id: category.id, event: $event })"
+                  @change="onCategoryBudgetChanged(category.id, $event)"
+                  @blur="onCategoryBudgetChanged(category.id, $event)"
                   @keyup.enter="onCategoryBudgetEnter(category, $event)"
                   background-color="grey lighten-3"
                   suffix="$"
@@ -199,8 +199,8 @@
                   :data-testid="`category-budget-input-${category.id}`"
                   :id="`category-budget-input-${category.id}`"
                   :ref="`category-budget-input-${category.id}`"
-                  @click="SET_EDITED_CATEGORY_BUDGET_ID(category.id)"
-                  @focus="SET_EDITED_CATEGORY_BUDGET_ID(category.id)"
+                  @click="editedCategoryBudgetId = category.id"
+                  @focus="editedCategoryBudgetId = category.id"
                   :value="intlCurrency.format(category.budgetDisplay)"
                   readonly
                   hide-details
@@ -233,13 +233,17 @@
 </template>
 
 <script>
+import Vue from 'vue'
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import BaseDialogModalComponent from "../Modals/BaseDialogModalComponent.vue";
 import BudgetHeader from "./BudgetHeader.vue";
 import _ from "lodash";
 import draggable from "vuedraggable";
+import { DEFAULT_MONTH_CATEGORY, ID_LENGTH, ID_NAME, NONE } from "../../constants";
+import { prevMonth, nextMonth } from "../../helper";
+import { getCarryover } from "@/store/modules/category-module";
+import moment from "moment";
 import { nextTick } from "vue";
-import { ID_LENGTH } from "../../constants";
 
 export default {
   name: "BudgetGrid",
@@ -249,21 +253,50 @@ export default {
     BudgetHeader,
   },
   data() {
-    return {};
+    return {
+      ID_LENGTH,
+      intlCurrency: new Intl.NumberFormat("en-us", { style: "currency", currency: "USD" }),
+      isReorderingCategories: false,
+      category_name: "",
+      isModalVisibleMasterCat: false,
+      isModalVisibleCategory: false,
+      isModalVisibleEditCategory: false,
+      isModalVisibleCreateSubCategory: false,
+      masterCategoryId: "",
+      editedMasterCategoryId: "",
+      editedCategoryNameId: "",
+      editedCategoryBudgetId: "",
+      editedCategoryBudgetValue: "",
+      editedCategory: {},
+      isEditing: true,
+      // selectedMonth: this.$store.selectedMonth,
+      headers: [
+        {
+          text: "Category name",
+          align: "left",
+          value: "name",
+        },
+        // { text: "Category", value: "id" },
+        { text: "Budgeted", value: "budgeted", width: "25px" },
+        { text: "Spent", value: "spent", width: "25px" },
+        { text: "Balance", value: "balance", width: "25px" },
+        // { text: "masterCategory", value: "masterCategory" }
+      ],
+    };
   },
   computed: {
-    ...mapGetters(["intlCurrency", "categories"]),
-    ...mapGetters("categoryMonth", [
-      "editedMasterCategoryId",
-      "editedCategoryBudgetId",
-      "editedCategoryNameId",
-      "prevMonth",
-      "nextMonth",
-      "thisMonth",
-      "categoriesData",
-      "masterCategoriesStats",
+    ...mapGetters([
+      "selectedBudgetId",
+      "categoriesById",
+      "masterCategories",
+      "masterCategoriesById",
+      "allCategoryBalances",
+      // "selectedMonth",
+      "monthsInUse",
+      "categoriesByMaster",
+      "categories",
     ]),
-    ...mapMutations("categoryMonth", ["SET_EDITED_MASTER_CATEGORY_ID"]),
+    ...mapGetters("categoryMonth", ["selectedMonth"]),
     masterCategories: {
       get() {
         return this.$store.getters.masterCategories;
@@ -285,57 +318,160 @@ export default {
         this.$store.dispatch("reorderMasterCategories", values);
       },
     },
+    masterCategoriesStats() {
+      return Object.entries(this.categoriesData).reduce((partial, [master_id, category_docs]) => {
+        partial[master_id] = category_docs.reduce(
+          (sum_partial, category) => {
+            sum_partial.budget += category.budget;
+            sum_partial.spent += category.spent;
+            sum_partial.balance += category.balance;
+            return sum_partial;
+          },
+          { budget: 0, spent: 0, carryover: 0, balance: 0 }
+        );
+        return partial;
+      }, {});
+    },
+    categoriesData() {
+      let index = 0;
+      return this.masterCategories.reduce((partial, master_category) => {
+        const master_id = master_category._id.slice(-ID_LENGTH.category);
+
+        if (!Array.isArray(this.categoriesByMaster[master_id])) {
+          return partial;
+        }
+
+        partial[master_id] = this.categoriesByMaster[master_id]
+          .sort((a, b) => a.sort - b.sort)
+          .map((category) => {
+            const category_id = category._id.slice(-ID_LENGTH.category);
+            const budget = _.get(
+              this.allCategoryBalances,
+              [this.selectedMonth, category_id, "doc", "budget"],
+              0
+            );
+            const spent = _.get(
+              this.allCategoryBalances,
+              [this.selectedMonth, category_id, "spent"],
+              0
+            );
+            const carryover = getCarryover(
+              this.allCategoryBalances,
+              this.selectedMonth,
+              category_id
+            );
+            const name = _.get(this.categoriesById, [category_id, "name"], "");
+            const budget_display = (budget / 100).toFixed(2);
+            const result = {
+              id: category_id,
+              name: name,
+              budget: budget,
+              budgetDisplay: budget_display,
+              spent: spent,
+              carryover: carryover,
+              balance: budget + spent + carryover,
+              index: index,
+            };
+            index += 1;
+            return result;
+          });
+        return partial;
+      }, {});
+    },
+    // categoryIdsSorted() {
+    //   return this.masterCategories.reduce((partial, master_category) => {
+    //     const master_id = master_category._id.slice(-ID_LENGTH.category)
+
+    //   }, [])
+    // },
+    prevMonth() {
+      return prevMonth(this.selectedMonth);
+    },
+    nextMonth() {
+      return nextMonth(this.selectedMonth);
+    },
+    thisMonth() {
+      return moment(new Date()).format("YYYY-MM");
+    },
   },
   mounted() {
-    this.UPDATE_SELECTED_MONTH(this.$route.params.month);
+    // this.$store.commit("UPDATE_SELECTED_MONTH", this.$route.params.month);
+    this.UPDATE_SELECTED_MONTH( this.$route.params.month)
   },
   beforeRouteUpdate(to, from, next) {
-    this.UPDATE_SELECTED_MONTH(to.params.month);
+    // this.$store.commit("UPDATE_SELECTED_MONTH", to.params.month);
+    this.UPDATE_SELECTED_MONTH(to.params.month)
     next();
   },
   methods: {
-    ...mapMutations("categoryMonth", [
-      "UPDATE_SELECTED_MONTH",
-      "SET_EDITED_CATEGORY_BUDGET_ID",
-      "SET_EDITED_CATEGORY_NAME_ID",
-    ]),
-    ...mapActions(["createCategory"]),
-    ...mapActions("categoryMonth", [
-      "onCategoryBudgetChanged",
-      "onMasterCategoryNameChange",
-      "onMasterCategoryNameChange",
-      "categoryIdFromIndex",
-      "newMasterCategory",
-      "deleteMasterCategory",
-      "onCategoryNameChange",
-      "onHideCategory",
-      "onCategoryOrderChanged",
-    ]),
+    ...mapMutations("categoryMonth", ["UPDATE_SELECTED_MONTH"]),
+    ...mapActions(["updateMonthCategory", "deleteDocFromPouch", "deleteMasterCategory"]),
+
+    onCategoryBudgetChanged(category_id, event) {
+      if (!event.target) {
+        return;
+      }
+      const target_value = event.target.value;
+
+      const month = this.selectedMonth;
+
+      let budget_value = parseInt(parseFloat(target_value) * 100);
+      let current = null;
+      if (isNaN(budget_value)) {
+        console.warn("Budget value is NaN");
+        return;
+      }
+
+      const previous = _.get(
+        this.allCategoryBalances,
+        [this.selectedMonth, category_id, "doc"],
+        null
+      );
+
+      if (previous === null) {
+        current = {
+          ...DEFAULT_MONTH_CATEGORY,
+          _id: `b_${this.selectedBudgetId}${ID_NAME.monthCategory}${month}_${category_id}`,
+          budget: budget_value,
+        };
+      } else {
+        current = {
+          ...previous,
+          budget: budget_value,
+        };
+      }
+      this.$store.dispatch("updateMonthCategory", { current, previous });
+      this.editedCategoryBudgetId = "";
+    },
     onCategoryBudgetEnter(category, event) {
-      this.onCategoryBudgetChanged({ category_id: category.id, event: event });
+      this.onCategoryBudgetChanged(category.id, event);
       const next_id = this.categoryIdFromIndex(category.index + 1);
       document.activeElement.blur();
       if (next_id !== undefined) {
-        this.SET_EDITED_CATEGORY_BUDGET_ID(next_id);
+        // this.editedCategoryBudgetId = this.categoryIdFromIndex(category.index + 1);
+        this.editedCategoryBudgetId = next_id
         const element_id = `category-budget-input-${next_id}`;
         this.$refs[element_id][0].focus();
         nextTick().then(() => document.getElementById(element_id).select());
       }
     },
-    newCategory(master_category) {
-      this.createCategory({ name: 'Name', master_id: master_category.id }).then((id) => {
-        const element_id = `category-name-input-${id}`
-        this.SET_EDITED_CATEGORY_NAME_ID(id)
-
-        nextTick(() => {
-          const new_element = document.getElementById(element_id)
-          if (!new_element) {
-            return
-          }
-          new_element.focus()
-          new_element.select()
-        })
-      })
+    onMasterCategoryNameChange(event) {
+      let name = ''
+      if (typeof event === 'string' || event instanceof String) {
+        name = event
+      } else if (event.target) {
+        name = event.target.value;
+      } else {
+        return
+      }
+      const doc = this.masterCategoriesById[this.editedMasterCategoryId];
+      this.editedMasterCategoryId = "";
+      if (doc !== undefined) {
+        this.$store.dispatch("commitDocToPouchAndVuex", {
+          current: { ...doc, name: name },
+          previous: doc,
+        });
+      }
     },
     categoryIdFromIndex(index) {
       if (index >= this.categories.length) {
@@ -350,11 +486,79 @@ export default {
       }
       return undefined;
     },
-    onSelectTarget(event) {
-      // SAVE
+    newMasterCategory(index) {
+      this.$store
+        .dispatch("createMasterCategory", { name: "Name", is_income: false, sort: index - 0.5 })
+        .then((id) => {
+          this.editedMasterCategoryId = id
+          const element_id = `master-category-name-input-${id}`
+
+          Vue.nextTick(() => {
+            const new_element = document.getElementById(element_id)
+            if (!new_element) {
+              return
+            }
+            new_element.focus()
+            new_element.select()
+          })
+        })
+    },
+    deleteMasterCategory(master_category) {
+      this.$store.dispatch("deleteMasterCategory", master_category.id);
+    },
+    newCategory(master_category) {
+      this.$store
+        .dispatch("createCategory", { name: "Name", master_id: master_category.id })
+        .then((id) => {
+          const element_id = `category-name-input-${id}`
+          this.editedCategoryNameId = id;
+
+          Vue.nextTick(() => {
+            const new_element = document.getElementById(element_id)
+            if (!new_element) {
+              return
+            }
+            new_element.focus()
+            new_element.select()
+          })
+
+        });
+    },
+    onSelectTarget(event) { // SAVE
       if (event.target) {
         event.target.select();
       }
+    },
+
+    onCategoryNameChange(event) {
+      let name = ''
+      if (typeof event === 'string' || event instanceof String) {
+        name = event
+      } else if (event.target) {
+        name = event.target.value;
+      } else {
+        return
+      }
+      const doc = this.categoriesById[this.editedCategoryNameId];
+      this.editedCategoryNameId = "";
+      if (doc !== undefined) {
+        this.$store.dispatch("commitDocToPouchAndVuex", {
+          current: { ...doc, name: name },
+          previous: doc,
+        });
+      }
+    },
+    onHideCategory(category_id) {
+      const doc = this.categoriesById[category_id];
+      if (doc !== undefined) {
+        this.$store.dispatch("commitDocToPouchAndVuex", {
+          current: { ...doc, masterCategory: NONE._id },
+          previous: doc,
+        });
+      }
+    },
+    onCategoryOrderChanged(event) {
+      this.$store.dispatch("reorderCategory", event);
     },
   },
 };
