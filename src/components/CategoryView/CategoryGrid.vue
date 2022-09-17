@@ -12,7 +12,7 @@
     <v-row justify="space-between" class="ma-0 pt-2">
       <v-col sm="auto" />
       <v-col sm="auto">
-        <BudgetHeader />
+        <category-header />
       </v-col>
     </v-row>
     <v-row>
@@ -29,50 +29,27 @@
       >
         <v-container class="primary lighten-2">
           <v-row class="master-row white--text">
-            <v-col
-              :data-testid="`master-category-name-${master_category.id}`"
-              v-if="editedMasterCategoryId == master_category.id"
-            >
-              <v-text-field
-                :id="`master-category-name-input-${master_category.id}`"
-                :data-testid="`master-category-name-input-${master_category.id}`"
-                :value="master_category.name"
-                hide-details
-                dark
-                dense
-                flat
-                solo
-                @blur="onMasterCategoryNameChange($event)"
-                @change="onMasterCategoryNameChange($event)"
-                background-color="primary"
-              >
-                <template v-slot:prepend>
-                  <v-icon class="handle" :id="`drag-master-category-${master_category.id}`">
+            <v-col :data-testid="`master-category-name-${master_category.id}`">
+              <v-row>
+                <v-col align-self="center" sm="1" class="mr-2">
+                  <v-icon
+                    class="handle"
+                    :data-testid="`drag-master-category-${master_category.id}`"
+                  >
                     mdi-drag-horizontal
                   </v-icon>
-                </template>
-              </v-text-field>
-            </v-col>
-            <v-col :data-testid="`master-category-name-${master_category.id}`" v-else>
-              <v-text-field
-                :data-testid="`master-category-name-input-${master_category.id}`"
-                :value="master_category.name"
-                @click="SET_EDITED_MASTER_CATEGORY_ID(master_category.id)"
-                @focus="SET_EDITED_MASTER_CATEGORY_ID(master_category.id)"
-                dark
-                dense
-                flat
-                solo
-                hide-details
-                readonly
-                background-color="primary lighten-2"
-              >
-                <template v-slot:prepend>
-                  <v-icon class="handle" :id="`drag-master-category-${master_category.id}`">
-                    mdi-drag-horizontal
-                  </v-icon>
-                </template>
-              </v-text-field>
+                </v-col>
+                <v-col>
+                  <category-grid-input
+                    :id="`master-category-name-input-${master_category.id}`"
+                    :data-testid="`master-category-name-input-${master_category.id}`"
+                    :is-editing="editedMasterCategoryId == master_category.id"
+                    :value="master_category.name"
+                    @edit="onEditMasterCategoryName(master_category.id)"
+                    @apply="onMasterCategoryNameChange"
+                  />
+                </v-col>
+              </v-row>
             </v-col>
             <v-col :data-testid="`master-category-budget-${master_category.id}`" align="right">
               {{ intlCurrency.format(masterCategoriesStats[master_category.id].budget / 100) }}
@@ -87,7 +64,7 @@
                 small
                 right
                 :data-testid="`btn-new-master-category-${master_category.id}`"
-                @click="newMasterCategory(master_index)"
+                @click="onNewMasterCategory(master_index)"
               >
                 mdi-plus-circle-outline
               </v-icon>
@@ -105,7 +82,7 @@
                 small
                 right
                 :data-testid="`btn-new-category-${master_category.id}`"
-                @click="newCategory(master_category)"
+                @click="onNewCategory(master_category)"
               >
                 mdi-note-plus-outline
               </v-icon>
@@ -126,88 +103,39 @@
               v-for="category in categoriesData[master_category.id]"
               :key="category.id"
             >
-              <v-col
-                :data-testid="`category-name-${category.id}`"
-                v-if="editedCategoryNameId === category.id"
-              >
-                <v-text-field
-                  class="category-name-input"
-                  :id="`category-name-input-${category.id}`"
-                  :data-testid="`category-name-input-${category.id}`"
-                  :value="category.name"
-                  hide-details
-                  dense
-                  flat
-                  solo
-                  @blur="onCategoryNameChange($event)"
-                  @change="onCategoryNameChange($event)"
-                  background-color="grey lighten-3"
-                >
-                  <template v-slot:prepend>
+              <v-col :data-testid="`category-name-${category.id}`">
+                <v-row>
+                  <v-col align-self="center" sm="1" class="mr-2">
                     <v-icon class="handle" :data-testid="`drag-category-${category.id}`">
                       mdi-drag-horizontal
                     </v-icon>
-                  </template>
-                </v-text-field>
+                  </v-col>
+                  <v-col>
+                    <category-grid-input
+                      class="category-name-input"
+                      :id="`category-name-input-${category.id}`"
+                      :data-testid="`category-name-input-${category.id}`"
+                      :is-editing="editedCategoryNameId == category.id"
+                      :value="category.name"
+                      @edit="onEditCategoryName(category.id)"
+                      @apply="onCategoryNameChange"
+                    />
+                  </v-col>
+                </v-row>
               </v-col>
-              <v-col :data-testid="`category-name-${category.id}`" v-else>
-                <v-text-field
-                  class="category-name-input"
-                  :data-testid="`category-name-input-${category.id}`"
-                  @click="SET_EDITED_CATEGORY_NAME_ID(category.id)"
-                  @focus="SET_EDITED_CATEGORY_NAME_ID(category.id)"
-                  :value="category.name"
-                  readonly
-                  hide-details
-                  dense
-                  flat
-                  solo
-                >
-                  <template v-slot:prepend>
-                    <v-icon class="handle" :data-testid="`drag-category-${category.id}`">
-                      mdi-drag-horizontal
-                    </v-icon>
-                  </template>
-                </v-text-field>
-              </v-col>
-              <v-col
-                :id="`category-budget-${category.id}`"
-                v-if="editedCategoryBudgetId == category.id"
-              >
-                <v-text-field
+              <v-col :id="`category-budget-${category.id}`">
+                <category-grid-input 
                   class="category-budget-input"
                   :id="`category-budget-input-${category.id}`"
                   :data-testid="`category-budget-input-${category.id}`"
-                  :ref="`category-budget-input-${category.id}`"
                   :value="category.budgetDisplay"
-                  hide-details
-                  dense
-                  flat
-                  solo
-                  reverse
-                  @click="$event.target.select()"
-                  @change="onCategoryBudgetChanged({ category_id: category.id, event: $event })"
-                  @blur="onCategoryBudgetChanged({ category_id: category.id, event: $event })"
-                  @keyup.enter="onCategoryBudgetEnter(category, $event)"
-                  background-color="grey lighten-3"
-                  suffix="$"
-                />
-              </v-col>
-              <v-col v-else>
-                <v-text-field
-                  class="category-budget-input"
-                  :data-testid="`category-budget-input-${category.id}`"
-                  :id="`category-budget-input-${category.id}`"
-                  :ref="`category-budget-input-${category.id}`"
-                  @click="SET_EDITED_CATEGORY_BUDGET_ID(category.id)"
-                  @focus="SET_EDITED_CATEGORY_BUDGET_ID(category.id)"
-                  :value="intlCurrency.format(category.budgetDisplay)"
-                  readonly
-                  hide-details
-                  dense
-                  flat
-                  solo
-                  reverse
+                  :is-editing="editedCategoryBudgetId == category.id"
+                  currency
+                  @edit="onEditCategoryBudget(category.id)"
+                  @apply="(event) => {
+                    onCategoryBudgetChanged({ category_id: category.id, event: event })
+                  }"
+                  @enter="(event) => onCategoryBudgetEnter(category, event)"
                 />
               </v-col>
               <v-col :data-testid="`category-spent-${category.id}`" align="right">
@@ -235,18 +163,20 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import BaseDialogModalComponent from "../Modals/BaseDialogModalComponent.vue";
-import BudgetHeader from "./BudgetHeader.vue";
+import CategoryHeader from "./CategoryHeader.vue";
+import CategoryGridInput from "./CategoryGridInput.vue";
 import _ from "lodash";
 import draggable from "vuedraggable";
 import { nextTick } from "vue";
 import { ID_LENGTH } from "../../constants";
 
 export default {
-  name: "BudgetGrid",
+  name: "CategoryGrid",
   components: {
     draggable,
     BaseDialogModalComponent,
-    BudgetHeader,
+    CategoryHeader,
+    CategoryGridInput,
   },
   data() {
     return {};
@@ -298,18 +228,22 @@ export default {
       "UPDATE_SELECTED_MONTH",
       "SET_EDITED_CATEGORY_BUDGET_ID",
       "SET_EDITED_CATEGORY_NAME_ID",
+      "SET_EDITED_MASTER_CATEGORY_ID,",
     ]),
-    ...mapActions(["createCategory"]),
     ...mapActions("categoryMonth", [
       "onCategoryBudgetChanged",
       "onMasterCategoryNameChange",
       "onMasterCategoryNameChange",
       "categoryIdFromIndex",
-      "newMasterCategory",
       "deleteMasterCategory",
       "onCategoryNameChange",
       "onHideCategory",
       "onCategoryOrderChanged",
+      "onEditMasterCategoryName",
+      "onEditCategoryName",
+      "newMasterCategory",
+      "newCategory",
+      "onEditCategoryBudget",
     ]),
     onCategoryBudgetEnter(category, event) {
       this.onCategoryBudgetChanged({ category_id: category.id, event: event });
@@ -318,24 +252,44 @@ export default {
       if (next_id !== undefined) {
         this.SET_EDITED_CATEGORY_BUDGET_ID(next_id);
         const element_id = `category-budget-input-${next_id}`;
-        this.$refs[element_id][0].focus();
-        nextTick().then(() => document.getElementById(element_id).select());
+        const element = document.getElementById(element_id)
+        element.focus()
+        nextTick().then(() => {
+          element.select()
+        })
       }
     },
-    newCategory(master_category) {
-      this.createCategory({ name: 'Name', master_id: master_category.id }).then((id) => {
-        const element_id = `category-name-input-${id}`
-        this.SET_EDITED_CATEGORY_NAME_ID(id)
+    onNewCategory(master_category) {
+      // this.createCategory({ name: "Name", master_id: master_category.id }).then((id) => {
+      //   this.SET_EDITED_CATEGORY_NAME_ID(id);
+      this.newCategory(master_category).then((id) => {
+        const element_id = `category-name-input-${id}`;
 
         nextTick(() => {
-          const new_element = document.getElementById(element_id)
+          const new_element = document.getElementById(element_id);
           if (!new_element) {
-            return
+            return;
           }
-          new_element.focus()
-          new_element.select()
-        })
-      })
+          new_element.focus();
+          new_element.select();
+        });
+      });
+    },
+    onNewMasterCategory(index) {
+      // this.createMasterCategory({ name: 'Name', is_income: false, sort: index - 0.5 }).then((id) => {
+      //     this.SET_EDITED_MASTER_CATEGORY_ID(id)
+      this.newMasterCategory(index).then((id) => {
+        const element_id = `master-category-name-input-${id}`;
+
+        nextTick(() => {
+          const new_element = document.getElementById(element_id);
+          if (!new_element) {
+            return;
+          }
+          new_element.focus();
+          new_element.select();
+        });
+      });
     },
     categoryIdFromIndex(index) {
       if (index >= this.categories.length) {
@@ -356,6 +310,9 @@ export default {
         event.target.select();
       }
     },
+    lg(msg) {
+      console.log(msg)
+    }
   },
 };
 </script>

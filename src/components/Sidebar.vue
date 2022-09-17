@@ -235,7 +235,7 @@
 import { mapGetters } from 'vuex'
 import BaseDialogModalComponent from './Modals/BaseDialogModalComponent.vue'
 import { ID_LENGTH } from '../constants'
-import BudgetAddModal from './BudgetView/BudgetAddModal.vue'
+import BudgetAddModal from './CategoryView/BudgetAddModal.vue'
 
 import moment from 'moment'
 

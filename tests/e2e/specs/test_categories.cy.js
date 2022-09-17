@@ -6,6 +6,7 @@ describe('Test categories (budget) page', () => {
 
     it('Checks category values for July', () => {
       cy.get('[data-testid="master-category-name-input-fVM"]').should('have.value', 'Income')
+      // cy.get('[data-testid="master-category-name-input-fVM"]')
       cy.get('[data-testid="master-category-budget-fVM"]').should('have.text', ' -$1,500.00 ')
       cy.get('[data-testid="master-category-spent-fVM"]').should('have.text', ' $1,586.79 ')
       cy.get('[data-testid="master-category-balance-fVM"]').should('have.text', ' $86.79 ')
@@ -253,6 +254,19 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="category-budget-input-Lx7"]').should('have.value', '-$25.34')
       cy.get('[data-testid="category-spent-Lx7"]').should('have.text', ' -$520.00 ')
       cy.get('[data-testid="category-balance-Lx7"]').should('have.text', ' -$535.34 ')
+    })
+
+    it('Drag master category', () => {
+      cy.get('[data-testid="drag-master-category-ggJ"]').drag('[data-testid="master-category-name-fVM"]', {
+        target: {
+          position: 'top'
+        }
+      })
+      cy.get('.master-row').should('have.length', 4)
+      cy.get('.master-row input').eq(0).should('contain.value', 'Misc')
+      cy.get('.master-row input').eq(1).should('contain.value', 'Income')
+      cy.get('.master-row input').eq(2).should('contain.value', 'Spending')
+      cy.get('.master-row input').eq(3).should('contain.value', 'Uncategorized')
     })
     // Test moving water to above paycheck
   })

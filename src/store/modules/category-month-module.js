@@ -1,10 +1,5 @@
 import Vue from 'vue'
-import {
-  DEFAULT_MONTH_CATEGORY,
-  ID_LENGTH,
-  ID_NAME,
-  NONE
-} from '../../constants'
+import { DEFAULT_MONTH_CATEGORY, ID_LENGTH, ID_NAME, NONE } from '../../constants'
 import { getCarryover } from '@/store/modules/category-module'
 import _ from 'lodash'
 import moment from 'moment'
@@ -24,6 +19,7 @@ export default {
   },
   mutations: {
     SET_EDITED_MASTER_CATEGORY_ID(state, id) {
+      // console.log('SET_EDITED_MASTER_CATEGORY_ID', id)
       Vue.set(state, 'editedMasterCategoryId', id)
     },
     CLEAR_EDITED_MASTER_CATEGORY_ID(state) {
@@ -188,26 +184,29 @@ export default {
       }
     },
     newMasterCategory({ commit, dispatch }, index) {
-      dispatch('createMasterCategory', { name: 'Name', is_income: false, sort: index - 0.5 }, { root: true }).then(
-        (id) => {
-          commit('SET_EDITED_MASTER_CATEGORY_ID', id)
-          const element_id = `master-category-name-input-${id}`
-
-          Vue.nextTick(() => {
-            const new_element = document.getElementById(element_id)
-            if (!new_element) {
-              return
-            }
-            new_element.focus()
-            new_element.select()
-          })
-        }
-      )
+      return dispatch(
+        'createMasterCategory',
+        { name: 'Name', is_income: false, sort: index - 0.5 },
+        { root: true }
+      ).then((id) => {
+        commit('SET_EDITED_MASTER_CATEGORY_ID', id)
+        return id
+      })
+    },
+    newCategory({ commit, dispatch }, master_category) {
+      return dispatch(
+        'createCategory',
+        { name: 'Name', master_id: master_category.id }, 
+        { root: true }
+      ).then((id) => {
+        commit('SET_EDITED_CATEGORY_NAME_ID', id)
+        return id
+      })
     },
     deleteMasterCategory({ dispatch }, master_category) {
       dispatch('deleteMasterCategory', master_category.id, { root: true })
     },
-    
+
     onCategoryNameChange({ getters, commit, dispatch, rootGetters }, event) {
       let name = ''
       if (typeof event === 'string' || event instanceof String) {
@@ -245,8 +244,15 @@ export default {
     },
     onCategoryOrderChanged({ dispatch }, event) {
       dispatch('reorderCategory', event, { root: true })
+    },
+    onEditMasterCategoryName({ commit }, id) {
+      commit('SET_EDITED_MASTER_CATEGORY_ID', id)
+    },
+    onEditCategoryName({ commit }, id) {
+      commit('SET_EDITED_CATEGORY_NAME_ID', id)
+    },
+    onEditCategoryBudget({ commit }, id) {
+      commit('SET_EDITED_CATEGORY_BUDGET_ID', id)
     }
   }
 }
-
-

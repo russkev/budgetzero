@@ -50,9 +50,6 @@ export default {
       this.isSelected = false
     },
     onClick(event) {
-      // console.log("Start", event.target.selectionStart)
-      // console.log("End", event.target.selectionEnd)
-      
       if (!this.isSelected) {
         event.target.select()
         this.isSelected = true
