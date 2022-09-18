@@ -257,11 +257,7 @@ describe('Test categories (budget) page', () => {
     })
 
     it('Drag master category', () => {
-      cy.get('[data-testid="drag-master-category-ggJ"]').drag('[data-testid="master-category-name-fVM"]', {
-        target: {
-          position: 'top'
-        }
-      })
+      cy.get('[data-testid="drag-master-category-ggJ"]').drag('[data-testid="master-category-name-fVM"]')
       cy.get('.master-row').should('have.length', 4)
       cy.get('.master-row input').eq(0).should('contain.value', 'Misc')
       cy.get('.master-row input').eq(1).should('contain.value', 'Income')

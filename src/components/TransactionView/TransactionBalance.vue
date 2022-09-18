@@ -3,7 +3,7 @@
     {{ intlCurrency.format(item.balance / 100) }}
   </div>
   <div v-else>
-    <v-btn icon @click="toggleSplit">
+    <v-btn icon @click="toggleSplit" data-testid="splits-button">
       <v-icon>mdi-call-split</v-icon>
     </v-btn>
   </div>
@@ -36,3 +36,4 @@ export default {
   }
 };
 </script>
+s

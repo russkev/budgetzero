@@ -1,18 +1,31 @@
 <template>
-  <select-amount-base 
-    :amount="amount" 
+    <v-text-field
+    :value="amount"
+    suffix="$"
+    reverse
+    dense
+    hide-details
+    :rules="[currencyRule]"
+    @click="onClick($event)"
+    @blur="
+      onApply($event)
+      onBlur()
+    "
+    @change="onApply($event)"
+    @mousedown="onApply($event)"
+    @keyup.enter="
+      onApply($event)
+      onSave()
+    "
     :disabled="disabled"
-    @apply="amountApply" 
-    v-on="$listeners" 
+    :data-testid="dataTestid"
   />
 </template>
 
 <script>
 import { DEFAULT_TRANSACTION } from "../../constants";
-import SelectAmountBase from "../Inputs/SelectAmountBase.vue";
 
 export default {
-  components: { SelectAmountBase },
   emits: ["update"],
   props: {
     editedItem: {
@@ -26,11 +39,19 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
+    },
+    dataTestid: {
+      type: String,
+      default: '',
     }
   },
   data() {
     return {
       displayValue: "",
+      currencyRule: (value) => {
+        return value !== undefined && (value.length === 0 || !isNaN(value));
+      },
+      isSelected: false,
     };
   },
   computed: {
@@ -52,7 +73,16 @@ export default {
     },
   },
   methods: {
-    amountApply(event) {
+    onBlur() {
+      this.isSelected = false
+    },
+    onClick(event) {
+      if (!this.isSelected) {
+        event.target.select()
+        this.isSelected = true
+      }
+    },
+    onApply(event) {
       if (!event.target) {
         return;
       }
@@ -79,6 +109,10 @@ export default {
           this.displayValue = (sanitized_value / 100).toFixed(2);
         }
       });
+    },
+    onSave() {
+      this.$emit('save')
+      this.isSelected = false
     },
     isBlank(value) {
       if (this.isOutflow) {

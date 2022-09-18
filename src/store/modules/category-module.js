@@ -1,7 +1,7 @@
 import { logPerformanceTime, extractMonthCategoryMonth } from '../../helper'
 import { ID_LENGTH, ID_NAME, NONE } from '../../constants'
 import { compareAscii } from './id-module'
-import _ from 'lodash'
+import _, { isArray } from 'lodash'
 import Vue from 'vue'
 
 const DEFAULT_CATEGORY_STATE = {
@@ -378,24 +378,37 @@ export default {
         : previous.account.slice(-ID_LENGTH.account)
       const current_month = current ? current.date.slice(0, 7) : null
       const previous_month = previous ? previous.date.slice(0, 7) : null
-      const current_category_id = current ? current.category : null
-      const previous_category_id = previous ? previous.category : null
-      const current_master_id = current ? getters.categoriesById[current.category]['masterCategory'] : null
-      const previous_master_id = previous ? getters.categoriesById[previous.category]['masterCategory'] : null
+      // const current_category_id = current ? current.category : null
+      // const previous_category_id = previous ? previous.category : null
+      // const current_master_id = current ? getters.categoriesById[current.category]['masterCategory'] : null
+      // const previous_master_id = previous ? getters.categoriesById[previous.category]['masterCategory'] : null
+      const account = getters.accountsById[account_id]
+
+      // currentCategoryItems = []
+      // if (current) {
+      //   if (current.splits && current.splits.length > 0) {
+      //     current.CategoryItems
+      //   }
+
+      // }
+      
+
+
+
       const current_value = current ? current.value : 0
       const previous_value = previous ? previous.value : 0
-      const value_difference = current_value - previous_value
-      let isSameMonthCategory = true
-      if (current 
-        && previous 
-        && (
-          current_month !== previous_month ||
-          current_master_id !== previous_master_id ||
-          current_category_id !== previous_category_id
-        )
-      ) {
-        isSameMonthCategory = false
-      }
+      // const value_difference = current_value - previous_value
+      // let isSameMonthCategory = true
+      // if (current 
+      //   && previous 
+      //   && (
+      //     current_month !== previous_month ||
+      //     current_master_id !== previous_master_id ||
+      //     current_category_id !== previous_category_id
+      //   )
+      // ) {
+      //   isSameMonthCategory = false
+      // }
 
       if (getters.allCategoryBalances[current_month] === undefined) {
         commit('INIT_CATEGORY_BALANCES_MONTH', {
@@ -411,34 +424,79 @@ export default {
         return
       }
 
-      const transaction_payload = {
-        account: getters.accountsById[account_id],
-        month: current ? current_month : previous_month,
-        master_id: current ? current_master_id : previous_master_id,
-        category_id: current ? current.category : previous.category,
-        spent: 0
-      }
+      // const transaction_payload = {
+      //   account: getters.accountsById[account_id],
+      //   month: current ? current_month : previous_month,
+      //   master_id: current ? current_master_id : previous_master_id,
+      //   category_id: current ? current.category : previous.category,
+      //   spent: 0
+      // }
 
       let result = []
 
-      if (isSameMonthCategory) {
-        result.push({
-          ...transaction_payload,
-          spent: value_difference
-        })
-      } else {
-        result.push({
-          ...transaction_payload,
-          spent: current_value
-        })
-        result.push({
-          ...transaction_payload,
-          month: previous_month,
-          master_id: previous_master_id,
-          category_id: previous.category,
-          spent: -current.value
-        })
+      // // if (isSameMonthCategory) {
+      // if(false) {
+      //   result.push({
+      //     ...transaction_payload,
+      //     spent: value_difference
+      //   })
+      // } else {
+      //   result.push({
+      //     ...transaction_payload,
+      //     spent: current_value
+      //   })
+      //   result.push({
+      //     ...transaction_payload,
+      //     month: previous_month,
+      //     master_id: previous_master_id,
+      //     category_id: previous.category,
+      //     spent: -current.value
+      //   })
+      // }
+      if (current) {
+        if (current.splits && isArray(current.splits) && current.splits.length > 0) {
+          const this_result = current.splits.map((split) => {
+            return {
+              account: account,
+              month: current_month,
+              category_id: split.category,
+              spent: split.value,
+            }
+          })
+          result = result.concat(this_result)
+        } else {
+          result.push({
+            account: account,
+            month: current_month,
+            category_id: current.category,
+            spent: current_value
+          })
+        }
       }
+      if (previous) {
+        if (previous.splits && isArray(previous.splits) && previous.splits.length > 0) {
+          const this_result = previous.splits.map((split) => {
+            return {
+              account: account,
+              month: previous_month,
+              category_id: split.category,
+              spent: -split.value,
+            }
+          })
+          result = result.concat(this_result)
+        } else {
+          result.push({
+            account: account,
+            month: previous_month,
+            category_id: previous.category,
+            spent: -previous_value,
+          })
+        }
+      }
+      console.log("Current", current)
+      console.log("Previous", previous)
+      console.log("UPDATE RESULT", result)
+
       return result
     },
 

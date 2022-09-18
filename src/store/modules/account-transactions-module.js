@@ -80,6 +80,15 @@ export default {
     SET_EDITED_TRANSACTION_CLEARED(state, value) {
       Vue.set(state.editedTransaction, 'cleared', value)
     },
+    SET_EDITED_TRANSACTION_MEMO(state, value) {
+      Vue.set(state.editedTransaction, 'memo', value)
+    },
+    SET_EDITED_TRANSACTION_NOTE(state, value) {
+      Vue.set(state.editedTransaction, 'note', value)
+    },
+    SET_EDITED_TRANSACTION_DATE(state, date) {
+      Vue.set(state.editedTransaction, 'date', date)
+    },
     PUSH_EDITED_TRANSACTION_SPLIT(state, splitObject) {
       state.editedTransaction.splits.push(splitObject)
     },
@@ -100,7 +109,7 @@ export default {
     },
     CLEAR_EDITED_TRANSACTION_SPLIT(state) {
       // Vue.set(state.editedTransaction, 'splits', [])
-      while(state.editedTransaction.splits.length > 0) {
+      while (state.editedTransaction.splits.length > 0) {
         state.editedTransaction.splits.pop()
       }
     },
@@ -176,6 +185,7 @@ export default {
       let previous = getters.isCreatingNewTransaction ? null : item
       await dispatch('prepareEditedItem')
       const transaction = JSON.parse(JSON.stringify(getters.editedTransaction))
+      console.log("SAVE PREVIOUS", previous)
       return dispatch(
         'createOrUpdateTransaction',
         {
@@ -216,9 +226,10 @@ export default {
       commit('SET_IS_CREATING_NEW_TRANSACTION', false)
       commit('CLEAR_EDITED_TRANSACTION')
       commit('SET_EDITED_TRANSACTION_INDEX', getters.transactions.indexOf(transaction))
-      commit('SET_EDITED_TRANSACTION', {
-        ...getters.transactions[getters.editedTransactionIndex]
-      })
+      commit('SET_EDITED_TRANSACTION', 
+        JSON.parse(JSON.stringify(getters.transactions[getters.editedTransactionIndex]))
+        // ...getters.transactions[getters.editedTransactionIndex]
+      )
     },
     prepareEditedItem({ commit, getters, rootGetters }) {
       if (getters.isCreatingNewTransaction && getters.editedTransactionInitialDate !== getters.editedTransaction.date) {
@@ -331,15 +342,14 @@ export default {
         commit('CLEAR_SELECTED_TRANSACTIONS')
       })
     },
-    setEditedTransactionSplitValue({commit, getters}, {index, value}) {
-      commit('SET_EDITED_TRANSACTION_SPLIT_VALUE', {index: index, value: value})
+    setEditedTransactionSplitValue({ commit, getters }, { index, value }) {
+      commit('SET_EDITED_TRANSACTION_SPLIT_VALUE', { index: index, value: value })
       let remainder = getters.editedTransaction.value
       const splits = getters.editedTransaction.splits
-      for (let i = 0; i < splits.length - 1; i++)
-      {
+      for (let i = 0; i < splits.length - 1; i++) {
         remainder -= splits[i].value
       }
-      commit('SET_EDITED_TRANSACTION_SPLIT_VALUE', {index: splits.length - 1, value: remainder})
+      commit('SET_EDITED_TRANSACTION_SPLIT_VALUE', { index: splits.length - 1, value: remainder })
     }
   }
 }

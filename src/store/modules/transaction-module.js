@@ -1,3 +1,4 @@
+import { isArray } from 'lodash'
 import { ID_LENGTH, ID_NAME, NONE } from '../../constants'
 import { sanitizeValueInput, randomInt, randomString } from '../../helper'
 import { defaultAccountBalance, updateAccountBalances } from './account-module'
@@ -60,8 +61,11 @@ export default {
       if (current) {
         current = await processTransfer(current, context)
         current.value = sanitizeValueInput(current.value)
-        // const payee = await context.dispatch('getPayeeID', current.payee)
-        // current.payee = payee
+        if (isArray(current.splits) && current.splits.length > 0) {
+          current.splits.map((split) => {
+            split.value = sanitizeValueInput(split.value)
+          })
+        }
       }
 
       return context.dispatch('commitDocToPouchAndVuex', { current, previous })
@@ -319,6 +323,7 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     const category_id = row.doc.category
     const cleared = row.doc.cleared ? working : 0
     const uncleared = row.doc.cleared ? 0 : working
+    const splits = row.doc.splits ? row.doc.splits : []
 
     _.defaultsDeep(balances.account, defaultAccountBalance(account_id))
     updateAccountBalances(balances.account, account_doc, account_id, cleared, uncleared, working)
@@ -332,12 +337,18 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
 
     initFromMonthCategory(month)
 
-    if (balances.category[month] === undefined) {
-      balances.category[month] = initCategoryBalancesMonth(balances.category, month, getters.categories)
-    }
-    balances.category[month] = updateSingleCategory(balances.category[month], category_id, {
-      spent: working,
-      account: account_doc
+    // if (splits.length < 1) {
+
+    const category_items = splits.length > 0 ? splits : [{category: category_id, value: working}]
+
+    category_items.map((item) => {
+      if (balances.category[month] === undefined) {
+        balances.category[month] = initCategoryBalancesMonth(balances.category, month, getters.categories)
+      }
+      balances.category[month] = updateSingleCategory(balances.category[month], item.category, {
+        spent: item.value,
+        account: account_doc
+      })
     })
   })
 

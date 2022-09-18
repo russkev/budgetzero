@@ -40,6 +40,7 @@
         <v-container>
           <select-category
             id="select-category-selected-input"
+            data-testid="multiple-transaction-category-input"
             category-id=":::"
             @update="onCategoryUpdate"
           />

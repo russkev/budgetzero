@@ -1,8 +1,8 @@
 <template>
   <v-autocomplete 
     v-model="selection"
-    data-testid="edit-row-select-category"
     :items="items"
+    :data-testid="dataTestid"
     item-text="name"
     item-value="_id"
     return-object
@@ -31,6 +31,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false,
+    },
+    dataTestid: {
+      type: String,
+      default: '',
     }
   },
   data() {

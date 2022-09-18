@@ -47,11 +47,11 @@
       </tr>
     </template>
     <template #expanded-item="{ item }">
-      <tr v-for="(split, index) in item.splits" :key="split.category">
-        <transaction-expanded-split
+      <tr v-for="(split, index) in editedTransaction.splits" :key="split.category">
+        <transaction-split
           :split="split"
           :index="index"
-          :disabled="index === item.splits.length - 1"
+          :disabled="index === editedTransaction.splits.length - 1"
         />
       </tr>
       <tr>
@@ -69,7 +69,7 @@ import SelectCategory from "./SelectCategory.vue";
 import TransactionFlow from "./TransactionFlow.vue";
 import TransactionBalance from "./TransactionBalance.vue";
 import TransactionExpanded from "./TransactionExpanded.vue";
-import TransactionExpandedSplit from "./TransactionExpandedSplit.vue";
+import TransactionSplit from "./TransactionSplit.vue";
 
 export default {
   components: {
@@ -78,7 +78,7 @@ export default {
     TransactionFlow,
     TransactionBalance,
     TransactionExpanded,
-    TransactionExpandedSplit,
+    TransactionSplit,
   },
   computed: {
     ...mapGetters("accountTransactions", [

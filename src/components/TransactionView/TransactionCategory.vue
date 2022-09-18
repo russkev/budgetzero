@@ -14,6 +14,7 @@
       :category-id="item.category"
       @update="onCategoryUpdate"
       :disabled="item.splits.length > 0"
+      data-testid="edit-row-select-category"
     />
   </div>
 </template>

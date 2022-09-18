@@ -5,6 +5,7 @@
     <td>
       <select-category
         :id="`split-category-input-${index}`"
+        :data-testid="`split-category-input-${index}`"
         :category-id="split.category"
         @update="onSplitsCategoryUpdate"
       />
