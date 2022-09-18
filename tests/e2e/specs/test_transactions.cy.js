@@ -403,7 +403,7 @@ describe('Test transactions', () => {
     })
   })
 
-  context('Test that split category works', () => {
+  context.only('Test that split category works', () => {
     before(() => {
       cy.initPath('transactions/7kW')
     })
@@ -482,7 +482,6 @@ describe('Test transactions', () => {
 
       cy.get('[data-testid="category-name-input-ATi"]').should('have.value', 'Groceries')
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $804.95 ')
-
     })
   })
 })

@@ -1,6 +1,12 @@
 <template>
   <div v-if="item._id !== editedTransaction._id" class="text-truncate" @click="onItemClick">
-    <span class="row-category font-weight-medium">
+    <span v-if="isSplits(item)" class="cyan--text row-category font-weight-medium">
+      <v-icon small color="cyan">mdi-call-split</v-icon>Split
+    </span>
+    <span v-else-if="isUncategorized(item)" class="amber--text row-category font-weight-medium">
+      {{ item.category_name }}
+    </span>
+    <span v-else class="row-category font-weight-medium">
       {{ item.category_name }}
     </span>
     <br />
@@ -23,7 +29,7 @@
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import { nextTick } from "vue";
 import SelectCategory from "./SelectCategory.vue";
-import { ID_LENGTH } from "../../constants";
+import { ID_LENGTH, NONE } from "../../constants";
 
 
 export default {
@@ -58,6 +64,12 @@ export default {
     },
     onCategoryUpdate(category_id) {
       this.SET_EDITED_TRANSACTION_CATEGORY(category_id);
+    },
+    isUncategorized(item) {
+      return item.category === NONE._id
+    },
+    isSplits(item) {
+      return item.splits && Array.isArray(item.splits) && item.splits.length > 0
     },
   },
 };
