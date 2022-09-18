@@ -72,20 +72,16 @@ export default {
     },
 
     updateRunningBalance(context, { transaction, isDeleted }) {
-      // let running_balance = 0
       return context
         .dispatch('fetchPrecedingTransaction', { transaction, isDeleted })
         .then((result) => {
-          // running_balance = result === null ? 0 : result.doc.balance
           const return_value = result === null ? transaction : result.doc
           return return_value
-          // return result === null ? transaction :
         })
         .then((result) => {
           return context.dispatch('fetchAllSucceedingTransactions', result)
         })
         .then((rows) => {
-          // rows.shift() // Remove first element since it is already counted
           if (!rows || rows.length === 0) {
             return
           }

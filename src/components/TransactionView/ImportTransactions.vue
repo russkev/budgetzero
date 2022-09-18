@@ -133,7 +133,7 @@
 <script>
 import Vue from 'vue'
 // import Banking from 'banking'
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import _ from 'lodash'
 import { VueCsvImport } from 'vue-csv-import'
 import moment from 'moment'
@@ -184,6 +184,7 @@ export default {
   },
   watch: {},
   methods: {
+    ...mapActions(['loadLocalBudget', 'commitBulkNewDocsToPouch']),
     onFileChange() {
       this.readOFXfile(this.chosenFile)
     },
@@ -194,50 +195,47 @@ export default {
       this.selectedOfxTransactions = {}
 
       reader.onload = (e) => {
-        // TODO: Get this new ofx parser to work, possibly different arguments required
-        ofx.parse(e.target.result, (res) => {
-          const potentialBankAccounts = _.get(res, 'body.OFX.BANKMSGSRSV1.STMTTRNRS', [])
-          const potentialCreditAccounts = _.get(res, 'body.OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS', [])
-          var creditAccountsForImport = []
-          var bankAccountsForImport = []
+        
+        const parsed_ofx = ofx.parse(e.target.result)
+        const potentialBankAccounts = _.get(parsed_ofx, 'OFX.BANKMSGSRSV1.STMTTRNRS', [])
+        const potentialCreditAccounts = _.get(parsed_ofx, 'OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS', [])
+        var creditAccountsForImport = []
+        var bankAccountsForImport = []
 
-          if (Array.isArray(potentialBankAccounts)) {
-            bankAccountsForImport = potentialBankAccounts
-          } else {
-            bankAccountsForImport.push(potentialBankAccounts)
-          }
+        if (Array.isArray(potentialBankAccounts)) {
+          bankAccountsForImport = potentialBankAccounts
+        } else {
+          bankAccountsForImport.push(potentialBankAccounts)
+        }
 
-          bankAccountsForImport = bankAccountsForImport.map((acct) => {
-            let standardAcct = {}
-            standardAcct.id = getAccountId(acct)
-            standardAcct.type = getAccountType(acct)
-            standardAcct.bankid = getAccountBankId(acct)
-            standardAcct.transactions = getAccountTransactions(acct)
-            return standardAcct
-          })
-
-          if (Array.isArray(potentialCreditAccounts)) {
-            creditAccountsForImport = potentialCreditAccounts
-          } else {
-            creditAccountsForImport.push(potentialCreditAccounts)
-          }
-
-          creditAccountsForImport = creditAccountsForImport.map((acct) => {
-            let standardAcct = {}
-            standardAcct.id = acct.CCSTMTRS.CCACCTFROM.ACCTID
-            standardAcct.type = 'CREDIT'
-            standardAcct.bankid = acct.CCSTMTRS.CCACCTFROM.ACCTID
-            standardAcct.transactions = acct.CCSTMTRS.BANKTRANLIST.STMTTRN
-            return standardAcct
-          })
-
-          this.accountsForImport = this.accountsForImport.concat(bankAccountsForImport, creditAccountsForImport)
-          if (this.accountsForImport.length > 0 && this.accountsForImport[0]) {
-            this.selectedOfxTransactions = this.accountsForImport[0].transactions
-          }
-
-          // TODO: Make import button enabled here
+        bankAccountsForImport = bankAccountsForImport.map((acct) => {
+          let standardAcct = {}
+          standardAcct.id = getAccountId(acct)
+          standardAcct.type = getAccountType(acct)
+          standardAcct.bankid = getAccountBankId(acct)
+          standardAcct.transactions = getAccountTransactions(acct)
+          return standardAcct
         })
+
+        if (Array.isArray(potentialCreditAccounts)) {
+          creditAccountsForImport = potentialCreditAccounts
+        } else {
+          creditAccountsForImport.push(potentialCreditAccounts)
+        }
+
+        creditAccountsForImport = creditAccountsForImport.map((acct) => {
+          let standardAcct = {}
+          standardAcct.id = acct.CCSTMTRS.CCACCTFROM.ACCTID
+          standardAcct.type = 'CREDIT'
+          standardAcct.bankid = acct.CCSTMTRS.CCACCTFROM.ACCTID
+          standardAcct.transactions = acct.CCSTMTRS.BANKTRANLIST.STMTTRN
+          return standardAcct
+        })
+
+        this.accountsForImport = this.accountsForImport.concat(bankAccountsForImport, creditAccountsForImport)
+        if (this.accountsForImport.length > 0 && this.accountsForImport[0]) {
+          this.selectedOfxTransactions = this.accountsForImport[0].transactions
+        }
       }
       if (file) {
         reader.readAsText(file)
@@ -247,37 +245,6 @@ export default {
       return getDate(value)
     },
     async pushTransactionsToBackend() {
-      // const transactionListToImport = []
-      // this.selectedOfxTransactions.forEach((trn) => {
-      //   //Create a custom imprtId that appends account to the FITID
-      //   const import_id = `${this.account}_${trn.FITID}`
-      //   if (this.$store.getters.listOfImportIds.includes(import_id) && trn.FITID !== '' && trn.FITID !== null) {
-      //     console.log('import skipped')
-      //     this.importCount.skipped++
-      //   } else {
-      //     const date = getDate(trn.DTPOSTED)
-      //     const jsonData = {
-      //       account: this.account,
-      //       category: NONE._id,
-      //       cleared: false,
-      //       approved: false,
-      //       value: Math.round(trn.TRNAMT * 100),
-      //       date: date,
-      //       memo: trn.MEMO,
-      //       reconciled: false,
-      //       flag: '#ffffff',
-      //       payee: trn.NAME ? trn.NAME : null,
-      //       imprtId: import_id,
-      //       transfer: null,
-      //       splits: [],
-      //       _id: `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId(date, trn.FITID)}`
-      //     }
-
-      //     this.importCount.imported++
-      //     transactionListToImport.push(jsonData)
-      //   }
-      // })
-
       const import_promises = this.selectedOfxTransactions.map((transaction) => {
         const import_id = `${this.account}_${transaction.FITID}`
         return this.$store
@@ -303,31 +270,18 @@ export default {
               reconciled: false,
               flag: '#ffffff',
               payee: transaction.NAME ? transaction.NAME : null,
-              imprtId: import_id,
+              importId: import_id,
               transfer: null,
               splits: [],
               _id: `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId(date, transaction.FITID)}`
             }
-
           })
       })
 
-      return this.doImport(import_promises)
+      return this.doImport(import_promises).then(() => {
+        this.loadLocalBudget()
+      })
 
-      // this.$swal({
-      //   title: 'Loading...',
-      //   html: 'Importing transactions. Please wait...',
-      //   didOpen: () => {
-      //     Vue.prototype.$swal.showLoading()
-      //   },
-      //   showConfirmButton: false,
-      //   showCancelButton: false
-      // })
-
-      // await this.commitTransactions(transactionListToImport)
-
-      // this.importComplete()
-      // this.$emit('close')
     },
     async importCSVTransactions() {
       const import_promises = this.parseCsv.map((transaction) => {
@@ -367,44 +321,47 @@ export default {
           })
       })
 
-      return this.doImport(import_promises)
+      return this.doImport(import_promises).then(() => {
+        this.loadLocalBudget()
+      })
     },
     async doImport(import_promises) {
-      this.$swal({
-        title: 'Loading...',
-        html: 'Importing transactions. Please wait...',
-        didOpen: () => {
-          Vue.prototype.$swal.showLoading()
-        },
-        showConfirmButton: false,
-        showCancelButton: false
-      })
+      // this.$swal({
+      //   title: 'Loading...',
+      //   html: 'Importing transactions. Please wait...',
+      //   didOpen: () => {
+      //     Vue.prototype.$swal.showLoading()
+      //   },
+      //   showConfirmButton: false,
+      //   showCancelButton: false
+      // })
 
       const import_promise_result = await Promise.all(import_promises)
       const transaction_list_to_import = import_promise_result
         .filter((transaction) => transaction !== null)
 
       try {
-        await this.commitTransactions(transaction_list_to_import)
+        await this.commitBulkNewDocsToPouch(transaction_list_to_import)
       } finally {
         this.parseCsv = null
-        this.importComplete()
+        // this.importComplete()
         this.$emit('apply')
       }
     },
-    async commitTransactions(transaction_list_to_import) {
-      for (const transaction of transaction_list_to_import) {
-        await this.$store.dispatch('createOrUpdateTransaction', { current: transaction, previous: null })
-      }
+    // async commitTransactions(transaction_list_to_import) {
+    //   this.commitBulkNewDocsToPouch(transaction_list_to_import)
+    //   // for (const transaction of transaction_list_to_import) {
+    //   //   await this.$store.dispatch('createOrUpdateTransaction', { current: transaction, previous: null })
+    //   // }
 
-      return Promise.resolve()
-    },
-    importComplete() {
-      const msg = `Transactions Skipped: ${this.importCount.skipped} \nTransactions Imported: ${this.importCount.imported}`
-      this.$swal('Import Complete', msg, 'success')
+    //   return Promise.resolve()
+    // },
+    // importComplete() {
+    //   const msg = `Transactions Skipped: ${this.importCount.skipped} \nTransactions Imported: ${this.importCount.imported}`
+    //   this.$swal('Import Complete', msg, 'success')
 
-      this.resetData()
-    },
+    //   this.resetData()
+    // },
     resetData() {
       this.selectedOfxTransactions = null
       this.accountsForImport = null

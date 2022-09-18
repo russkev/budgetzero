@@ -89,19 +89,17 @@ export default {
       }
       const doc_type = validateDocument(context, current, previous)
       if (doc_type) {
-        return context
-          .dispatch('commitDocToPouch', { current, previous, doc_type })
-          .then((result) => {
-            if (result.ok) {
-              if (current) {
-                current._rev = result.rev
-              }
-              return context.dispatch('commitDocToVuex', { current, previous, doc_type }).then(() => result)
-            } else {
-              console.log(result)
-              Promise.reject(`Pouch update failed`)
+        return context.dispatch('commitDocToPouch', { current, previous, doc_type }).then((result) => {
+          if (result.ok) {
+            if (current) {
+              current._rev = result.rev
             }
-          })
+            return context.dispatch('commitDocToVuex', { current, previous, doc_type }).then(() => result)
+          } else {
+            console.log(result)
+            Promise.reject(`Pouch update failed`)
+          }
+        })
       } else {
         Promise.reject(`Invalid document type: ${doc_type}`)
       }
@@ -112,7 +110,7 @@ export default {
       if (current) {
         const current_account = context.getters.accountsById[current.account]
         if (doc_type === ID_NAME.transaction && current_account) {
-          current = {...current, value: current.value * current_account.sign}
+          current = { ...current, value: current.value * current_account.sign }
         }
         if (doc_type === ID_NAME.transaction && previous && current.date !== previous.date) {
           // New transaction date requires a new ID which means the old transaction has to be deleted
@@ -126,23 +124,21 @@ export default {
             _id: `b_${context.getters.selectedBudgetId}${ID_NAME.transaction}${transaction_id}`
           }
           delete for_db_current._rev
-          return db
-            .bulkDocs([for_db_current, for_db_previous])
-            .then((results) => {
-              const all_successful = results.reduce((partial, result) => {
-                if (!result.ok) {
-                  return false
-                } else {
-                  return partial
-                }
-              }, true)
-              if (all_successful) {
-                // Return first result because it is the one with the correct _rev
-                return results[0]
+          return db.bulkDocs([for_db_current, for_db_previous]).then((results) => {
+            const all_successful = results.reduce((partial, result) => {
+              if (!result.ok) {
+                return false
               } else {
-                Promise.reject(`Pouch update failed`)
-                console.log(results)
+                return partial
               }
+            }, true)
+            if (all_successful) {
+              // Return first result because it is the one with the correct _rev
+              return results[0]
+            } else {
+              Promise.reject(`Pouch update failed`)
+              console.log(results)
+            }
           })
         } else {
           return db.put(current)
@@ -166,6 +162,11 @@ export default {
         return partial
       }, [])
       return db.bulkDocs(db_documents)
+    },
+
+    commitBulkNewDocsToPouch(context, docs) {
+      const db = this._vm.$pouch
+      return db.bulkDocs(docs)
     },
 
     commitDocsToVuex(context, documents) {
