@@ -12,6 +12,7 @@
     @change="onApply"
     @mouseDown="onApply"
     @keyup.enter="onApply"
+    :disabled="disabled"
   >
     <!-- <template #no-data> </template> -->
   </v-autocomplete>
@@ -27,6 +28,10 @@ export default {
       type: String,
       default: NONE._id,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    }
   },
   data() {
     return {

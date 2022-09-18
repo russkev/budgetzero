@@ -13,6 +13,7 @@
       id="category-input"
       :category-id="item.category"
       @update="onCategoryUpdate"
+      :disabled="item.splits.length > 0"
     />
   </div>
 </template>
@@ -23,10 +24,9 @@ import { nextTick } from "vue";
 import SelectCategory from "./SelectCategory.vue";
 import { ID_LENGTH } from "../../constants";
 
-const INPUT_ID = "category-input"
 
 export default {
-  components: { SelectCategory, INPUT_ID },
+  components: { SelectCategory },
   props: {
     item: {
       type: Object,

@@ -2,10 +2,16 @@
   <div v-if="item._id !== editedTransaction._id">
     {{ intlCurrency.format(item.balance / 100) }}
   </div>
+  <div v-else>
+    <v-btn icon @click="toggleSplit">
+      <v-icon>mdi-call-split</v-icon>
+    </v-btn>
+  </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapMutations } from "vuex";
+import { NONE } from "../../constants";
 
 export default {
   props: {
@@ -17,5 +23,16 @@ export default {
     ...mapGetters("accountTransactions", ["editedTransaction"]),
     ...mapGetters(["intlCurrency"]),
   },
+  methods: {
+    ...mapMutations("accountTransactions", ["PUSH_EDITED_TRANSACTION_SPLIT", "CLEAR_EDITED_TRANSACTION_SPLIT"]),
+    toggleSplit() {
+      if(this.editedTransaction.splits.length < 1) {
+        this.PUSH_EDITED_TRANSACTION_SPLIT({ category: this.editedTransaction.category, value: 0 })
+        this.PUSH_EDITED_TRANSACTION_SPLIT({ category: NONE._id, value: this.editedTransaction.value })
+      } else {
+        this.CLEAR_EDITED_TRANSACTION_SPLIT()
+      }
+    }
+  }
 };
 </script>

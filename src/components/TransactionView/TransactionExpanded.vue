@@ -1,4 +1,5 @@
 <template>
+
   <td colspan="100">
     <div class="expanded-details">
       <span>

@@ -67,9 +67,10 @@ export default {
       return context.dispatch('commitDocToPouchAndVuex', { current, previous })
     },
 
-    updateRunningBalance(context, {transaction, isDeleted}) {
+    updateRunningBalance(context, { transaction, isDeleted }) {
       // let running_balance = 0
-      return context.dispatch('fetchPrecedingTransaction', {transaction, isDeleted})
+      return context
+        .dispatch('fetchPrecedingTransaction', { transaction, isDeleted })
         .then((result) => {
           // running_balance = result === null ? 0 : result.doc.balance
           const return_value = result === null ? transaction : result.doc
@@ -101,7 +102,7 @@ export default {
           let result_promise = null
           if (updated_docs.length > 0) {
             result_promise = context.dispatch('commitBulkDocsToPouch', updated_docs)
-          } 
+          }
           return result_promise
         })
     },
@@ -324,14 +325,9 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
 
     const running_balance = running_balances[account_id] + working
     running_balances[account_id] = running_balance
-    if (row.doc.balance !== running_balance) {
-      updated_transaction_docs.push({
-        current: {
-          ...row.doc,
-          balance: running_balance,
-        },
-        previous: row.doc
-      })
+    const updated_transaction_doc = getUpdatedDoc(row.doc, running_balance)
+    if (updated_transaction_doc) {
+      updated_transaction_docs.push({ current: updated_transaction_doc, previous: row.doc })
     }
 
     initFromMonthCategory(month)
@@ -341,9 +337,8 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     }
     balances.category[month] = updateSingleCategory(balances.category[month], category_id, {
       spent: working,
-      account: account_doc,
+      account: account_doc
     })
-
   })
 
   if (updated_transaction_docs.length > 0) {
@@ -361,11 +356,7 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
       compareAscii(month_category_months[month_category_index], month) <= 0
     ) {
       const current_month = month_category_months[month_category_index]
-      balances.category[current_month] = initCategoryBalancesMonth(
-        balances.category,
-        current_month,
-        getters.categories
-      )
+      balances.category[current_month] = initCategoryBalancesMonth(balances.category, current_month, getters.categories)
       Object.entries(month_category_balances[current_month]).forEach(([category_id, category]) => {
         balances.category[current_month][category_id].doc = _.get(
           month_category_balances,
@@ -382,4 +373,26 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
 
 export { calculateTransactionBalanceUpdate, parseAllTransactions }
 
-
+function getUpdatedDoc(transaction_doc, running_balance) {
+  let updated_transaction_doc = null
+  if (transaction_doc.balance !== running_balance) {
+    updated_transaction_doc = {
+      ...transaction_doc,
+      balance: running_balance
+    }
+  }
+  if (!Array.isArray(transaction_doc.splits)) {
+    if (updated_transaction_doc) {
+      updated_transaction_doc = {
+        ...updated_transaction_doc,
+        splits: []
+      }
+    } else {
+      updated_transaction_doc = {
+        ...transaction_doc,
+        splits: []
+      }
+    }
+  }
+  return updated_transaction_doc
+}

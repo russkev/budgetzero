@@ -17,6 +17,7 @@
       onApply($event)
       onSave()
     "
+    :disabled="disabled"
   />
 </template>
 
@@ -28,6 +29,10 @@ export default {
       type: String,
       default: "",
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    }
   },
   data() {
     return {
@@ -42,7 +47,6 @@ export default {
       this.$emit('apply', event)
     },
     onBlur() {
-      console.log("ON BLUR CALLED")
       this.isSelected = false
     },
     onSave() {

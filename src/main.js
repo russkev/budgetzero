@@ -32,6 +32,7 @@ import pouchdb_find from 'pouchdb-find'
 import pouchdb_live_find from 'pouchdb-live-find'
 import pouchdb_authentication from 'pouchdb-authentication'
 import pouchdb_erase from 'pouchdb-erase'
+import Fragment from 'vue-fragment'
 
 
 
@@ -69,6 +70,7 @@ Vue.use(Vuelidate)
 
 Vue.config.productionTip = false
 Vue.use(VueRouter)
+Vue.use(Fragment.Plugin)
 
 // eslint-disable-next-line vars-on-top
 export var router = new VueRouter({

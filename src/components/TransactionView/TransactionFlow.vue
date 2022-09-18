@@ -7,7 +7,6 @@
       :is-outflow="isOutflow"
       :data-testid="testId"
       :id="inputId"
-      :item="item"
       :edited-item="editedTransaction"
       @update="onEditUpdate"
       @save="save(item)"

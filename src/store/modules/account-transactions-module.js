@@ -18,7 +18,7 @@ const DEFAULT_ACCOUNT_TRANSACTIONS_STATE = {
   itemsPerPage: DEFAULT_TRANSACTIONS_PER_PAGE,
   expandedTransactions: [],
   selectedTransactions: [],
-  isCreatingNewTransaction: false
+  isCreatingNewTransaction: false,
 }
 
 export default {
@@ -28,7 +28,9 @@ export default {
   },
   getters: {
     accountId: (state) => state.accountId,
-    accountOptions: (state) => {return {...state.accountOptions, accountId: state.accountId}},
+    accountOptions: (state) => {
+      return { ...state.accountOptions, accountId: state.accountId }
+    },
     transactions: (state) => state.transactions,
     editedTransaction: (state) => state.editedTransaction,
     editedTransactionInitialDate: (state) => state.editedTransactionInitialDate,
@@ -39,7 +41,7 @@ export default {
     expandedTransactions: (state) => state.expandedTransactions,
     selectedTransactions: (state) => state.selectedTransactions,
     isCreatingNewTransaction: (state) => state.isCreatingNewTransaction,
-    dataTableHeaders: () => dataTableHeaders,
+    dataTableHeaders: () => dataTableHeaders
   },
   mutations: {
     SET_ACCOUNT_ID(state, account_id) {
@@ -77,6 +79,30 @@ export default {
     },
     SET_EDITED_TRANSACTION_CLEARED(state, value) {
       Vue.set(state.editedTransaction, 'cleared', value)
+    },
+    PUSH_EDITED_TRANSACTION_SPLIT(state, splitObject) {
+      state.editedTransaction.splits.push(splitObject)
+    },
+    SET_EDITED_TRANSACTION_SPLIT_VALUE(state, { index, value }) {
+      if (index > -1 && index < state.editedTransaction.splits.length) {
+        Vue.set(state.editedTransaction.splits[index], 'value', value)
+      }
+    },
+    SET_EDITED_TRANSACTION_SPLIT_CATEGORY(state, { index, category }) {
+      if (index > -1 && index < state.editedTransaction.splits.length) {
+        Vue.set(state.editedTransaction.splits[index], 'category', category)
+      }
+    },
+    REMOVE_EDITED_TRANSACTION_SPLIT(state, index) {
+      if (index > -1) {
+        state.editedTransaction.splits.splice(index, 1)
+      }
+    },
+    CLEAR_EDITED_TRANSACTION_SPLIT(state) {
+      // Vue.set(state.editedTransaction, 'splits', [])
+      while(state.editedTransaction.splits.length > 0) {
+        state.editedTransaction.splits.pop()
+      }
     },
     CLEAR_EDITED_TRANSACTION(state) {
       if (state.isCreatingNewTransaction && state.editedTransactionIndex > -1) {
@@ -119,9 +145,9 @@ export default {
     }
   },
   actions: {
-    getTransactions({dispatch, commit, getters, rootGetters}, account_id) {
+    getTransactions({ dispatch, commit, getters, rootGetters }, account_id) {
       if (account_id !== undefined) {
-        console.log("SETTING ACCOUNT ID", account_id)
+        console.log('SETTING ACCOUNT ID', account_id)
         commit('SET_ACCOUNT_ID', account_id)
       }
 
@@ -129,7 +155,7 @@ export default {
         return
       }
 
-      console.log("GET TRANSACTIONS", getters.accountId)
+      console.log('GET TRANSACTIONS', getters.accountId)
       dispatch('fetchTransactionsForAccount', getters.accountOptions, { root: true }).then((result) => {
         commit('SET_NUM_SERVER_TRANSACTIONS', result.total_rows)
         const transactions = result.rows.map((row) => {
@@ -146,40 +172,47 @@ export default {
         commit('SET_TRANSACTIONS', transactions)
       })
     },
-    async save({getters, dispatch}, item) {
+    async save({ getters, dispatch }, item) {
       let previous = getters.isCreatingNewTransaction ? null : item
       await dispatch('prepareEditedItem')
       const transaction = JSON.parse(JSON.stringify(getters.editedTransaction))
-      return dispatch('createOrUpdateTransaction', {
-        current: JSON.parse(JSON.stringify(getters.editedTransaction)),
-        previous: previous,
-      }, {
-        root: true,
-      })
-        .then(() => {
-          return dispatch('updateRunningBalance', {
+      return dispatch(
+        'createOrUpdateTransaction',
+        {
+          current: JSON.parse(JSON.stringify(getters.editedTransaction)),
+          previous: previous
+        },
+        {
+          root: true
+        }
+      ).then(() => {
+        return dispatch(
+          'updateRunningBalance',
+          {
             transaction: transaction,
-            isDeleted: false,
-          }, {
-            root: true,
+            isDeleted: false
+          },
+          {
+            root: true
+          }
+        )
+          .then(() => {
+            return dispatch('getTransactions')
           })
-        .then(() => {
-          return dispatch('getTransactions');
-        })
-        .catch((error) => {
-          console.log(error)
-        })
-        .finally(() => {
-          return dispatch('cancel');
-        })
-      })      
+          .catch((error) => {
+            console.log(error)
+          })
+          .finally(() => {
+            return dispatch('cancel')
+          })
+      })
     },
-    cancel({commit}) {
+    cancel({ commit }) {
       commit('CLEAR_EXPANDED_TRANSACTIONS')
       commit('CLEAR_EXPANDED_TRANSACTIONS')
       commit('CLEAR_EDITED_TRANSACTION')
     },
-    editTransaction({commit, getters}, transaction) {
+    editTransaction({ commit, getters }, transaction) {
       commit('SET_IS_CREATING_NEW_TRANSACTION', false)
       commit('CLEAR_EDITED_TRANSACTION')
       commit('SET_EDITED_TRANSACTION_INDEX', getters.transactions.indexOf(transaction))
@@ -187,16 +220,11 @@ export default {
         ...getters.transactions[getters.editedTransactionIndex]
       })
     },
-    prepareEditedItem({commit, getters, rootGetters}) {
-      if (
-        getters.isCreatingNewTransaction &&
-        getters.editedTransactionInitialDate !== getters.editedTransaction.date
-      ) {
+    prepareEditedItem({ commit, getters, rootGetters }) {
+      if (getters.isCreatingNewTransaction && getters.editedTransactionInitialDate !== getters.editedTransaction.date) {
         commit(
           'SET_EDITED_TRANSACTION_ID',
-          `b_${rootGetters.selectedBudgetId}${ID_NAME.transaction}${generateId(
-            getters.editedTransaction.date
-          )}`
+          `b_${rootGetters.selectedBudgetId}${ID_NAME.transaction}${generateId(getters.editedTransaction.date)}`
         )
 
         if (getters.editedTransaction.category === null) {
@@ -238,7 +266,7 @@ export default {
         commit('CLEAR_SELECTED_TRANSACTIONS')
       })
     },
-    categorizeSelectedTransactions({getters, dispatch, commit}, { categoryId }) {
+    categorizeSelectedTransactions({ getters, dispatch, commit }, { categoryId }) {
       if (getters.selectedTransactions.length < 1) {
         return
       }
@@ -256,7 +284,7 @@ export default {
         commit('CLEAR_SELECTED_TRANSACTIONS')
       })
     },
-    deleteSelectedTransactions({getters, dispatch}) {
+    deleteSelectedTransactions({ getters, dispatch }) {
       if (getters.selectedTransactions.length < 1) {
         return
       }
@@ -284,8 +312,8 @@ export default {
           dispatch('getTransactions')
         })
     },
-    setClearedSelectedTransactions({getters, dispatch, commit},  { cleared_value }) {
-      console.log("CLEARED VALUE", cleared_value)
+    setClearedSelectedTransactions({ getters, dispatch, commit }, { cleared_value }) {
+      console.log('CLEARED VALUE', cleared_value)
       if (getters.selectedTransactions.length < 1) {
         return
       }
@@ -295,13 +323,23 @@ export default {
             ...doc,
             cleared: cleared_value
           },
-          previous: doc,
+          previous: doc
         }
       })
       dispatch('commitBulkDocsToPouchAndVuex', documents, { root: true }).then(() => {
         dispatch('getTransactions')
         commit('CLEAR_SELECTED_TRANSACTIONS')
       })
+    },
+    setEditedTransactionSplitValue({commit, getters}, {index, value}) {
+      commit('SET_EDITED_TRANSACTION_SPLIT_VALUE', {index: index, value: value})
+      let remainder = getters.editedTransaction.value
+      const splits = getters.editedTransaction.splits
+      for (let i = 0; i < splits.length - 1; i++)
+      {
+        remainder -= splits[i].value
+      }
+      commit('SET_EDITED_TRANSACTION_SPLIT_VALUE', {index: splits.length - 1, value: remainder})
     }
   }
 }

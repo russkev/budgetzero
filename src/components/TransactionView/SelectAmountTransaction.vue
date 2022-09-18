@@ -1,6 +1,7 @@
 <template>
   <select-amount-base 
     :amount="amount" 
+    :disabled="disabled"
     @apply="amountApply" 
     v-on="$listeners" 
   />
@@ -14,10 +15,6 @@ export default {
   components: { SelectAmountBase },
   emits: ["update"],
   props: {
-    item: {
-      type: Object,
-      default: DEFAULT_TRANSACTION,
-    },
     editedItem: {
       type: Object,
       default: DEFAULT_TRANSACTION,
@@ -26,6 +23,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    disabled: {
+      type: Boolean,
+      default: false,
+    }
   },
   data() {
     return {
@@ -35,15 +36,16 @@ export default {
   computed: {
     amount: {
       get() {
-        if (this.displayValue === "" && !this.isBlank(this.editedItem.value)) {
+        if (this.isBlank(this.editedItem.value)) {
+          this.displayValue = ""
+        } else {
           this.displayValue = (
             Math.round(this.parseCurrencyValue(this.editedItem.value)) / 100
           ).toFixed(2);
-        } else if (this.displayValue !== "" && this.isBlank(this.editedItem.value)) {
-          this.displayValue = ""
         }
         return this.displayValue;
       },
+
       set(inflow_value) {
         this.displayValue = inflow_value;
       },
