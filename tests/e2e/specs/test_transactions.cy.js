@@ -403,7 +403,7 @@ describe('Test transactions', () => {
     })
   })
 
-  context.only('Test that split category works', () => {
+  context('Test that split category works', () => {
     before(() => {
       cy.initPath('transactions/7kW')
     })
@@ -465,7 +465,7 @@ describe('Test transactions', () => {
       cy.get('[data-testid="split-category-input-1"]').should('have.value', 'Groceries')
 
       cy.get('[data-testid="save-edit-button"]').click()
-      cy.get(':nth-child(2) > td.row-memo').should('contain.text', 'Paycheck 1')
+      cy.get(':nth-child(2) > td.row-memo').should('contain.text', 'Split')
       cy.get('.transaction-row > .row-outflow').eq(0).should('contain.text', '$1.25')
       cy.get('.transaction-row > .row-inflow').eq(0).should('not.contain.text', '$')
     })
