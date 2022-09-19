@@ -1,5 +1,5 @@
 <template>
-  <v-container class="primary lighten-2">
+  <v-container class="background lighten-1">
     <v-row class="master-row white--text">
       <v-col :data-testid="`master-category-name-${masterCategory.id}`">
         <v-row>
@@ -10,6 +10,7 @@
           </v-col>
           <v-col>
             <category-grid-input
+              background-color="background lighten-1"
               :id="`master-category-name-input-${masterCategory.id}`"
               :data-testid="`master-category-name-input-${masterCategory.id}`"
               :is-editing="editedMasterCategoryId == masterCategory.id"

@@ -1,80 +1,81 @@
 <template>
-  <!-- <fragment> -->
-            <v-container>
-          <draggable
-            class="categories-container"
-            :data-testid="`categories-container-${masterCategory.id}`"
-            :id="`categories-container-${masterCategory.id}`"
-            :group="{ name: masterCategory.id, put: true }"
-            @end="onCategoryOrderChanged"
-            handle=".handle"
-          >
-    <v-row
-      class="category-row"
-      v-for="category in categoriesData[masterCategory.id]"
-      :key="category.id"
+  <v-container>
+    <draggable
+      class="categories-container"
+      :data-testid="`categories-container-${masterCategory.id}`"
+      :id="`categories-container-${masterCategory.id}`"
+      :group="{ name: masterCategory.id, put: true }"
+      @end="onCategoryOrderChanged"
+      handle=".handle"
     >
-      <v-col :data-testid="`category-name-${category.id}`">
-        <v-row>
-          <v-col align-self="center" sm="1" class="mr-2">
-            <v-icon class="handle" :data-testid="`drag-category-${category.id}`">
-              mdi-drag-horizontal
-            </v-icon>
-          </v-col>
-          <v-col>
-            <category-grid-input
-              class="category-name-input"
-              :id="`category-name-input-${category.id}`"
-              :data-testid="`category-name-input-${category.id}`"
-              :is-editing="editedCategoryNameId == category.id"
-              :value="category.name"
-              @edit="onEditCategoryName(category.id)"
-              @apply="onCategoryNameChange"
-            />
-          </v-col>
-        </v-row>
-      </v-col>
-      <v-col :id="`category-budget-${category.id}`">
-        <category-grid-input
-          class="category-budget-input"
-          :id="`category-budget-input-${category.id}`"
-          :data-testid="`category-budget-input-${category.id}`"
-          :value="category.budgetDisplay"
-          :is-editing="editedCategoryBudgetId == category.id"
-          currency
-          @edit="onEditCategoryBudget(category.id)"
-          @apply="
-            (event) => {
-              onCategoryBudgetChanged({ category_id: category.id, event: event });
-            }
-          "
-          @enter="(event) => onCategoryBudgetEnter(category, event)"
-        />
-      </v-col>
-      <v-col :data-testid="`category-spent-${category.id}`" align="right">
-        {{ intlCurrency.format(category.spent / 100) }}
-      </v-col>
-      <v-col :data-testid="`category-balance-${category.id}`" align="right">
-        {{ intlCurrency.format(category.balance / 100) }}
-        <v-icon
-          small
-          right
-          :data-testid="`btn-hide-category-${category.id}`"
-          @click="onHideCategory(category.id)"
-        >
-          mdi-eye-off-outline
-        </v-icon>
-      </v-col>
-    </v-row>
+      <v-row
+        class="category-row"
+        v-for="category in categoriesData[masterCategory.id]"
+        :key="category.id"
+      >
+        <v-col :data-testid="`category-name-${category.id}`">
+          <v-row>
+            <v-col align-self="center" sm="1" class="mr-2">
+              <v-icon class="handle" :data-testid="`drag-category-${category.id}`">
+                mdi-drag-horizontal
+              </v-icon>
+            </v-col>
+            <v-col>
+              <category-grid-input
+                class="category-name-input"
+                background-color="background darken-1"
+                :id="`category-name-input-${category.id}`"
+                :data-testid="`category-name-input-${category.id}`"
+                :is-editing="isEditingName(category.id)"
+                :value="category.name"
+                @edit="onEditCategoryName(category.id)"
+                @apply="onCategoryNameChange"
+              />
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col :id="`category-budget-${category.id}`">
+          <category-grid-input
+            class="category-budget-input"
+            background-color="background darken-1"
+            :id="`category-budget-input-${category.id}`"
+            :data-testid="`category-budget-input-${category.id}`"
+            :value="category.budgetDisplay"
+            :is-editing="editedCategoryBudgetId == category.id"
+            currency
+            @edit="onEditCategoryBudget(category.id)"
+            @apply="
+              (event) => {
+                onCategoryBudgetChanged({ category_id: category.id, event: event });
+              }
+            "
+            @enter="(event) => onCategoryBudgetEnter(category, event)"
+          />
+        </v-col>
+        <v-col :data-testid="`category-spent-${category.id}`" align="right">
+          {{ intlCurrency.format(category.spent / 100) }}
+        </v-col>
+        <v-col :data-testid="`category-balance-${category.id}`" align="right">
+          {{ intlCurrency.format(category.balance / 100) }}
+          <v-icon
+            small
+            right
+            :data-testid="`btn-hide-category-${category.id}`"
+            @click="onHideCategory(category.id)"
+          >
+            mdi-eye-off-outline
+          </v-icon>
+        </v-col>
+      </v-row>
     </draggable>
-    </v-container>
-  <!-- </fragment> -->
+  </v-container>
 </template>
 
 <script>
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import draggable from "vuedraggable";
 import { nextTick } from "vue";
+import { NONE } from "../../constants";
 
 export default {
   props: {
@@ -82,13 +83,10 @@ export default {
       type: Object,
       default: {},
     },
-    categoriesForMaster: {
-      type: Array,
-    }
   },
-    components: {
+  components: {
     draggable,
-},
+  },
   computed: {
     ...mapGetters(["intlCurrency", "categories"]),
     ...mapGetters("categoryMonth", [
@@ -98,9 +96,7 @@ export default {
     ]),
   },
   methods: {
-    ...mapMutations("categoryMonth", [
-      "SET_EDITED_CATEGORY_BUDGET_ID",
-    ]),
+    ...mapMutations("categoryMonth", ["SET_EDITED_CATEGORY_BUDGET_ID"]),
     ...mapActions("categoryMonth", [
       "onCategoryOrderChanged",
       "onCategoryNameChange",
@@ -136,6 +132,13 @@ export default {
       }
       return undefined;
     },
+    isEditingName(category_id) {
+      if (category_id === NONE._id) {
+        return false
+      } else {
+        return category_id === this.editedCategoryNameId
+      }
+    }
   },
 };
 </script>

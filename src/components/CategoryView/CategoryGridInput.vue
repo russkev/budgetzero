@@ -12,9 +12,9 @@
         :value="currency ? intlCurrency.format(value) : value"
         @click="onClick"
         @focus="onClick"
-        background-color="primary"
         :reverse="currency"
-      />
+        :background-color="backgroundColor"
+        />
     </div>
     <div v-else>
       <v-text-field
@@ -32,6 +32,7 @@
         @click="onEditedClicked"
         :suffix="currency ? '$' : ''"
         :reverse="currency"
+        background-color="background lighten-2"
         />
     </div>
   </div>
@@ -63,6 +64,10 @@ export default {
       type: String,
       default: "",
     },
+    backgroundColor: {
+      type: String,
+      default: "background"
+    }
   },
   data() {
     return {

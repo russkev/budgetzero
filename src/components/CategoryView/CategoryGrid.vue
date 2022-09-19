@@ -19,29 +19,21 @@
         v-for="(master_category, master_index) in masterCategoriesData"
         :key="master_category.id"
       >
-        <master-category-row :masterCategory="master_category" :masterIndex="master_index" />
-        <!-- <v-container> -->
-          <!-- <draggable
-            class="categories-container"
-            :data-testid="`categories-container-${master_category.id}`"
-            :id="`categories-container-${master_category.id}`"
-            :group="{ name: master_category.id, put: true }"
-            @end="onCategoryOrderChanged"
-            handle=".handle"
-          > -->
-            <category-rows :categoriesForMaster="categoriesData[master_category.id]" :masterCategory="master_category" />
-          <!-- </draggable> -->
-        <!-- </v-container> -->
+        <v-card class="ma-1 background darken-1">
+
+          <master-category-row :masterCategory="master_category" :masterIndex="master_index" />
+          <category-rows
+          :masterCategory="master_category"
+          />
+        </v-card>
       </v-row>
     </draggable>
   </v-container>
 </template>
 
 <script>
-import { mapGetters, mapActions, mapMutations } from "vuex";
-import BaseDialogModalComponent from "../Modals/BaseDialogModalComponent.vue";
+import { mapMutations } from "vuex";
 import CategoryHeader from "./CategoryHeader.vue";
-import CategoryGridInput from "./CategoryGridInput.vue";
 import CategoryMonthSelector from "./CategoryMonthSelector.vue";
 import MasterCategoryRow from "./MasterCategoryRow.vue";
 import CategoryRows from "./CategoryRows.vue";
@@ -53,22 +45,15 @@ export default {
   name: "CategoryGrid",
   components: {
     draggable,
-    BaseDialogModalComponent,
     CategoryHeader,
-    CategoryGridInput,
     CategoryMonthSelector,
     MasterCategoryRow,
     CategoryRows,
-},
+  },
   data() {
     return {};
   },
   computed: {
-    ...mapGetters(["intlCurrency", "categories"]),
-    ...mapGetters("categoryMonth", [
-      "categoriesData",
-    ]),
-    ...mapMutations("categoryMonth", ["SET_EDITED_MASTER_CATEGORY_ID"]),
     masterCategories: {
       get() {
         return this.$store.getters.masterCategories;
@@ -101,25 +86,7 @@ export default {
   methods: {
     ...mapMutations("categoryMonth", [
       "UPDATE_SELECTED_MONTH",
-      "SET_EDITED_CATEGORY_BUDGET_ID",
-      "SET_EDITED_CATEGORY_NAME_ID",
-      "SET_EDITED_MASTER_CATEGORY_ID,",
     ]),
-    ...mapActions("categoryMonth", [
-      "onCategoryBudgetChanged",
-      "onEditCategoryName",
-      "onEditCategoryBudget",
-    ]),
-
-    
-    
-
-    // onSelectTarget(event) {
-    //   // SAVE
-    //   if (event.target) {
-    //     event.target.select();
-    //   }
-    // },
   },
 };
 </script>
