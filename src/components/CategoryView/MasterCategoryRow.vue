@@ -1,10 +1,11 @@
 <template>
   <v-container class="background lighten-1">
+    <v-hover v-slot="{hover}">
     <v-row class="master-row white--text">
       <v-col :data-testid="`master-category-name-${masterCategory.id}`">
         <v-row>
           <v-col align-self="center" sm="1" class="mr-2">
-            <v-icon class="master-handle" :data-testid="`drag-master-category-${masterCategory.id}`">
+            <v-icon v-if="hover" class="master-handle" :data-testid="`drag-master-category-${masterCategory.id}`">
               mdi-drag-horizontal
             </v-icon>
           </v-col>
@@ -58,6 +59,7 @@
         </v-icon>
       </v-col>
     </v-row>
+  </v-hover>
   </v-container>
 </template>
 

@@ -1,7 +1,9 @@
 <template>
   <div>
     <div v-if="!isEditing">
-      <v-text-field
+      <v-hover v-slot="{hover}">
+
+        <v-text-field
         dense
         flat
         solo
@@ -13,8 +15,10 @@
         @click="onClick"
         @focus="onClick"
         :reverse="currency"
-        :background-color="backgroundColor"
+        :background-color="hover ? activeBackgroundColor : backgroundColor"
+        :height="height"
         />
+      </v-hover>
     </div>
     <div v-else>
       <v-text-field
@@ -30,9 +34,11 @@
         @change="onApply"
         @keyup.enter="onEnterPressed"
         @click="onEditedClicked"
+        
         :suffix="currency ? '$' : ''"
         :reverse="currency"
-        background-color="background lighten-2"
+        :background-color="activeBackgroundColor"
+        :height="height"
         />
     </div>
   </div>
@@ -72,10 +78,20 @@ export default {
   data() {
     return {
       isSelected: false,
+      height: "26px",
+      isHovering: false,
+      activeBackgroundColor: "background lighten-2"
     }
   },
   computed: {
     ...mapGetters(["intlCurrency",]),
+    nonEditingBackgroundColor() {
+      if(this.isHovering) {
+        return this.activeBackgroundColor
+      } else {
+        return this.backgroundColor
+      }
+    }
   },
   methods: {
     onApply(event) {
@@ -94,6 +110,15 @@ export default {
         this.isSelected = true
       }
     }
+
   },
 };
 </script>
+
+<style>
+
+.v-text-field .v-input__control .v-input__slot {
+  min-height: 0px !important
+}
+
+</style>
