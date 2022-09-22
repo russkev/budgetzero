@@ -1,5 +1,8 @@
 <template>
-  <div>
+  <div
+    @blur="onBlur"
+    @focusout="onBlur"
+  >
     <div v-if="!isEditing">
       <v-hover v-slot="{hover}">
 
@@ -27,14 +30,13 @@
         dense
         flat
         solo
+        autofocus
         :id="id"
         :data-testid="dataTestid"
         :value="value"
-        @blur="onApply"
         @change="onApply"
         @keyup.enter="onEnterPressed"
         @click="onEditedClicked"
-        
         :suffix="currency ? '$' : ''"
         :reverse="currency"
         :background-color="activeBackgroundColor"
@@ -94,6 +96,10 @@ export default {
     }
   },
   methods: {
+    onBlur(event) {
+      console.log("ON BLUR")
+      this.onApply(event)
+    },
     onApply(event) {
       this.$emit("apply", event);
       this.isSelected = false
@@ -118,7 +124,9 @@ export default {
 <style>
 
 .v-text-field .v-input__control .v-input__slot {
-  min-height: 0px !important
+  min-height: 0px !important;
+  margin-top: auto !important;
+  margin-bottom: auto !important;
 }
 
 </style>

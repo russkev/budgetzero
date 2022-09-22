@@ -17,7 +17,7 @@
           <v-row>
             <v-col align-self="center" sm="1" class="mr-2">
               <v-icon class="handle" :data-testid="`drag-category-${category.id}`">
-                mdi-drag-horizontal
+                mdi-drag-vertical
               </v-icon>
             </v-col>
             <v-col>
@@ -68,6 +68,15 @@
         </v-col>
       </v-row>
     </draggable>
+    <v-row>
+      <v-btn
+        small
+        text
+        class="text-none"
+      >
+        New Category
+      </v-btn>
+    </v-row>
   </v-container>
 </template>
 
