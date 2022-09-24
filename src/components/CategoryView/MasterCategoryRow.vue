@@ -1,95 +1,154 @@
 <template>
   <v-container class="background lighten-1 pa-0">
-    <v-row>
-      <v-col cols="5"> </v-col>
-      <v-col class="text-right"> Budget</v-col>
-      <v-col class="text-right"> Spent</v-col>
-      <v-col class="text-right"> Balance</v-col>
-    </v-row>
     <v-hover v-slot="{ hover }">
-
-      <v-row class="master-row white--text ma-0">
-      <v-sheet width="20px" color="transparent" class="row-side-widget">
-          
-          <v-icon
-          v-if="hover"
-          class="master-handle ma-auto"
+      <v-row class="ma-0 pa-0">
+        <v-sheet 
+          width="20px" 
+          color="transparent" 
+          class="row-side-widget"
           :data-testid="`drag-master-category-${masterCategory.id}`"
+        >
+          <v-icon
+            v-if="hover"
+            small
+            class="master-handle ma-auto"
           >
-          mdi-drag-vertical
-        </v-icon>
-      </v-sheet>
-        <v-col :data-testid="`master-category-name-${masterCategory.id}`" cols="5" class="pa-0">
-              
-            <v-col class="pa-0 my-auto">
-              <category-grid-input
-                background-color="background lighten-1"
-                :id="`master-category-name-input-${masterCategory.id}`"
-                :data-testid="`master-category-name-input-${masterCategory.id}`"
-                :is-editing="editedMasterCategoryId == masterCategory.id"
-                :value="masterCategory.name"
-                @edit="onEditMasterCategoryName(masterCategory.id)"
-                @apply="onMasterCategoryNameChange"
-              />
+            mdi-drag-vertical
+          </v-icon>
+        </v-sheet>
+        <v-col class="pa-0">
+          <v-row class="master-row white--text ma-0">
+            <v-col
+              :data-testid="`master-category-name-${masterCategory.id}`"
+              :cols="nameCols"
+              class="pa-0 ma-0 my-auto"
+            >
+              <!-- <v-col class="pa-0 my-auto"> -->
+                <category-grid-input
+                  background-color="background lighten-1"
+                  :id="`master-category-name-input-${masterCategory.id}`"
+                  :data-testid="`master-category-name-input-${masterCategory.id}`"
+                  :is-editing="editedMasterCategoryId == masterCategory.id"
+                  :value="masterCategory.name"
+                  @edit="onEditMasterCategoryName(masterCategory.id)"
+                  @apply="onMasterCategoryNameChange"
+                  text="h4"
+                />
+              <!-- </v-col> -->
             </v-col>
+            <v-col
+              class="pa-0 my-auto"
+              :data-testid="`master-category-budget-${masterCategory.id}`"
+              align="right"
+            >
+              <span class="text-h5">
+                Budgeted
+              </span>
+              <br />
+              <span class="text-body-1">
+                {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].budget / 100) }}
+              </span>
+            </v-col>
+            <v-col
+              class="pa-0 my-auto"
+              :data-testid="`master-category-spent-${masterCategory.id}`"
+              align="right"
+            ><span class="text-h5">
+                Spent
+              </span>
+              <br />
+              <span class="text-body-1">
+              {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].spent / 100) }}
+              </span>
+            </v-col>
+            <v-col
+              class="pa-0 my-auto"
+              :data-testid="`master-category-balance-${masterCategory.id}`"
+              align="right"
+            ><span class="text-h5">
+                Balance
+              </span>
+              <br />
+              <span class="text-body-1">
+              {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].balance / 100) }}
+              </span>
+            </v-col>
+          </v-row>
         </v-col>
-        <v-col
-          class="pa-0 my-auto"
-          :data-testid="`master-category-budget-${masterCategory.id}`"
-          align="right"
-        >
-          {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].budget / 100) }}
-        </v-col>
-        <v-col
-          class="pa-0 my-auto"
-          :data-testid="`master-category-spent-${masterCategory.id}`"
-          align="right"
-        >
-          {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].spent / 100) }}
-        </v-col>
-        <v-col
-          class="pa-0 my-auto"
-          :data-testid="`master-category-balance-${masterCategory.id}`"
-          align="right"
-        >
-          {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].balance / 100) }}
-          <v-icon
-            dark
+        <v-hover v-slot="{ hover: deleteButtonHover }">
+          <v-btn
+            tile
+            elevation="0"
             small
-            right
-            :data-testid="`btn-new-master-category-${masterCategory.id}`"
-            @click="onNewMasterCategory(masterIndex)"
-          >
-            mdi-plus-circle-outline
-          </v-icon>
-          <v-icon
-            dark
-            small
-            right
+            class="pa-0 ma-0 delete-button"
+            min-width="20px"
+            height="auto"
             :data-testid="`btn-delete-master-category-${masterCategory.id}`"
-            @click="deleteMasterCategory(masterCategory)"
+            :color="deleteButtonHover ? 'delete' : 'transparent'"
+            @click="onDeleteMasterCategory(masterCategory)"
           >
-            mdi-delete-circle-outline
-          </v-icon>
+            <v-icon small :color="deleteIconColor(hover, deleteButtonHover)">
+              mdi-delete-outline
+            </v-icon>
+          </v-btn>
+        </v-hover>
+        <!-- <v-sheet width="20px" class="alert row-side-widget"> -->
+        <!-- width="20px" -->
+
+        <!-- <v-icon
+      v-if="hover"
+      :color="hover ? 'primary' : 'accent'"
+      small
+      :data-testid="`delete-master-category-${masterCategory.id}`"
+    >
+      mdi-delete-outline
+    </v-icon> -->
+        <!-- <v-hover v-slot="{ hover }">
           <v-icon
-            dark
-            small
-            right
-            :data-testid="`btn-new-category-${masterCategory.id}`"
-            @click="onNewCategory(masterCategory)"
-          >
-            mdi-note-plus-outline
-          </v-icon>
-        </v-col>
+            :color
+            />
+        </v-hover> -->
       </v-row>
     </v-hover>
   </v-container>
 </template>
 
+<!-- :color="hover? 'red darken-4' : 'transparent'"  -->
+
+<!-- <v-icon
+    dark
+    small
+    right
+    :data-testid="`btn-new-master-category-${masterCategory.id}`"
+    @click="onNewMasterCategory(masterIndex)"
+  >
+    mdi-plus-circle-outline
+  </v-icon> -->
+<!-- <v-icon
+    dark
+    small
+    right
+    v-if="hover"
+    class="ma-auto"
+    :data-testid="`btn-delete-master-category-${masterCategory.id}`"
+    @click="deleteMasterCategory(masterCategory)"
+  >
+    mdi-trash-can-outline
+  </v-icon> -->
+<!-- <v-icon
+    dark
+    small
+    right
+    :data-testid="`btn-new-category-${masterCategory.id}`"
+    @click="onNewCategory(masterCategory)"
+  >
+    mdi-note-plus-outline
+  </v-icon> -->
+
 <script>
 import { mapGetters, mapActions } from "vuex";
 import { nextTick } from "vue";
-
+import { deleteIconColor } from "./CategoryGrid.vue";
 export default {
   props: {
     masterCategory: {
@@ -100,6 +159,10 @@ export default {
       type: Number,
       default: 0,
     },
+    nameCols: {
+      type: Number,
+      default: 5,
+    },
   },
   computed: {
     ...mapGetters(["intlCurrency"]),
@@ -107,53 +170,31 @@ export default {
   },
   methods: {
     ...mapActions("categoryMonth", [
-      "deleteMasterCategory",
+      "onDeleteMasterCategory",
       "onMasterCategoryNameChange",
       "onEditMasterCategoryName",
       "newMasterCategory",
       "newCategory",
     ]),
-    onNewMasterCategory(index) {
-      // this.createMasterCategory({ name: 'Name', is_income: false, sort: index - 0.5 }).then((id) => {
-      //     this.SET_EDITED_MASTER_CATEGORY_ID(id)
-      this.newMasterCategory(index).then((id) => {
-        const element_id = `master-category-name-input-${id}`;
+   
 
-        nextTick(() => {
-          const new_element = document.getElementById(element_id);
-          if (!new_element) {
-            return;
-          }
-          new_element.focus();
-          new_element.select();
-        });
-      });
+    deleteIconColor (hover, deleteButtonHover) {
+      return deleteIconColor(hover, deleteButtonHover)
     },
-    onNewCategory(master_category) {
-      // this.createCategory({ name: "Name", master_id: master_category.id }).then((id) => {
-      //   this.SET_EDITED_CATEGORY_NAME_ID(id);
-      this.newCategory(master_category).then((id) => {
-        const element_id = `category-name-input-${id}`;
 
-        nextTick(() => {
-          const new_element = document.getElementById(element_id);
-          if (!new_element) {
-            return;
-          }
-          new_element.focus();
-          new_element.select();
-        });
-      });
-    },
   },
 };
 </script>
 
 <style>
-.master-handle {
+.master-handle, .handle {
   cursor: move;
 }
 .row-side-widget {
-  display: flex
+  display: flex;
+}
+
+.delete-button {
+  transition: background-color 0.3s;
 }
 </style>

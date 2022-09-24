@@ -1,8 +1,8 @@
 <template>
   <div>
     <v-row cols="12" class="pr-4">
-      <v-card style="width: 300px;" outlined>
-        <v-card-title id="selected-month" class="headline grey lighten-4 py-2">
+      <v-card style="width: 300px;" outlined color="background lighten-1">
+        <v-card-title id="selected-month" class="headline py-2">
           {{
             new Intl.DateTimeFormat("en-GB", { year: "numeric", month: "long" }).format(
               new Date(selectedMonth)
@@ -51,7 +51,7 @@
             </p>
           </div>
           <v-divider />
-          <div id="available-to-budget-text" class="text-center primary--text title grey lighten-4">
+          <div id="available-to-budget-text" class="text-center primary--text title">
             Available To Budget
             <v-divider />
           </div>

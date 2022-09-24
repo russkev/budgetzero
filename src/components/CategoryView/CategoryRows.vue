@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class="pa-0 category-rows-container">
     <draggable
       class="categories-container"
       :data-testid="`categories-container-${masterCategory.id}`"
@@ -8,22 +8,38 @@
       @end="onCategoryOrderChanged"
       handle=".handle"
     >
-      <v-row
-        class="category-row"
+      <div
+        class="ma-0 pa-0"
         v-for="category in categoriesData[masterCategory.id]"
         :key="category.id"
       >
-        <v-col :data-testid="`category-name-${category.id}`">
-          <v-row>
-            <v-col align-self="center" sm="1" class="mr-2">
+        <v-hover v-slot="{ hover }">
+          <v-row class="ma-0 pa-0 category-row">
+            <v-sheet
+              width="20px"
+              color="transparent"
+              class="row-side-widget"
+              :data-testid="`drag-category-${category.id}`"
+            >
+              <v-icon v-if="hover" small class="handle ma-auto">
+                mdi-drag-vertical
+              </v-icon>
+            </v-sheet>
+
+            <v-col
+              :cols="nameCols"
+              class="pa-0 ma-0 my-1"
+              :data-testid="`category-name-${category.id}`"
+            >
+              <!-- <v-row> -->
+              <!-- <v-col align-self="center" sm="1" class="mr-2">
               <v-icon class="handle" :data-testid="`drag-category-${category.id}`">
                 mdi-drag-vertical
               </v-icon>
-            </v-col>
-            <v-col>
+            </v-col> -->
+              <!-- <v-col> -->
               <category-grid-input
                 class="category-name-input"
-                background-color="background darken-1"
                 :id="`category-name-input-${category.id}`"
                 :data-testid="`category-name-input-${category.id}`"
                 :is-editing="isEditingName(category.id)"
@@ -31,51 +47,85 @@
                 @edit="onEditCategoryName(category.id)"
                 @apply="onCategoryNameChange"
               />
+              <!-- </v-col> -->
+              <!-- </v-row> -->
             </v-col>
+            <v-col :id="`category-budget-${category.id}`" class="pa-0 my-1">
+              <category-grid-input
+                class="category-budget-input"
+                :id="`category-budget-input-${category.id}`"
+                :data-testid="`category-budget-input-${category.id}`"
+                :value="category.budgetDisplay"
+                :is-editing="editedCategoryBudgetId == category.id"
+                currency
+                @edit="onEditCategoryBudget(category.id)"
+                @apply="
+                  (event) => {
+                    onCategoryBudgetChanged({ category_id: category.id, event: event });
+                  }
+                "
+                @enter="(event) => onCategoryBudgetEnter(category, event)"
+              />
+            </v-col>
+            <v-col
+              :data-testid="`category-spent-${category.id}`"
+              align="right"
+              class="pa-0 my-auto"
+            >
+              {{ intlCurrency.format(category.spent / 100) }}
+            </v-col>
+            <v-col
+              :data-testid="`category-balance-${category.id}`"
+              align="right"
+              class="pa-0 my-auto"
+            >
+              {{ intlCurrency.format(category.balance / 100) }}
+              <!-- <v-icon
+                small
+                right
+                :data-testid="`btn-hide-category-${category.id}`"
+                @click="onHideCategory(category.id)"
+              >
+                mdi-eye-off-outline
+              </v-icon> -->
+            </v-col>
+            <v-hover v-slot="{ hover: hideButton }">
+              <v-btn
+                tile
+                elevation="0"
+                small
+                class="pa-0 ma-0 delete-button"
+                min-width="20px"
+                height="auto"
+                :data-testid="`btn-hide-category-${category.id}`"
+                :color="hideButton ? 'delete' : 'transparent'"
+                @click="onHideCategory(category.id)"
+              >
+                <v-icon x-small :color="deleteIconColor(hover, hideButton)">
+                  mdi-eye-off-outline
+                </v-icon>
+              </v-btn>
+            </v-hover>
           </v-row>
-        </v-col>
-        <v-col :id="`category-budget-${category.id}`">
-          <category-grid-input
-            class="category-budget-input"
-            background-color="background darken-1"
-            :id="`category-budget-input-${category.id}`"
-            :data-testid="`category-budget-input-${category.id}`"
-            :value="category.budgetDisplay"
-            :is-editing="editedCategoryBudgetId == category.id"
-            currency
-            @edit="onEditCategoryBudget(category.id)"
-            @apply="
-              (event) => {
-                onCategoryBudgetChanged({ category_id: category.id, event: event });
-              }
-            "
-            @enter="(event) => onCategoryBudgetEnter(category, event)"
-          />
-        </v-col>
-        <v-col :data-testid="`category-spent-${category.id}`" align="right">
-          {{ intlCurrency.format(category.spent / 100) }}
-        </v-col>
-        <v-col :data-testid="`category-balance-${category.id}`" align="right">
-          {{ intlCurrency.format(category.balance / 100) }}
-          <v-icon
-            small
-            right
-            :data-testid="`btn-hide-category-${category.id}`"
-            @click="onHideCategory(category.id)"
-          >
-            mdi-eye-off-outline
-          </v-icon>
-        </v-col>
-      </v-row>
+        </v-hover>
+      </div>
     </draggable>
     <v-row>
-      <v-btn
-        small
-        text
-        class="text-none"
-      >
-        New Category
-      </v-btn>
+      <v-sheet width="20px" color="transparent" class="row-side-widget" />
+      <v-col>
+        <v-btn
+          small
+          tile
+          text
+          class="text-none"
+          color="primary"
+          :data-testid="`btn-new-category-${masterCategory.id}`"
+          @click="onNewCategory(masterCategory)"
+        >
+          <v-icon small class="ma-1">mdi-plus</v-icon>
+          New Category
+        </v-btn>
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -85,12 +135,17 @@ import { mapGetters, mapActions, mapMutations } from "vuex";
 import draggable from "vuedraggable";
 import { nextTick } from "vue";
 import { NONE } from "../../constants";
+import { deleteIconColor } from "./CategoryGrid.vue";
 
 export default {
   props: {
     masterCategory: {
       type: Object,
       default: {},
+    },
+    nameCols: {
+      type: Number,
+      default: 5,
     },
   },
   components: {
@@ -113,7 +168,24 @@ export default {
       "onEditCategoryName",
       "onEditCategoryBudget",
       "onHideCategory",
+      "newCategory",
     ]),
+    onNewCategory(master_category) {
+      // this.createCategory({ name: "Name", master_id: master_category.id }).then((id) => {
+      //   this.SET_EDITED_CATEGORY_NAME_ID(id);
+      this.newCategory(master_category).then((id) => {
+        const element_id = `category-name-input-${id}`;
+
+        nextTick(() => {
+          const new_element = document.getElementById(element_id);
+          if (!new_element) {
+            return;
+          }
+          new_element.focus();
+          new_element.select();
+        });
+      });
+    },
     onCategoryBudgetEnter(category, event) {
       this.onCategoryBudgetChanged({ category_id: category.id, event: event });
       const next_id = this.categoryIdFromIndex(category.index + 1);
@@ -143,11 +215,18 @@ export default {
     },
     isEditingName(category_id) {
       if (category_id === NONE._id) {
-        return false
+        return false;
       } else {
-        return category_id === this.editedCategoryNameId
+        return category_id === this.editedCategoryNameId;
       }
-    }
+    },
+    // onEditCategoryBudget({ commit }, id) {
+    //   // commit('SET_EDITED_CATEGORY_BUDGET_ID', id)
+    //   this.SET_EDITED_CATEGORY_BUDGET_ID(id)
+    // },
+    deleteIconColor(hover, hideButton) {
+      return deleteIconColor(hover, hideButton);
+    },
   },
 };
 </script>

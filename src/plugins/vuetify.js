@@ -21,7 +21,16 @@ export default new Vuetify({
       },
       dark: {
         // primary: '#354148',
-        background: '#354148'
+        primary: '#00ff84',
+        accent: '#ff00ff',
+        background: {
+          base: '#2d3334',
+          darken1: '#2a3032',
+          lighten1: '#31383a',
+          lighten2: '#3b4345'
+        },
+        delete: '#391616',
+        delete_text: '#ff4343'
       }
     },
     dark: true,

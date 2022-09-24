@@ -51,7 +51,7 @@ export default {
   },
   methods: {
     ...mapMutations("accountTransactions", ["SET_ACCOUNT_ID"]),
-    ...mapActions("accountTransactions", ["getTransactions"])
+    ...mapActions("accountTransactions", ["getTransactions"]),
   },
 };
 </script>

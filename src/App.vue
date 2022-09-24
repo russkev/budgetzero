@@ -72,32 +72,11 @@ export default {
   }
 }
 </script>
-
+<!-- 
 <style lang="scss">
-// #app {
-//   font-family: 'Avenir', Helvetica, Arial, sans-serif;
-//   -webkit-font-smoothing: antialiased;
-//   -moz-osx-font-smoothing: grayscale;
-//   text-align: center;
-//   // color: #2c3e50;
-//   margin-top: 60px;
-//   // background-color: var(--v-background-base);
-//   background-color: red
-// }
-
-// .swal2-title {
-//   font-family: SofiaPro, Roboto !important;
-//   font-size: 2.125rem !important;
-// }
-
-// .transaction-table-header {
-//   background-color: var(--v-header_background-base) !important;
-//   color: var(--v-primary-base) !important;
-//   font-weight: 500;
-//   padding-right: 5px !important;
-// }
+@import './styles/variables.scss';
 
 #app {
-  background-color: var(--v-background-base)
+  background-color: var(--v-background-base);
 }
-</style>
+</style> -->

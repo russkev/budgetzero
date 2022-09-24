@@ -2,13 +2,13 @@
   <v-navigation-drawer
     v-model="drawer"
     app
-    class="primary"
-    dark
+    class="background"
     width="250"
     :mini-variant.sync="mini"
     permanent
     stateless
     hide-overlay
+    floating
   >
     <budget-add-modal v-model="budget_add_modal_is_visible" />
     <BaseDialogModalComponent v-model="manageBudgetsModalVisible">
@@ -151,9 +151,9 @@
         :key="item._id"
         :to="{ path: '/transactions/' + item._id.slice(-ID_LENGTH.account) }"
         active-class="primary white--text"
-        class="primary darken-1"
         :data-testid="`transactions-page-${item._id.slice(-ID_LENGTH.account)}`"
-      >
+        >
+        <!-- class="primary darken-1" -->
         <v-list-item-content>
           <v-list-item-title class="font-weight-regular subtitle-2">
             {{ item.name }}
@@ -178,8 +178,8 @@
         :key="item._id"
         :to="{ path: '/transactions/' + item._id.slice(-ID_LENGTH.account) }"
         active-class="primary white--text"
-        class="primary darken-1"
-      >
+        >
+        <!-- class="primary darken-1" -->
         <v-list-item-content>
           <v-list-item-title class="font-weight-regular subtitle-2">
             {{ item.name }}

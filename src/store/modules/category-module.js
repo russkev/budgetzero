@@ -213,6 +213,7 @@ export default {
     },
 
     deleteMasterCategory(context, master_id) {
+      console.log("MASTER_ID", master_id)
       const categories = context.getters.categoriesByMaster[master_id]
       if (categories !== undefined) {
         const bulk_categories = categories.map((category) => {

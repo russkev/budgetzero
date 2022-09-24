@@ -7,36 +7,63 @@
         <category-header />
       </v-col>
     </v-row>
-    <v-row>
-      <v-col />
-      <v-col> Budget </v-col>
-      <v-col> Spent </v-col>
-      <v-col> Balance </v-col>
-    </v-row>
     <draggable v-model="masterCategoriesData" handle=".master-handle">
       <v-row
         class="master-category-row ma-0 pa-0"
         v-for="(master_category, master_index) in masterCategoriesData"
         :key="master_category.id"
       >
-        <v-card class="ma-1 background darken-1">
+        <!-- <v-card class="ma-2 background lighten-1" elevation="0" width="100%"> -->
+          <category-card width="100%">
 
-          <master-category-row :masterCategory="master_category" :masterIndex="master_index" />
-          <category-rows
-          :masterCategory="master_category"
-          />
-        </v-card>
+            <master-category-row
+            :name-cols="nameCols"
+            :master-category="master_category"
+            :master-index="master_index"
+            />
+            <!-- <v-divider/> -->
+            <v-progress-linear value="100" height="2" />
+            <category-rows :masterCategory="master_category" :nameCols="nameCols" />
+          </category-card>
+        <!-- </v-card> -->
       </v-row>
     </draggable>
+    <!-- <v-card class="ma-2 background lighten-1" elevation="0" width="auto"> -->
+      <category-card>
+
+      <v-row class="ma-0 pa-0">
+        <v-col class="pa-0 ma-0" align="center">
+          <v-btn 
+            tile 
+            text 
+            class="text-none my-2"
+            :data-testid="`btn-new-master-category`"
+            @click="onNewMasterCategory()"
+          >
+            <v-icon color="primary" class="mr-2">
+              mdi-plus
+            </v-icon>
+            New Group
+          </v-btn>
+        </v-col>
+      </v-row>
+      </category-card>
+    <!-- </v-card> -->
   </v-container>
 </template>
+<!-- <v-btn small tile text class="text-none mx-auto" color="primary">
+    <v-icon small>mdi-plus</v-icon>
+    New Group
+  </v-btn> -->
 
 <script>
-import { mapMutations } from "vuex";
+import { mapMutations, mapActions } from "vuex";
+import { nextTick } from "vue";
 import CategoryHeader from "./CategoryHeader.vue";
 import CategoryMonthSelector from "./CategoryMonthSelector.vue";
 import MasterCategoryRow from "./MasterCategoryRow.vue";
 import CategoryRows from "./CategoryRows.vue";
+import CategoryCard from "./CategoryCard.vue";
 import _ from "lodash";
 import draggable from "vuedraggable";
 import { ID_LENGTH } from "../../constants";
@@ -49,9 +76,12 @@ export default {
     CategoryMonthSelector,
     MasterCategoryRow,
     CategoryRows,
+    CategoryCard,
   },
   data() {
-    return {};
+    return {
+      nameCols: 5,
+    };
   },
   computed: {
     masterCategories: {
@@ -84,11 +114,38 @@ export default {
     next();
   },
   methods: {
-    ...mapMutations("categoryMonth", [
-      "UPDATE_SELECTED_MONTH",
-    ]),
+    ...mapMutations("categoryMonth", ["UPDATE_SELECTED_MONTH"]),
+    ...mapActions("categoryMonth", ["reorderMasterCategories", "newMasterCategory"]),
+    onNewMasterCategory() {
+      // this.createMasterCategory({ name: 'Name', is_income: false, sort: index - 0.5 }).then((id) => {
+      //     this.SET_EDITED_MASTER_CATEGORY_ID(id)
+      this.newMasterCategory().then((id) => {
+        const element_id = `master-category-name-input-${id}`;
+
+        nextTick(() => {
+          const new_element = document.getElementById(element_id);
+          if (!new_element) {
+            return;
+          }
+          new_element.focus();
+          new_element.select();
+        });
+      });
+    },
   },
 };
+
+export function deleteIconColor(hover, deleteButtonHover) {
+  if (hover) {
+    if (deleteButtonHover) {
+      return "delete_text";
+    } else {
+      return "white";
+    }
+  } else {
+    return "transparent";
+  }
+}
 </script>
 
 <style scoped>

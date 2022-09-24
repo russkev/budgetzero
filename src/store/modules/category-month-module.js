@@ -183,7 +183,8 @@ export default {
         )
       }
     },
-    newMasterCategory({ commit, dispatch }, index) {
+    newMasterCategory({ commit, dispatch, rootGetters }) {
+      const index = rootGetters.masterCategories.length 
       return dispatch(
         'createMasterCategory',
         { name: 'Name', is_income: false, sort: index - 0.5 },
@@ -203,7 +204,7 @@ export default {
         return id
       })
     },
-    deleteMasterCategory({ dispatch }, master_category) {
+    onDeleteMasterCategory({ dispatch }, master_category) {
       dispatch('deleteMasterCategory', master_category.id, { root: true })
     },
 
