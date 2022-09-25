@@ -98,7 +98,7 @@
     <v-divider />
 
     <v-list dark dense class="text-left pt-0 sidebar">
-      <v-list-item :to="{ path: `/budget/${year_month}` }" data-testid="sidebar-button-budgets">
+      <v-list-item :to="{ path: `/budget/${selectedMonth}` }" data-testid="sidebar-button-budgets">
         <v-list-item-icon>
           <v-icon> mdi-cash-multiple </v-icon>
         </v-list-item-icon>
@@ -233,9 +233,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import BaseDialogModalComponent from './Modals/BaseDialogModalComponent.vue'
-import { ID_LENGTH } from '../constants'
-import BudgetAddModal from './CategoryView/BudgetAddModal.vue'
+import BaseDialogModalComponent from '../Modals/BaseDialogModalComponent.vue'
+import { ID_LENGTH } from '../../constants'
+import BudgetAddModal from '../CategoryView/BudgetAddModal.vue'
 
 import moment from 'moment'
 
@@ -254,7 +254,7 @@ export default {
       mini: false,
       manageBudgetsModalVisible: false,
       budget_add_modal_is_visible: false,
-      year_month: moment(new Date()).format('YYYY-MM')
+      // year_month: moment(new Date()).format('YYYY-MM')
       // accounts: [],
     }
   },
@@ -271,6 +271,7 @@ export default {
       'allBudgets',
       'budgetsById',
     ]),
+    ...mapGetters('categoryMonth',['selectedMonth']),
     budgetName() {
       if (this.selectedBudget) {
         // return this.budgetRootsMap[this.selectedBudget] ? this.budgetRootsMap[this.selectedBudget].name : 'None'

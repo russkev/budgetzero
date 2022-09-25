@@ -8,7 +8,8 @@ const DEFAULT_CATEGORY_STATE = {
   allCategoryBalances: {},
   // monthCategoryBudgets: [],
   masterCategories: [],
-  categories: []
+  categories: [],
+  monthBalances: {},
 }
 
 export default {
@@ -31,7 +32,7 @@ export default {
     masterCategoriesByCategoryId: (state, getters) => {
       // // categories.reduce((partial, category) => {
       // //   if ()
-        
+
       // // })
       // return _.groupBy(state.categories,)
       // let result = {}
@@ -66,7 +67,8 @@ export default {
         }
       })
       return groups
-    }
+    },
+    monthBalances: (state) => state.monthBalances,
   },
   mutations: {
     SET_ALL_CATEGORY_BALANCES(state, payload) {
@@ -96,11 +98,9 @@ export default {
       let prev_balance = getCategoryBalance(state.allCategoryBalances, month, category_id)
       Object.keys(state.allCategoryBalances).forEach((current_month) => {
         if (this._vm.compareAscii(current_month, month) > 0) {
-          const current_month_balances = updateSingleCategory(
-            state.allCategoryBalances[current_month],
-            category_id,
-            { carryover: prev_balance }
-          )
+          const current_month_balances = updateSingleCategory(state.allCategoryBalances[current_month], category_id, {
+            carryover: prev_balance
+          })
           Vue.set(state.allCategoryBalances, current_month, current_month_balances)
           prev_balance = getCategoryBalance(state.allCategoryBalances, current_month, category_id)
         }
@@ -110,6 +110,9 @@ export default {
       Object.entries(DEFAULT_CATEGORY_STATE).forEach(([key, value]) => {
         Vue.set(state, key, value)
       })
+    },
+    SET_MONTH_BALANCES(state, monthBalances) {
+      Vue.set(state, 'monthBalances', monthBalances)
     }
   },
   actions: {
@@ -213,7 +216,7 @@ export default {
     },
 
     deleteMasterCategory(context, master_id) {
-      console.log("MASTER_ID", master_id)
+      console.log('MASTER_ID', master_id)
       const categories = context.getters.categoriesByMaster[master_id]
       if (categories !== undefined) {
         const bulk_categories = categories.map((category) => {
@@ -239,7 +242,7 @@ export default {
       const master_id_to = payload.to.id.slice(-ID_LENGTH.category)
 
       let updated_by_master = {}
-      // TOTO: Old index won't be relevant if different master id 
+      // TOTO: Old index won't be relevant if different master id
       const temp_index = new_index > old_index ? new_index + 0.5 : new_index - 0.5
       updated_by_master[master_id_from] = context.getters.categoriesByMaster[master_id_from].map((category, i) => {
         const sort = i === old_index ? temp_index : i
@@ -405,7 +408,7 @@ export default {
               account: account,
               month: current_month,
               category_id: split.category,
-              spent: split.value,
+              spent: split.value
             }
           })
           result = result.concat(this_result)
@@ -425,7 +428,7 @@ export default {
               account: account,
               month: previous_month,
               category_id: split.category,
-              spent: -split.value,
+              spent: -split.value
             }
           })
           result = result.concat(this_result)
@@ -434,7 +437,7 @@ export default {
             account: account,
             month: previous_month,
             category_id: previous.category,
-            spent: -previous_value,
+            spent: -previous_value
           })
         }
       }
@@ -564,6 +567,17 @@ const defaultCategoryBalance = (category_id) => {
   }
 }
 
+const updateMonthBalances = (month_balances, account, month, amount) => {
+  let updated_balances = { ...month_balances[month] }
+  const final_amount = (amount *= account.sign)
+  if (final_amount > 0) {
+    updated_balances.income += final_amount
+  } else {
+    updated_balances.spent += final_amount * -1
+  }
+  Vue.set(month_balances, month, updated_balances)
+}
+
 export {
   initCategoryBalancesMonth,
   updateSingleCategory,
@@ -571,5 +585,6 @@ export {
   getCategoryBalance,
   prevUsedMonth,
   getCarryover,
-  parseAllMonthCategories
+  parseAllMonthCategories,
+  updateMonthBalances,
 }

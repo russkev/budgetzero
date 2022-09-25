@@ -119,13 +119,19 @@ const updateAccountBalances = (current_balances, account, account_id, cleared, u
   updated_balances.cleared += cleared * account.sign
   updated_balances.uncleared += uncleared * account.sign
   updated_balances.working += working * account.sign
+  if (working * account.sign > 0) {
+    updated_balances.income += working * account.sign
+  } else {
+    updated_balances.spent += working * account.sign * -1
+  }
 
   Vue.set(current_balances, account_id, updated_balances)
 }
 
-const defaultAccountBalance = (account_id) => {
-  return {
-    [account_id]: DEFAULT_ACCOUNT_BALANCE
-  }
-}
-export { updateAccountBalances, defaultAccountBalance }
+
+// const defaultAccountBalance = (account_id) => {
+//   return {
+//     [account_id]: DEFAULT_ACCOUNT_BALANCE
+//   }
+// }
+export { updateAccountBalances }

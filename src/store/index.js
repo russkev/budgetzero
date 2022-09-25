@@ -17,7 +17,7 @@ import accountTransactions from './modules/account-transactions-module'
 import categoryMonth from './modules/category-month-module'
 import { generateId, generateShortId, validateId, compareAscii } from './modules/id-module'
 import { updateSingleCategory, defaultCategoryBalance, getCategoryBalance, getCarryover } from './modules/category-module'
-import { updateAccountBalances, defaultAccountBalance } from './modules/account-module'
+import { updateAccountBalances } from './modules/account-module'
 import { calculateTransactionBalanceUpdate } from './modules/transaction-module'
 import { validateDate, validateMonth } from '../helper'
 import moment from 'moment'
@@ -28,7 +28,6 @@ Vue.mixin({
     generateShortId,
     validateId,
     compareAscii,
-    defaultAccountBalance,
     defaultCategoryBalance,
     updateAccountBalances,
     updateSingleCategory,

@@ -350,4 +350,45 @@ describe('Test categories (budget) page', () => {
       cy.get('main').find('div.master-category-row:nth-child(4) .categories-container').children().should('have.length', 0)
     })
   })
+
+  context('Test selected date is saved', () => {
+    before(() => {
+      cy.initPath('budget/2022-01')
+    })
+
+    it('Accesses transaction page and then categories page again', () => {
+      cy.get('[data-testid="transactions-page-7kW"]').click()
+      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      cy.url().should('include', 'budget/2022-01')
+
+    })
+  })
+
+  context.only('Test that total balance value updates correctly', () => {
+    before(() => {
+      cy.initPath('budget/2022-07')
+    })
+
+    it('Checks the value for July and August', () => {
+      // Total income for July is    $1,592.00
+      // Total budgeted for July is    $418.26
+      // Total left for July is      $1,173.64
+
+      // Total income for August is    $2,884.00
+      // Total carryover from July is  $1,173.64
+      // Total budgeted for August is    $242.35
+      // Total left for August is      $3,815.29
+
+
+
+      // Total income should be: $4,476.00
+
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,173.64 ')
+      cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget:')
+
+      cy.get('[data-testid="next-month-button"]').click()
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $3,815.29 ')
+      cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget:')
+    })
+  })
 })

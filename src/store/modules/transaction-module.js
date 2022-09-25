@@ -1,8 +1,9 @@
 import { isArray } from 'lodash'
-import { ID_LENGTH, ID_NAME, NONE } from '../../constants'
+import { DEFAULT_ACCOUNT_BALANCE, DEFAULT_MONTH_BALANCE, ID_LENGTH, ID_NAME, NONE } from '../../constants'
 import { sanitizeValueInput, randomInt, randomString } from '../../helper'
-import { defaultAccountBalance, updateAccountBalances } from './account-module'
+import { updateAccountBalances } from './account-module'
 import { initCategoryBalancesMonth, updateSingleCategory } from './category-module'
+import { updateMonthBalances } from './category-module'
 import { compareAscii } from './id-module'
 
 export default {
@@ -302,7 +303,8 @@ const calculateTransactionBalanceUpdate = (current, previous, account) => {
 const parseAllTransactions = (allTransactions, month_category_balances, getters, dispatch) => {
   const month_category_months = Object.keys(month_category_balances)
   let month_category_index = 0
-  let balances = { account: {}, category: {} }
+  let balances = { account: {}, category: {}, month: {} }
+  // let monthBalances = {}
   let updated_transaction_docs = []
 
   let running_balances = getters.accounts.reduce((partial, account) => {
@@ -321,8 +323,11 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     const uncleared = row.doc.cleared ? 0 : working
     const splits = row.doc.splits ? row.doc.splits : []
 
-    _.defaultsDeep(balances.account, defaultAccountBalance(account_id))
+    // _.defaultsDeep(balances.account, defaultAccountBalance(account_id))
+    _.defaultsDeep(balances.account, {[account_id]: DEFAULT_ACCOUNT_BALANCE})
+    _.defaultsDeep(balances.month, {[month]: DEFAULT_MONTH_BALANCE})
     updateAccountBalances(balances.account, account_doc, account_id, cleared, uncleared, working)
+    updateMonthBalances(balances.month, account_doc, month, working)
 
     const running_balance = running_balances[account_id] + working
     running_balances[account_id] = running_balance

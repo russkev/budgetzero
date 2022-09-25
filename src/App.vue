@@ -24,7 +24,7 @@
 
 <script>
 window.global ||= window;
-import Sidebar from './components/Sidebar.vue'
+import Sidebar from './components/SidebarView/Sidebar.vue';
 import BaseDialogModalComponent from './components/Modals/BaseDialogModalComponent.vue'
 import ConfirmDialog from './components/Modals/ConfirmDialog.vue'
 import BudgetAddModal from './components/CategoryView/BudgetAddModal.vue'

@@ -3,7 +3,7 @@
     <div v-if="!isEditing">
       <v-hover v-slot="{ hover }">
         <v-text-field
-          :class="`ma-0 text-${text}`"
+          :class="`ma-0 pa-0 text-${text}`"
           dense
           flat
           solo
@@ -28,7 +28,7 @@
         flat
         solo
         autofocus
-        :class="`ma-0 text-${text}`"
+        :class="`ma-0 pa-0 text-${text}`"
         :id="id"
         :data-testid="dataTestid"
         :value="value"

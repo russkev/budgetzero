@@ -292,6 +292,7 @@ export default {
           const balances = parseAllTransactions(result.rows, month_category_balances, getters, dispatch)
 
           logPerformanceTime('calculateAllValues', t1)
+          commit('SET_MONTH_BALANCES', balances.month)
           commit('SET_ALL_ACCOUNT_BALANCES', balances.account)
           commit('SET_ALL_CATEGORY_BALANCES', balances.category)
           return balances.category

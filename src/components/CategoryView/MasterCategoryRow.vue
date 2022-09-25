@@ -39,13 +39,20 @@
               :data-testid="`master-category-budget-${masterCategory.id}`"
               align="right"
             >
-              <span class="text-h5">
-                Budgeted
-              </span>
-              <br />
-              <span class="text-body-1">
-                {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].budget / 100) }}
-              </span>
+              <v-row>
+                <v-col class="pa-0 pr-6">
+
+                  
+                  <span class="text-h5">
+                    Budgeted
+                  </span>
+                  <br />
+                  <span class="text-body-1">
+                    {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].budget / 100) }}
+                  </span>
+                </v-col>
+              </v-row>
+
             </v-col>
             <v-col
               class="pa-0 my-auto"

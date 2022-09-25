@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <div>
     <v-row cols="12" class="pr-4">
       <v-card style="width: 300px;" outlined color="background lighten-1">
@@ -63,10 +63,43 @@
       </v-card>
     </v-row>
   </div>
+</template> -->
+
+<template>
+  <v-alert
+    align="right"
+    border="left"
+    :type="availableToBudget < 0 ? 'error' : 'success'"
+    text
+    class="pa-2"
+    icon="false"
+  >
+  <template #prepend>
+    <div class="mr-2"></div>
+  </template>
+    <div class="text-h5" data-testid="total-balance-title">
+      <span v-if="availableToBudget < 0">
+        Amount over budget:
+      </span>
+      <span v-else>
+        Amount left to budget:
+      </span>
+    </div>
+    <div class="text-h3" data-testid="total-balance">
+      <span v-if="availableToBudget < 0">
+        {{ intlCurrency.format(-availableToBudget / 100) }}
+        <!-- {{  }} -->
+      </span>
+        <span v-else>
+        {{ intlCurrency.format(availableToBudget / 100) }}
+      </span>
+    </div>
+  </v-alert>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import { compareAscii } from "../../store/modules/id-module";
 
 export default {
   props: {},
@@ -81,49 +114,104 @@ export default {
       "allCategoryBalances",
       "masterCategoriesById",
       "masterCategoriesByCategoryId",
+      "monthBalances",
     ]),
-    ...mapGetters("categoryMonth", ["selectedMonth"]),
-    monthDataExists() {
-      return this.allCategoryBalances[this.selectedMonth] !== undefined;
-    },
+    ...mapGetters("categoryMonth", ["selectedMonth", "masterCategoriesStats"]),
     monthStats() {
       let stats = {
-        leftover_last_month: 0,
+        // leftover_last_month: 0,
+        // income_this_month: 0,
+        // overspent_last_month: 0,
+        // budgeted_this_month: 0,
+        // spent_this_month: 0,
+        // income_last_month: 0,
+        balance_last_month: 0,
         income_this_month: 0,
-        overspent_last_month: 0,
         budgeted_this_month: 0,
-        spent_this_month: 0,
+        balance_this_month: 0,
       };
-      if (!this.monthDataExists) {
-        return stats;
+      Object.values(this.masterCategoriesStats).forEach((stats_object) => {
+        stats.balance_this_month += stats_object.balance;
+      });
+
+
+      const sortedMonths = Object.keys(this.monthBalances).sort((a, b) => compareAscii(a, b));
+      const thisMonthIndex = sortedMonths.findIndex((month) => month === this.selectedMonth);
+      let previous_income = 0
+      if (thisMonthIndex > 0) {
+        previous_income = this.monthBalances[sortedMonths[thisMonthIndex - 1]].income;
       }
 
-      Object.entries(this.allCategoryBalances[this.selectedMonth]).reduce(
-        (partial, [category_id, category_balances]) => {
-          // const is_income = this.masterCategoriesById[category_balances.master_id].isIncome
-          const is_income = this.masterCategoriesByCategoryId[category_id];
-          // Object.values(categories).map((category) => {
-          if (is_income) {
-            stats.income_this_month += _.get(category_balances, ["spent"], 0);
-            stats.leftover_last_month += _.get(category_balances, ["carryover"], 0);
-          } else {
-            stats.spent_this_month += _.get(category_balances, ["spent"], 0);
-            stats.overspent_last_month += _.get(category_balances, ["carryover"], 0);
-          }
-          stats.budgeted_this_month += _.get(category_balances, ["doc", "budget"], 0);
-          // })
-        }
-      );
       return stats;
     },
     availableToBudget() {
-      return (
-        this.monthStats.leftover_last_month +
-        this.monthStats.income_this_month -
-        this.monthStats.budgeted_this_month +
-        this.monthStats.overspent_last_month
-      );
+      // console.log('availableToBudget', this.monthStats.balance_this_month)
+
+      // get previous month from monthBalances if it exists
+      // let previousMonth = this.monthBalances.find(
+      //   (monthBalance) => monthBalance.month === this.selectedMonth - 1
+      // );
+
+      // sort a list of months
+
+
+
+      return this.monthStats.balance_this_month;
     },
+
+    // // monthDataExists() {
+    // //   return this.allCategoryBalances[this.selectedMonth] !== undefined;
+    // // },
+    // monthStats() {
+    //   let stats = {
+    //     // leftover_last_month: 0,
+    //     // income_this_month: 0,
+    //     // overspent_last_month: 0,
+    //     // budgeted_this_month: 0,
+    //     // spent_this_month: 0,
+    //     balance_this_month: 0,
+    //   };
+    //   // if (!this.monthDataExists) {
+    //   //   return stats;
+    //   // }
+
+    //   // Object.entries(this.allCategoryBalances[this.selectedMonth]).reduce(
+    //   //   (partial, [category_id, category_balances]) => {
+    //   //     // // const is_income = this.masterCategoriesById[category_balances.master_id].isIncome
+    //   //     // const is_income = this.masterCategoriesByCategoryId[category_id];
+    //   //     // // Object.values(categories).map((category) => {
+    //   //     // if (is_income) {
+    //   //     //   stats.income_this_month += _.get(category_balances, ["spent"], 0);
+    //   //     //   stats.leftover_last_month += _.get(category_balances, ["carryover"], 0);
+    //   //     // } else {
+    //   //     //   stats.spent_this_month += _.get(category_balances, ["spent"], 0);
+    //   //     //   stats.overspent_last_month += _.get(category_balances, ["carryover"], 0);
+    //   //     // }
+    //   //     // stats.budgeted_this_month += _.get(category_balances, ["doc", "budget"], 0);
+    //   //     // // })
+
+    //   //   }
+    //   // );
+    //   // return stats;
+    //   // Object.values(this.masterCategoriesStats).reduce(
+    //   //   (partial, stats) => {
+    //   //     stats.balance_this_month += stats.balance
+    //   //   }
+    //   // )
+    //   console.log("this.masterCategoriesStats", Object.values(this.masterCategoriesStats));
+    //   Object.values(this.masterCategoriesStats).forEach((stats_object) => {
+    //     stats.balance_this_month += stats_object.balance;
+    //   });
+    // },
+    // availableToBudget() {
+    //   return (
+    //     this.monthStats.balance_this_month
+    //     // this.monthStats.leftover_last_month +
+    //     // this.monthStats.income_this_month -
+    //     // this.monthStats.budgeted_this_month +
+    //     // this.monthStats.overspent_last_month
+    //   );
+    // },
   },
   methods: {},
 };

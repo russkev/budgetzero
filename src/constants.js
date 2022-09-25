@@ -26,7 +26,14 @@ export const ID_NAME = {
 export const DEFAULT_ACCOUNT_BALANCE = {
   cleared: 0,
   uncleared: 0,
-  working: 0
+  working: 0,
+  income: 0,
+  spent: 0,
+}
+
+export const DEFAULT_MONTH_BALANCE = {
+  income: 0,
+  spent: 0,
 }
 
 export const DEFAULT_MONTH_CATEGORY = {

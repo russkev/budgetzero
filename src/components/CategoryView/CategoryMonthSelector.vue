@@ -1,5 +1,5 @@
 <template>
-  <v-card class="ma-0 pa-0" elevation="0" color="transparent" width="250px">
+  <v-card class="ma-0 pa-0" elevation="0" color="transparent" width="250px" min-width="250px">
     <v-row class="pa-0 ma-0">
       <month-next-prev-button
         icon="mdi-chevron-left"
@@ -29,7 +29,13 @@
               </v-row>
             </v-btn>
           </template>
-          <v-date-picker v-model="date" type="month" @input="datePickerIsOpen = false" header-color="background lighten-1"/>
+          <v-date-picker
+            v-model="date"
+            type="month"
+            @input="datePickerIsOpen = false"
+            color="primary darken-2"
+            header-color="background lighten-1"
+          />
         </v-menu>
       </v-col>
       <month-next-prev-button
@@ -56,7 +62,7 @@ export default {
   },
 
   computed: {
-    ...mapGetters("categoryMonth", ["prevMonth", "nextMonth", "thisMonth", "selectedMonth"]),
+    ...mapGetters("categoryMonth", ["prevMonth", "nextMonth", "selectedMonth"]),
     monthName() {
       const date = new Date(this.selectedMonth);
 

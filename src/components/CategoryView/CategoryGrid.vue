@@ -1,57 +1,58 @@
 <template>
   <v-container fluid class="pt-0">
     <v-sheet max-width="800px" justify="center" class="mx-auto pa-2" color="transparent">
-
-    <category-month-selector />
-    <!-- <v-row justify="space-between" class="ma-0 pt-2">
-      <v-col sm="auto" />
-      <v-col sm="auto">
-        <category-header />
-      </v-col>
-    </v-row> -->
-    <draggable v-model="masterCategoriesData" handle=".master-handle">
-      <v-row
-        class="master-category-row ma-0 pa-0"
-        v-for="(master_category, master_index) in masterCategoriesData"
-        :key="master_category.id"
-      >
+      <v-row class="ma-0 pa-0" style="flex-wrap: nowrap; justify-content: space-between;">
+        <v-col 
+          class="ma-0 mr-auto pa-0 mb-2"
+          cols="auto">
+          <category-month-selector />
+        </v-col>
+        <v-col
+          class="ma-0 pa-0"
+          cols="auto"
+          style="flex: 0 1 250px;"
+        >
+          <category-header />
+        </v-col>
+      </v-row>
+      <draggable v-model="masterCategoriesData" handle=".master-handle">
+        <v-row
+          class="master-category-row ma-0 pa-0"
+          v-for="(master_category, master_index) in masterCategoriesData"
+          :key="master_category.id"
+        >
           <category-card width="100%">
-
             <master-category-row
-            :name-cols="nameCols"
-            :master-category="master_category"
-            :master-index="master_index"
+              :name-cols="nameCols"
+              :master-category="master_category"
+              :master-index="master_index"
             />
-            <!-- <v-progress-linear value="100" height="2" /> -->
             <v-divider />
             <category-rows :masterCategory="master_category" :nameCols="nameCols" />
           </category-card>
-      </v-row>
-    </draggable>
+        </v-row>
+      </draggable>
       <category-card>
-
-      <v-row class="ma-0 pa-0">
-        <v-col class="pa-0 ma-0" align="center">
-          <v-btn 
-            tile 
-            text 
-            class="text-none my-2"
-            :data-testid="`btn-new-master-category`"
-            @click="onNewMasterCategory()"
-          >
-            <v-icon color="primary" class="mr-2">
-              mdi-plus
-            </v-icon>
-            New Group
-          </v-btn>
-        </v-col>
-      </v-row>
+        <v-row class="ma-0 pa-0">
+          <v-col class="pa-0 ma-0" align="center">
+            <v-btn
+              tile
+              text
+              class="text-none my-2"
+              :data-testid="`btn-new-master-category`"
+              @click="onNewMasterCategory()"
+            >
+              <v-icon color="primary" class="mr-2">
+                mdi-plus
+              </v-icon>
+              New Group
+            </v-btn>
+          </v-col>
+        </v-row>
       </category-card>
     </v-sheet>
-
   </v-container>
 </template>
-
 
 <script>
 import { mapMutations, mapActions } from "vuex";
