@@ -18,6 +18,7 @@
               v-on="on"
               v-bind="attrs"
               width="100%"
+              data-testid="month-selector-button"
             >
               <v-row class="pa-0 ma-0">
                 <v-col class="pa-0 ma-0" align="left">

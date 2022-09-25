@@ -74,9 +74,9 @@
     class="pa-2"
     icon="false"
   >
-  <template #prepend>
-    <div class="mr-2"></div>
-  </template>
+    <template #prepend>
+      <div class="mr-2"></div>
+    </template>
     <div class="text-h5" data-testid="total-balance-title">
       <span v-if="availableToBudget < 0">
         Amount over budget:
@@ -90,7 +90,7 @@
         {{ intlCurrency.format(-availableToBudget / 100) }}
         <!-- {{  }} -->
       </span>
-        <span v-else>
+      <span v-else>
         {{ intlCurrency.format(availableToBudget / 100) }}
       </span>
     </div>
@@ -119,30 +119,46 @@ export default {
     ...mapGetters("categoryMonth", ["selectedMonth", "masterCategoriesStats"]),
     monthStats() {
       let stats = {
-        // leftover_last_month: 0,
-        // income_this_month: 0,
-        // overspent_last_month: 0,
-        // budgeted_this_month: 0,
-        // spent_this_month: 0,
-        // income_last_month: 0,
-        balance_last_month: 0,
+        available_last_month: 0,
         income_this_month: 0,
         budgeted_this_month: 0,
-        balance_this_month: 0,
+        available_this_month: 0,
       };
-      Object.values(this.masterCategoriesStats).forEach((stats_object) => {
-        stats.balance_this_month += stats_object.balance;
-      });
-
 
       const sortedMonths = Object.keys(this.monthBalances).sort((a, b) => compareAscii(a, b));
-      const thisMonthIndex = sortedMonths.findIndex((month) => month === this.selectedMonth);
-      let previous_income = 0
-      if (thisMonthIndex > 0) {
-        previous_income = this.monthBalances[sortedMonths[thisMonthIndex - 1]].income;
+      if (sortedMonths.length > 0) {
+        let previous_month = sortedMonths[0];
+        if (compareAscii(previous_month, this.selectedMonth) < 0) {
+          for (let i = 1; i < sortedMonths.length; i++) {
+            if (compareAscii(sortedMonths[i], this.selectedMonth) >= 0) {
+              break;
+            }
+            previous_month = sortedMonths[i];
+          }
+          stats.available_last_month = this.monthBalances[previous_month].available;
+        }
+      }
+
+
+      if (this.monthBalances[this.selectedMonth]) {
+        stats.income_this_month = this.monthBalances[this.selectedMonth].income;
+        stats.budgeted_this_month = this.monthBalances[this.selectedMonth].budgeted;
+        stats.available_this_month = this.monthBalances[this.selectedMonth].available;
+      } else {
+        stats.income_this_month = 0;
+        stats.budgeted_this_month = 0;
+        stats.available_this_month = stats.available_last_month;
       }
 
       return stats;
+
+      // const thisMonthIndex = sortedMonths.findIndex((month) => month === this.selectedMonth);
+      // let previous_income = 0
+      // if (thisMonthIndex > 0) {
+      //   previous_income = this.monthBalances[sortedMonths[thisMonthIndex - 1]].income;
+      // }
+
+      // return stats;
     },
     availableToBudget() {
       // console.log('availableToBudget', this.monthStats.balance_this_month)
@@ -154,9 +170,7 @@ export default {
 
       // sort a list of months
 
-
-
-      return this.monthStats.balance_this_month;
+      return this.monthStats.available_this_month;
     },
 
     // // monthDataExists() {

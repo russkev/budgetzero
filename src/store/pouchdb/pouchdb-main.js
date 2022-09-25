@@ -283,6 +283,8 @@ export default {
       ])
         .then((results) => {
           month_category_balances = parseAllMonthCategories(results, getters)
+          // console.log('month_category_balances', month_category_balances)
+          dispatch('updateMonthBudgetedBalances', month_category_balances)
         })
         .then(() => {
           return dispatch('fetchAllTransactions')
@@ -292,7 +294,9 @@ export default {
           const balances = parseAllTransactions(result.rows, month_category_balances, getters, dispatch)
 
           logPerformanceTime('calculateAllValues', t1)
-          commit('SET_MONTH_BALANCES', balances.month)
+          // commit('SET_MONTH_BALANCES', balances.month)
+          dispatch('updateMonthIncomeSpentBalances', balances.month)
+          dispatch('calculateAvailableToBudget')
           commit('SET_ALL_ACCOUNT_BALANCES', balances.account)
           commit('SET_ALL_CATEGORY_BALANCES', balances.category)
           return balances.category

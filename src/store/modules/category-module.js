@@ -1,5 +1,5 @@
 import { logPerformanceTime, extractMonthCategoryMonth } from '../../helper'
-import { ID_LENGTH, ID_NAME, NONE } from '../../constants'
+import { DEFAULT_MONTH_BALANCE, ID_LENGTH, ID_NAME, NONE } from '../../constants'
 import { compareAscii } from './id-module'
 import _, { isArray } from 'lodash'
 import Vue from 'vue'
@@ -9,7 +9,7 @@ const DEFAULT_CATEGORY_STATE = {
   // monthCategoryBudgets: [],
   masterCategories: [],
   categories: [],
-  monthBalances: {},
+  monthBalances: {}
 }
 
 export default {
@@ -68,7 +68,7 @@ export default {
       })
       return groups
     },
-    monthBalances: (state) => state.monthBalances,
+    monthBalances: (state) => state.monthBalances
   },
   mutations: {
     SET_ALL_CATEGORY_BALANCES(state, payload) {
@@ -113,6 +113,15 @@ export default {
     },
     SET_MONTH_BALANCES(state, monthBalances) {
       Vue.set(state, 'monthBalances', monthBalances)
+    },
+    UPDATE_MONTH_BALANCES(state, monthBalancesItem) {
+      const existing = _.defaultsDeep(state.monthBalances[monthBalancesItem.month], DEFAULT_MONTH_BALANCE)
+      Vue.set(state.monthBalances, monthBalancesItem.month, {
+        income: _.get(monthBalancesItem, 'income', existing.income),
+        spent: _.get(monthBalancesItem, 'spent', existing.spent),
+        budgeted: _.get(monthBalancesItem, 'budgeted', existing.budgeted),
+        available: _.get(monthBalancesItem, 'available', existing.available)
+      })
     }
   },
   actions: {
@@ -457,6 +466,45 @@ export default {
         spent: 0,
         doc: current ? current : null
       }
+    },
+    updateMonthBudgetedBalances({ commit }, monthCategoryBalances) {
+      // monthBalances = JSON.parse(JSON.stringify(getters.monthBalances))
+      Object.entries(monthCategoryBalances).forEach(([month, categoryBalances]) => {
+        const budgeted = Object.values(categoryBalances).reduce((total, categoryBalance) => {
+          return total + categoryBalance.doc.budget
+        }, 0)
+        commit('UPDATE_MONTH_BALANCES', { month: month, budgeted: budgeted })
+      })
+    },
+    updateMonthIncomeSpentBalances({ commit }, monthCategoryBalances) {
+      // monthBalances = JSON.parse(JSON.stringify(getters.monthBalances))
+      Object.entries(monthCategoryBalances).forEach(([month, categoryBalances]) => {
+        commit('UPDATE_MONTH_BALANCES', {
+          month: month,
+          income: categoryBalances.income,
+          spent: categoryBalances.spent
+        })
+      })
+    },
+    calculateAvailableToBudget({ getters, commit }) {
+      if (getters.monthBalances.length === 0) {
+        return
+      }
+      const sortedMonths = Object.keys(getters.monthBalances).sort((a, b) => {
+        return compareAscii(a, b)
+      })
+
+      const previousMonthBalance = getters.monthBalances[sortedMonths[0]]
+      let previousMonthAvailable = previousMonthBalance.income - previousMonthBalance.budgeted
+      commit('UPDATE_MONTH_BALANCES', { month: sortedMonths[0], available: previousMonthAvailable })
+
+      for (let month of sortedMonths.slice(1, sortedMonths.length)) {
+        const currentMonthAvailable =
+          previousMonthAvailable + getters.monthBalances[month].income - getters.monthBalances[month].budgeted
+
+        commit('UPDATE_MONTH_BALANCES', { month: month, available: currentMonthAvailable })
+        previousMonthAvailable = currentMonthAvailable
+      }
     }
   }
 }
@@ -586,5 +634,5 @@ export {
   prevUsedMonth,
   getCarryover,
   parseAllMonthCategories,
-  updateMonthBalances,
+  updateMonthBalances
 }

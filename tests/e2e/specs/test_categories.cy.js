@@ -364,7 +364,26 @@ describe('Test categories (budget) page', () => {
     })
   })
 
-  context.only('Test that total balance value updates correctly', () => {
+  context.only('Test updating budgeted values', () => {
+    before(() => {
+      cy.initPath('budget/2022-07')
+    })
+    it('Checks that changing budgeted values results in values updating properly', () => {
+      const vacation_selector = '[data-testid="category-budget-input-Lx7"]'
+      cy.get(vacation_selector).click()
+      cy.get(vacation_selector).clear()
+      cy.get(vacation_selector).type('-100')
+      cy.get(vacation_selector).type('{enter}')
+      cy.get(vacation_selector).should('have.value', '-$100.00')
+
+      cy.get('[data-testid="category-balance-Lx7"]').should('have.text', ' -$520.00 ')
+      
+
+    })
+  })
+
+
+  context('Test that total balance value updates correctly', () => {
     before(() => {
       cy.initPath('budget/2022-07')
     })
@@ -372,23 +391,26 @@ describe('Test categories (budget) page', () => {
     it('Checks the value for July and August', () => {
       // Total income for July is    $1,592.00
       // Total budgeted for July is    $418.26
-      // Total left for July is      $1,173.64
+      // Total left for July is      $1,173.74
 
       // Total income for August is    $2,884.00
-      // Total carryover from July is  $1,173.64
-      // Total budgeted for August is    $242.35
-      // Total left for August is      $3,815.29
-
-
+      // Total carryover from July is  $1,173.74
+      // Total budgeted for August is    $104.60
+      // Total left for August is      $3,953.14
 
       // Total income should be: $4,476.00
 
-      cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,173.64 ')
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,173.74 ')
       cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget:')
 
       cy.get('[data-testid="next-month-button"]').click()
-      cy.get('[data-testid="total-balance"]').should('contain.text', ' $3,815.29 ')
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $3,953.14 ')
       cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget:')
+
+      cy.get('[data-testid="previous-month-button"]').click()
+
+
+
     })
   })
 })
