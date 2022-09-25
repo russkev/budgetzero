@@ -9,6 +9,11 @@ $font-size-root: 12px;
 
 // All variables here: https://vuetifyjs.com/en/api/vuetify/#sass
 $headings: (
+  'h3': (
+    'size': 2rem,
+    'weight': 500,
+    'line-height': 2rem,
+  ),
   'h4': (
     'size': 1.4rem,
     'weight': 600,

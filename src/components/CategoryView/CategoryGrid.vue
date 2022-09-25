@@ -1,19 +1,20 @@
 <template>
-  <v-container class="pt-0">
+  <v-container fluid class="pt-0">
+    <v-sheet max-width="800px" justify="center" class="mx-auto pa-2" color="transparent">
+
     <category-month-selector />
-    <v-row justify="space-between" class="ma-0 pt-2">
+    <!-- <v-row justify="space-between" class="ma-0 pt-2">
       <v-col sm="auto" />
       <v-col sm="auto">
         <category-header />
       </v-col>
-    </v-row>
+    </v-row> -->
     <draggable v-model="masterCategoriesData" handle=".master-handle">
       <v-row
         class="master-category-row ma-0 pa-0"
         v-for="(master_category, master_index) in masterCategoriesData"
         :key="master_category.id"
       >
-        <!-- <v-card class="ma-2 background lighten-1" elevation="0" width="100%"> -->
           <category-card width="100%">
 
             <master-category-row
@@ -21,14 +22,11 @@
             :master-category="master_category"
             :master-index="master_index"
             />
-            <!-- <v-divider/> -->
             <v-progress-linear value="100" height="2" />
             <category-rows :masterCategory="master_category" :nameCols="nameCols" />
           </category-card>
-        <!-- </v-card> -->
       </v-row>
     </draggable>
-    <!-- <v-card class="ma-2 background lighten-1" elevation="0" width="auto"> -->
       <category-card>
 
       <v-row class="ma-0 pa-0">
@@ -48,13 +46,11 @@
         </v-col>
       </v-row>
       </category-card>
-    <!-- </v-card> -->
+    </v-sheet>
+
   </v-container>
 </template>
-<!-- <v-btn small tile text class="text-none mx-auto" color="primary">
-    <v-icon small>mdi-plus</v-icon>
-    New Group
-  </v-btn> -->
+
 
 <script>
 import { mapMutations, mapActions } from "vuex";
@@ -117,8 +113,6 @@ export default {
     ...mapMutations("categoryMonth", ["UPDATE_SELECTED_MONTH"]),
     ...mapActions("categoryMonth", ["reorderMasterCategories", "newMasterCategory"]),
     onNewMasterCategory() {
-      // this.createMasterCategory({ name: 'Name', is_income: false, sort: index - 0.5 }).then((id) => {
-      //     this.SET_EDITED_MASTER_CATEGORY_ID(id)
       this.newMasterCategory().then((id) => {
         const element_id = `master-category-name-input-${id}`;
 

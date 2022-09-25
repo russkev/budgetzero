@@ -23,7 +23,6 @@
               :cols="nameCols"
               class="pa-0 ma-0 my-auto"
             >
-              <!-- <v-col class="pa-0 my-auto"> -->
                 <category-grid-input
                   background-color="background lighten-1"
                   :id="`master-category-name-input-${masterCategory.id}`"
@@ -34,7 +33,6 @@
                   @apply="onMasterCategoryNameChange"
                   text="h4"
                 />
-              <!-- </v-col> -->
             </v-col>
             <v-col
               class="pa-0 my-auto"
@@ -92,62 +90,13 @@
             </v-icon>
           </v-btn>
         </v-hover>
-        <!-- <v-sheet width="20px" class="alert row-side-widget"> -->
-        <!-- width="20px" -->
-
-        <!-- <v-icon
-      v-if="hover"
-      :color="hover ? 'primary' : 'accent'"
-      small
-      :data-testid="`delete-master-category-${masterCategory.id}`"
-    >
-      mdi-delete-outline
-    </v-icon> -->
-        <!-- <v-hover v-slot="{ hover }">
-          <v-icon
-            :color
-            />
-        </v-hover> -->
       </v-row>
     </v-hover>
   </v-container>
 </template>
 
-<!-- :color="hover? 'red darken-4' : 'transparent'"  -->
-
-<!-- <v-icon
-    dark
-    small
-    right
-    :data-testid="`btn-new-master-category-${masterCategory.id}`"
-    @click="onNewMasterCategory(masterIndex)"
-  >
-    mdi-plus-circle-outline
-  </v-icon> -->
-<!-- <v-icon
-    dark
-    small
-    right
-    v-if="hover"
-    class="ma-auto"
-    :data-testid="`btn-delete-master-category-${masterCategory.id}`"
-    @click="deleteMasterCategory(masterCategory)"
-  >
-    mdi-trash-can-outline
-  </v-icon> -->
-<!-- <v-icon
-    dark
-    small
-    right
-    :data-testid="`btn-new-category-${masterCategory.id}`"
-    @click="onNewCategory(masterCategory)"
-  >
-    mdi-note-plus-outline
-  </v-icon> -->
-
 <script>
 import { mapGetters, mapActions } from "vuex";
-import { nextTick } from "vue";
 import { deleteIconColor } from "./CategoryGrid.vue";
 export default {
   props: {

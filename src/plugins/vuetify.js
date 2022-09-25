@@ -21,13 +21,13 @@ export default new Vuetify({
       },
       dark: {
         // primary: '#354148',
-        primary: '#00ff84',
+        primary: '#99ff00',
         accent: '#ff00ff',
         background: {
-          base: '#2d3334',
-          darken1: '#2a3032',
-          lighten1: '#31383a',
-          lighten2: '#3b4345'
+          base: hslToHex('hsl(245, 9%, 19%)'),
+          darken1: hslToHex('hsl(251, 9%, 18%)'),
+          lighten1: hslToHex('hsl(254, 9%, 21%)'),
+          lighten2: hslToHex('hsl(248, 9%, 25%)'),
         },
         delete: '#391616',
         delete_text: '#ff4343'
@@ -39,3 +39,21 @@ export default new Vuetify({
     }
   }
 })
+
+function hslToHex(hsl) {
+  hsl= hsl.replace('hsl(', '').replace(')', '').split(',')
+  const h = parseInt(hsl[0])
+  const s = parseInt(hsl[1])
+  let l = parseInt(hsl[2])
+
+  l /= 100
+  const a = s * Math.min(l, 1 - l) / 100
+  const f = n => {
+    const k = (n + h / 30) % 12
+    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
+    return Math.round(255 * color)
+      .toString(16)
+      .padStart(2, '0') // convert to Hex and prefix "0" if needed
+  }
+  return `#${f(0)}${f(8)}${f(4)}`
+}
