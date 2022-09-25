@@ -25,70 +25,66 @@
                 mdi-drag-vertical
               </v-icon>
             </v-sheet>
-
-            <v-col
-              :cols="nameCols"
-              class="pa-0 ma-0 my-1"
-              :data-testid="`category-name-${category.id}`"
-            >
-              <!-- <v-row> -->
-              <!-- <v-col align-self="center" sm="1" class="mr-2">
+            <v-col class="pa-0 ma-0">
+              <v-row class="ma-0 pa-0">
+                <v-col
+                  :cols="nameCols"
+                  class="pa-0 ma-0 my-1"
+                  :data-testid="`category-name-${category.id}`"
+                >
+                  <!-- <v-row> -->
+                  <!-- <v-col align-self="center" sm="1" class="mr-2">
               <v-icon class="handle" :data-testid="`drag-category-${category.id}`">
                 mdi-drag-vertical
               </v-icon>
             </v-col> -->
-              <!-- <v-col> -->
-              <category-grid-input
-                class="category-name-input"
-                :id="`category-name-input-${category.id}`"
-                :data-testid="`category-name-input-${category.id}`"
-                :is-editing="isEditingName(category.id)"
-                :value="category.name"
-                @edit="onEditCategoryName(category.id)"
-                @apply="onCategoryNameChange"
-              />
-              <!-- </v-col> -->
-              <!-- </v-row> -->
+                  <!-- <v-col> -->
+                  <category-grid-input
+                    class="category-name-input"
+                    :id="`category-name-input-${category.id}`"
+                    :data-testid="`category-name-input-${category.id}`"
+                    :is-editing="isEditingName(category.id)"
+                    :value="category.name"
+                    @edit="onEditCategoryName(category.id)"
+                    @apply="onCategoryNameChange"
+                  />
+                  <!-- </v-col> -->
+                  <!-- </v-row> -->
+                </v-col>
+                <v-col :id="`category-budget-${category.id}`" class="pa-0 my-1">
+                  <category-grid-input
+                    class="category-budget-input"
+                    :id="`category-budget-input-${category.id}`"
+                    :data-testid="`category-budget-input-${category.id}`"
+                    :value="category.budgetDisplay"
+                    :is-editing="editedCategoryBudgetId == category.id"
+                    currency
+                    @edit="onEditCategoryBudget(category.id)"
+                    @apply="
+                      (event) => {
+                        onCategoryBudgetChanged({ category_id: category.id, event: event });
+                      }
+                    "
+                    @enter="(event) => onCategoryBudgetEnter(category, event)"
+                  />
+                </v-col>
+                <v-col
+                  :data-testid="`category-spent-${category.id}`"
+                  align="right"
+                  class="pa-0 my-auto"
+                >
+                  {{ intlCurrency.format(category.spent / 100) }}
+                </v-col>
+                <v-col
+                  :data-testid="`category-balance-${category.id}`"
+                  align="right"
+                  class="pa-0 my-auto"
+                >
+                  {{ intlCurrency.format(category.balance / 100) }}
+                </v-col>
+              </v-row>
             </v-col>
-            <v-col :id="`category-budget-${category.id}`" class="pa-0 my-1">
-              <category-grid-input
-                class="category-budget-input"
-                :id="`category-budget-input-${category.id}`"
-                :data-testid="`category-budget-input-${category.id}`"
-                :value="category.budgetDisplay"
-                :is-editing="editedCategoryBudgetId == category.id"
-                currency
-                @edit="onEditCategoryBudget(category.id)"
-                @apply="
-                  (event) => {
-                    onCategoryBudgetChanged({ category_id: category.id, event: event });
-                  }
-                "
-                @enter="(event) => onCategoryBudgetEnter(category, event)"
-              />
-            </v-col>
-            <v-col
-              :data-testid="`category-spent-${category.id}`"
-              align="right"
-              class="pa-0 my-auto"
-            >
-              {{ intlCurrency.format(category.spent / 100) }}
-            </v-col>
-            <v-col
-              :data-testid="`category-balance-${category.id}`"
-              align="right"
-              class="pa-0 my-auto"
-            >
-              {{ intlCurrency.format(category.balance / 100) }}
-              <!-- <v-icon
-                small
-                right
-                :data-testid="`btn-hide-category-${category.id}`"
-                @click="onHideCategory(category.id)"
-              >
-                mdi-eye-off-outline
-              </v-icon> -->
-            </v-col>
+
             <v-hover v-slot="{ hover: hideButton }">
               <v-btn
                 tile
@@ -110,20 +106,24 @@
         </v-hover>
       </div>
     </draggable>
-    <v-row>
+    <v-row class="ma-0 pa-0">
       <v-sheet width="20px" color="transparent" class="row-side-widget" />
-      <v-col>
+      <v-col class="ma-0 pa-0">
         <v-btn
           small
           tile
           text
           class="text-none"
-          color="primary"
           :data-testid="`btn-new-category-${masterCategory.id}`"
           @click="onNewCategory(masterCategory)"
         >
-          <v-icon small class="ma-1">mdi-plus</v-icon>
-          New Category
+          
+            <v-icon small class="ma-1" color="primary">mdi-plus</v-icon>
+            <span class="primary--text">
+              
+              New Category
+            </span>
+
         </v-btn>
       </v-col>
     </v-row>

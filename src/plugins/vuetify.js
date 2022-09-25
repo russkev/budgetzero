@@ -21,13 +21,14 @@ export default new Vuetify({
       },
       dark: {
         // primary: '#354148',
-        primary: '#99ff00',
-        accent: '#ff00ff',
+        primary: hslToHex('hsl(80, 100%, 51%)'),
+        secondary: hslToHex('hsl(245, 40%, 50%)'),
+        accent: hslToHex('hsl(253, 100%, 72%)'),
         background: {
           base: hslToHex('hsl(245, 9%, 19%)'),
           darken1: hslToHex('hsl(251, 9%, 18%)'),
           lighten1: hslToHex('hsl(254, 9%, 21%)'),
-          lighten2: hslToHex('hsl(248, 9%, 25%)'),
+          lighten2: hslToHex('hsl(248, 9%, 25%)')
         },
         delete: '#391616',
         delete_text: '#ff4343'

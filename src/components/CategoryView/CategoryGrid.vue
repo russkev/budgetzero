@@ -22,7 +22,8 @@
             :master-category="master_category"
             :master-index="master_index"
             />
-            <v-progress-linear value="100" height="2" />
+            <!-- <v-progress-linear value="100" height="2" /> -->
+            <v-divider />
             <category-rows :masterCategory="master_category" :nameCols="nameCols" />
           </category-card>
       </v-row>
