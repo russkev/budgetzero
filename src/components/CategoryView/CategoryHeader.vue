@@ -103,11 +103,6 @@ import { compareAscii } from "../../store/modules/id-module";
 
 export default {
   props: {},
-  // data() {
-  //   return {
-  //     intlCurrency: new Intl.NumberFormat("en-us", { style: "currency", currency: "USD" }),
-  //   };
-  // },
   computed: {
     ...mapGetters([
       "intlCurrency",

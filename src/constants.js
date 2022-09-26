@@ -33,9 +33,8 @@ export const DEFAULT_ACCOUNT_BALANCE = {
 
 export const DEFAULT_MONTH_BALANCE = {
   income: 0,
-  spent: 0,
+  expense: 0,
   budgeted: 0,
-  available: 0,
 }
 
 export const DEFAULT_MONTH_CATEGORY = {

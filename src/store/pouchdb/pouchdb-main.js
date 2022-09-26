@@ -227,10 +227,7 @@ export default {
       const transaction_payload = this._vm.calculateTransactionBalanceUpdate(current, previous, account)
       this.commit('UPDATE_ACCOUNT_BALANCES', transaction_payload)
 
-      const category_balances = await context.dispatch('calculateCategoryBalanceUpdate', { current, previous })
-      category_balances.map((result) => {
-        this.commit('UPDATE_CATEGORY_BALANCES', result)
-      })
+      await context.dispatch('updateCategoryBalance', { current, previous })
       return true
     },
 
@@ -284,7 +281,7 @@ export default {
         .then((results) => {
           month_category_balances = parseAllMonthCategories(results, getters)
           // console.log('month_category_balances', month_category_balances)
-          dispatch('updateMonthBudgetedBalances', month_category_balances)
+          dispatch('setMonthBudgetedBalances', month_category_balances)
         })
         .then(() => {
           return dispatch('fetchAllTransactions')
@@ -295,8 +292,7 @@ export default {
 
           logPerformanceTime('calculateAllValues', t1)
           // commit('SET_MONTH_BALANCES', balances.month)
-          dispatch('updateMonthIncomeSpentBalances', balances.month)
-          dispatch('calculateAvailableToBudget')
+          dispatch('setMonthIncomeExpenseBalances', balances.month)
           commit('SET_ALL_ACCOUNT_BALANCES', balances.account)
           commit('SET_ALL_CATEGORY_BALANCES', balances.category)
           return balances.category

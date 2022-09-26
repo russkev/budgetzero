@@ -187,7 +187,7 @@ export default {
       });
     },
     onCategoryBudgetEnter(category, event) {
-      this.onCategoryBudgetChanged({ category_id: category.id, event: event });
+      // this.onCategoryBudgetChanged({ category_id: category.id, event: event });
       const next_id = this.categoryIdFromIndex(category.index + 1);
       document.activeElement.blur();
       if (next_id !== undefined) {

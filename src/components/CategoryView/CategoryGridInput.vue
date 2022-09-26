@@ -96,7 +96,6 @@ export default {
   },
   methods: {
     onBlur(event) {
-      console.log("ON BLUR");
       this.onApply(event);
     },
     onApply(event) {

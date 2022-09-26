@@ -364,7 +364,7 @@ describe('Test categories (budget) page', () => {
     })
   })
 
-  context.only('Test updating budgeted values', () => {
+  context('Test updating budgeted values', () => {
     before(() => {
       cy.initPath('budget/2022-07')
     })
@@ -408,9 +408,81 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget:')
 
       cy.get('[data-testid="previous-month-button"]').click()
+    })
+
+    it('Checks that updating a budgeted value causes the correct total balance update', () => {
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,173.74 ')
+      cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget:')
+      const water_selector = '[data-testid="category-budget-input-2aW"]'
+      cy.get(water_selector).click()
+      cy.get(water_selector).clear()
+      cy.get(water_selector).type('-1')
+      cy.get(water_selector).type('{enter}')
+      cy.get(water_selector).should('have.value', '-$1.00')
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,189.74 ')
+      cy.get('[data-testid="next-month-button"]').click()
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $3,969.14 ')
+      cy.get('[data-testid="previous-month-button"]').click()
+
+      cy.get(water_selector).click()
+      cy.get(water_selector).clear()
+      cy.get(water_selector).type('2000')
+      cy.get(water_selector).type('{enter}')
+      cy.get(water_selector).should('have.value', '$2,000.00')
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $811.26 ')
+      cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount over budget:')
+      cy.get('[data-testid="next-month-button"]').click()
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,968.14 ')
+      cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget:')
+      cy.get('[data-testid="previous-month-button"]').click()
 
 
+      cy.get(water_selector).click()
+      cy.get(water_selector).clear()
+      cy.get(water_selector).type('15')
+      cy.get(water_selector).type('{enter}')
+      cy.get(water_selector).should('have.value', '$15.00')
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,173.74 ')
+    })
 
+    it('Checks tha updating a transaction results in the correct update of total balance', () => {
+      // In $21.00
+      cy.get('[data-testid="transactions-page-v6A"]').click()
+      cy.get('.transaction-row').should('have.length', 5)
+      cy.get('[data-testid="create-transaction-button"]').click()
+      cy.get('[data-testid="edit-row-date"] input').clear().type('2022-07-30')
+      cy.get('[data-testid="edit-row-select-category"]').type('Paycheck 1').type('{downArrow}').type('{enter}')
+      cy.get('[data-testid="edit-row-inflow"]').type('21.00').blur()
+      cy.get('[data-testid="save-edit-button"]').click()
+      cy.get(':nth-child(8) > .row-inflow').should('have.text', ' $21.00 ')
+      cy.get('.transaction-row').should('have.length', 6)
+
+      // Out $15.00
+      cy.get('.transaction-row .row-outflow').eq(5).click()
+      cy.get('[data-testid="edit-row-outflow"]').type('20.21').type('{enter}')
+      cy.get(':nth-child(12) > .row-outflow').should('have.text', ' $20.21 ')
+      cy.get('.transaction-row').should('have.length', 6)
+
+      // In -$42
+      cy.get('.transaction-row .row-inflow').eq(4).click()
+      cy.get('[data-testid="edit-row-inflow"]').type('300').type('{enter}')
+      cy.get(':nth-child(10) > .row-inflow').should('have.text', ' $300.00 ')
+      cy.get('.transaction-row').should('have.length', 6)
+
+      // In -$320 (August)
+      cy.get('.transaction-row > .row-checkbox').eq(0).click()
+      cy.get('[data-testid="delete-selected-transactions-button"]').click()
+      cy.get('.transaction-row').should('have.length', 5)
+      
+      // CHeck categories
+      cy.get('[data-testid="sidebar-button-budgets"]').click()
+
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,152.74 ')
+      cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget:')
+
+      cy.get('[data-testid="next-month-button"]').click()
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $3,612.14 ')
+      cy.get('[data-testid="sidebar-button-budgets"]').click()
     })
   })
 })

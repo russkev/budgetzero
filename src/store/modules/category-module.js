@@ -1,7 +1,7 @@
 import { logPerformanceTime, extractMonthCategoryMonth } from '../../helper'
 import { DEFAULT_MONTH_BALANCE, ID_LENGTH, ID_NAME, NONE } from '../../constants'
 import { compareAscii } from './id-module'
-import _, { isArray } from 'lodash'
+import _, { isArray, split } from 'lodash'
 import Vue from 'vue'
 
 const DEFAULT_CATEGORY_STATE = {
@@ -68,7 +68,30 @@ export default {
       })
       return groups
     },
-    monthBalances: (state) => state.monthBalances
+    monthBalances: (state) => {
+      let monthBalances = JSON.parse(JSON.stringify(state.monthBalances))
+
+      if (Object.keys(monthBalances).length < 1) {
+        return {}
+      }
+
+      const sortedMonths = Object.keys(monthBalances).sort((a, b) => {
+        return compareAscii(a, b)
+      })
+
+      const previousMonthBalance = monthBalances[sortedMonths[0]]
+      let previousMonthAvailable = previousMonthBalance.income - previousMonthBalance.budgeted
+
+      monthBalances[sortedMonths[0]].available = previousMonthAvailable
+
+      for (let month of sortedMonths.slice(1, sortedMonths.length)) {
+        const currentMonthAvailable =
+          previousMonthAvailable + monthBalances[month].income - monthBalances[month].budgeted
+        monthBalances[month].available = currentMonthAvailable
+        previousMonthAvailable = currentMonthAvailable
+      }
+      return monthBalances
+    }
   },
   mutations: {
     SET_ALL_CATEGORY_BALANCES(state, payload) {
@@ -114,13 +137,21 @@ export default {
     SET_MONTH_BALANCES(state, monthBalances) {
       Vue.set(state, 'monthBalances', monthBalances)
     },
-    UPDATE_MONTH_BALANCES(state, monthBalancesItem) {
+    SET_MONTH_BALANCES_ATTRIBUTE(state, monthBalancesItem) {
       const existing = _.defaultsDeep(state.monthBalances[monthBalancesItem.month], DEFAULT_MONTH_BALANCE)
       Vue.set(state.monthBalances, monthBalancesItem.month, {
         income: _.get(monthBalancesItem, 'income', existing.income),
-        spent: _.get(monthBalancesItem, 'spent', existing.spent),
-        budgeted: _.get(monthBalancesItem, 'budgeted', existing.budgeted),
-        available: _.get(monthBalancesItem, 'available', existing.available)
+        expense: _.get(monthBalancesItem, 'expense', existing.expense),
+        budgeted: _.get(monthBalancesItem, 'budgeted', existing.budgeted)
+      })
+    },
+    UPDATE_MONTH_BALANCES(state, monthBalancesItem) {
+      console.log('UPDATE_MONTH_BALANCES', monthBalancesItem)
+      const existing = _.defaultsDeep(state.monthBalances[monthBalancesItem.month], DEFAULT_MONTH_BALANCE)
+      Vue.set(state.monthBalances, monthBalancesItem.month, {
+        income: existing.income + _.get(monthBalancesItem, 'income', 0),
+        expense: existing.expense + _.get(monthBalancesItem, 'expense', 0),
+        budgeted: existing.budgeted + _.get(monthBalancesItem, 'budgeted', 0)
       })
     }
   },
@@ -219,9 +250,9 @@ export default {
       context
         .dispatch('calculateMonthCategoryBalanceUpdate', { current, previous })
         .then((category_balances_update) => {
-          console.log('commitMonthCategoryToVuex')
           return this.commit('UPDATE_CATEGORY_BALANCES', category_balances_update)
         })
+      context.dispatch('updateMonthBalancesBudgeted', { current, previous })
     },
 
     deleteMasterCategory(context, master_id) {
@@ -381,7 +412,11 @@ export default {
       ])
     },
 
-    calculateCategoryBalanceUpdate({ commit, getters }, { current, previous }) {
+    // calculateMonthBalancesUpdate({ commit, getters}, {current, previous}) {
+
+    // },
+
+    updateCategoryBalance({ commit, getters }, { current, previous }) {
       if (!current && !previous) {
         console.warn('calculateCategoryBalanceUpdate called with no current or previous data')
         return
@@ -409,7 +444,7 @@ export default {
         return
       }
 
-      let result = []
+      let category_balances = []
       if (current) {
         if (current.splits && isArray(current.splits) && current.splits.length > 0) {
           const this_result = current.splits.map((split) => {
@@ -417,16 +452,20 @@ export default {
               account: account,
               month: current_month,
               category_id: split.category,
-              spent: split.value
+              spent: split.value,
+              income: split.value > 0 ? split.value : 0,
+              expense: split.value < 0 ? split.value : 0
             }
           })
-          result = result.concat(this_result)
+          category_balances = category_balances.concat(this_result)
         } else {
-          result.push({
+          category_balances.push({
             account: account,
             month: current_month,
             category_id: current.category,
-            spent: current_value
+            spent: current_value,
+            income: current_value > 0 ? current_value : 0,
+            expense: current_value < 0 ? current_value : 0
           })
         }
       }
@@ -437,26 +476,54 @@ export default {
               account: account,
               month: previous_month,
               category_id: split.category,
-              spent: -split.value
+              spent: -split.value,
+              income: split.value > 0 ? -split.value : 0,
+              expense: split.value < 0 ? -split.value : 0
             }
           })
-          result = result.concat(this_result)
+          category_balances = category_balances.concat(this_result)
         } else {
-          result.push({
+          category_balances.push({
             account: account,
             month: previous_month,
             category_id: previous.category,
-            spent: -previous_value
+            spent: -previous_value,
+            income: previous_value > 0 ? -previous_value : 0,
+            expense: previous_value < 0 ? -previous_value : 0
           })
         }
       }
+      category_balances.map((category_balance) => {
+        this.commit('UPDATE_CATEGORY_BALANCES', category_balance)
+        this.commit('UPDATE_MONTH_BALANCES', category_balance)
+      })
+      return category_balances
+    },
 
-      return result
+    updateMonthBalancesBudgeted({ commit }, { current, previous }) {
+      console.log('updateMonthBalancesBudgeted', current, previous)
+      const month = current ? extractMonthCategoryMonth(current._id) : extractMonthCategoryMonth(previous._id)
+      let monthBalanceUpdates = []
+      if (current) {
+        monthBalanceUpdates.push({
+          month: month,
+          budgeted: current.budget
+        })
+      }
+      if (previous) {
+        monthBalanceUpdates.push({
+          month: month,
+          budgeted: -previous.budget
+        })
+      }
+      monthBalanceUpdates.map((monthBalanceUpdate) => {
+        commit('UPDATE_MONTH_BALANCES', monthBalanceUpdate)
+      })
     },
 
     calculateMonthCategoryBalanceUpdate({ getters }, { current, previous }) {
       const month = current ? extractMonthCategoryMonth(current._id) : extractMonthCategoryMonth(previous._id)
-      const category_id = current ? current._id.slice(-ID_LENGTH.category) : previous._id.slice(-ID_LENGTH.categroy)
+      const category_id = current ? current._id.slice(-ID_LENGTH.category) : previous._id.slice(-ID_LENGTH.category)
       const master_id = getters.categoriesById[category_id]['masterCategory']
 
       return {
@@ -467,44 +534,24 @@ export default {
         doc: current ? current : null
       }
     },
-    updateMonthBudgetedBalances({ commit }, monthCategoryBalances) {
+    setMonthBudgetedBalances({ commit }, monthCategoryBalances) {
       // monthBalances = JSON.parse(JSON.stringify(getters.monthBalances))
       Object.entries(monthCategoryBalances).forEach(([month, categoryBalances]) => {
         const budgeted = Object.values(categoryBalances).reduce((total, categoryBalance) => {
           return total + categoryBalance.doc.budget
         }, 0)
-        commit('UPDATE_MONTH_BALANCES', { month: month, budgeted: budgeted })
+        commit('SET_MONTH_BALANCES_ATTRIBUTE', { month: month, budgeted: budgeted })
       })
     },
-    updateMonthIncomeSpentBalances({ commit }, monthCategoryBalances) {
+    setMonthIncomeExpenseBalances({ commit }, monthCategoryBalances) {
       // monthBalances = JSON.parse(JSON.stringify(getters.monthBalances))
       Object.entries(monthCategoryBalances).forEach(([month, categoryBalances]) => {
-        commit('UPDATE_MONTH_BALANCES', {
+        commit('SET_MONTH_BALANCES_ATTRIBUTE', {
           month: month,
           income: categoryBalances.income,
-          spent: categoryBalances.spent
+          expense: categoryBalances.expense
         })
       })
-    },
-    calculateAvailableToBudget({ getters, commit }) {
-      if (getters.monthBalances.length === 0) {
-        return
-      }
-      const sortedMonths = Object.keys(getters.monthBalances).sort((a, b) => {
-        return compareAscii(a, b)
-      })
-
-      const previousMonthBalance = getters.monthBalances[sortedMonths[0]]
-      let previousMonthAvailable = previousMonthBalance.income - previousMonthBalance.budgeted
-      commit('UPDATE_MONTH_BALANCES', { month: sortedMonths[0], available: previousMonthAvailable })
-
-      for (let month of sortedMonths.slice(1, sortedMonths.length)) {
-        const currentMonthAvailable =
-          previousMonthAvailable + getters.monthBalances[month].income - getters.monthBalances[month].budgeted
-
-        commit('UPDATE_MONTH_BALANCES', { month: month, available: currentMonthAvailable })
-        previousMonthAvailable = currentMonthAvailable
-      }
     }
   }
 }
@@ -621,7 +668,7 @@ const updateMonthBalances = (month_balances, account, month, amount) => {
   if (final_amount > 0) {
     updated_balances.income += final_amount
   } else {
-    updated_balances.spent += final_amount * -1
+    updated_balances.expense += final_amount * -1
   }
   Vue.set(month_balances, month, updated_balances)
 }
