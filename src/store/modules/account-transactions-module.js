@@ -164,7 +164,6 @@ export default {
         return
       }
 
-      console.log('GET TRANSACTIONS', getters.accountId)
       dispatch('fetchTransactionsForAccount', getters.accountOptions, { root: true }).then((result) => {
         commit('SET_NUM_SERVER_TRANSACTIONS', result.total_rows)
         const transactions = result.rows.map((row) => {

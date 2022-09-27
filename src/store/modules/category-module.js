@@ -146,7 +146,6 @@ export default {
       })
     },
     UPDATE_MONTH_BALANCES(state, monthBalancesItem) {
-      console.log('UPDATE_MONTH_BALANCES', monthBalancesItem)
       const existing = _.defaultsDeep(state.monthBalances[monthBalancesItem.month], DEFAULT_MONTH_BALANCE)
       Vue.set(state.monthBalances, monthBalancesItem.month, {
         income: existing.income + _.get(monthBalancesItem, 'income', 0),
@@ -272,6 +271,21 @@ export default {
         const master_category = context.getters.masterCategoriesById[master_id]
         context.dispatch('commitDocToPouchAndVuex', { current: null, previous: master_category })
       }
+    },
+    setMasterCategoriesExpanded({ getters, dispatch }, expanded_indices) {
+      const docs = getters.masterCategories.reduce((partial, master_category, i) => {
+        if (expanded_indices.includes(i)) {
+          if (!master_category.isExpanded) {
+            partial.push({current: { ...master_category, isExpanded: true }, previous: master_category})
+          }
+        } else {
+          if(master_category.isExpanded) {
+            partial.push({current: { ...master_category, isExpanded: false }, previous: master_category})
+          }
+        }
+        return partial
+      }, [])
+      dispatch('commitBulkDocsToPouchAndVuex', docs)
     },
 
     reorderCategory(context, payload) {

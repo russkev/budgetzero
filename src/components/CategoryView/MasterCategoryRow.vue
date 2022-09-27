@@ -1,5 +1,5 @@
 <template>
-  <v-container class="background lighten-1 pa-0">
+  <v-container class="pa-0">
     <v-hover v-slot="{ hover }">
       <v-row class="ma-0 pa-0">
         <v-sheet 
@@ -24,6 +24,7 @@
               class="pa-0 ma-0 my-auto"
             >
                 <category-grid-input
+                  :readonly="masterCategory.id === ':::'"
                   background-color="background lighten-1"
                   :id="`master-category-name-input-${masterCategory.id}`"
                   :data-testid="`master-category-name-input-${masterCategory.id}`"

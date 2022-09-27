@@ -47,9 +47,15 @@ export const DEFAULT_MONTH_CATEGORY = {
 }
 
 export const NONE = {
-  _id: ':::', // '~' Is never used in an id and is URL safe
+  _id: ':::', // ':' Is never used in an id and is URL safe
   name: 'Uncategorized',
   masterCategory: ':::',
+}
+
+export const HIDDEN = {
+  _id: '::0',
+  name: 'Hidden',
+  masterCategory: '::0',
 }
 
 export const DEFAULT_TRANSACTION = {

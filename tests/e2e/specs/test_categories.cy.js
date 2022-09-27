@@ -181,7 +181,7 @@ describe('Test categories (budget) page', () => {
     })
   })
 
-  context('Test drag and drop', () => {
+  context.only('Test drag and drop', () => {
     before(() => {
       cy.initPath('budget/2022-08')
     })

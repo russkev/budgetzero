@@ -2,36 +2,44 @@
   <v-container fluid class="pt-0">
     <v-sheet max-width="800px" justify="center" class="mx-auto pa-2" color="transparent">
       <v-row class="ma-0 pa-0" style="flex-wrap: nowrap; justify-content: space-between;">
-        <v-col 
-          class="ma-0 mr-auto pa-0 mb-2"
-          cols="auto">
+        <v-col class="ma-0 mr-auto pa-0 mb-2" cols="auto">
           <category-month-selector />
         </v-col>
-        <v-col
-          class="ma-0 pa-0"
-          cols="auto"
-          style="flex: 0 1 250px;"
-        >
+        <v-col class="ma-0 pa-0" cols="auto" style="flex: 0 1 250px;">
           <category-header />
         </v-col>
       </v-row>
-      <draggable v-model="masterCategoriesData" handle=".master-handle">
-        <v-row
-          class="master-category-row ma-0 pa-0"
-          v-for="(master_category, master_index) in masterCategoriesData"
-          :key="master_category.id"
-        >
-          <category-card width="100%">
-            <master-category-row
-              :name-cols="nameCols"
-              :master-category="master_category"
-              :master-index="master_index"
-            />
-            <v-divider />
-            <category-rows :masterCategory="master_category" :nameCols="nameCols" />
-          </category-card>
-        </v-row>
-      </draggable>
+      <!-- <v-row
+        class="master-category-row ma-0 pa-0"
+        v-for="(master_category, master_index) in masterCategoriesData"
+        :key="master_category.id"
+        > -->
+      <v-expansion-panels flat multiple accordion v-model="masterCategoriesExpanded">
+        <draggable v-model="masterCategoriesData" handle=".master-handle" style="width: inherit;">
+          <v-expansion-panel
+            v-for="(master_category, master_index) in masterCategoriesData"
+            :key="master_category.id"
+            class="master-category-row background lighten-1 ma-0 pa-0 my-1"
+            style="box-shadow: none;"
+          >
+            <v-expansion-panel-header class="pa-0 ma-0" expand-icon="mdi-menu-down">
+              <!-- <category-card width="100%"> -->
+              <master-category-row
+                :name-cols="nameCols"
+                :master-category="master_category"
+                :master-index="master_index"
+                @click.native.stop
+              />
+              <v-divider />
+            </v-expansion-panel-header>
+            <v-expansion-panel-content class="pa-0 ma-0" color="transparent">
+              <category-rows :masterCategory="master_category" :nameCols="nameCols" />
+            </v-expansion-panel-content>
+            <!-- </category-card> -->
+          </v-expansion-panel>
+        </draggable>
+      </v-expansion-panels>
+      <!-- </v-row> -->
       <category-card>
         <v-row class="ma-0 pa-0">
           <v-col class="pa-0 ma-0" align="center">
@@ -103,6 +111,19 @@ export default {
         this.$store.dispatch("reorderMasterCategories", values);
       },
     },
+    masterCategoriesExpanded: {
+      get() {
+        return this.masterCategories.reduce((partial, master_category, index) => {
+          if (master_category.isExpanded === undefined || master_category.isExpanded) {
+            partial.push(index);
+          }
+          return partial;
+        }, []);
+      },
+      set(indices) {
+        this.setMasterCategoriesExpanded(indices);
+      },
+    },
   },
   mounted() {
     this.UPDATE_SELECTED_MONTH(this.$route.params.month);
@@ -114,6 +135,7 @@ export default {
   methods: {
     ...mapMutations("categoryMonth", ["UPDATE_SELECTED_MONTH"]),
     ...mapActions("categoryMonth", ["reorderMasterCategories", "newMasterCategory"]),
+    ...mapActions(["setMasterCategoriesExpanded"]),
     onNewMasterCategory() {
       this.newMasterCategory().then((id) => {
         const element_id = `master-category-name-input-${id}`;
@@ -144,12 +166,32 @@ export function deleteIconColor(hover, deleteButtonHover) {
 }
 </script>
 
-<style scoped>
+<style>
+.v-expansion-panel {
+  /* background-color: transparent !important; */
+  border: none;
+  box-shadow: none;
+}
+
+.v-expansion-panel-content__wrap {
+  padding: 0 !important;
+  padding-right: 24px !important;
+}
+
+.v-expansion-panel::before {
+  box-shadow: none;
+}
+
+.master-category-row .v-expansion-panel-header {
+  min-height: 0;
+}
+
+/*
 .category-budgeted-input >>> input {
   text-align: right !important;
 }
-/* .budgeted-amount-neg >>> input {
-} */
+.budgeted-amount-neg >>> input {
+} 
 .budgeted-amount-pos >>> input {
   color: var(--v-primary-base);
 }
@@ -157,7 +199,6 @@ export function deleteIconColor(hover, deleteButtonHover) {
   color: grey;
 }
 
-/* .master-category-row */
 
 .crud-actions {
   width: 200px;
@@ -198,14 +239,14 @@ tr:hover .crud-actions {
 .header {
   text-align: right;
 }
-/* .category-row {
+.category-row {
   border-bottom: 1px solid rgb(182, 182, 182);
   height: 30px;
-} */
+} 
 
-/* .masterCategory-row {
+.masterCategory-row {
   padding: 5px 0px 5px 5px;
-} */
+} 
 
 .uncategorized-row {
   border-top: 1px solid rgb(182, 182, 182);
@@ -216,4 +257,5 @@ tr:hover .crud-actions {
   margin-top: -1px;
   height: 30px;
 }
+*/
 </style>

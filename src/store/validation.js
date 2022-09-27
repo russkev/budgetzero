@@ -9,7 +9,6 @@ import { ID_LENGTH, ID_NAME } from '../constants'
 // const Validator = jsonSchema.V
 // const validateSchema = new jsonSchema.Validator()
 
-
 const account_id_length = 'b_'.length + ID_LENGTH.budget + ID_NAME.account.length + ID_LENGTH.account
 const schema_account = {
   type: 'object',
@@ -145,7 +144,7 @@ const schema_monthCategory = {
     },
     note: {
       type: ['string', 'null']
-    },
+    }
   },
   required: ['_id', 'budget', 'overspending']
 }
@@ -172,6 +171,9 @@ const schema_masterCategory = {
       type: ['boolean', 'null']
     },
     isIncome: {
+      type: 'boolean'
+    },
+    isExpanded: {
       type: 'boolean'
     }
   },
@@ -217,7 +219,7 @@ const schema_budget = {
     },
     checkNumber: {
       type: 'boolean'
-    },
+    }
   },
   required: ['_id', 'name', 'created', 'accessed', 'currency', 'checkNumber']
 }

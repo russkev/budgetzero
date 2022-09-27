@@ -1,5 +1,5 @@
 <template>
-  <div @blur="onBlur" @focusout="onBlur">
+  <div v-if="!readonly" @blur="onBlur" @focusout="onBlur">
     <div v-if="!isEditing">
       <v-hover v-slot="{ hover }">
         <v-text-field
@@ -42,6 +42,24 @@
       />
     </div>
   </div>
+  <div v-else>
+    <div>
+      <v-text-field
+        :class="`ma-0 pa-0 text-${text}`"
+        dense
+        flat
+        solo
+        hide-details
+        readonly
+        :id="id"
+        :data-testid="dataTestid"
+        :value="currency ? intlCurrency.format(value) : value"
+        :reverse="currency"
+        background-color="transparent"
+        :height="height"
+      />
+    </div>
+  </div>
 </template>
 
 <script>
@@ -75,6 +93,11 @@ export default {
       type: String,
       default: "body-1",
     },
+    readonly: {
+      type: Boolean,
+      default: false,
+    },
+
   },
   data() {
     return {
