@@ -68,7 +68,7 @@
         </v-list-item>
       </template>
       <v-list max-width="400" color="grey lighten-4">
-        <v-list-item :to="{ path: '/manage' }">
+        <v-list-item :to="{ path: '/manage' }" :ripple="false">
           <v-list-item-avatar>
             <v-icon left color="primary"> mdi-swap-horizontal </v-icon>
           </v-list-item-avatar>
@@ -76,7 +76,7 @@
             <v-list-item-title>Manage Budgets</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item id="settingsBtn" :to="{ path: '/settings' }">
+        <v-list-item id="settingsBtn" :to="{ path: '/settings' }" :ripple="false">
           <v-list-item-avatar>
             <v-icon left medium color="primary"> mdi-cog-outline </v-icon>
           </v-list-item-avatar>
@@ -98,7 +98,7 @@
     <v-divider />
 
     <v-list dark dense class="text-left pt-0 sidebar">
-      <v-list-item :to="{ path: `/budget/${selectedMonth}` }" data-testid="sidebar-button-budgets">
+      <v-list-item :to="{ path: `/budget/${selectedMonth}` }" data-testid="sidebar-button-budgets" :ripple="false">
         <v-list-item-icon>
           <v-icon> mdi-cash-multiple </v-icon>
         </v-list-item-icon>
@@ -107,7 +107,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item :to="{ path: '/accounts' }" data-testid="sidebar-button-accounts">
+      <v-list-item :to="{ path: '/accounts' }" data-testid="sidebar-button-accounts" :ripple="false">
         <v-list-item-icon>
           <v-icon>mdi-bank</v-icon>
         </v-list-item-icon>
@@ -116,7 +116,7 @@
         </v-list-item-content>
       </v-list-item>
 
-      <v-list-item :to="{ path: '/reports' }" data-testid="sidebar-button-reports">
+      <v-list-item :to="{ path: '/reports' }" data-testid="sidebar-button-reports" :ripple="false">
         <v-list-item-icon>
           <v-icon>mdi-chart-line</v-icon>
         </v-list-item-icon>

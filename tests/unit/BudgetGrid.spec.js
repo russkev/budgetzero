@@ -281,7 +281,6 @@ describe('budgetgrid component', () => {
         name: 'New Name',
         sort: 2,
         collapsed: false,
-        isIncome: false,
         _id: 'b_rkW_masterCategory_1of',
         _rev: '1-781cb3f10d5d327198ab0650d5be1b64'
       },
@@ -289,7 +288,6 @@ describe('budgetgrid component', () => {
         name: 'Monthly Bills',
         sort: 2,
         collapsed: false,
-        isIncome: false,
         _id: 'b_rkW_masterCategory_1of',
         _rev: '1-781cb3f10d5d327198ab0650d5be1b64'
       }

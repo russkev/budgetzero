@@ -254,42 +254,36 @@
     "name": "Monthly Bills",
     "sort": 2,
     "collapsed": false,
-    "isIncome": false,
     "_id": "b_rkW_masterCategory_1of"
   },
   {
     "name": "Savings Goals",
     "sort": 4,
     "collapsed": false,
-    "isIncome": false,
     "_id": "b_rkW_masterCategory_816"
   },
   {
     "name": "Income",
     "sort": 0,
     "collapsed": false,
-    "isIncome": true,
     "_id": "b_rkW_masterCategory_JEs"
   },
   {
     "name": "Everyday Expenses",
     "sort": 1,
     "collapsed": false,
-    "isIncome": false,
     "_id": "b_rkW_masterCategory_MpQ"
   },
   {
     "name": "Debt",
     "sort": 3,
     "collapsed": false,
-    "isIncome": false,
     "_id": "b_rkW_masterCategory_tut"
   },
   {
     "name": "Giving",
     "sort": 0,
     "collapsed": false,
-    "isIncome": false,
     "_id": "b_rkW_masterCategory_vzu"
   },
   {

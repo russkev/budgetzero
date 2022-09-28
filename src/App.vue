@@ -72,11 +72,11 @@ export default {
   }
 }
 </script>
-<!-- 
+
 <style lang="scss">
 @import './styles/variables.scss';
 
 #app {
   background-color: var(--v-background-base);
 }
-</style> -->
+</style>

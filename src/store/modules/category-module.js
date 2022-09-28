@@ -180,7 +180,7 @@ export default {
       return category._id.slice(-ID_LENGTH.category)
     },
 
-    masterCategoryDocument: async (context, { name, is_income, sort }) => {
+    masterCategoryDocument: async (context, { name, sort }) => {
       const prefix = `b_${context.rootState.selectedBudgetId}${ID_NAME.masterCategory}`
       const id = await context.dispatch('generateUniqueShortId', { prefix, sort })
       return {
@@ -188,7 +188,6 @@ export default {
         name: name,
         sort: sort,
         collapsed: false,
-        isIncome: is_income
       }
     },
 
@@ -275,17 +274,26 @@ export default {
     setMasterCategoriesExpanded({ getters, dispatch }, expanded_indices) {
       const docs = getters.masterCategories.reduce((partial, master_category, i) => {
         if (expanded_indices.includes(i)) {
-          if (!master_category.isExpanded) {
-            partial.push({current: { ...master_category, isExpanded: true }, previous: master_category})
+          if (master_category.collapsed) {
+            partial.push({current: { ...master_category, collapsed: false }, previous: master_category})
           }
         } else {
-          if(master_category.isExpanded) {
-            partial.push({current: { ...master_category, isExpanded: false }, previous: master_category})
+          if(!master_category.collapsed) {
+            partial.push({current: { ...master_category, collapsed: true }, previous: master_category})
           }
         }
         return partial
       }, [])
       dispatch('commitBulkDocsToPouchAndVuex', docs)
+    },
+    toggleMasterCategoryCollapsed({ getters, dispatch }, master_id) {
+      const master_category = getters.masterCategoriesById[master_id]
+      if(master_category) {
+        dispatch('commitDocToPouchAndVuex', {current: 
+          { ...master_category, 
+            collapsed: !master_category.collapsed 
+          }, previous: master_category})
+      }
     },
 
     reorderCategory(context, payload) {

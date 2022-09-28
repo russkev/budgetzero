@@ -170,12 +170,6 @@ const schema_masterCategory = {
     hidden: {
       type: ['boolean', 'null']
     },
-    isIncome: {
-      type: 'boolean'
-    },
-    isExpanded: {
-      type: 'boolean'
-    }
   },
   required: ['_id', 'name', 'sort', 'collapsed']
 }

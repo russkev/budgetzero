@@ -50,12 +50,14 @@ export const NONE = {
   _id: ':::', // ':' Is never used in an id and is URL safe
   name: 'Uncategorized',
   masterCategory: ':::',
+  collapsed: false,
 }
 
 export const HIDDEN = {
   _id: '::0',
   name: 'Hidden',
   masterCategory: '::0',
+  collapsed: false,
 }
 
 export const DEFAULT_TRANSACTION = {

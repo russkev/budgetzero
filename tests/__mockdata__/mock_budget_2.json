@@ -234,7 +234,6 @@
         "name": "Savings Goals",
         "sort": 4,
         "collapsed": false,
-        "isIncome": false,
         "_id": "b_rkW_masterCategory_816",
         "_rev": "1-a4485e7163351b87c1af84e71b723099"
       },
@@ -242,7 +241,6 @@
         "name": "Income",
         "sort": 0,
         "collapsed": false,
-        "isIncome": true,
         "_id": "b_rkW_masterCategory_JEs",
         "_rev": "1-5634f6ea6c953e79cbbfc0717a99c0a8"
       },
@@ -250,7 +248,6 @@
         "name": "Giving",
         "sort": 0,
         "collapsed": false,
-        "isIncome": false,
         "_id": "b_rkW_masterCategory_vzu",
         "_rev": "1-b5315b77b18a04a060491e02e83cc8b5"
       },
@@ -258,7 +255,6 @@
         "name": "Everyday Expenses",
         "sort": 1,
         "collapsed": false,
-        "isIncome": false,
         "_id": "b_rkW_masterCategory_MpQ",
         "_rev": "1-9856b2a798c8b51781628dce206a0e03"
       },
@@ -266,7 +262,6 @@
         "name": "Monthly Bills",
         "sort": 2,
         "collapsed": false,
-        "isIncome": false,
         "_id": "b_rkW_masterCategory_1of",
         "_rev": "1-781cb3f10d5d327198ab0650d5be1b64"
       },
@@ -274,7 +269,6 @@
         "name": "Debt",
         "sort": 3,
         "collapsed": false,
-        "isIncome": false,
         "_id": "b_rkW_masterCategory_tut",
         "_rev": "1-b1702e7544e2a167594e0d2d2b27fee1"
       },
@@ -5008,7 +5002,6 @@
         "name": "Monthly Bills",
         "sort": 2,
         "collapsed": false,
-        "isIncome": false,
         "_id": "b_rkW_masterCategory_1of",
         "_rev": "1-781cb3f10d5d327198ab0650d5be1b64"
       }
@@ -5021,7 +5014,6 @@
         "name": "Savings Goals",
         "sort": 4,
         "collapsed": false,
-        "isIncome": false,
         "_id": "b_rkW_masterCategory_816",
         "_rev": "1-a4485e7163351b87c1af84e71b723099"
       }
@@ -5034,7 +5026,6 @@
         "name": "Income",
         "sort": 0,
         "collapsed": false,
-        "isIncome": true,
         "_id": "b_rkW_masterCategory_JEs",
         "_rev": "1-5634f6ea6c953e79cbbfc0717a99c0a8"
       }
@@ -5047,7 +5038,6 @@
         "name": "Everyday Expenses",
         "sort": 1,
         "collapsed": false,
-        "isIncome": false,
         "_id": "b_rkW_masterCategory_MpQ",
         "_rev": "1-9856b2a798c8b51781628dce206a0e03"
       }
@@ -5060,7 +5050,6 @@
         "name": "Debt",
         "sort": 3,
         "collapsed": false,
-        "isIncome": false,
         "_id": "b_rkW_masterCategory_tut",
         "_rev": "1-b1702e7544e2a167594e0d2d2b27fee1"
       }
@@ -5073,7 +5062,6 @@
         "name": "Giving",
         "sort": 0,
         "collapsed": false,
-        "isIncome": false,
         "_id": "b_rkW_masterCategory_vzu",
         "_rev": "1-b5315b77b18a04a060491e02e83cc8b5"
       }

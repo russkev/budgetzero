@@ -167,7 +167,6 @@
         "name": "Spending",
         "sort": 1,
         "collapsed": false,
-        "isIncome": false,
         "_id": "b_N8Q_masterCategory_3ks",
         "_rev": "3-ca523f3da22d44bdf4d596d958f0de3c"
       }
@@ -180,7 +179,6 @@
         "name": "Income",
         "sort": 0,
         "collapsed": false,
-        "isIncome": true,
         "_id": "b_N8Q_masterCategory_fVM",
         "_rev": "2-66d6c50a86cb07e2c47c16615749663d"
       }
@@ -193,7 +191,6 @@
         "name": "Misc",
         "sort": 1,
         "collapsed": false,
-        "isIncome": false,
         "_id": "b_N8Q_masterCategory_ggJ",
         "_rev": "2-42292a58519922913eed95dab1434fa7"
       }

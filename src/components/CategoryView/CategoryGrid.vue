@@ -9,11 +9,6 @@
           <category-header />
         </v-col>
       </v-row>
-      <!-- <v-row
-        class="master-category-row ma-0 pa-0"
-        v-for="(master_category, master_index) in masterCategoriesData"
-        :key="master_category.id"
-        > -->
       <v-expansion-panels flat multiple accordion v-model="masterCategoriesExpanded">
         <draggable v-model="masterCategoriesData" handle=".master-handle" style="width: inherit;">
           <v-expansion-panel
@@ -22,24 +17,21 @@
             class="master-category-row background lighten-1 ma-0 pa-0 my-1"
             style="box-shadow: none;"
           >
-            <v-expansion-panel-header class="pa-0 ma-0" expand-icon="mdi-menu-down">
-              <!-- <category-card width="100%"> -->
+            <!-- <v-expansion-panel-header class="pa-0 ma-0" expand-icon="mdi-menu-down"> -->
               <master-category-row
                 :name-cols="nameCols"
                 :master-category="master_category"
                 :master-index="master_index"
                 @click.native.stop
               />
-              <v-divider />
-            </v-expansion-panel-header>
+              <!-- <v-divider /> -->
+            <!-- </v-expansion-panel-header> -->
             <v-expansion-panel-content class="pa-0 ma-0" color="transparent">
               <category-rows :masterCategory="master_category" :nameCols="nameCols" />
             </v-expansion-panel-content>
-            <!-- </category-card> -->
           </v-expansion-panel>
         </draggable>
       </v-expansion-panels>
-      <!-- </v-row> -->
       <category-card>
         <v-row class="ma-0 pa-0">
           <v-col class="pa-0 ma-0" align="center">
@@ -114,7 +106,7 @@ export default {
     masterCategoriesExpanded: {
       get() {
         return this.masterCategories.reduce((partial, master_category, index) => {
-          if (master_category.isExpanded === undefined || master_category.isExpanded) {
+          if (master_category.collapsed === undefined || !master_category.collapsed) {
             partial.push(index);
           }
           return partial;
