@@ -1,5 +1,5 @@
 import { logPerformanceTime, extractMonthCategoryMonth } from '../../helper'
-import { DEFAULT_MONTH_BALANCE, ID_LENGTH, ID_NAME, NONE } from '../../constants'
+import { DEFAULT_MONTH_BALANCE, ID_LENGTH, ID_NAME, NONE, HIDDEN } from '../../constants'
 import { compareAscii } from './id-module'
 import _, { isArray, split } from 'lodash'
 import Vue from 'vue'
@@ -8,8 +8,10 @@ const DEFAULT_CATEGORY_STATE = {
   allCategoryBalances: {},
   // monthCategoryBudgets: [],
   masterCategories: [],
+  masterHiddenCategory: JSON.parse(JSON.stringify(HIDDEN)),
   categories: [],
-  monthBalances: {}
+  monthBalances: {},
+
 }
 
 export default {
@@ -22,9 +24,16 @@ export default {
       return Object.keys(state.allCategoryBalances).sort((a, b) => compareAscii(a, b))
     },
     // masterCategories: (state) => [...state.masterCategories].sort((a, b) => (a.sort > b.sort ? 1 : -1)),
-    masterCategories: (state) => state.masterCategories,
-    masterCategoriesById: (state) => {
-      return state.masterCategories.reduce((partial, masterCategory) => {
+    masterCategories: (state) => {
+      console.log(HIDDEN)
+      console.log("STATE MASTER CATEGORIES", state.masterCategories)
+      console.log("HIDDEN CATEGORY", state.masterHiddenCategory)
+      console.log([...state.masterCategories, state.masterHiddenCategory])
+      return [...state.masterCategories, state.masterHiddenCategory]
+      // state.masterCategories
+    },
+    masterCategoriesById: (state, getters) => {
+      return getters.masterCategories.reduce((partial, masterCategory) => {
         partial[masterCategory._id.slice(-ID_LENGTH.category)] = masterCategory
         return partial
       }, {})
@@ -50,7 +59,7 @@ export default {
     // monthCategoryBudgets: (state) => state.monthCategoryBudgets,
     categories: (state) => state.categories,
     // categories: (state) => {
-    //   return [NONE, ...state.categories]
+    //   return [...state.categories, state.masterHiddenCategory]
     // },
     categoriesById: (state) => {
       return state.categories.reduce((partial, category) => {
@@ -58,15 +67,34 @@ export default {
         return partial
       }, {})
     },
-    categoriesByMaster: (state) => {
-      let groups = _.groupBy(state.categories, 'masterCategory')
-      state.masterCategories.forEach((master_category) => {
+    categoriesByMaster: (state, getters) => {
+      // let groups = _.groupBy(state.categories, 'masterCategory')
+      // getters.masterCategories.forEach((master_category) => {
+      //   const master_id = master_category._id.slice(-ID_LENGTH.category)
+      //   if (groups[master_id] === undefined) {
+      //     groups[master_id] = []
+      //   }
+      // })
+      // return groups
+      // let groups = {}
+      console.log("CATEGORIES", getters.categories)
+      console.log("MASTER CATEGORIES", getters.masterCategories)
+      let initial = getters.masterCategories.reduce((partial, master_category) => {
         const master_id = master_category._id.slice(-ID_LENGTH.category)
-        if (groups[master_id] === undefined) {
-          groups[master_id] = []
-        }
+        partial[master_id] = []
+        return partial
       })
-      return groups
+      return getters.categories.reduce((partial, category) => {
+        if (category.hidden) {
+          // partial[HIDDEN._id] = category
+          _.defaults(partial, { [HIDDEN._id]: [] })
+          partial[HIDDEN._id].push(category)
+        } else {
+          _.defaults(partial, { [category.masterCategory]: []})
+          partial[category.masterCategory].push(category)
+        }
+        return partial
+      },initial)
     },
     monthBalances: (state) => {
       let monthBalances = JSON.parse(JSON.stringify(state.monthBalances))
@@ -105,8 +133,12 @@ export default {
       const sorted_categories = master_categories.sort((a, b) => a.sort - b.sort)
       Vue.set(state, 'masterCategories', sorted_categories)
     },
+    SET_HIDDEN_COLLAPSED(state, value) {
+      console.log("SET HIDDEN COLLAPSED", value)
+      Vue.set(state.masterHiddenCategory, 'collapsed', value)
+    },
     SET_CATEGORIES(state, categories) {
-      Vue.set(state, 'categories', [NONE, ...categories])
+      Vue.set(state, 'categories', [...categories, NONE])
     },
     UPDATE_CATEGORY_BALANCES(state, { account, month, category_id, spent, doc }) {
       let month_balances = initCategoryBalancesMonth(state.allCategoryBalances, month, state.categories)
@@ -286,9 +318,15 @@ export default {
       }, [])
       dispatch('commitBulkDocsToPouchAndVuex', docs)
     },
-    toggleMasterCategoryCollapsed({ getters, dispatch }, master_id) {
+    toggleMasterCategoryCollapsed({ getters, dispatch, commit }, master_id) {
       const master_category = getters.masterCategoriesById[master_id]
-      if(master_category) {
+      if (!master_category) {
+        return
+      }
+      if (master_id === HIDDEN._id) {
+        commit('SET_HIDDEN_COLLAPSED', !master_category.collapsed)
+      }
+      else {
         dispatch('commitDocToPouchAndVuex', {current: 
           { ...master_category, 
             collapsed: !master_category.collapsed 

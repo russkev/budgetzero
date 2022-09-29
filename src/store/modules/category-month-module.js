@@ -56,6 +56,7 @@ export default {
       return moment(new Date()).format('YYYY-MM')
     },
     categoriesData: (state, getters, rootState, rootGetters) => {
+      console.log('categoriesByMaster', rootGetters.categoriesByMaster)
       let index = 0
       return rootGetters.masterCategories.reduce((partial, master_category) => {
         const master_id = master_category._id.slice(-ID_LENGTH.category)

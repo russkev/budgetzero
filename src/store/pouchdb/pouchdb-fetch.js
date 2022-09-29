@@ -72,7 +72,7 @@ export default {
       const db = Vue.prototype.$pouch
       const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.masterCategory, 'fetchMasterCategories').then((result) => {
-        result.push(NONE)
+        // result.push(NONE)
         context.commit('SET_MASTER_CATEGORIES', result)
         return result
       })

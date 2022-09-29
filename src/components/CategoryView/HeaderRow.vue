@@ -8,7 +8,7 @@
           class="row-side-widget"
           :data-testid="dragId"
         >
-        <slot name="drag" :message="hover"></slot>
+        <slot name="drag" :hover="hover"></slot>
         </v-sheet>
         <v-col class="pa-0">
           <v-row class="master-row white--text ma-0">
@@ -47,8 +47,20 @@
             </v-col>
           </v-row>
         </v-col>
-        <slot name="delete" :message="hover"></slot>
-        <slot name="collapse" :message="hover"></slot>
+        <slot name="delete" :hover="hover">
+          <v-sheet 
+            width="20px" 
+            color="transparent" 
+            class="row-side-widget"
+          />
+        </slot>
+        <slot name="collapse" :hover="hover">
+          <v-sheet 
+            width="20px" 
+            color="transparent" 
+            class="row-side-widget"
+          />
+        </slot>
       </v-row>
     </v-hover>
   </v-container>

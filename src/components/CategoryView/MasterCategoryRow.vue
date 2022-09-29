@@ -1,4 +1,5 @@
 <template>
+
   <header-row
     :drag-id="`drag-master-category-${masterCategory.id}`"
     :title-id="`master-category-name-${masterCategory.id}`"
@@ -78,11 +79,12 @@
         class="pa-0 ma-0"
         min-width="20px"
         height="auto"
+        color="transparent"
         :data-testid="`btn-expand-${masterCategory.id}`"
         @click="toggleMasterCategoryCollapsed(masterCategory.id)"
       >
         <v-icon small>
-          {{ masterCategory.expanded ? "mdi-chevron-up" : "mdi-chevron-down" }}
+          {{ masterCategory.collapsed ? "mdi-chevron-down" : "mdi-chevron-up" }}
         </v-icon>
       </v-btn>
     </template>

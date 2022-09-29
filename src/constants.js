@@ -57,7 +57,7 @@ export const HIDDEN = {
   _id: '::0',
   name: 'Hidden',
   masterCategory: '::0',
-  collapsed: false,
+  collapsed: true,
 }
 
 export const DEFAULT_TRANSACTION = {

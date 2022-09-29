@@ -9,6 +9,7 @@
           <category-header />
         </v-col>
       </v-row>
+      <uncategorized-row />
       <v-expansion-panels flat multiple accordion v-model="masterCategoriesExpanded">
         <draggable v-model="masterCategoriesData" handle=".master-handle" style="width: inherit;">
           <v-expansion-panel
@@ -62,6 +63,7 @@ import CategoryMonthSelector from "./CategoryMonthSelector.vue";
 import MasterCategoryRow from "./MasterCategoryRow.vue";
 import CategoryRows from "./CategoryRows.vue";
 import CategoryCard from "./CategoryCard.vue";
+import UncategorizedRow from "./UncategorizedRow.vue";
 import _ from "lodash";
 import draggable from "vuedraggable";
 import { ID_LENGTH } from "../../constants";
@@ -75,6 +77,7 @@ export default {
     MasterCategoryRow,
     CategoryRows,
     CategoryCard,
+    UncategorizedRow,
   },
   data() {
     return {
@@ -96,6 +99,7 @@ export default {
           return {
             id: master_category._id.slice(-ID_LENGTH.category),
             name: master_category.name,
+            collapsed: master_category.collapsed,
           };
         });
       },
@@ -107,7 +111,7 @@ export default {
       get() {
         return this.masterCategories.reduce((partial, master_category, index) => {
           if (master_category.collapsed === undefined || !master_category.collapsed) {
-            partial.push(index);
+            partial.push(index + 1);
           }
           return partial;
         }, []);
