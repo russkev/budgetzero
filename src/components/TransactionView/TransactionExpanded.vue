@@ -71,7 +71,6 @@ export default {
       "SET_EDITED_TRANSACTION_DATE",
     ]),
     onMemoApply(event) {
-      console.log("onmemoapply");
       if (!event.target) {
         return;
       }

@@ -82,7 +82,6 @@ export default {
     },
     onCategoryUpdate(category_id) {
       this.selectedCategoryId = category_id;
-      // console.log("On category update", category_id)
     },
     onImportModalClose() {
       this.importModalIsVisible = false;
@@ -92,7 +91,6 @@ export default {
     },
     onCategoryApply() {
       if (this.selectedCategoryId != "") {
-        console.log("onCategoryApply", this.selectedCategoryId);
         this.categorizeSelectedTransactions({ categoryId: this.selectedCategoryId });
       }
       this.selectCategoryIsOpen = false;

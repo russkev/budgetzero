@@ -78,23 +78,8 @@
               </v-row>
             </v-col>
 
-            <v-hover v-slot="{ hover: hideButton }">
-              <v-btn
-                tile
-                elevation="0"
-                small
-                class="pa-0 ma-0 delete-button"
-                min-width="20px"
-                height="auto"
-                :data-testid="`btn-hide-category-${category.id}`"
-                :color="hideButton ? 'delete' : 'transparent'"
-                @click="onHideCategory(category.id)"
-              >
-                <v-icon x-small :color="deleteIconColor(hover, hideButton)">
-                  mdi-eye-off-outline
-                </v-icon>
-              </v-btn>
-            </v-hover>
+            <button-hide-category v-if="isStandard()" :category="category" :hover="hover"/>
+            <button-unhide-category v-else :category="category" :hover="hover"/>
           </v-row>
         </v-hover>
       </div>
@@ -123,9 +108,10 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import draggable from "vuedraggable";
+import ButtonHideCategory from "./ButtonHideCategory.vue";
+import ButtonUnhideCategory from "./ButtonUnhideCategory.vue";
 import { nextTick } from "vue";
-import { NONE } from "../../constants";
-import { deleteIconColor } from "./CategoryGrid.vue";
+import { NONE, HIDDEN } from "../../constants";
 
 export default {
   props: {
@@ -140,6 +126,8 @@ export default {
   },
   components: {
     draggable,
+    ButtonHideCategory,
+    ButtonUnhideCategory,
   },
   computed: {
     ...mapGetters(["intlCurrency", "categories"]),
@@ -210,18 +198,10 @@ export default {
         return category_id === this.editedCategoryNameId;
       }
     },
-    temp(event) {
-      console.log("TEMP");
-      console.log(event);
-      console.log(this.masterCategory);
+    isStandard() {
+      return !([HIDDEN._id, NONE._id].includes(this.masterCategory.id));
     },
-    // onEditCategoryBudget({ commit }, id) {
-    //   // commit('SET_EDITED_CATEGORY_BUDGET_ID', id)
-    //   this.SET_EDITED_CATEGORY_BUDGET_ID(id)
-    // },
-    deleteIconColor(hover, hideButton) {
-      return deleteIconColor(hover, hideButton);
-    },
+
   },
 };
 </script>

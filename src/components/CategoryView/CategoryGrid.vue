@@ -14,19 +14,15 @@
         <draggable v-model="masterCategoriesData" handle=".master-handle" style="width: inherit;">
           <v-expansion-panel
             v-for="(master_category, master_index) in masterCategoriesData"
-            :key="master_category.id"
+            :key="master_index"
             class="master-category-row background lighten-1 ma-0 pa-0 my-1"
             style="box-shadow: none;"
           >
-            <!-- <v-expansion-panel-header class="pa-0 ma-0" expand-icon="mdi-menu-down"> -->
-              <master-category-row
-                :name-cols="nameCols"
-                :master-category="master_category"
-                :master-index="master_index"
-                @click.native.stop
-              />
-              <!-- <v-divider /> -->
-            <!-- </v-expansion-panel-header> -->
+            <master-category-row
+              :name-cols="nameCols"
+              :master-category="master_category"
+              :master-index="master_index"
+            />
             <v-expansion-panel-content class="pa-0 ma-0" color="transparent">
               <category-rows :masterCategory="master_category" :nameCols="nameCols" />
             </v-expansion-panel-content>
@@ -66,7 +62,7 @@ import CategoryCard from "./CategoryCard.vue";
 import UncategorizedRow from "./UncategorizedRow.vue";
 import _ from "lodash";
 import draggable from "vuedraggable";
-import { ID_LENGTH } from "../../constants";
+import { ID_LENGTH, NONE } from "../../constants";
 
 export default {
   name: "CategoryGrid",
@@ -95,7 +91,10 @@ export default {
     },
     masterCategoriesData: {
       get() {
-        return this.masterCategories.map((master_category) => {
+        const masterCategories = this.masterCategories.filter((masterCategory) => {
+          return masterCategory._id !== NONE._id;
+        });
+        return masterCategories.map((master_category) => {
           return {
             id: master_category._id.slice(-ID_LENGTH.category),
             name: master_category.name,
@@ -109,12 +108,14 @@ export default {
     },
     masterCategoriesExpanded: {
       get() {
-        return this.masterCategories.reduce((partial, master_category, index) => {
+        const expanded = this.masterCategoriesData.reduce((partial, master_category, index) => {
           if (master_category.collapsed === undefined || !master_category.collapsed) {
-            partial.push(index + 1);
+            // partial.push(index + 1);
+            partial.push(index);
           }
           return partial;
         }, []);
+        return expanded;
       },
       set(indices) {
         this.setMasterCategoriesExpanded(indices);
@@ -153,6 +154,18 @@ export function deleteIconColor(hover, deleteButtonHover) {
   if (hover) {
     if (deleteButtonHover) {
       return "delete_text";
+    } else {
+      return "white";
+    }
+  } else {
+    return "transparent";
+  }
+}
+
+export function unhideIconColor(hover, unhideButtonHover) {
+  if (hover) {
+    if (unhideButtonHover) {
+      return "unhide_text";
     } else {
       return "white";
     }

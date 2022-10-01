@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { DEFAULT_MONTH_CATEGORY, ID_LENGTH, ID_NAME, NONE } from '../../constants'
+import { DEFAULT_MONTH_CATEGORY, ID_LENGTH, ID_NAME, NONE, HIDDEN } from '../../constants'
 import { getCarryover } from '@/store/modules/category-module'
 import _ from 'lodash'
 import moment from 'moment'
@@ -19,7 +19,6 @@ export default {
   },
   mutations: {
     SET_EDITED_MASTER_CATEGORY_ID(state, id) {
-      // console.log('SET_EDITED_MASTER_CATEGORY_ID', id)
       Vue.set(state, 'editedMasterCategoryId', id)
     },
     CLEAR_EDITED_MASTER_CATEGORY_ID(state) {
@@ -56,9 +55,11 @@ export default {
       return moment(new Date()).format('YYYY-MM')
     },
     categoriesData: (state, getters, rootState, rootGetters) => {
-      console.log('categoriesByMaster', rootGetters.categoriesByMaster)
+      // console.log('categoriesByMaster', rootGetters.categoriesByMaster)
       let index = 0
-      return rootGetters.masterCategories.reduce((partial, master_category) => {
+      // Remove the 'None' category
+      const masterCategories = rootGetters.masterCategories.filter((masterCategory) => masterCategory._id !== NONE._id)
+      return masterCategories.reduce((partial, master_category) => {
         const master_id = master_category._id.slice(-ID_LENGTH.category)
 
         if (!Array.isArray(rootGetters.categoriesByMaster[master_id])) {
@@ -185,7 +186,7 @@ export default {
       }
     },
     newMasterCategory({ commit, dispatch, rootGetters }) {
-      const index = rootGetters.masterCategories.length 
+      const index = rootGetters.masterCategories.length
       return dispatch(
         'createMasterCategory',
         { name: 'Name', is_income: false, sort: index - 0.5 },
@@ -196,11 +197,7 @@ export default {
       })
     },
     newCategory({ commit, dispatch }, master_category) {
-      return dispatch(
-        'createCategory',
-        { name: 'Name', master_id: master_category.id }, 
-        { root: true }
-      ).then((id) => {
+      return dispatch('createCategory', { name: 'Name', master_id: master_category.id }, { root: true }).then((id) => {
         commit('SET_EDITED_CATEGORY_NAME_ID', id)
         return id
       })
@@ -237,12 +234,48 @@ export default {
         dispatch(
           'commitDocToPouchAndVuex',
           {
-            current: { ...doc, masterCategory: NONE._id },
+            current: { ...doc, hidden: true },
             previous: doc
           },
           { root: true }
         )
       }
+    },
+    onUnhideCategory({ dispatch, rootGetters }, category_id) {
+      const doc = rootGetters.categoriesById[category_id]
+      if (doc === undefined) {
+        return
+      }
+      if (rootGetters.masterCategories.length < 1) {
+        return
+      }
+
+      let master_id = doc.masterCategory
+      if (
+        [NONE._id, HIDDEN._id].includes(doc.masterCategory) ||
+        !Object.keys(rootGetters.masterCategoriesById).includes(master_id)
+      ) {
+        for (let masterCategory of rootGetters.masterCategories) {
+          if (![NONE._id, HIDDEN._id].includes(masterCategory._id)) {
+            master_id = masterCategory._id.slice(-ID_LENGTH.category)
+            break
+          }
+        }
+      }
+
+      let sort = 0
+      const destination_categories = rootGetters.categoriesByMaster[master_id]
+      if (destination_categories !== undefined) {
+        sort = destination_categories.length
+      }
+      dispatch(
+        'commitDocToPouchAndVuex',
+        {
+          current: { ...doc, masterCategory: master_id, hidden: false, sort: sort },
+          previous: doc
+        },
+        { root: true }
+      )
     },
     onCategoryOrderChanged({ dispatch }, event) {
       dispatch('reorderCategory', event, { root: true })
@@ -258,4 +291,3 @@ export default {
     }
   }
 }
-

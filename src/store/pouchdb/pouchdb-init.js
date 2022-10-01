@@ -108,7 +108,6 @@ export default {
           if (existing_design_document) {
             design_document['_rev'] = existing_design_document['_rev']
           }
-          console.log('WARNING DESIGN DOCUMENT UPDATED')
           return db.put(design_document)
         })
         .catch((err) => {

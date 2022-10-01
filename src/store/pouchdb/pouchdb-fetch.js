@@ -42,10 +42,6 @@ export default {
     },
     fetchAccounts: (context) => {
       const db = Vue.prototype.$pouch
-      // console.log('DDDDDBBBBB')
-      // console.log("Route", Vue.prototype.$route)
-      // console.log("Pouch", Vue.prototype.$pouch)
-      // console.log(Vue.prototype)
       const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.account, 'fetchAccounts').then((accounts) => {
         context.commit('SET_ACCOUNTS', accounts)
@@ -233,8 +229,6 @@ export default {
           endkey: [`${budget_id}`, `${month_end}`, '\ufff0']
         })
         .then((result) => {
-          console.log('sum_transaction_by_budget')
-          console.log(result)
           logPerformanceTime('fetchBudgetBalances', t1)
           return result.rows
         })

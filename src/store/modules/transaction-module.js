@@ -370,6 +370,7 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
       const current_month = month_category_months[month_category_index]
       balances.category[current_month] = initCategoryBalancesMonth(balances.category, current_month, getters.categories)
       Object.entries(month_category_balances[current_month]).forEach(([category_id, category]) => {
+
         balances.category[current_month][category_id].doc = _.get(
           month_category_balances,
           [current_month, category_id, 'doc'],

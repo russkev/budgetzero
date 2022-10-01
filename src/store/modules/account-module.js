@@ -78,7 +78,6 @@ export default {
             splits: [],
             _id: `b_${context.getters.selectedBudgetId}${ID_NAME.transaction}${this._vm.generateId(date)}`
           }
-          console.log('initTransaction', initTransaction)
           return context.dispatch('createOrUpdateTransaction', { current: initTransaction, previous: null })
         }
 
@@ -95,7 +94,6 @@ export default {
             }
           })
           .then((result2) => {
-            console.log('delete account', result2.total_rows)
             if (result2.total_rows > 0) {
               // Account still has transactions, so resolve with amount of transactions in account for error message.
               reject(result2.total_rows)

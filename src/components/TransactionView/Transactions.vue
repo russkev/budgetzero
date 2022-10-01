@@ -29,13 +29,10 @@ export default {
     }
   },
   beforeRouteUpdate(to, from, next) {
-    console.log("ROUTE UPDATE", to.params.account_id)
-
     this.getTransactions(to.params.account_id)
     next();
   },
   created() {
-    console.log("Before mount")
     this.getTransactions(this.$route.params.account_id)
   },
   watch: {

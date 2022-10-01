@@ -23,7 +23,7 @@ export default new Vuetify({
       dark: {
         // primary: '#354148',
         primary: hslToHex('hsl(80, 100%, 51%)'),
-        secondary: hslToHex('hsl(245, 40%, 50%)'),
+        secondary: hslToHex('hsl(244, 18%, 57%)'),
         accent: hslToHex('hsl(253, 100%, 72%)'),
         background: {
           base: hslToHex('hsl(245, 9%, 19%)'),
@@ -32,7 +32,9 @@ export default new Vuetify({
           lighten2: hslToHex('hsl(248, 9%, 25%)')
         },
         delete: '#391616',
-        delete_text: '#ff4343'
+        delete_text: '#ff4343',
+        unhide: '#173715',
+        unhide_text: '#77d274'
       }
     },
     dark: true,

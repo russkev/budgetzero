@@ -2,7 +2,7 @@
   <v-row class="ma-0 px-0 py-1 background lighten-1">
     <header-row>
       <template #title>
-        <span class="text-h4 ml-2 amber--text">
+        <span class="text-h4 ml-3 amber--text">
           Uncategorized
         </span>
       </template>

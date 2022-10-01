@@ -118,7 +118,10 @@ const schema_category = {
     },
     name: {
       type: 'string'
-    }
+    },
+    hidden: {
+      type: ['boolean', 'null']
+    },
   },
   required: ['_id', 'sort', 'masterCategory', 'name']
 }
@@ -139,9 +142,7 @@ const schema_monthCategory = {
     spent: {
       type: ['null', 'integer']
     },
-    hidden: {
-      type: ['boolean', 'null']
-    },
+    
     note: {
       type: ['string', 'null']
     }
@@ -165,9 +166,6 @@ const schema_masterCategory = {
       type: ['integer', 'number']
     },
     collapsed: {
-      type: ['boolean', 'null']
-    },
-    hidden: {
       type: ['boolean', 'null']
     },
   },

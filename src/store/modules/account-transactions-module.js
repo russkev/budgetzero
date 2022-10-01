@@ -156,7 +156,6 @@ export default {
   actions: {
     getTransactions({ dispatch, commit, getters, rootGetters }, account_id) {
       if (account_id !== undefined) {
-        console.log('SETTING ACCOUNT ID', account_id)
         commit('SET_ACCOUNT_ID', account_id)
       }
 
@@ -184,7 +183,6 @@ export default {
       let previous = getters.isCreatingNewTransaction ? null : item
       await dispatch('prepareEditedItem')
       const transaction = JSON.parse(JSON.stringify(getters.editedTransaction))
-      console.log("SAVE PREVIOUS", previous)
       return dispatch(
         'createOrUpdateTransaction',
         {
@@ -323,7 +321,6 @@ export default {
         })
     },
     setClearedSelectedTransactions({ getters, dispatch, commit }, { cleared_value }) {
-      console.log('CLEARED VALUE', cleared_value)
       if (getters.selectedTransactions.length < 1) {
         return
       }

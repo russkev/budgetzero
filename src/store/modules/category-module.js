@@ -23,14 +23,8 @@ export default {
     monthsInUse(state) {
       return Object.keys(state.allCategoryBalances).sort((a, b) => compareAscii(a, b))
     },
-    // masterCategories: (state) => [...state.masterCategories].sort((a, b) => (a.sort > b.sort ? 1 : -1)),
     masterCategories: (state) => {
-      console.log(HIDDEN)
-      console.log("STATE MASTER CATEGORIES", state.masterCategories)
-      console.log("HIDDEN CATEGORY", state.masterHiddenCategory)
-      console.log([...state.masterCategories, state.masterHiddenCategory])
-      return [...state.masterCategories, state.masterHiddenCategory]
-      // state.masterCategories
+      return [...state.masterCategories, state.masterHiddenCategory, {...NONE}]
     },
     masterCategoriesById: (state, getters) => {
       return getters.masterCategories.reduce((partial, masterCategory) => {
@@ -38,63 +32,45 @@ export default {
         return partial
       }, {})
     },
-    masterCategoriesByCategoryId: (state, getters) => {
-      // // categories.reduce((partial, category) => {
-      // //   if ()
-
-      // // })
-      // return _.groupBy(state.categories,)
-      // let result = {}
-      // for(let category of state.categories)
-      return state.categories.reduce((partial, category) => {
-        partial[category._id] = _.get(getters, ['masterCategoriesById', category._id], null)
-        return partial
-      }, {})
-      // {
-      //   result[category._id] = _.get(getters, ['masterCategoriesByCategoryId', category._id], null)
-      // }
-
-      // return result
+    categories: (state) => {
+      return [...state.categories, { ...NONE }]
     },
-    // monthCategoryBudgets: (state) => state.monthCategoryBudgets,
-    categories: (state) => state.categories,
-    // categories: (state) => {
-    //   return [...state.categories, state.masterHiddenCategory]
-    // },
-    categoriesById: (state) => {
-      return state.categories.reduce((partial, category) => {
+    categoriesById: (state, getters) => {
+      return getters.categories.reduce((partial, category) => {
         partial[category._id.slice(-ID_LENGTH.category)] = category
         return partial
       }, {})
     },
     categoriesByMaster: (state, getters) => {
-      // let groups = _.groupBy(state.categories, 'masterCategory')
-      // getters.masterCategories.forEach((master_category) => {
-      //   const master_id = master_category._id.slice(-ID_LENGTH.category)
-      //   if (groups[master_id] === undefined) {
-      //     groups[master_id] = []
-      //   }
-      // })
-      // return groups
-      // let groups = {}
-      console.log("CATEGORIES", getters.categories)
-      console.log("MASTER CATEGORIES", getters.masterCategories)
       let initial = getters.masterCategories.reduce((partial, master_category) => {
         const master_id = master_category._id.slice(-ID_LENGTH.category)
         partial[master_id] = []
         return partial
-      })
-      return getters.categories.reduce((partial, category) => {
-        if (category.hidden) {
-          // partial[HIDDEN._id] = category
+      }, {})
+      initial[NONE._id] = [{ ...NONE }]
+
+      const result = getters.categories.reduce((partial, category) => {
+        if (category._id.slice(-ID_LENGTH.category) === NONE._id) {
+          return partial
+        }
+        if (category.hidden || [HIDDEN._id, NONE._id].includes(category.masterCategory)) {
           _.defaults(partial, { [HIDDEN._id]: [] })
           partial[HIDDEN._id].push(category)
         } else {
-          _.defaults(partial, { [category.masterCategory]: []})
+          _.defaults(partial, { [category.masterCategory]: [] })
           partial[category.masterCategory].push(category)
         }
         return partial
-      },initial)
+      }, initial)
+      return result
+    },
+    masterCategoriesByCategoryId: (state, getters) => {
+      return Object.entries(getters.categoriesByMaster).reduce((partial, [master_id, categories]) => {
+        categories.forEach((category) => {
+          partial[category._id.slice(-ID_LENGTH.category)] = getters.masterCategoriesById[master_id]
+        })
+        return partial
+      }, {})
     },
     monthBalances: (state) => {
       let monthBalances = JSON.parse(JSON.stringify(state.monthBalances))
@@ -134,11 +110,10 @@ export default {
       Vue.set(state, 'masterCategories', sorted_categories)
     },
     SET_HIDDEN_COLLAPSED(state, value) {
-      console.log("SET HIDDEN COLLAPSED", value)
       Vue.set(state.masterHiddenCategory, 'collapsed', value)
     },
     SET_CATEGORIES(state, categories) {
-      Vue.set(state, 'categories', [...categories, NONE])
+      Vue.set(state, 'categories', categories)
     },
     UPDATE_CATEGORY_BALANCES(state, { account, month, category_id, spent, doc }) {
       let month_balances = initCategoryBalancesMonth(state.allCategoryBalances, month, state.categories)
@@ -219,7 +194,7 @@ export default {
         _id: prefix + id,
         name: name,
         sort: sort,
-        collapsed: false,
+        collapsed: false
       }
     },
 
@@ -286,7 +261,6 @@ export default {
     },
 
     deleteMasterCategory(context, master_id) {
-      console.log('MASTER_ID', master_id)
       const categories = context.getters.categoriesByMaster[master_id]
       if (categories !== undefined) {
         const bulk_categories = categories.map((category) => {
@@ -307,11 +281,11 @@ export default {
       const docs = getters.masterCategories.reduce((partial, master_category, i) => {
         if (expanded_indices.includes(i)) {
           if (master_category.collapsed) {
-            partial.push({current: { ...master_category, collapsed: false }, previous: master_category})
+            partial.push({ current: { ...master_category, collapsed: false }, previous: master_category })
           }
         } else {
-          if(!master_category.collapsed) {
-            partial.push({current: { ...master_category, collapsed: true }, previous: master_category})
+          if (!master_category.collapsed) {
+            partial.push({ current: { ...master_category, collapsed: true }, previous: master_category })
           }
         }
         return partial
@@ -325,12 +299,11 @@ export default {
       }
       if (master_id === HIDDEN._id) {
         commit('SET_HIDDEN_COLLAPSED', !master_category.collapsed)
-      }
-      else {
-        dispatch('commitDocToPouchAndVuex', {current: 
-          { ...master_category, 
-            collapsed: !master_category.collapsed 
-          }, previous: master_category})
+      } else {
+        dispatch('commitDocToPouchAndVuex', {
+          current: { ...master_category, collapsed: !master_category.collapsed },
+          previous: master_category
+        })
       }
     },
 
@@ -622,7 +595,7 @@ const parseAllMonthCategories = (results, getters) => {
   month_categories.map((month_category) => {
     const month = extractMonthCategoryMonth(month_category._id)
     const category_id = month_category._id.slice(-ID_LENGTH.category)
-    const master_id = getters.categoriesById[category_id]['masterCategory']
+    // const master_id = getters.categoriesById[category_id]['masterCategory']
 
     month_category_balances[month] = updateSingleCategory(month_category_balances[month], category_id, {
       doc: month_category

@@ -91,8 +91,6 @@ export default {
       if (payee_id === null) {
         payee_id = NONE._id
       }
-      console.log("getPayeeID")
-      console.log(payee_id)
       //First, check if this payee has already been created
       const payeeLookup = Object.keys(context.getters.payeesById).find(
         (key) => context.getters.payeesById[key] === payee_id
