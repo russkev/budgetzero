@@ -1,5 +1,5 @@
 <template>
-  <v-card class="my-2 background lighten-1 rounded-l" elevation="0" :width="width">
+  <v-card class="mb-2 background lighten-1 category-card" elevation="0" :width="width">
     <!-- Template that acts as a wrapper -->
       <slot></slot>
   </v-card>

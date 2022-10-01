@@ -1,5 +1,4 @@
 <template>
-
   <header-row
     :drag-id="`drag-master-category-${masterCategory.id}`"
     :title-id="`master-category-name-${masterCategory.id}`"
@@ -10,22 +9,21 @@
     <template #title>
       <span class="text-h4 ml-3 secondary--text text--lighten-2">
         {{ masterCategory.name }}
-        </span>
+      </span>
     </template>
     <template #budgeted>
       <div class="secondary--text text--lighten-2">
-      <span class="text-h5">
-        Budgeted
-      </span>
-      <br />
-      <span class="text-body-1">
-        {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].budget / 100) }}
-      </span>
+        <span class="text-h5">
+          Budgeted
+        </span>
+        <br />
+        <span class="text-body-1">
+          {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].budget / 100) }}
+        </span>
       </div>
     </template>
     <template #spent>
       <div class="secondary--text text--lighten-2">
-
         <span class="text-h5">
           Spent
         </span>
@@ -37,13 +35,13 @@
     </template>
     <template #balance>
       <div class="secondary--text text--lighten-2">
-      <span class="text-h5">
-        Balance
-      </span>
-      <br />
-      <span class="text-body-1">
-        {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].balance / 100) }}
-      </span>
+        <span class="text-h5">
+          Balance
+        </span>
+        <br />
+        <span class="text-body-1">
+          {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].balance / 100) }}
+        </span>
       </div>
     </template>
     <template #collapse>
@@ -93,8 +91,8 @@ export default {
     ...mapGetters(["intlCurrency"]),
     ...mapGetters("categoryMonth", ["editedMasterCategoryId", "masterCategoriesStats"]),
     data() {
-      return "data"
-    }
+      return "data";
+    },
   },
   methods: {
     ...mapActions(["toggleMasterCategoryCollapsed"]),

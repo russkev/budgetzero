@@ -8,6 +8,7 @@
       @end="onCategoryOrderChanged"
       handle=".handle"
     >
+    <v-divider />
       <div
         class="ma-0 pa-0"
         v-for="category in categoriesData[masterCategory.id]"
@@ -80,6 +81,8 @@
 
             <button-hide-category v-if="isStandard()" :category="category" :hover="hover"/>
             <button-unhide-category v-else :category="category" :hover="hover"/>
+
+            <v-sheet width="20px" color="transparent"/>
           </v-row>
         </v-hover>
       </div>

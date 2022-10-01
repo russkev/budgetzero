@@ -17,7 +17,7 @@
           <v-expansion-panel
             v-for="(master_category, master_index) in masterCategoriesData"
             :key="master_index"
-            class="master-category-row background lighten-1 ma-0 pa-0 my-1"
+            class="master-category-row category-card background lighten-1 rounded-1 ma-0 pa-0 mb-2"
             style="box-shadow: none;"
           >
             <master-category-row-standard
@@ -34,7 +34,7 @@
           <v-expansion-panel
             slot="footer"
             :key="masterCategoriesData.length"
-            class="master-category-row background lighten-1 ma-0 pa-0 my-1"
+            class="master-category-row category-card background lighten-1 ma-0 pa-0 mb-2"
             style="box-shadow: none;"
           >
             <master-category-row-hidden
@@ -154,20 +154,6 @@ export default {
           collapsed: this.masterHiddenCategory.collapsed,
         }
     },
-    // hiddenExpanded: {
-    //   get() {
-    //     let expanded = [];
-    //     if (this.masterHiddenCategory.collapsed === false) {
-    //       expanded.push(0);
-    //     }
-    //     console.log("Expanded: ", expanded);
-    //     return expanded;
-    //   },
-    //   set(value) {
-    //     console.log("Hidden is expanded", value);
-    //     this.setHiddenIsExpanded(value);
-    //   },
-    // },
   },
   mounted() {
     this.UPDATE_SELECTED_MONTH(this.$route.params.month);
@@ -195,9 +181,6 @@ export default {
       });
     },
   },
-  // isStandard(master_id) {
-  //   return ![HIDDEN._id, NONE._id].includes(this.masterCategory.id);
-  // },
 };
 
 export function deleteIconColor(hover, deleteButtonHover) {
@@ -226,15 +209,19 @@ export function unhideIconColor(hover, unhideButtonHover) {
 </script>
 
 <style>
-.v-expansion-panel {
+.v-expansion-panel.master-category-row {
   /* background-color: transparent !important; */
   border: none;
   box-shadow: none;
 }
 
+.v-expansion-panel.master-category-row:not(:first-child)::after {
+  border: none;
+}
+
 .v-expansion-panel-content__wrap {
   padding: 0 !important;
-  padding-right: 24px !important;
+  /* padding-right: 24px !important; */
 }
 
 .v-expansion-panel::before {
@@ -243,6 +230,10 @@ export function unhideIconColor(hover, unhideButtonHover) {
 
 .master-category-row .v-expansion-panel-header {
   min-height: 0;
+}
+
+.category-card {
+  border-radius: 4px;
 }
 
 /*

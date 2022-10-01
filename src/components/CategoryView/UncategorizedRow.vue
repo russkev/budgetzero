@@ -1,5 +1,5 @@
 <template>
-  <v-row class="ma-0 px-0 py-1 background lighten-1">
+  <v-row class="ma-0 px-0 py-1 mb-2 category-card background lighten-1">
     <header-row>
       <template #title>
         <span 

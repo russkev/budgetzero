@@ -158,7 +158,12 @@ describe('Test transactions', () => {
 
     it('Change category from Paycheck 1 to Uncategorized', () => {
       cy.get('.transaction-row .row-category').eq(2).click()
-      cy.get('[data-testid="edit-row-select-category"]').click().type('{downArrow}').type('{enter}')
+      cy.get('[data-testid="edit-row-select-category"]')
+        .click()
+        .clear()
+        .type('Uncategorized')
+        .type('{downArrow}')
+        .type('{enter}')
       cy.get('[data-testid="save-edit-button"]').click()
       cy.get('[data-testid="edit-row-memo"]').should('not.exist')
       cy.get('.transaction-row .row-category').eq(2).should('contain.text', 'Uncategorized')
@@ -170,8 +175,7 @@ describe('Test transactions', () => {
       cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $497.53 ')
       cy.get('[data-testid="master-category-balance-fVM"]').should('contain.text', ' $497.53 ')
 
-      cy.get('[data-testid="category-balance-\\:\\:\\:"]').should('have.text', ' $2,218.68 ')
-      cy.get('[data-testid="master-category-balance-\\:\\:\\:"]').should('contain.text', ' $2,218.68 ')
+      cy.get('[data-testid="uncategorized-balance"]').should('contain.text', ' $2,218.68 ')
 
       cy.get('[data-testid="transactions-page-7kW"]').click()
     })
@@ -432,8 +436,7 @@ describe('Test transactions', () => {
       cy.get('[data-testid="category-name-input-2aW"]').should('have.value', 'Water')
       cy.get('[data-testid="category-balance-2aW"]').should('have.text', ' $146.03 ')
 
-      cy.get('[data-testid="category-name-input-\\:\\:\\:"]').should('have.value', 'Uncategorized')
-      cy.get('[data-testid="category-balance-\\:\\:\\:"]').should('have.text', ' -$223.86 ')
+      cy.get('[data-testid="uncategorized-balance"]').should('contain.text', ' -$223.86 ')
     })
   })
 
