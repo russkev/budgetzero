@@ -7,7 +7,7 @@
       class="pa-0 ma-0 delete-button"
       min-width="20px"
       height="auto"
-      :data-testid="`btn-hide-category-${category.id}`"
+      :data-testid="`btn-restore-category-${category.id}`"
       :color="buttonHover ? 'unhide' : 'transparent'"
       @click="onUnhideCategory(category.id)"
     >

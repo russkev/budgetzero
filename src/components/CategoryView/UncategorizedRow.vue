@@ -2,20 +2,31 @@
   <v-row class="ma-0 px-0 py-1 background lighten-1">
     <header-row>
       <template #title>
-        <span class="text-h4 ml-3 amber--text">
+        <span 
+          class="text-h4 ml-3 amber--text"
+          data-testid="uncategorized-name"
+        >
           Uncategorized
         </span>
       </template>
       <template #spent>
-        <span class="text-h5">
+        <div data-testid="uncategorized-spent">
+
+          <span 
+          class="text-h5"
+          >
           Spent
         </span>
         <br />
-        <span class="text-body-1">
-          {{ intlCurrency.format(spent / 100) }}
-        </span>
+        <span
+        class="text-body-1"
+        >
+        {{ intlCurrency.format(spent / 100) }}
+      </span>
+    </div>
       </template>
       <template #balance>
+        <div data-testid="uncategorized-balance">
         <span class="text-h5">
           Balance
         </span>
@@ -23,6 +34,7 @@
         <span class="text-body-1">
           {{ intlCurrency.format(balance / 100) }}
         </span>
+        </div>
       </template>
     </header-row>
   </v-row>

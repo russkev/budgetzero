@@ -12,13 +12,15 @@
       <uncategorized-row />
       <v-expansion-panels flat multiple accordion v-model="masterCategoriesExpanded">
         <draggable v-model="masterCategoriesData" handle=".master-handle" style="width: inherit;">
+
+          <!-- STANDARD -->
           <v-expansion-panel
             v-for="(master_category, master_index) in masterCategoriesData"
             :key="master_index"
             class="master-category-row background lighten-1 ma-0 pa-0 my-1"
             style="box-shadow: none;"
           >
-            <master-category-row
+            <master-category-row-standard
               :name-cols="nameCols"
               :master-category="master_category"
               :master-index="master_index"
@@ -27,6 +29,24 @@
               <category-rows :masterCategory="master_category" :nameCols="nameCols" />
             </v-expansion-panel-content>
           </v-expansion-panel>
+
+          <!-- HIDDEN -->
+          <v-expansion-panel
+            slot="footer"
+            :key="masterCategoriesData.length"
+            class="master-category-row background lighten-1 ma-0 pa-0 my-1"
+            style="box-shadow: none;"
+          >
+            <master-category-row-hidden
+              :name-cols="nameCols"
+              :master-category="hiddenMasterData"
+              :master-index="masterCategoriesData.length"
+            />
+            <v-expansion-panel-content class="pa-0 ma-0" color="transparent">
+              <category-rows :masterCategory="hiddenMasterData" :nameCols="nameCols" />
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+
         </draggable>
       </v-expansion-panels>
       <category-card>
@@ -52,17 +72,18 @@
 </template>
 
 <script>
-import { mapMutations, mapActions } from "vuex";
+import { mapMutations, mapActions, mapGetters } from "vuex";
 import { nextTick } from "vue";
 import CategoryHeader from "./CategoryHeader.vue";
 import CategoryMonthSelector from "./CategoryMonthSelector.vue";
-import MasterCategoryRow from "./MasterCategoryRow.vue";
+import MasterCategoryRowHidden from "./MasterCategoryRowHidden.vue";
+import MasterCategoryRowStandard from "./MasterCategoryRowStandard.vue";
 import CategoryRows from "./CategoryRows.vue";
 import CategoryCard from "./CategoryCard.vue";
 import UncategorizedRow from "./UncategorizedRow.vue";
 import _ from "lodash";
 import draggable from "vuedraggable";
-import { ID_LENGTH, NONE } from "../../constants";
+import { ID_LENGTH, NONE, HIDDEN } from "../../constants";
 
 export default {
   name: "CategoryGrid",
@@ -70,10 +91,11 @@ export default {
     draggable,
     CategoryHeader,
     CategoryMonthSelector,
-    MasterCategoryRow,
     CategoryRows,
     CategoryCard,
     UncategorizedRow,
+    MasterCategoryRowHidden,
+    MasterCategoryRowStandard,
   },
   data() {
     return {
@@ -81,6 +103,7 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(["masterHiddenCategory"]),
     masterCategories: {
       get() {
         return this.$store.getters.masterCategories;
@@ -92,7 +115,8 @@ export default {
     masterCategoriesData: {
       get() {
         const masterCategories = this.masterCategories.filter((masterCategory) => {
-          return masterCategory._id !== NONE._id;
+          // return masterCategory._id !== NONE._id;
+          return ![HIDDEN._id, NONE._id].includes(masterCategory._id);
         });
         return masterCategories.map((master_category) => {
           return {
@@ -108,7 +132,8 @@ export default {
     },
     masterCategoriesExpanded: {
       get() {
-        const expanded = this.masterCategoriesData.reduce((partial, master_category, index) => {
+        const data = this.masterCategoriesData.concat(this.hiddenMasterData);
+        const expanded = data.reduce((partial, master_category, index) => {
           if (master_category.collapsed === undefined || !master_category.collapsed) {
             // partial.push(index + 1);
             partial.push(index);
@@ -118,9 +143,31 @@ export default {
         return expanded;
       },
       set(indices) {
-        this.setMasterCategoriesExpanded(indices);
+        console.log("main expanded", indices);
+        this.setMasterCategoriesCollapsed(indices);
       },
     },
+    hiddenMasterData() {
+      return {
+          id: this.masterHiddenCategory._id,
+          name: this.masterHiddenCategory.name,
+          collapsed: this.masterHiddenCategory.collapsed,
+        }
+    },
+    // hiddenExpanded: {
+    //   get() {
+    //     let expanded = [];
+    //     if (this.masterHiddenCategory.collapsed === false) {
+    //       expanded.push(0);
+    //     }
+    //     console.log("Expanded: ", expanded);
+    //     return expanded;
+    //   },
+    //   set(value) {
+    //     console.log("Hidden is expanded", value);
+    //     this.setHiddenIsExpanded(value);
+    //   },
+    // },
   },
   mounted() {
     this.UPDATE_SELECTED_MONTH(this.$route.params.month);
@@ -132,7 +179,7 @@ export default {
   methods: {
     ...mapMutations("categoryMonth", ["UPDATE_SELECTED_MONTH"]),
     ...mapActions("categoryMonth", ["reorderMasterCategories", "newMasterCategory"]),
-    ...mapActions(["setMasterCategoriesExpanded"]),
+    ...mapActions(["setMasterCategoriesCollapsed"]),
     onNewMasterCategory() {
       this.newMasterCategory().then((id) => {
         const element_id = `master-category-name-input-${id}`;
@@ -148,6 +195,9 @@ export default {
       });
     },
   },
+  // isStandard(master_id) {
+  //   return ![HIDDEN._id, NONE._id].includes(this.masterCategory.id);
+  // },
 };
 
 export function deleteIconColor(hover, deleteButtonHover) {

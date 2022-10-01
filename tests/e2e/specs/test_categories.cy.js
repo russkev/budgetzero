@@ -54,12 +54,9 @@ describe('Test categories (budget) page', () => {
 
       //---------------------------------------------------------------------//
 
-      cy.get('[data-testid="master-category-name-input-\\:\\:\\:"]').should('have.value', 'Uncategorized')
-
-      cy.get('[data-testid="category-name-input-\\:\\:\\:"]').should('have.value', 'Uncategorized')
-      cy.get('[data-testid="category-budget-input-\\:\\:\\:"]').should('have.value', '$0.00')
-      cy.get('[data-testid="category-spent-\\:\\:\\:"]').should('have.text', ' -$81.32 ')
-      cy.get('[data-testid="category-balance-\\:\\:\\:"]').should('have.text', ' -$81.32 ')
+      cy.get('[data-testid="uncategorized-name"]').should('contain.text', 'Uncategorized')
+      cy.get('[data-testid="uncategorized-spent"]').should('contain.text', ' -$81.32 ')
+      cy.get('[data-testid="uncategorized-balance"]').should('contain.text', ' -$81.32 ')
     })
 
     it('Checks category values for August and September', () => {
@@ -116,15 +113,18 @@ describe('Test categories (budget) page', () => {
 
       // //---------------------------------------------------------------------//
 
-      cy.get('[data-testid="master-category-name-input-\\:\\:\\:"]').should('have.value', 'Uncategorized')
-      cy.get('[data-testid="master-category-budget-\\:\\:\\:"]').should('contain.text', ' $0.00 ')
-      cy.get('[data-testid="master-category-spent-\\:\\:\\:"]').should('contain.text', ' $0.00 ')
-      cy.get('[data-testid="master-category-balance-\\:\\:\\:"]').should('contain.text', ' -$81.32 ')
+      cy.get('[data-testid="uncategorized-spent"]').should('contain.text', ' $0.00 ')
+      cy.get('[data-testid="uncategorized-balance"]').should('contain.text', ' -$81.32 ')
 
-      cy.get('[data-testid="category-name-input-\\:\\:\\:"]').should('have.value', 'Uncategorized')
-      cy.get('[data-testid="category-budget-input-\\:\\:\\:"]').should('have.value', '$0.00')
-      cy.get('[data-testid="category-spent-\\:\\:\\:"]').should('have.text', ' $0.00 ')
-      cy.get('[data-testid="category-balance-\\:\\:\\:"]').should('have.text', ' -$81.32 ')
+      // cy.get('[data-testid="master-category-name-input-\\:\\:\\:"]').should('have.value', 'Uncategorized')
+      // cy.get('[data-testid="master-category-budget-\\:\\:\\:"]').should('contain.text', ' $0.00 ')
+      // cy.get('[data-testid="master-category-spent-\\:\\:\\:"]').should('contain.text', ' $0.00 ')
+      // cy.get('[data-testid="master-category-balance-\\:\\:\\:"]').should('contain.text', ' -$81.32 ')
+
+      // cy.get('[data-testid="category-name-input-\\:\\:\\:"]').should('have.value', 'Uncategorized')
+      // cy.get('[data-testid="category-budget-input-\\:\\:\\:"]').should('have.value', '$0.00')
+      // cy.get('[data-testid="category-spent-\\:\\:\\:"]').should('have.text', ' $0.00 ')
+      // cy.get('[data-testid="category-balance-\\:\\:\\:"]').should('have.text', ' -$81.32 ')
 
       // //---------------------------------------------------------------------//
       // September
@@ -137,8 +137,7 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $23.84 ')
       cy.get('[data-testid="category-balance-2aW"]').should('have.text', ' $177.25 ')
       cy.get('[data-testid="category-balance-Lx7"]').should('have.text', ' -$535.34 ')
-      cy.get('[data-testid="category-balance-\\:\\:\\:"]').should('have.text', ' -$81.32 ')
-
+      cy.get('[data-testid="uncategorized-balance"]').should('contain.text', ' -$81.32 ')
       // Return to start page for future tests
       cy.get('[data-testid="previous-month-button"]').click()
       cy.get('[data-testid="previous-month-button"]').click()
@@ -171,17 +170,17 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="category-balance-n00"]').should('have.text', ' -$372.92 ')
       cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $618.44 ')
 
-        cy.get('[data-testid="next-month-button"]').click()
-        cy.get('[data-testid="category-balance-n00"]').should('have.text', ' -$372.92 ')
-        cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $618.44 ')
+      cy.get('[data-testid="next-month-button"]').click()
+      cy.get('[data-testid="category-balance-n00"]').should('have.text', ' -$372.92 ')
+      cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $618.44 ')
 
-        // Return to start page for future tests
-        cy.get('[data-testid="previous-month-button"]').click()
-        cy.get('[data-testid="previous-month-button"]').click()
+      // Return to start page for future tests
+      cy.get('[data-testid="previous-month-button"]').click()
+      cy.get('[data-testid="previous-month-button"]').click()
     })
   })
 
-  context.only('Test drag and drop', () => {
+  context('Test drag and drop', () => {
     before(() => {
       cy.initPath('budget/2022-08')
     })
@@ -236,8 +235,6 @@ describe('Test categories (budget) page', () => {
         }
       })
       cy.get('[data-testid="categories-container-ggJ"]').children().should('have.length', 0)
-      cy.get('[data-testid="categories-container-fVM"]').children().should('have.length', 2)
-
       cy.get('[data-testid="categories-container-fVM"] > div:nth-child(1)')
         .find('[data-testid="category-name-gpe"]')
         .should('have.length', 1)
@@ -266,11 +263,10 @@ describe('Test categories (budget) page', () => {
     it('Drag master category', () => {
       cy.get('[data-testid="drag-master-category-ggJ"]').trigger('mouseenter')
       cy.get('[data-testid="drag-master-category-ggJ"]').drag('[data-testid="master-category-name-fVM"]')
-      cy.get('.master-row').should('have.length', 4)
+      cy.get('.master-row').should('have.length', 5)
       cy.get('.master-row input').eq(0).should('contain.value', 'Misc')
       cy.get('.master-row input').eq(1).should('contain.value', 'Income')
       cy.get('.master-row input').eq(2).should('contain.value', 'Spending')
-      cy.get('.master-row input').eq(3).should('contain.value', 'Uncategorized')
     })
     // Test moving water to above paycheck
   })
@@ -278,18 +274,16 @@ describe('Test categories (budget) page', () => {
   context('Test delete / hide', () => {
     before(() => {
       cy.initPath('budget/2022-08')
+      cy.get('[data-testid="btn-expand-::0"]').trigger('mouseenter').click()
     })
 
     it('Hides a category', () => {
       cy.get('[data-testid="btn-hide-category-Lx7"]').trigger('mouseenter').click()
 
       cy.get('[data-testid="categories-container-ggJ"]').children().should('have.length', 0)
-      cy.get('[data-testid="categories-container-\\:\\:\\:"]').children().should('have.length', 2)
+      cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 1)
 
-      cy.get('[data-testid="categories-container-\\:\\:\\:"] > div:nth-child(1)')
-        .find('[data-testid="category-name-\\:\\:\\:"]')
-        .should('have.length', 1)
-      cy.get('[data-testid="categories-container-\\:\\:\\:"] > div:nth-child(2)')
+      cy.get('[data-testid="categories-container-\\:\\:0"] > div:nth-child(1)')
         .find('[data-testid="category-name-Lx7"]')
         .should('have.length', 1)
 
@@ -297,9 +291,9 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="master-category-spent-ggJ"]').should('contain.text', ' $0.00 ')
       cy.get('[data-testid="master-category-balance-ggJ"]').should('contain.text', ' $0.00 ')
 
-      cy.get('[data-testid="master-category-budget-\\:\\:\\:"]').should('contain.text', ' -$25.34 ')
-      cy.get('[data-testid="master-category-spent-\\:\\:\\:"]').should('contain.text', ' -$520.00 ')
-      cy.get('[data-testid="master-category-balance-\\:\\:\\:"]').should('contain.text', ' -$616.66 ')
+      cy.get('[data-testid="master-category-budget-\\:\\:0"]').should('contain.text', ' -$25.34 ')
+      cy.get('[data-testid="master-category-spent-\\:\\:0"]').should('contain.text', ' -$520.00 ')
+      cy.get('[data-testid="master-category-balance-\\:\\:0"]').should('contain.text', ' -$535.34 ')
 
       cy.get('[data-testid="category-name-input-Lx7"]').should('have.value', 'Vacation')
       cy.get('[data-testid="category-budget-input-Lx7"]').should('have.value', '-$25.34')
@@ -310,11 +304,11 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="btn-delete-master-category-3ks"]').trigger('mouseenter').click()
 
       cy.get('[data-testid="master-category-name-3ks"]').should('not.exist')
-      cy.get('[data-testid="categories-container-\\:\\:\\:"]').children().should('have.length', 6)
+      cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 5)
 
-      cy.get('[data-testid="master-category-budget-\\:\\:\\:"]').should('contain.text', ' $275.50 ')
-      cy.get('[data-testid="master-category-spent-\\:\\:\\:"]').should('contain.text', ' -$899.64 ')
-      cy.get('[data-testid="master-category-balance-\\:\\:\\:"]').should('contain.text', ' $398.54 ')
+      cy.get('[data-testid="master-category-budget-\\:\\:0"]').should('contain.text', ' $275.50 ')
+      cy.get('[data-testid="master-category-spent-\\:\\:0"]').should('contain.text', ' -$899.64 ')
+      cy.get('[data-testid="master-category-balance-\\:\\:0"]').should('contain.text', ' $479.86 ')
 
       cy.get('[data-testid="category-name-input-6b2"]').should('have.value', 'Electricity')
       cy.get('[data-testid="category-budget-input-6b2"]').should('have.value', '-$41.84')
@@ -331,7 +325,8 @@ describe('Test categories (budget) page', () => {
     it('Creates a new category', () => {
       cy.get('[data-testid="btn-new-category-3ks"]').click()
       cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 5)
-      const name_input_selector = '[data-testid="categories-container-3ks"] > div:nth-child(5) .category-name-input input'
+      const name_input_selector =
+        '[data-testid="categories-container-3ks"] > div:nth-child(5) .category-name-input input'
 
       cy.get(name_input_selector).should('not.have.attr', 'readonly')
       cy.get(name_input_selector).should('have.focus')
@@ -347,7 +342,10 @@ describe('Test categories (budget) page', () => {
       cy.get('main').find('div.master-category-row:nth-child(4) input').should('have.focus')
       cy.get('main').find('div.master-category-row:nth-child(4) input').type('Dividends').type('{enter}')
       cy.get('main').find('div.master-category-row:nth-child(4) input').should('have.value', 'Dividends')
-      cy.get('main').find('div.master-category-row:nth-child(4) .categories-container').children().should('have.length', 0)
+      cy.get('main')
+        .find('div.master-category-row:nth-child(4) .categories-container')
+        .children()
+        .should('have.length', 0)
     })
   })
 
@@ -360,7 +358,6 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="transactions-page-7kW"]').click()
       cy.get('[data-testid="sidebar-button-budgets"]').click()
       cy.url().should('include', 'budget/2022-01')
-
     })
   })
 
@@ -371,17 +368,16 @@ describe('Test categories (budget) page', () => {
     it('Checks that changing budgeted values results in values updating properly', () => {
       const vacation_selector = '[data-testid="category-budget-input-Lx7"]'
       cy.get(vacation_selector).click()
+      cy.get(vacation_selector).focus()
+
       cy.get(vacation_selector).clear()
       cy.get(vacation_selector).type('-100')
       cy.get(vacation_selector).type('{enter}')
       cy.get(vacation_selector).should('have.value', '-$100.00')
 
       cy.get('[data-testid="category-balance-Lx7"]').should('have.text', ' -$520.00 ')
-      
-
     })
   })
-
 
   context('Test that total balance value updates correctly', () => {
     before(() => {
@@ -436,7 +432,6 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget:')
       cy.get('[data-testid="previous-month-button"]').click()
 
-
       cy.get(water_selector).click()
       cy.get(water_selector).clear()
       cy.get(water_selector).type('15')
@@ -473,7 +468,7 @@ describe('Test categories (budget) page', () => {
       cy.get('.transaction-row > .row-checkbox').eq(0).click()
       cy.get('[data-testid="delete-selected-transactions-button"]').click()
       cy.get('.transaction-row').should('have.length', 5)
-      
+
       // CHeck categories
       cy.get('[data-testid="sidebar-button-budgets"]').click()
 
@@ -483,6 +478,61 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="next-month-button"]').click()
       cy.get('[data-testid="total-balance"]').should('contain.text', ' $3,612.14 ')
       cy.get('[data-testid="sidebar-button-budgets"]').click()
+    })
+  })
+
+  context('Test that hidden restore works correctly', () => {
+    beforeEach(() => {
+      cy.initPath('budget/2022-08')
+      cy.get('[data-testid="btn-expand-::0"]').trigger('mouseenter').click()
+    })
+
+    it('Checks that restoring with the restore button works', () => {
+      cy.get('[data-testid="btn-hide-category-6b2"]').trigger('mouseenter').click()
+      cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 3)
+      cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 1)
+
+      cy.get('[data-testid="btn-restore-category-6b2"]').trigger('mouseenter').click()
+      cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 4)
+      cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 0)
+      cy.get('[data-testid="categories-container-3ks"] > div:nth-child(4)')
+        .find('[data-testid="category-name-6b2"]')
+        .should('have.length', 1)
+    })
+
+    it('Checks that restoring after drag drop works', () => {
+      // Do the drag and drop
+      cy.get('[data-testid="drag-category-ATi"]').trigger('mouseenter')
+      cy.get('[data-testid="drag-category-ATi"]').drag('[data-testid="btn-new-category-::0"]', {
+        target: {
+          position: 'top'
+        }
+      })
+      cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 3)
+      cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 1)
+
+      cy.get('[data-testid="btn-restore-category-ATi"]').trigger('mouseenter').click()
+      cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 4)
+      cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 0)
+      cy.get('[data-testid="categories-container-3ks"] > div:nth-child(4)')
+        .find('[data-testid="category-name-ATi"]')
+        .should('have.length', 1)
+    })
+
+    it('Checks that deleting a master category and then restoring works', () => {
+      cy.get('[data-testid="btn-delete-master-category-ggJ"]').trigger('mouseenter').click()
+      cy.get('[data-testid="categories-container-ggJ"]').children().should('have.length', 0)
+      cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 1)
+      cy.get('[data-testid="categories-container-\\:\\:0"] > div:nth-child(1)')
+        .find('[data-testid="category-name-Lx7"]')
+        .should('have.length', 1)
+
+      cy.get('[data-testid="btn-restore-category-Lx7"]').trigger('mouseenter').click()
+      cy.get('[data-testid="categories-container-fVM"]').children().should('have.length', 2)
+      cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 0)
+      cy.get('[data-testid="categories-container-fVM"] > div:nth-child(2)')
+        .find('[data-testid="category-name-Lx7"]')
+        .should('have.length', 1)
     })
   })
 })

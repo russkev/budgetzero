@@ -32,6 +32,7 @@ export default {
         return partial
       }, {})
     },
+    masterHiddenCategory: (state) => state.masterHiddenCategory,
     categories: (state) => {
       return [...state.categories, { ...NONE }]
     },
@@ -267,7 +268,7 @@ export default {
           return {
             current: {
               ...category,
-              masterCategory: NONE.masterCategory
+              masterCategory: HIDDEN.masterCategory
             },
             previous: category
           }
@@ -277,7 +278,16 @@ export default {
         context.dispatch('commitDocToPouchAndVuex', { current: null, previous: master_category })
       }
     },
-    setMasterCategoriesExpanded({ getters, dispatch }, expanded_indices) {
+    setMasterCategoriesCollapsed({ getters, dispatch }, expanded_indices) {
+      if (expanded_indices.includes(getters.masterCategories.length)) {
+        if(masterHiddenCategory.collapsed) {
+          commit('SET_HIDDEN_COLLAPSED', false)
+        } 
+      } else {
+        if(!masterHiddenCategory.collapsed) {
+          commit('SET_HIDDEN_COLLAPSED', true)
+        }
+      }
       const docs = getters.masterCategories.reduce((partial, master_category, i) => {
         if (expanded_indices.includes(i)) {
           if (master_category.collapsed) {
@@ -291,6 +301,9 @@ export default {
         return partial
       }, [])
       dispatch('commitBulkDocsToPouchAndVuex', docs)
+    },
+    setHiddenCollapsed({ commit }, expanded_indices) {
+      commit('SET_HIDDEN_COLLAPSED', expanded_indices.length == 0)
     },
     toggleMasterCategoryCollapsed({ getters, dispatch, commit }, master_id) {
       const master_category = getters.masterCategoriesById[master_id]
@@ -311,20 +324,42 @@ export default {
       //Get the category that was moved
       const old_index = payload.oldIndex
       const new_index = payload.newIndex
+      console.log("old index: " + old_index + " new index: " + new_index)
       const master_id_from = payload.from.id.slice(-ID_LENGTH.category)
       const master_id_to = payload.to.id.slice(-ID_LENGTH.category)
 
       let updated_by_master = {}
-      // TOTO: Old index won't be relevant if different master id
-      const temp_index = new_index > old_index ? new_index + 0.5 : new_index - 0.5
+
+      let temp_index = new_index - 0.5
+      if(master_id_from === master_id_to && new_index > old_index) {
+        temp_index = new_index + 0.5
+      }
+
+      console.log("temp index: " + temp_index)
       updated_by_master[master_id_from] = context.getters.categoriesByMaster[master_id_from].map((category, i) => {
         const sort = i === old_index ? temp_index : i
         const master_id = sort === temp_index ? master_id_to : category.masterCategory
-        return {
-          ...category,
-          masterCategory: master_id,
-          sort: sort
+
+        if (i == old_index) {
+          if (master_id_from === HIDDEN._id && master_id !== HIDDEN._id) {
+            category = { ...category, hidden: false }
+          }
+          if (master_id_from !== HIDDEN._id && master_id_to === HIDDEN._id) {
+            return { 
+              ...category, 
+              sort: sort, 
+              hidden: true, 
+            }
+          }
         }
+
+        //  else {
+          return {
+            ...category,
+            masterCategory: master_id,
+            sort: sort
+          }
+        // }
       })
       if (master_id_to !== master_id_from) {
         updated_by_master[master_id_to] = context.getters.categoriesByMaster[master_id_to].map((category, i) => {
@@ -534,7 +569,6 @@ export default {
     },
 
     updateMonthBalancesBudgeted({ commit }, { current, previous }) {
-      console.log('updateMonthBalancesBudgeted', current, previous)
       const month = current ? extractMonthCategoryMonth(current._id) : extractMonthCategoryMonth(previous._id)
       let monthBalanceUpdates = []
       if (current) {

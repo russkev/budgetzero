@@ -55,10 +55,8 @@ export default {
       return moment(new Date()).format('YYYY-MM')
     },
     categoriesData: (state, getters, rootState, rootGetters) => {
-      // console.log('categoriesByMaster', rootGetters.categoriesByMaster)
       let index = 0
-      // Remove the 'None' category
-      const masterCategories = rootGetters.masterCategories.filter((masterCategory) => masterCategory._id !== NONE._id)
+      const masterCategories = rootGetters.masterCategories
       return masterCategories.reduce((partial, master_category) => {
         const master_id = master_category._id.slice(-ID_LENGTH.category)
 

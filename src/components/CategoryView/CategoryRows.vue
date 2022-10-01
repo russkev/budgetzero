@@ -172,6 +172,9 @@ export default {
         this.SET_EDITED_CATEGORY_BUDGET_ID(next_id);
         const element_id = `category-budget-input-${next_id}`;
         const element = document.getElementById(element_id);
+        if (!element) {
+          return;
+        }
         element.focus();
         nextTick().then(() => {
           element.select();
