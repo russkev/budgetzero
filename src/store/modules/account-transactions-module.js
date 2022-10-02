@@ -350,51 +350,52 @@ export default {
   }
 }
 
+const headerClass =  'transaction-table-header text-body-2'
 const dataTableHeaders = [
   {
     text: '',
-    class: 'transaction-table-header',
+    class: headerClass,
     value: 'data-table-select',
     width: '46px',
     align: 'center'
   },
   {
     text: '',
-    class: 'transaction-table-header',
+    class: headerClass,
     value: 'cleared',
     width: '26px',
     align: 'center'
   },
   {
     text: 'Date',
-    class: 'transaction-table-header',
+    class: headerClass,
     value: 'date',
     align: 'left'
   },
   {
     text: 'Category',
-    class: 'transaction-table-header',
+    class: headerClass,
     value: 'category',
     align: 'left',
     width: '100%'
   },
   {
     text: 'Outflow',
-    class: 'transaction-table-header',
+    class: headerClass,
     value: 'outflow',
     align: 'left',
     width: '100px'
   },
   {
     text: 'Inflow',
-    class: 'transaction-table-header',
+    class: headerClass,
     value: 'inflow',
     align: 'left',
     width: '100px'
   },
   {
     text: 'Balance',
-    class: 'transaction-table-header',
+    class: headerClass,
     value: 'balance',
     align: 'right',
     width: '100px'

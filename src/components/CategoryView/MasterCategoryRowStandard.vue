@@ -1,5 +1,4 @@
 <template>
-
   <header-row
     :drag-id="`drag-master-category-${masterCategory.id}`"
     :title-id="`master-category-name-${masterCategory.id}`"
@@ -12,9 +11,33 @@
         mdi-drag-vertical
       </v-icon>
     </template>
+    <template #color="{hover}">
+      <v-menu offset-y>
+        <template #activator="{ on }">
+          <v-btn
+            elevation="0"
+            min-width="14px"
+            width="14px"
+            height="14px"
+            class="pa-0 ma-auto"
+            v-on="on"
+            :color="hover ? masterCategoryDoc.color.hex : 'transparent'"
+          />
+        </template>
+        <v-color-picker
+          show-swatches
+          hide-canvas
+          hide-inputs
+          hide-mode-switch
+          hide-sliders
+          :swatches="hexSwatches"
+          :value="masterCategoryDoc.color.hex"
+          @update:color="onColorChange"
+          />
+      </v-menu>
+    </template>
     <template #title>
       <category-grid-input
-        :readonly="masterCategory.id === ':::'"
         background-color="background lighten-1"
         :id="`master-category-name-input-${masterCategory.id}`"
         :data-testid="`master-category-name-input-${masterCategory.id}`"
@@ -92,7 +115,7 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
+import { mapGetters, mapActions, mapMutations } from "vuex";
 import { deleteIconColor } from "./CategoryGrid.vue";
 import HeaderRow from "./HeaderRow.vue";
 
@@ -114,15 +137,31 @@ export default {
   components: {
     HeaderRow,
   },
+  data() {
+    return {
+      selectedColor: { hex: "#FF0000" },
+    };
+  },
   computed: {
-    ...mapGetters(["intlCurrency"]),
+    ...mapGetters(["intlCurrency", "colorSwatches", "masterCategoriesById", "categoryColors"]),
     ...mapGetters("categoryMonth", ["editedMasterCategoryId", "masterCategoriesStats"]),
     data() {
-      return "data"
-    }
+      return "data";
+    },
+    hexSwatches() {
+      return this.colorSwatches.map((colorSwatchRow) => {
+        return colorSwatchRow.map((colorSwatch) => {
+          return colorSwatch.hex;
+        });
+      });
+    },
+    masterCategoryDoc() {
+      return this.masterCategoriesById[this.masterCategory.id];
+    },
   },
   methods: {
-    ...mapActions(["toggleMasterCategoryCollapsed"]),
+    ...mapMutations(["SET_MASTER_CATEGORY_COLOR"]),
+    ...mapActions(["toggleMasterCategoryCollapsed", "updateMasterColor"]),
     ...mapActions("categoryMonth", [
       "onDeleteMasterCategory",
       "onMasterCategoryNameChange",
@@ -133,6 +172,12 @@ export default {
 
     deleteIconColor(hover, deleteButtonHover) {
       return deleteIconColor(hover, deleteButtonHover);
+    },
+    onColorSelected() {
+      console.log("Color selected", this.masterCategory);
+    },
+    onColorChange(color) {
+      this.updateMasterColor({ masterId: this.masterCategory.id, colorObject: color })
     },
   },
 };

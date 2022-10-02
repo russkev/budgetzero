@@ -168,6 +168,9 @@ const schema_masterCategory = {
     collapsed: {
       type: ['boolean', 'null']
     },
+    color: {
+      type: ['object', 'null']
+    }
   },
   required: ['_id', 'name', 'sort', 'collapsed']
 }

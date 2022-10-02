@@ -10,7 +10,7 @@
       {{ item.category_name }}
     </span>
     <br />
-    <span class="row-memo text-caption transaction-details">
+    <span class="row-memo text-body-1 transaction-details">
       {{ item.note ? item.note : item.memo }}
     </span>
   </div>

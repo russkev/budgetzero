@@ -1,5 +1,5 @@
 <template>
-  <div v-if="item._id !== editedTransaction._id">
+  <div v-if="item._id !== editedTransaction._id" class="text-body-2">
     {{ intlCurrency.format(item.balance / 100) }}
   </div>
   <div v-else>
@@ -36,4 +36,3 @@ export default {
   }
 };
 </script>
-s

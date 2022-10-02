@@ -1,6 +1,7 @@
 // import 'vuetify/dist/vuetify.min.css'
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
+import { hslStringToHex } from '../helper'
 
 Vue.use(Vuetify)
 
@@ -22,14 +23,14 @@ export default new Vuetify({
       },
       dark: {
         // primary: '#354148',
-        primary: hslToHex('hsl(80, 100%, 51%)'),
-        secondary: hslToHex('hsl(244, 18%, 57%)'),
-        accent: hslToHex('hsl(253, 100%, 72%)'),
+        primary: hslStringToHex('hsl(80, 100%, 51%)'),
+        secondary: hslStringToHex('hsl(244, 18%, 57%)'),
+        accent: hslStringToHex('hsl(253, 100%, 72%)'),
         background: {
-          base: hslToHex('hsl(245, 9%, 19%)'),
-          darken1: hslToHex('hsl(251, 9%, 18%)'),
-          lighten1: hslToHex('hsl(254, 9%, 21%)'),
-          lighten2: hslToHex('hsl(248, 9%, 25%)')
+          base: hslStringToHex('hsl(245, 9%, 19%)'),
+          darken1: hslStringToHex('hsl(251, 9%, 18%)'),
+          lighten1: hslStringToHex('hsl(254, 9%, 21%)'),
+          lighten2: hslStringToHex('hsl(248, 9%, 25%)')
         },
         delete: '#391616',
         delete_text: '#ff4343',
@@ -44,20 +45,3 @@ export default new Vuetify({
   }
 })
 
-function hslToHex(hsl) {
-  hsl= hsl.replace('hsl(', '').replace(')', '').split(',')
-  const h = parseInt(hsl[0])
-  const s = parseInt(hsl[1])
-  let l = parseInt(hsl[2])
-
-  l /= 100
-  const a = s * Math.min(l, 1 - l) / 100
-  const f = n => {
-    const k = (n + h / 30) % 12
-    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
-    return Math.round(255 * color)
-      .toString(16)
-      .padStart(2, '0') // convert to Hex and prefix "0" if needed
-  }
-  return `#${f(0)}${f(8)}${f(4)}`
-}

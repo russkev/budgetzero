@@ -1,12 +1,12 @@
 <template>
   <div>
-    <transactions-header :selected_account_id="accountId" />
-    <v-container>
-      <v-sheet max-width="800px" justify="center">
+    <v-container fluid class="pt-0">
+      <v-sheet max-width="800px" justify="center" class="flex-sheet mx-auto" color="transparent">
+        <transactions-header :selected_account_id="accountId" />
         <transactions-table />
+        <transactions-edit-multiple />
       </v-sheet>
     </v-container>
-    <transactions-edit-multiple />
   </div>
 </template>
 
@@ -24,27 +24,30 @@ export default {
   },
   data() {
     return {
-      test_items: [{name: "John", age: 3}, {name: "Susan", age: 2}],
-      items_per_page: 3
-    }
+      test_items: [
+        { name: "John", age: 3 },
+        { name: "Susan", age: 2 },
+      ],
+      items_per_page: 3,
+    };
   },
   beforeRouteUpdate(to, from, next) {
-    this.getTransactions(to.params.account_id)
+    this.getTransactions(to.params.account_id);
     next();
   },
   created() {
-    this.getTransactions(this.$route.params.account_id)
+    this.getTransactions(this.$route.params.account_id);
   },
   watch: {
     accounts: {
       handler() {
-        this.getTransactions()
-      }
-    }
+        this.getTransactions();
+      },
+    },
   },
   computed: {
     ...mapGetters("accountTransactions", ["accountId"]),
-    ...mapGetters(["accounts"])
+    ...mapGetters(["accounts"]),
   },
   methods: {
     ...mapMutations("accountTransactions", ["SET_ACCOUNT_ID"]),
@@ -52,3 +55,11 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+.flex-sheet {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+</style>

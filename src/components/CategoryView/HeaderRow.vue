@@ -10,6 +10,15 @@
         >
         <slot name="drag" :hover="hover"></slot>
         </v-sheet>
+        <v-sheet
+          width="20px"
+          color="transparent"
+          :data-testid="colorId"
+          style="display: flex;"
+        >
+          <slot name="color" :hover="hover"></slot>
+        </v-sheet>
+
         <v-col class="pa-0">
           <v-row class="master-row white--text ma-0">
             <v-col
@@ -90,6 +99,11 @@ export default {
       default: '',
     },
     balanceId: {
+      type: String,
+      required: false,
+      default: '',
+    },
+    colorId: {
       type: String,
       required: false,
       default: '',

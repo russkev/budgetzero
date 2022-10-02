@@ -26,6 +26,10 @@
                 mdi-drag-vertical
               </v-icon>
             </v-sheet>
+            <v-sheet
+              width="2px"
+              :color="categoryColors[category.id] === undefined ? 'transparent' : categoryColors[category.id]"
+            />
             <v-col class="pa-0 ma-0">
               <v-row class="ma-0 pa-0">
                 <v-col
@@ -34,7 +38,6 @@
                   :data-testid="`category-name-${category.id}`"
                 >
                   <category-grid-input
-                    :readonly="category.id === ':::'"
                     class="category-name-input"
                     :id="`category-name-input-${category.id}`"
                     :data-testid="`category-name-input-${category.id}`"
@@ -46,7 +49,6 @@
                 </v-col>
                 <v-col :id="`category-budget-${category.id}`" class="pa-0 my-1">
                   <category-grid-input
-                    :readonly="category.id === ':::'"
                     class="category-budget-input"
                     :id="`category-budget-input-${category.id}`"
                     :data-testid="`category-budget-input-${category.id}`"
@@ -133,7 +135,7 @@ export default {
     ButtonUnhideCategory,
   },
   computed: {
-    ...mapGetters(["intlCurrency", "categories"]),
+    ...mapGetters(["intlCurrency", "categories", "categoryColors"]),
     ...mapGetters("categoryMonth", [
       "editedCategoryBudgetId",
       "editedCategoryNameId",

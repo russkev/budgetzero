@@ -273,7 +273,7 @@ export default {
       let month_category_balances = {} // Month Category Balances
       return Promise.all([
         dispatch('fetchCategories'),
-        dispatch('fetchMasterCategories'),
+        dispatch('initMasterCategories'),
         dispatch('fetchMonthCategories')
       ])
         .then((results) => {

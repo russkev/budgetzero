@@ -1,8 +1,8 @@
-import { logPerformanceTime, extractMonthCategoryMonth } from '../../helper'
+import Vue from 'vue'
+import _, { isArray, split } from 'lodash'
+import { logPerformanceTime, extractMonthCategoryMonth, hslToHex } from '../../helper'
 import { DEFAULT_MONTH_BALANCE, ID_LENGTH, ID_NAME, NONE, HIDDEN } from '../../constants'
 import { compareAscii } from './id-module'
-import _, { isArray, split } from 'lodash'
-import Vue from 'vue'
 
 const DEFAULT_CATEGORY_STATE = {
   allCategoryBalances: {},
@@ -11,7 +11,6 @@ const DEFAULT_CATEGORY_STATE = {
   masterHiddenCategory: JSON.parse(JSON.stringify(HIDDEN)),
   categories: [],
   monthBalances: {},
-
 }
 
 export default {
@@ -65,6 +64,29 @@ export default {
       }, initial)
       return result
     },
+    categoryColors: (state, getters) => {
+      return getters.masterCategories.reduce((partial, master_category) => {
+        const master_id = master_category._id.slice(-ID_LENGTH.category)
+        const categories = getters.categoriesByMaster[master_id]
+        if (categories.length === 0 || master_category.color === undefined) {
+          return partial
+        }
+        const h = master_category.color.hsla.h
+        const s = master_category.color.hsla.s
+        const l = master_category.color.hsla.l
+        const l_min = 0.1
+        const l_max = 0.5
+        const l_step = (l_max - l_min) / categories.length
+        let l_current = l_max
+        categories.forEach((category) => {
+          const category_id = category._id.slice(-ID_LENGTH.category)
+          const color = hslToHex(h, s*100, l_current*100)
+          partial[category_id] = color
+          l_current -= l_step
+        })
+        return partial
+      }, {})
+    },
     masterCategoriesByCategoryId: (state, getters) => {
       return Object.entries(getters.categoriesByMaster).reduce((partial, [master_id, categories]) => {
         categories.forEach((category) => {
@@ -96,6 +118,36 @@ export default {
         previousMonthAvailable = currentMonthAvailable
       }
       return monthBalances
+    },
+    colorSwatches: () => {
+      const rows = 4;
+      const cols = 3;
+      const saturation = 0.7
+      const lightness = 0.5
+      const step = 360 / (rows * cols);
+      let colors = []
+      for (const i of Array(rows).keys()) {
+        let color_row = []
+        for (const j of Array(cols).keys()) {
+          const index = i * cols + j
+          const hue = index * step
+          const hex =  hslToHex(hue, saturation * 100, lightness * 100)
+          color_row.push({
+            alpha: 1,
+            hex,
+            hexa: hex + 'ff',
+            hsla: {
+              h: hue,
+              s: saturation,
+              l: lightness,
+              a: 1,
+            },
+            hue            
+          })
+        }
+        colors.push(color_row)
+      }
+      return colors
     }
   },
   mutations: {
@@ -109,6 +161,12 @@ export default {
     SET_MASTER_CATEGORIES(state, master_categories) {
       const sorted_categories = master_categories.sort((a, b) => a.sort - b.sort)
       Vue.set(state, 'masterCategories', sorted_categories)
+    },
+    SET_MASTER_CATEGORY_COLOR(state, { masterId, colorObject }) {
+      const index = state.masterCategories.findIndex((master) => master._id === masterId)
+      if (index > -1) {
+        Vue.set(state.masterCategories[index], 'color', colorObject)
+      }
     },
     SET_HIDDEN_COLLAPSED(state, value) {
       Vue.set(state.masterHiddenCategory, 'collapsed', value)
@@ -174,7 +232,36 @@ export default {
         return null
       }
     },
-
+    initMasterCategories: async ({state, getters, dispatch}) => {
+      await dispatch('fetchMasterCategories')
+      const docs = state.masterCategories.reduce((partial, master_category) => {
+        if (master_category.color === undefined || typeof master_category.color !== 'object') {
+          const colors = getters.colorSwatches.flat()
+          // generate random integer 
+          const random_index = Math.floor(Math.random() * colors.length)
+          const color = colors[random_index]
+          partial.push({
+            current: {...master_category, color: color},
+            previous: master_category,
+          })
+        }
+        return partial
+      }, [])
+      console.log("DOCS", docs)
+      if (docs.length > 0) {
+        dispatch('commitBulkDocsToPouchAndVuex', docs)
+      }
+    },
+    updateMasterColor( {getters, dispatch}, { masterId, colorObject }) {
+      const master_category = getters.masterCategoriesById[masterId]
+      if (master_category && master_category.color.hex !== colorObject.hex) {
+        const new_master_category = {
+          ...master_category,
+          color: colorObject
+        }
+        dispatch('commitDocToPouchAndVuex', { current: new_master_category, previous: master_category })
+      }
+    },
     createCategory: async (context, { name, master_id }) => {
       const categoriesGroup = context.getters.categoriesByMaster[master_id]
 

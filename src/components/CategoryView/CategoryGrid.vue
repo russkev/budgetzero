@@ -210,7 +210,6 @@ export function unhideIconColor(hover, unhideButtonHover) {
 
 <style>
 .v-expansion-panel.master-category-row {
-  /* background-color: transparent !important; */
   border: none;
   box-shadow: none;
 }
@@ -221,7 +220,6 @@ export function unhideIconColor(hover, unhideButtonHover) {
 
 .v-expansion-panel-content__wrap {
   padding: 0 !important;
-  /* padding-right: 24px !important; */
 }
 
 .v-expansion-panel::before {
@@ -236,76 +234,4 @@ export function unhideIconColor(hover, unhideButtonHover) {
   border-radius: 4px;
 }
 
-/*
-.category-budgeted-input >>> input {
-  text-align: right !important;
-}
-.budgeted-amount-neg >>> input {
-} 
-.budgeted-amount-pos >>> input {
-  color: var(--v-primary-base);
-}
-.budgeted-amount-zero >>> input {
-  color: grey;
-}
-
-
-.crud-actions {
-  width: 200px;
-  opacity: 0;
-  transition: 0.2s ease-in-out;
-}
-tr:hover .crud-actions {
-  opacity: 1;
-}
-
-.money-amount {
-  text-align: right;
-  min-width: 90px;
-  width: 90px;
-  max-width: 90px;
-  padding-left: 0;
-  padding-right: 5px;
-}
-.budgeted-amount {
-  text-align: right;
-  width: 100px;
-  padding-left: 0;
-  padding-right: 5px;
-}
-.spent-amount {
-  text-align: right;
-  width: 100px;
-  padding-left: 0;
-  padding-right: 5px;
-}
-.balance-amount {
-  text-align: right;
-  width: 100px;
-  padding-left: 0;
-  padding-right: 5px;
-}
-
-.header {
-  text-align: right;
-}
-.category-row {
-  border-bottom: 1px solid rgb(182, 182, 182);
-  height: 30px;
-} 
-
-.masterCategory-row {
-  padding: 5px 0px 5px 5px;
-} 
-
-.uncategorized-row {
-  border-top: 1px solid rgb(182, 182, 182);
-  height: 50px;
-}
-
-.budget-input-col {
-  margin-top: -1px;
-  height: 30px;
-}
-*/
 </style>
