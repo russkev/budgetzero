@@ -10,7 +10,7 @@
         </v-col>
       </v-row>
       <uncategorized-row />
-      <v-expansion-panels flat multiple accordion v-model="masterCategoriesExpanded">
+      <v-expansion-panels data-testid="all-categories-container" flat multiple accordion v-model="masterCategoriesExpanded">
         <draggable v-model="masterCategoriesData" handle=".master-handle" style="width: inherit;">
 
           <!-- STANDARD -->

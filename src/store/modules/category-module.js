@@ -232,14 +232,12 @@ export default {
         return null
       }
     },
+    
     initMasterCategories: async ({state, getters, dispatch}) => {
       await dispatch('fetchMasterCategories')
       const docs = state.masterCategories.reduce((partial, master_category) => {
         if (master_category.color === undefined || typeof master_category.color !== 'object') {
-          const colors = getters.colorSwatches.flat()
-          // generate random integer 
-          const random_index = Math.floor(Math.random() * colors.length)
-          const color = colors[random_index]
+          const color = getRandomColor(getters.colorSwatches)
           partial.push({
             current: {...master_category, color: color},
             previous: master_category,
@@ -275,13 +273,15 @@ export default {
       return category._id.slice(-ID_LENGTH.category)
     },
 
-    masterCategoryDocument: async (context, { name, sort }) => {
-      const prefix = `b_${context.rootState.selectedBudgetId}${ID_NAME.masterCategory}`
-      const id = await context.dispatch('generateUniqueShortId', { prefix, sort })
+    masterCategoryDocument: async ({rootState, getters, dispatch}, { name, sort }) => {
+      const prefix = `b_${rootState.selectedBudgetId}${ID_NAME.masterCategory}`
+      const id = await dispatch('generateUniqueShortId', { prefix, sort })
+      const color = getRandomColor(getters.colorSwatches)
       return {
         _id: prefix + id,
-        name: name,
-        sort: sort,
+        name,
+        sort,
+        color,
         collapsed: false
       }
     },
@@ -318,16 +318,6 @@ export default {
 
     updateCategory(context, payload) {
       context.dispatch('commitDocToPouchAndVuex', { current: payload, previous: null })
-    },
-    flipMasterCategoryCollapsed(context, payload) {
-      const cat = Object.assign({}, payload)
-      cat.collapsed = !cat.collapsed
-      context.dispatch('commitDocToPouchAndVuex', { current: cat, previous: null })
-    },
-    flipCategoryHidden(context, payload) {
-      const cat = Object.assign({}, payload)
-      cat.hidden = !cat.hidden
-      context.dispatch('commitDocToPouchAndVuex', { current: cat, previous: null })
     },
     updateMonthCategory(context, { current, previous }) {
       return context
@@ -476,19 +466,19 @@ export default {
       context.dispatch('commitBulkDocsToPouchAndVuex', updated_payload)
     },
 
-    async initializeIncomeCategory(context) {
-      console.log('Init base budget categories')
+    async initializeIncomeCategory({dispatch, getters}) {
       const master_category_payload = {
         name: 'Income',
-        is_income: true,
-        sort: 0
+        sort: 0,
+        collapsed: false,
+        color: getRandomColor(getters.colorSwatches)
       }
-      return context.dispatch('createMasterCategory', master_category_payload).then((response) => {
+      return dispatch('createMasterCategory', master_category_payload).then((response) => {
         const payload = {
           name: 'Paycheck 1',
           master_id: response._id.slice(-ID_LENGTH.category)
         }
-        return context.dispatch('createCategory', payload)
+        return dispatch('createCategory', payload)
       })
     },
 
@@ -825,6 +815,15 @@ const updateMonthBalances = (month_balances, account, month, amount) => {
     updated_balances.expense += final_amount * -1
   }
   Vue.set(month_balances, month, updated_balances)
+}
+const getRandomColor = (colorSwatches) => {
+  if (!Array.isArray(colorSwatches)) {
+    throw new Error(`Color swatches must be an array, got: ${colorSwatches}`)
+  }
+  const colors = colorSwatches.flat()
+  // generate random integer
+  const random_index = Math.floor(Math.random() * colors.length)
+  return colors[random_index]
 }
 
 export {

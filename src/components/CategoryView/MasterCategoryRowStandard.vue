@@ -12,16 +12,17 @@
       </v-icon>
     </template>
     <template #color="{hover}">
-      <v-menu offset-y>
+      <v-menu offset-y v-model="colorIsOpen">
         <template #activator="{ on }">
+          <!-- tile -->
           <v-btn
             elevation="0"
-            min-width="14px"
-            width="14px"
+            min-width="10px"
+            width="10px"
             height="14px"
             class="pa-0 ma-auto"
             v-on="on"
-            :color="hover ? masterCategoryDoc.color.hex : 'transparent'"
+            :color="hover || colorIsOpen ? masterCategoryDoc.color.hex : 'transparent'"
           />
         </template>
         <v-color-picker
@@ -33,7 +34,7 @@
           :swatches="hexSwatches"
           :value="masterCategoryDoc.color.hex"
           @update:color="onColorChange"
-          />
+        />
       </v-menu>
     </template>
     <template #title>
@@ -140,6 +141,7 @@ export default {
   data() {
     return {
       selectedColor: { hex: "#FF0000" },
+      colorIsOpen: false,
     };
   },
   computed: {

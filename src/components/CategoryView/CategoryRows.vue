@@ -8,12 +8,12 @@
       @end="onCategoryOrderChanged"
       handle=".handle"
     >
-    <v-divider />
       <div
         class="ma-0 pa-0"
-        v-for="category in categoriesData[masterCategory.id]"
+        v-for="(category, index) in categoriesData[masterCategory.id]"
         :key="category.id"
       >
+        <v-divider v-if="index == 0" />
         <v-hover v-slot="{ hover }">
           <v-row class="ma-0 pa-0 category-row">
             <v-sheet
@@ -26,10 +26,17 @@
                 mdi-drag-vertical
               </v-icon>
             </v-sheet>
-            <v-sheet
-              width="2px"
-              :color="categoryColors[category.id] === undefined ? 'transparent' : categoryColors[category.id]"
-            />
+            <v-sheet width="3px" class="mr-2 color-swatch-container" color="transparent">
+              <v-sheet
+                width="3px"
+                height="18px"
+                :color="
+                  categoryColors[category.id] === undefined
+                    ? 'transparent'
+                    : categoryColors[category.id]
+                "
+              />
+            </v-sheet>
             <v-col class="pa-0 ma-0">
               <v-row class="ma-0 pa-0">
                 <v-col
@@ -81,10 +88,10 @@
               </v-row>
             </v-col>
 
-            <button-hide-category v-if="isStandard()" :category="category" :hover="hover"/>
-            <button-unhide-category v-else :category="category" :hover="hover"/>
+            <button-hide-category v-if="isStandard()" :category="category" :hover="hover" />
+            <button-unhide-category v-else :category="category" :hover="hover" />
 
-            <v-sheet width="20px" color="transparent"/>
+            <v-sheet width="20px" color="transparent" />
           </v-row>
         </v-hover>
       </div>
@@ -207,9 +214,15 @@ export default {
       }
     },
     isStandard() {
-      return !([HIDDEN._id, NONE._id].includes(this.masterCategory.id));
+      return ![HIDDEN._id, NONE._id].includes(this.masterCategory.id);
     },
-
   },
 };
 </script>
+
+<style>
+.color-swatch-container {
+  display: flex;
+  align-items: center;
+}
+</style>

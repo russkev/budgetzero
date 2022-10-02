@@ -11,7 +11,7 @@
         <slot name="drag" :hover="hover"></slot>
         </v-sheet>
         <v-sheet
-          width="20px"
+          width="10px"
           color="transparent"
           :data-testid="colorId"
           style="display: flex;"
