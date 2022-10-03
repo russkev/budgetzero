@@ -1,6 +1,6 @@
 <template>
   <v-btn icon @click="toggleCleared()">
-    <v-icon v-if="isCleared" class="cleared-icon" color="primary">
+    <v-icon v-if="isCleared" class="cleared-icon">
       mdi-alpha-c-circle
     </v-icon>
     <v-icon v-else class="uncleared-icon" color="grey">
