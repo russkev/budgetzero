@@ -1,29 +1,4 @@
 <template>
-  <!-- <div v-if="item._id !== editedTransaction._id" class="text-truncate" @click="onItemClick">
-    <span v-if="isSplits(item)" class="cyan--text row-category font-weight-medium">
-      <v-icon small color="cyan">mdi-call-split</v-icon>Split
-    </span>
-    <span v-else-if="isUncategorized(item)" class="amber--text row-category font-weight-medium">
-      {{ item.category_name }}
-    </span>
-    <span v-else class="row-category font-weight-medium">
-      {{ item.category_name }}
-    </span>
-    <br />
-    <span class="row-memo text-body-1 transaction-details">
-      {{ item.note ? item.note : item.memo }}
-    </span>
-  </div>
-  <div v-else>
-    <select-category
-      id="category-input"
-      :category-id="item.category"
-      @update="onCategoryUpdate"
-      :disabled="item.splits.length > 0"
-      data-testid="edit-row-select-category"
-    />
-  </div> -->
-  <!-- outlined -->
   <v-menu
     v-model="menu"
     transition="scale-transition"
@@ -44,7 +19,7 @@
         {{ item.category_name }}
       </v-chip>
     </template>
-    <v-card width="300" height="300">
+    <v-card max-height="80vh">
       <v-list>
         <v-list-item>
           <v-list-item-avatar size="24" :color="categoryColor"> </v-list-item-avatar>
@@ -56,18 +31,32 @@
       </v-list>
       <v-row>
         <v-col>
-          <v-text-field />
+          <v-text-field
+            ref="search"
+            v-model="search"
+            full-width
+            hide-details
+            label="Search"
+            single-line
+          />
         </v-col>
       </v-row>
       <v-divider />
       <v-list dense subheader>
-        <template v-for="[masterId, categories] in Object.entries(categoriesByMaster)" >
-        <v-subheader  v-bind:key="masterId">
-        {{masterCategoriesById[masterId].name}}
-        </v-subheader>
-          <v-list-item v-for="category in categories"  :key="`master-${category._id}`">
+        <template v-for="[masterId, categories] in Object.entries(searchedMasterCategories)">
+          <v-subheader v-bind:key="masterId">
+            {{ listMasterCategoryName(masterId) }}
+          </v-subheader>
+          <v-list-item v-for="category in categories" :key="`master-${category._id}`" @click="onCategorySelected(category)">
             <v-list-item-content :key="`category-${category._id}`">
-              <v-list-item-title>{{category.name}}</v-list-item-title>
+              <v-list-item-title>{{ category.name }}</v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+          <v-list-item v-if="showAddCategory()" :key="`add-${masterId}`" @click="onCategoryAdd(masterId)">
+            <v-list-item-content>
+              <v-list-item-title>
+                <v-list-item-title>Add '{{search}}' to {{ listMasterCategoryName(masterId)}}</v-list-item-title>
+              </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </template>
@@ -92,10 +81,16 @@ export default {
   data() {
     return {
       menu: false,
+      search: '',
     };
   },
   computed: {
-    ...mapGetters(["categoryColors", "categoriesById", "masterCategoriesById", "categoriesByMaster"]),
+    ...mapGetters([
+      "categoryColors",
+      "categoriesById",
+      "masterCategoriesById",
+      "categoriesByMaster",
+    ]),
     ...mapGetters("accountTransactions", ["editedTransaction"]),
     itemId() {
       return this.item._id.slice(-ID_LENGTH.transaction);
@@ -127,10 +122,25 @@ export default {
 
       return master_category.name;
     },
+    searchedMasterCategories() {
+      console.log("SEARCH", this.search)
+      const search = this.search.toLowerCase();
+      
+      if (!search) {
+        return this.categoriesByMaster
+      }
+      console.log( Object.entries(this.categoriesByMaster))
+      return Object.entries(this.categoriesByMaster).reduce((acc, [masterId, categories]) => {
+        const filteredCategories = categories.filter(category => category.name.toLowerCase().includes(search))
+        acc[masterId] = filteredCategories
+        return acc
+      }, {})
+    }
   },
   methods: {
     ...mapMutations("accountTransactions", ["SET_EDITED_TRANSACTION_CATEGORY"]),
-    ...mapActions("accountTransactions", ["editTransaction"]),
+    ...mapActions("accountTransactions", ["editTransaction", "getTransactions"]),
+    ...mapActions(["commitDocToPouchAndVuex", "createCategory"]),
     onItemClick() {
       this.$emit("expand");
       this.editTransaction(this.item);
@@ -154,14 +164,41 @@ export default {
     isSplits(item) {
       return item.splits && Array.isArray(item.splits) && item.splits.length > 0;
     },
+    onCategorySelected(category) {
+      if (category._id === this.item._id) {
+        return;
+      }
+      this.selectCategory(category._id);
+    },
+    selectCategory(categoryId) {
+      const current = {...this.item, category: categoryId.slice(-ID_LENGTH.category)};
+      const previous = this.item
+      this.commitDocToPouchAndVuex({current, previous}).then(() => {
+        this.getTransactions()
+      })
+      this.menu = false;
+    },
+    onCategoryAdd(masterId) {
+      // console.log("MASTER ID", masterId)
+      this.createCategory({name: this.search, master_id: masterId}).then((category_id) => {
+        this.selectCategory(category_id)
+      })
+    },
+    listMasterCategoryName(masterId) {
+      // console.log("MASTER", masterId)
+      // masterCategory = this.masterCategoriesById[masterId]
+      // if(masterCategory === undefined) {
+      //   return "Uncategorized"
+      // }
+      // return masterCategory.name
+      return _.get(this.masterCategoriesById, [masterId, "name"], "Undefined")
+    },
+    showAddCategory(masterId) {
+      if (this.search.length < 1) {
+        return false
+      }
+      return !(masterId === NONE._id)
+    }
   },
 };
 </script>
-
-<style>
-/* .v-chip.category-chip .v-avatar {
-  height: 12px !important;
-  width: 12px !important;
-  min-width: 12px !important;
-} */
-</style>
