@@ -377,20 +377,27 @@ const dataTableHeaders = [
     class: headerClass,
     value: 'category',
     align: 'left',
+    width: '200px'
+  },
+  {
+    text: 'Description',
+    class: headerClass,
+    value: 'category',
+    align: 'left',
     width: '100%'
   },
   {
     text: 'Outflow',
     class: headerClass,
     value: 'outflow',
-    align: 'left',
+    align: 'right',
     width: '100px'
   },
   {
     text: 'Inflow',
     class: headerClass,
     value: 'inflow',
-    align: 'left',
+    align: 'right',
     width: '100px'
   },
   {

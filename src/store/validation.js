@@ -77,6 +77,9 @@ const schema_transaction = {
     balance: {
       type: 'integer'
     },
+    note: {
+      type: ['string', 'null']
+    },
     _id: {
       type: 'string',
       minimum: transaction_id_length,

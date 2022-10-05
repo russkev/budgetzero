@@ -52,8 +52,11 @@
           <td class="row-cleared pa-0">
             <toggle-cleared :item="item" />
           </td>
-          <td class="row-memo">
+          <td class="row-category">
             <transaction-category :item="item" @expand="expand(item)" />
+          </td>
+          <td class="row-description pa-0">
+            <transaction-description :item="item"/>
           </td>
           <td class="row-outflow">
             <transaction-flow :item="item" @expand="expand(item)" is-outflow />
@@ -91,6 +94,7 @@ import TransactionFlow from "./TransactionFlow.vue";
 import TransactionBalance from "./TransactionBalance.vue";
 import TransactionExpanded from "./TransactionExpanded.vue";
 import TransactionSplit from "./TransactionSplit.vue";
+import TransactionDescription from "./TransactionDescription.vue";
 
 export default {
   components: {
@@ -100,6 +104,7 @@ export default {
     TransactionBalance,
     TransactionExpanded,
     TransactionSplit,
+    TransactionDescription,
   },
   computed: {
     ...mapGetters("accountTransactions", [
@@ -186,12 +191,12 @@ export default {
 </script>
 
 <style scoped>
-td.row-memo {
+/* td.row-description {
   max-width: 150px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
+} */
 table {
   table-layout: fixed;
 }

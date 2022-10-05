@@ -1,46 +1,24 @@
 <template>
-  <!-- transition="scale-transition" -->
   <v-menu
     v-model="menu"
     origin="top left"
     :close-on-content-click="false"
   >
     <template #activator="{on}">
-      <!-- <v-chip
-        class="category-chip pl-0"
-        small
-        label
-        pill
-        v-on="on"
-        :color="categoryBackgroundColor"
-      >
-        <v-sheet width="5px" :color="selectedCategoryColor" height="100%" class="mr-2" />
-        {{ item.category_name }}
-      </v-chip> -->
       <category-chip
         :item="item"
         :on="on"
       />
     </template>
     <v-card max-height="80vh" color="background">
-      <v-list color="background" class="pa-0 ma-0">
+      <!-- <v-list color="background" class="pa-0 ma-0">
         <v-list-item>
-          <!-- <v-sheet width="3px" height="30px" :color="selectedCategoryColor" class="mr-1" />
-          <v-list-item-content>
-            <v-list-item-title>{{ item.category_name }}</v-list-item-title>
-            <v-list-item-subtitle>{{ masterCategoryName }}</v-list-item-subtitle>
-          </v-list-item-content> -->
           <category-chip :item="item" />
         </v-list-item>
-      </v-list>
+      </v-list> -->
       <v-row>
         <v-col class="ma-2">
-          <!-- dense -->
           Search
-          <!-- solo -->
-          <!-- single-line -->
-          <!-- rounded -->
-          <!-- filled -->
           <v-text-field
             flat
             solo
@@ -49,6 +27,7 @@
             ref="search"
             v-model="search"
             background-color="background lighten-2"
+            class="text-body-1"
           />
         </v-col>
       </v-row>
@@ -65,15 +44,12 @@
             @click="onCategorySelected(category)"
           >
             <v-list-item-content :key="`category-${category._id}`">
-              <!-- <v-list-item-title>{{ category.name }}</v-list-item-title> -->
-              <!-- <span class="text-body2"> -->
               <v-row class="pa-0 ma-0">
                 <v-sheet width="3px" height="15px" :color="categoryColor(category)" class="mr-1" />
                 <v-col class="pa-0 ma-0">
                   {{ category.name }}
                 </v-col>
               </v-row>
-              <!-- </span> -->
             </v-list-item-content>
           </v-list-item>
           <v-list-item
