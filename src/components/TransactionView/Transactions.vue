@@ -1,9 +1,19 @@
 <template>
   <div>
     <v-container fluid class="pt-0">
-      <v-sheet max-width="800px" justify="center" class="flex-sheet mx-auto" color="transparent">
+      <v-sheet justify="center" class="mx-auto" color="transparent">
         <transactions-header :selected_account_id="accountId" />
-        <transactions-table />
+        <v-row class="ma-0 pa-0">
+
+          <!-- <div class="flex-sheet"> -->
+          <v-col class="flex-sheet" cols="8">
+            <transactions-table />
+          </v-col>
+          <v-col cols="4">
+            <transaction-details />
+          </v-col>
+          <!-- </div> -->
+        </v-row>
         <transactions-edit-multiple />
       </v-sheet>
     </v-container>
@@ -15,12 +25,14 @@ import { mapActions, mapGetters, mapMutations } from "vuex";
 import TransactionsHeader from "./TransactionsHeader.vue";
 import TransactionsTable from "./TransactionsTable.vue";
 import TransactionsEditMultiple from "./TransactionsEditMultiple.vue";
+import TransactionDetails from "./TransactionDetails.vue";
 
 export default {
   components: {
     TransactionsHeader,
     TransactionsTable,
     TransactionsEditMultiple,
+    TransactionDetails,
   },
   data() {
     return {
@@ -58,8 +70,10 @@ export default {
 
 <style scoped>
 .flex-sheet {
-  height: 100vh;
+  height: calc(100vh - 200px);
   display: flex;
   flex-direction: column;
 }
+
+
 </style>
