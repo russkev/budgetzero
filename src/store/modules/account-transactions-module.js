@@ -97,9 +97,9 @@ export default {
         Vue.set(state.editedTransaction.splits[index], 'value', value)
       }
     },
-    SET_EDITED_TRANSACTION_SPLIT_CATEGORY(state, { index, category }) {
+    SET_EDITED_TRANSACTION_SPLIT_CATEGORY(state, { index, categoryId }) {
       if (index > -1 && index < state.editedTransaction.splits.length) {
-        Vue.set(state.editedTransaction.splits[index], 'category', category)
+        Vue.set(state.editedTransaction.splits[index], 'category', categoryId)
       }
     },
     REMOVE_EDITED_TRANSACTION_SPLIT(state, index) {

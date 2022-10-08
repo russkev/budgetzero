@@ -1,7 +1,7 @@
 <template>
   <v-hover v-slot="{ hover }">
     <v-textarea
-      v-model="memo"
+      v-model="note"
       class="text-body-1"
       dense
       flat
@@ -27,17 +27,17 @@ export default {
   },
   computed: {
     ...mapGetters("accountTransactions", ["editedTransaction"]),
-    memo: {
+    note: {
       get() {
-        return this.editedTransaction.memo;
+        return this.editedTransaction.note;
       },
-      set(memo) {
-        this.SET_EDITED_TRANSACTION_MEMO(memo);
+      set(note) {
+        this.SET_EDITED_TRANSACTION_NOTE(note);
       },
     },
   },
   methods: {
-    ...mapMutations("accountTransactions", ["SET_EDITED_TRANSACTION_MEMO"]),
+    ...mapMutations("accountTransactions", ["SET_EDITED_TRANSACTION_NOTE"]),
   }
 }
 

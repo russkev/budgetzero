@@ -169,9 +169,9 @@ export default {
     isUncategorized(item) {
       return item.category === NONE._id;
     },
-    isSplits(item) {
-      return item.splits && Array.isArray(item.splits) && item.splits.length > 0;
-    },
+    // isSplits(item) {
+    //   return item.splits && Array.isArray(item.splits) && item.splits.length > 0;
+    // },
     onCategorySelected(category) {
       if (category._id.slice(-ID_LENGTH.category) === this.item.category) {
         return;

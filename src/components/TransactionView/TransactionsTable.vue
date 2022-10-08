@@ -13,7 +13,6 @@
       dense
       fixed-header
       disable-sort
-      :expanded.sync="expanded"
       :options.sync="options"
       :server-items-length="numTransactionsTotal"
       :items-per-page="itemsPerPage"
@@ -26,7 +25,8 @@
         'class': 'text-body-2',
       }"
       class="flex-table-main background lighten-1"
-    >
+      >
+      <!-- :expanded.sync="expanded" -->
       <template #header.data-table-select="{ on, props }">
         <v-simple-checkbox
           :ripple="false"
@@ -70,7 +70,7 @@
         </tr>
       </template>
       <template #expanded-item="{ item }">
-        <tr v-for="(split, index) in editedTransaction.splits" :key="split.category">
+        <tr v-for="(split, index) in editedTransaction.splits" :key="index">
           <transaction-split
             :split="split"
             :index="index"

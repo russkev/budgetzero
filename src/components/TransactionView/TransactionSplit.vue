@@ -50,7 +50,7 @@ export default {
   methods: {
     ...mapMutations("accountTransactions", ["SET_EDITED_TRANSACTION_SPLIT_CATEGORY"]),
     onSplitsCategoryUpdate(category_id) {
-      this.SET_EDITED_TRANSACTION_SPLIT_CATEGORY({index: this.index, category: category_id})
+      this.SET_EDITED_TRANSACTION_SPLIT_CATEGORY({index: this.index, categoryId: category_id})
     }
   }
 };
