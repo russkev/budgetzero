@@ -18,13 +18,23 @@
             }
           "
         />
-        <transaction-splits-value :index="index" :key="`amount-${index}`"/>
+        <transaction-splits-value :index="index" :key="`amount-${index}`" />
       </template>
-      <v-card color="transparent" flat tile @click="onSplitCategoryAdd" id="add-split-category">
+      <v-card color="transparent" flat tile @click="onSplitCategoryAdd" class="splits-full-width">
         <v-icon>mdi-plus</v-icon>
         Add split category
       </v-card>
-      <currency-input id="splits-total" v-model="editedTransaction.value" right disabled/>
+      <currency-input
+        class="splits-full-width"
+        :value="splitsSum"
+        right
+        disabled
+      />
+      <div v-if=" splitsSum !== Math.abs(editedTransaction.value)" class="splits-full-width">
+        <v-alert color="error" text prominent class="text-h5 pa-1 pl-4">
+          Splits must add up to the transaction value
+        </v-alert>
+      </div>
     </div>
   </div>
 </template>
@@ -49,6 +59,12 @@ export default {
       set(value) {
         this.SET_EDITED_TRANSACTION_SPLITS(value);
       },
+    },
+    splitsSum() {
+      return this.editedTransaction.splits.reduce(
+        (partial, split) => partial + Math.abs(split.value),
+        0
+      );
     },
   },
   methods: {
@@ -82,10 +98,13 @@ div.splits-grid {
   display: grid;
   grid-template-columns: minmax(50px, auto) 100px;
 }
-#add-split-category {
+/* #add-split-category {
   grid-column: 1 / 3;
 }
 #splits-total {
-  grid-column: 2 / 3;
+  grid-column: 1 / 3;
+} */
+.splits-full-width {
+  grid-column: 1 / 3;
 }
 </style>

@@ -113,6 +113,11 @@ export default {
         state.editedTransaction.splits.pop()
       }
     },
+    REVERSE_EDITED_TRANSACTION_SPLIT_VALUES(state) {
+      state.editedTransaction.splits.forEach((split) => {
+        split.value = -split.value
+      })
+    },
     CLEAR_EDITED_TRANSACTION(state) {
       if (state.isCreatingNewTransaction && state.editedTransactionIndex > -1) {
         state.transactions.splice(state.editedTransactionIndex, 1)
@@ -186,7 +191,7 @@ export default {
       return dispatch(
         'createOrUpdateTransaction',
         {
-          current: JSON.parse(JSON.stringify(getters.editedTransaction)),
+          current: transaction,
           previous: previous
         },
         {

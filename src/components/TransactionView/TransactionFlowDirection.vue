@@ -24,7 +24,7 @@ export default {
     value: {
       type: Boolean,
       default: true,
-    }
+    },
   },
   computed: {
     ...mapGetters("accountTransactions", ["editedTransaction"]),
@@ -35,15 +35,20 @@ export default {
       set(value) {
         if (value && this.editedTransaction.value < 0) {
           this.SET_EDITED_TRANSACTION_VALUE(Math.abs(this.editedTransaction.value));
+          this.REVERSE_EDITED_TRANSACTION_SPLIT_VALUES();
         } else if (!value && this.editedTransaction.value > 0) {
           this.SET_EDITED_TRANSACTION_VALUE(-Math.abs(this.editedTransaction.value));
+          this.REVERSE_EDITED_TRANSACTION_SPLIT_VALUES();
         }
         this.$emit("input", value);
       },
     },
   },
   methods: {
-    ...mapMutations("accountTransactions", ["SET_EDITED_TRANSACTION_VALUE"]),
+    ...mapMutations("accountTransactions", [
+      "SET_EDITED_TRANSACTION_VALUE",
+      "REVERSE_EDITED_TRANSACTION_SPLIT_VALUES",
+    ]),
   },
 };
 </script>
@@ -53,9 +58,7 @@ export default {
   font-size: 1rem;
 }
 
-.small-radio
-  div.v-input--selection-controls__input >
-  div.v-input--selection-controls__ripple {
+.small-radio div.v-input--selection-controls__input > div.v-input--selection-controls__ripple {
   margin: 0;
   width: 23px;
   height: 23px;

@@ -7,7 +7,8 @@
       dense
       flat
       solo
-      hide-details
+      :hide-details="rules.length === 0"
+      :rules="rules"
       :disabled="disabled"
       :readonly="readonly"
       :reverse="right"
@@ -41,6 +42,10 @@ export default {
     readonly: {
       type: Boolean,
       default: false,
+    },
+    rules: {
+      type: Array,
+      default: () => [],
     },
   },
   data() {
