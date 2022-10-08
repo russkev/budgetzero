@@ -1,7 +1,7 @@
 <template>
   <v-chip class="category-chip pl-0" small label pill v-on="on" :color="categoryBackgroundColor">
     <v-sheet width="5px" :color="selectedCategoryColor" height="100%" class="mr-2" />
-    {{ item.category_name }}
+    {{ selectedCategoryName }}
   </v-chip>
 </template>
 
@@ -22,6 +22,7 @@ export default {
   computed: {
     ...mapGetters([
       "categoryColors",
+      "categoriesById",
     ]),
     selectedCategoryColor() {
       const id = this.item.category;
@@ -30,6 +31,14 @@ export default {
         return "grey";
       }
       return color;
+    },
+    selectedCategoryName() {
+      const id = this.item.category;
+      const category = this.categoriesById[id];
+      if (category === undefined) {
+        return "None";
+      }
+      return category.name;
     },
     categoryBackgroundColor() {
       return `${this.selectedCategoryColor}55`;

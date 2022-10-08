@@ -1,25 +1,34 @@
 <template>
-  <v-text-field
+  <v-hover v-slot="{hover}">
+    <v-text-field
     v-model="date_picker"
     :rules="[rules.date]"
     dense
-    filled
-    class="date-text-field"
+    flat
+    solo
+    class="text-body-1 date-text-field"
+    id="date-input"
     hide-details
-  >
+    @focus="isFocused = true"
+    @blur="isFocused = false"
+    :background-color="isFocused || hover ? 'background lighten-2' : 'transparent'"
+    
+    >
     <template v-slot:append-outer>
       <v-menu v-model="menu_is_visible" offset-y :close-on-content-click="false">
         <template v-slot:activator="{ on }">
-          <v-icon v-on="on" color="primary">mdi-calendar</v-icon>
+          <v-icon small v-on="on">mdi-calendar</v-icon>
         </template>
         <v-date-picker v-model="date_picker" @click="menu_is_visible = false" />
       </v-menu>
     </template>
   </v-text-field>
+</v-hover>
 </template>
 
 <script>
 import moment from "moment";
+
 export default {
   props: {
     value: {
@@ -34,6 +43,7 @@ export default {
   data() {
     return {
       menu_is_visible: false,
+      isFocused: false,
       rules: {
         date: (value) => {
           return this.$vm.validateDate(value) || "Invalid date.";

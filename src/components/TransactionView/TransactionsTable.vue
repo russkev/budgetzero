@@ -53,7 +53,7 @@
             <toggle-cleared :item="item" />
           </td>
           <td class="row-category">
-            <transaction-category :item="item" @expand="expand(item)" />
+            <transaction-category :item="item" @selected="onCategorySelected" />
           </td>
           <td class="row-description pa-0">
             <transaction-description :item="item"/>
@@ -177,6 +177,7 @@ export default {
       "SET_ITEMS_PER_PAGE",
     ]),
     ...mapActions("accountTransactions", ["getTransactions"]),
+    ...mapActions(["commitDocToPouchAndVuex"]),
     // Convert date to weekday, day, month, year words
     formatDate(date) {
       const date_obj = new Date(date);
@@ -185,6 +186,14 @@ export default {
       const month = date_obj.toLocaleString("en-us", { month: "long" });
       const year = date_obj.toLocaleString("en-us", { year: "numeric" });
       return `${weekday}, ${day} ${month}, ${year}`;
+    },
+    onCategorySelected({item, categoryId}) {
+      console.log("onCategorySelected", categoryId);
+      const current = { ...item, category: categoryId };
+      const previous = item;
+      this.commitDocToPouchAndVuex({ current, previous }).then(() => {
+        this.getTransactions();
+      });
     },
   },
 };

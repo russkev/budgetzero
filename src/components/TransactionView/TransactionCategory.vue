@@ -3,6 +3,7 @@
     v-model="menu"
     origin="top left"
     :close-on-content-click="false"
+    offset-y
   >
     <template #activator="{on}">
       <category-chip
@@ -11,11 +12,6 @@
       />
     </template>
     <v-card max-height="80vh" color="background">
-      <!-- <v-list color="background" class="pa-0 ma-0">
-        <v-list-item>
-          <category-chip :item="item" />
-        </v-list-item>
-      </v-list> -->
       <v-row>
         <v-col class="ma-2">
           Search
@@ -89,6 +85,7 @@ import CategoryChip from "./CategoryChip.vue";
 import { ID_LENGTH, NONE, HIDDEN } from "../../constants";
 
 export default {
+  emits: ["selected"],
   components: { SelectCategory, CategoryChip },
   props: {
     item: {
@@ -110,42 +107,28 @@ export default {
       "masterCategoriesById",
     ]),
     ...mapGetters("accountTransactions", ["editedTransaction"]),
-    itemId() {
-      return this.item._id.slice(-ID_LENGTH.transaction);
-    },
-    // selectedCategoryColor() {
-    //   const id = this.item.category;
-    //   const color = this.categoryColors[id];
-    //   if (color === undefined) {
-    //     return "grey";
+    // itemId() {
+    //   return this.item._id.slice(-ID_LENGTH.transaction);
+    // },
+    // masterCategoryName() {
+    //   console.log("MASTER CATEGORY NAME", this.item);
+    //   const category_id = this.item.category;
+    //   const category = this.categoriesById[category_id];
+
+    //   if (category === undefined) {
+    //     return "";
     //   }
-    //   return color;
+    //   const master_id = category.masterCategory;
+    //   const master_category = this.masterCategoriesById[master_id];
+
+    //   if (master_category === undefined) {
+    //     return "";
+    //   }
+
+    //   return master_category.name;
     // },
-    // categoryBackgroundColor() {
-    //   return `${this.selectedCategoryColor}55`;
-    // },
-    masterCategoryName() {
-      const category_id = this.item.category;
-      const category = this.categoriesById[category_id];
-
-      if (category === undefined) {
-        return "";
-      }
-      const master_id = category.masterCategory;
-      const master_category = this.masterCategoriesById[master_id];
-
-      if (master_category === undefined) {
-        return "";
-      }
-
-      return master_category.name;
-    },
     searchedMasterCategories() {
       const search = this.search.toLowerCase();
-
-      // if (!search) {
-      //   return this.categoriesByMaster;
-      // }
       return Object.entries(this.categoriesByMaster).reduce((partial, [masterId, categories]) => {
         if ([HIDDEN._id, "undefined"].includes(masterId)) {
           return partial;
@@ -165,24 +148,24 @@ export default {
   methods: {
     ...mapMutations("accountTransactions", ["SET_EDITED_TRANSACTION_CATEGORY"]),
     ...mapActions("accountTransactions", ["editTransaction", "getTransactions"]),
-    ...mapActions(["commitDocToPouchAndVuex", "createCategory"]),
-    onItemClick() {
-      this.$emit("expand");
-      this.editTransaction(this.item);
-      let element;
-      nextTick()
-        .then(() => {
-          element = document.getElementById("category-input").getElementsByTagName("input")[0];
-          element.focus();
-          return nextTick();
-        })
-        .then(() => {
-          element.select();
-        });
-    },
-    onCategoryUpdate(category_id) {
-      this.SET_EDITED_TRANSACTION_CATEGORY(category_id);
-    },
+    ...mapActions(["createCategory"]),
+    // onItemClick() {
+    //   this.$emit("expand");
+    //   this.editTransaction(this.item);
+    //   let element;
+    //   nextTick()
+    //     .then(() => {
+    //       element = document.getElementById("category-input").getElementsByTagName("input")[0];
+    //       element.focus();
+    //       return nextTick();
+    //     })
+    //     .then(() => {
+    //       element.select();
+    //     });
+    // },
+    // onCategoryUpdate(category_id) {
+    //   this.SET_EDITED_TRANSACTION_CATEGORY(category_id);
+    // },
     isUncategorized(item) {
       return item.category === NONE._id;
     },
@@ -190,32 +173,26 @@ export default {
       return item.splits && Array.isArray(item.splits) && item.splits.length > 0;
     },
     onCategorySelected(category) {
-      if (category._id === this.item._id) {
+      if (category._id.slice(-ID_LENGTH.category) === this.item.category) {
         return;
       }
       this.selectCategory(category._id);
     },
     selectCategory(categoryId) {
-      const current = { ...this.item, category: categoryId.slice(-ID_LENGTH.category) };
-      const previous = this.item;
-      this.commitDocToPouchAndVuex({ current, previous }).then(() => {
-        this.getTransactions();
-      });
+      this.$emit('selected', {item: this.item, categoryId: categoryId.slice(-ID_LENGTH.category)});
+      // const current = { ...this.item, category: categoryId.slice(-ID_LENGTH.category) };
+      // const previous = this.item;
+      // this.commitDocToPouchAndVuex({ current, previous }).then(() => {
+      //   this.getTransactions();
+      // });
       this.menu = false;
     },
     onCategoryAdd(masterId) {
-      // console.log("MASTER ID", masterId)
       this.createCategory({ name: this.search, master_id: masterId }).then((category_id) => {
         this.selectCategory(category_id);
       });
     },
     listMasterCategoryName(masterId) {
-      // console.log("MASTER", masterId)
-      // masterCategory = this.masterCategoriesById[masterId]
-      // if(masterCategory === undefined) {
-      //   return "Uncategorized"
-      // }
-      // return masterCategory.name
       return _.get(this.masterCategoriesById, [masterId, "name"], "Undefined");
     },
     showAddCategory(masterId) {
