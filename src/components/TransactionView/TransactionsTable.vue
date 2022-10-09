@@ -180,12 +180,7 @@ export default {
 </script>
 
 <style scoped>
-/* td.row-description {
-  max-width: 150px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-} */
+
 table {
   table-layout: fixed;
 }
@@ -193,6 +188,12 @@ table {
 tbody tr:hover {
   background-color: var(--v-background-base) !important;
 }
+
+table tr.transaction-row > td {
+  border-bottom: 1px solid var(--v-background-base) !important;
+}
+
+
 
 .flex-table-main {
   display: flex;
@@ -212,6 +213,7 @@ tbody tr:hover {
 } */
 </style>
 <style>
+
 .date-row {
   min-height: 12px;
 }
@@ -219,6 +221,9 @@ tbody tr:hover {
 #transactions-table th {
   padding: 0;
   min-width: min-content !important;
+  background: var(--v-background-base);
+  border: none;
+  box-shadow: none;
 }
 
 #transactions-table .v-input--selection-controls__input {

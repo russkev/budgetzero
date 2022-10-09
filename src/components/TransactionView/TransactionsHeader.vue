@@ -1,86 +1,53 @@
 <template>
-  <v-row class="ma-0 header_background">
-    <v-col sm="auto" class="pa-0">
-      <v-card flat class="header_background">
-        <v-card-title data-testid="transactions-account-name" class="headline font-weight-bold primary--text">
-          {{ accountName }}
-        </v-card-title>
-        <v-card-subtitle>
-          <span class="subtitle-2 grey--text text--darken-2"> ACCOUNT</span>
-        </v-card-subtitle>
-      </v-card>
-    </v-col>
+  <div id="transactions-header">
+    <transactions-header-balance left :heading="accountName" />
+    <v-alert 
+      border="left"
+      align="right"
+      :type="accountBalance.working < 0 ? 'error' : 'success'"
+      text
+      class="pa-2 ma-2"
+      icon="false"
+    >
+    <template #prepend>
+      <div class="mr-2"></div>
+    </template>
 
-    <v-col sm="auto" class="pa-0">
-      <v-card flat class="header_background">
-        <v-card-title data-testid="account-balance-cleared" class="title font-weight-bold primary--text">
-          {{ (accountBalance.cleared / 100) | currency }}<br />
-        </v-card-title>
-        <v-card-subtitle>
-          <span class="subtitle-2 grey--text text--darken-2">CLEARED</span>
-        </v-card-subtitle>
-      </v-card>
-    </v-col>
-
-    <v-col sm="auto" style="display: inline-flex; align-items: center" class="pa-0 header_background">
-      <span class="headline pa-0 grey--text">+</span>
-    </v-col>
-
-    <v-col sm="auto" class="pa-0">
-      <v-card flat class="header_background">
-        <v-card-title data-testid="account-balance-uncleared" class="title font-weight-bold primary--text">
-          {{ (accountBalance.uncleared / 100) | currency }}<br />
-        </v-card-title>
-        <v-card-subtitle>
-          <span class="subtitle-2">UNCLEARED</span>
-        </v-card-subtitle>
-      </v-card>
-    </v-col>
-
-    <v-col sm="auto" style="display: inline-flex; align-items: center" class="pa-0 header_background">
-      <span class="headline pa-0 grey--text">=</span>
-    </v-col>
-
-    <v-col sm="auto" class="pa-0">
-      <v-card flat class="header_background">
-        <v-card-title data-testid="account-balance-working" class="headline-5 font-weight-bold primary--text">
-          {{ (accountBalance.cleared / 100 + accountBalance.uncleared / 100) | currency }}<br />
-        </v-card-title>
-        <v-card-subtitle>
-          <span class="subtitle-2 grey--text text--darken-2">WORKING BALANCE</span>
-        </v-card-subtitle>
-      </v-card>
-    </v-col>
-    <v-col cols="1" class="ml-auto">
-      <v-tooltip bottom>
-        <template #activator="{ on }">
-          <v-btn
-            id="btn-reconcile"
-            large
-            class="white--text mb-2 ml-2"
-            color="primary"
-            icon
-            tile
-            @click="$emit('showReconcileModal')"
-          >
-            <v-icon large color="primary lighten-1" v-on="on"> mdi-lock </v-icon>
-          </v-btn>
-        </template>
-        <span>Reconcile</span>
-      </v-tooltip>
-    </v-col>
-  </v-row>
+      <transactions-header-balance 
+      :heading="intlCurrency.format(accountBalance.cleared / 100)"
+      headingStyle="h4"
+      subheading="Cleared"
+      />
+    <transactions-header-balance heading="+" headingStyle="h3" />
+    <transactions-header-balance 
+      :heading="intlCurrency.format(accountBalance.uncleared / 100)"
+      headingStyle="h4"
+      subheading="Uncleared"
+      />
+    <transactions-header-balance heading="=" headingStyle="h3" />
+    <transactions-header-balance 
+    :heading="intlCurrency.format(accountBalance.working / 100)"
+    headingStyle="h3"
+    />
+    </v-alert>
+        
+  </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import { DEFAULT_ACCOUNT_BALANCE } from '../../constants'
+import TransactionsHeaderBalance from './TransactionsHeaderBalance.vue'
+
 import _ from 'lodash'
 
 export default {
+  components: {
+    TransactionsHeaderBalance
+  },
   props: ['selected_account_id'],
   computed: {
-    ...mapGetters(['allAccountBalances', 'accountsById']),
+    ...mapGetters(['allAccountBalances', 'accountsById', 'intlCurrency']),
     accountBalance() {
       const accountBalance = this.allAccountBalances[this.selected_account_id]
       return accountBalance ? accountBalance : DEFAULT_ACCOUNT_BALANCE
@@ -89,6 +56,19 @@ export default {
       return _.get(this.accountsById, [this.selected_account_id, 'name'], '')
     }
   },
-  methods: {}
 }
 </script>
+
+<style>
+#transactions-header {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+
+}
+
+#transactions-header > div:nth-child(2) > div > div {
+  display: flex;
+  flex-direction: row;
+}
+</style>
