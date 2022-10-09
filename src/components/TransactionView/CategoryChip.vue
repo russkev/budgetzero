@@ -1,7 +1,17 @@
 <template>
-  <v-chip class="category-chip pl-0" small label pill v-on="on" :color="categoryBackgroundColor">
-    <v-sheet width="5px" :color="selectedCategoryColor" height="100%" class="mr-2" />
-    {{ selectedCategoryName }}
+  <v-chip
+    class="simple-ellipsis pl-0"
+    small
+    label
+    pill
+    v-on="on"
+    :color="categoryBackgroundColor"
+  >
+
+    <v-sheet width="5px" min-width="5px" :color="selectedCategoryColor" height="100%" class="mr-2" />
+    <div class="simple-ellipsis">
+      {{ selectedCategoryName }}
+      </div>
   </v-chip>
 </template>
 
@@ -18,24 +28,9 @@ export default {
       type: Object,
       required: false,
     },
-    // color: {
-    //   type: String,
-    //   required: false,
-    // },
-    // name: {
-    //   type: String,
-    //   required: false,
-    // },
-    // value: {
-    //   type: Number,
-    //   required: false,
-    // },
   },
   computed: {
-    ...mapGetters([
-      "categoryColors",
-      "categoriesById",
-    ]),
+    ...mapGetters(["categoryColors", "categoriesById"]),
     selectedCategoryColor() {
       const id = this.item.category;
       const color = this.categoryColors[id];
@@ -58,3 +53,17 @@ export default {
   },
 };
 </script>
+
+<style>
+.simple-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.category-chip {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+}
+</style>
