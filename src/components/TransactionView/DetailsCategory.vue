@@ -18,7 +18,7 @@
             }
           "
         />
-        <transaction-splits-value :index="index" :key="`amount-${index}`" />
+        <splits-value :index="index" :key="`amount-${index}`" />
       </template>
       <v-card color="transparent" flat tile @click="onSplitCategoryAdd" class="splits-full-width">
         <v-icon>mdi-plus</v-icon>
@@ -43,10 +43,10 @@
 import { mapGetters, mapMutations } from "vuex";
 import { NONE } from "../../constants";
 import CurrencyInput from "./CurrencyInput.vue";
-import TransactionSplitsValue from "./TransactionSplitsValue.vue";
+import SplitsValue from "./SplitsValue.vue";
 
 export default {
-  components: { CurrencyInput, TransactionSplitsValue },
+  components: { CurrencyInput, SplitsValue },
   computed: {
     ...mapGetters("accountTransactions", ["editedTransaction"]),
     isSplit() {

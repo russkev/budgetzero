@@ -3,17 +3,17 @@
     <div v-if="editedTransaction._id !== DEFAULT_TRANSACTION._id">
       <div class="transaction-details-grid">
         <div class="text-h5">Date</div>
-        <select-date data-testid="edit-row-date" v-model="transactionDate" />
+        <details-date data-testid="edit-row-date" v-model="transactionDate" />
         <div class="text-h5">Amount</div>
-        <select-amount />
+        <details-value />
         <div class="text-h5">Status</div>
-        <transaction-status />
+        <details-status />
         <div class="text-h5">Category</div>
-        <transaction-category-container />
+        <details-category />
         <div class="text-h5">Memo</div>
-        <transaction-memo />
+        <details-memo />
         <div class="text-h5">Note</div>
-        <transaction-note />
+        <details-note />
       </div>
       <div class="save-cancel-container">
         <v-btn text small @click="onCancel">
@@ -24,7 +24,7 @@
         </v-btn>
       </div>
     </div>
-    <transaction-details-buttons
+    <details-buttons
       v-else-if="selectedTransactions.length > 0"
       icon="mdi-file-document-multiple"
       :subtitle="`${selectedTransactions.length} transactions selected`"
@@ -52,7 +52,7 @@
               :attrs="attrs"
             />
           </template>
-          <transaction-category-select @selected="onCategorySelected" />
+          <category-select @selected="onCategorySelected" />
         </v-menu>
         <details-button
           data-testid="delete-selected-transactions-button"
@@ -61,8 +61,8 @@
           @click="deleteSelectedTransactions"
         />
       </template>
-    </transaction-details-buttons>
-    <transaction-details-buttons
+    </details-buttons>
+    <details-buttons
       v-else
       icon="mdi-file-document-outline"
       subtitle="No transactions selected"
@@ -87,36 +87,34 @@
           @apply="onImportModalApply"
         />
       </template>
-    </transaction-details-buttons>
+    </details-buttons>
   </v-sheet>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapActions } from "vuex";
 import { DEFAULT_TRANSACTION } from "../../constants";
-import SelectDate from "./SelectDate.vue";
-import SelectAmount from "./SelectAmount.vue";
-import TransactionCategoryContainer from "./TransactionCategoryContainer.vue";
-import TransactionMemo from "./TransactionMemo.vue";
-import TransactionNote from "./TransactionNote.vue";
-import TransactionFlowDirection from "./TransactionFlowDirection.vue";
-import TransactionStatus from "./TransactionStatus.vue";
+import DetailsDate from "./DetailsDate.vue";
+import DetailsValue from "./DetailsValue.vue";
+import DetailsCategory from "./DetailsCategory.vue";
+import DetailsMemo from "./DetailsMemo.vue";
+import DetailsNote from "./DetailsNote.vue";
+import DetailsFlowDirection from "./DetailsFlowDirection.vue";
+import DetailsStatus from "./DetailsStatus.vue";
 import DetailsButton from "./DetailsButton.vue";
-import TransactionCategorySelect from "./TransactionCategorySelect.vue";
-import TransactionDetailsButtons from "./TransactionDetailsButtons.vue";
+import DetailsButtons from "./DetailsButtons.vue";
 
 export default {
   components: {
-    SelectDate,
-    SelectAmount,
-    TransactionCategoryContainer,
-    TransactionMemo,
-    TransactionNote,
-    TransactionFlowDirection,
-    TransactionStatus,
+    DetailsDate,
+    DetailsValue,
+    DetailsCategory,
+    DetailsMemo,
+    DetailsNote,
+    DetailsFlowDirection,
+    DetailsStatus,
     DetailsButton,
-    TransactionCategorySelect,
-    TransactionDetailsButtons,
+    DetailsButtons,
   },
   props: {
     item: {

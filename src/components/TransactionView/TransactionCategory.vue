@@ -11,18 +11,18 @@
         :on="on"
       />
     </template>
-    <transaction-category-select @selected="onSelected" />
+    <category-select @selected="onSelected" />
   </v-menu>
 </template>
 
 <script>
 import CategoryChip from "./CategoryChip.vue";
 import { ID_LENGTH, } from "../../constants";
-import TransactionCategorySelect from "./TransactionCategorySelect.vue";
+import CategorySelect from "./CategorySelect.vue";
 
 export default {
   emits: ["selected"],
-  components: { CategoryChip, TransactionCategorySelect, },
+  components: { CategoryChip, CategorySelect, },
   props: {
     item: {
       type: Object,

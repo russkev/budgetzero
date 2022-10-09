@@ -10,11 +10,10 @@
             <transactions-table />
           </v-col>
           <v-col cols="4">
-            <transaction-details />
+            <details />
           </v-col>
           <!-- </div> -->
         </v-row>
-        <!-- <transactions-edit-multiple /> -->
       </v-sheet>
     </v-container>
   </div>
@@ -24,15 +23,13 @@
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import TransactionsHeader from "./TransactionsHeader.vue";
 import TransactionsTable from "./TransactionsTable.vue";
-import TransactionsEditMultiple from "./TransactionsEditMultiple.vue";
-import TransactionDetails from "./TransactionDetails.vue";
+import Details from "./Details.vue";
 
 export default {
   components: {
     TransactionsHeader,
     TransactionsTable,
-    TransactionsEditMultiple,
-    TransactionDetails,
+    Details,
   },
   data() {
     return {

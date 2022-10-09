@@ -47,7 +47,7 @@
       <template #item="{ item, select, isSelected }">
         <tr :class="`transaction-row ${isSelected ? 'info darken-4' : ''}`" :key="item._id">
           <td class="row-checkbox pa-0 ma-0">
-            <toggle-checked :is-selected="isSelected" @input="select($event)" />
+            <transaction-checked :is-selected="isSelected" @input="select($event)" />
           </td>
           <td class="row-cleared pa-0">
             <toggle-cleared :item="item" />
@@ -76,18 +76,14 @@
 <script>
 import { mapGetters, mapMutations, mapActions } from "vuex";
 import { DEFAULT_TRANSACTIONS_PER_PAGE } from "../../constants";
-import ToggleChecked from "./ToggleChecked.vue";
-import SelectCategory from "./SelectCategory.vue";
+import TransactionChecked from "./TransactionChecked.vue";
 import TransactionBalance from "./TransactionBalance.vue";
-import TransactionExpanded from "./TransactionExpanded.vue";
 import TransactionDescription from "./TransactionDescription.vue";
 
 export default {
   components: {
-    ToggleChecked,
-    SelectCategory,
+    TransactionChecked,
     TransactionBalance,
-    TransactionExpanded,
     TransactionDescription,
   },
   computed: {

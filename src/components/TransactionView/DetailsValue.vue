@@ -1,7 +1,7 @@
 <template>
   <div>
     <currency-input v-model="valueData" />
-    <transaction-flow-direction />
+    <details-flow-direction />
   </div>
 </template>
 
