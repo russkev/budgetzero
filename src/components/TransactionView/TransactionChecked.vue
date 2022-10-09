@@ -13,7 +13,7 @@
       v-else
       :size="size"
       @click="toggleSelected"
-      :color="isVisible(hover) ? 'grey lighten-2' : 'transparent'"
+      :color="isVisible(hover) ? 'grey lighten-2' : 'background lighten-3'"
       >
       mdi-checkbox-blank-outline
     </v-icon>

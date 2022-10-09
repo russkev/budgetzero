@@ -403,5 +403,9 @@ const dataTableHeaders = [
     value: 'balance',
     align: 'right',
     width: '100px'
+  },
+  {
+    text: '',
+    class: headerClass,
   }
 ]

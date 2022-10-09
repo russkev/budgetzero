@@ -54,7 +54,7 @@
             <td class="row-cleared pa-0">
               <transaction-cleared :item="item" :hover="hover" />
             </td>
-            <td class="row-category">
+            <td class="row-category pa-0">
               <transaction-category :item="item" @selected="onCategorySelected" />
             </td>
             <td class="row-description pa-0">

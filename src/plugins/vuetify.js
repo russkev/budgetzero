@@ -28,9 +28,15 @@ export default new Vuetify({
         accent: hslStringToHex('hsl(253, 100%, 72%)'),
         background: {
           base: hslStringToHex('hsl(245, 9%, 19%)'),
-          darken1: hslStringToHex('hsl(251, 9%, 18%)'),
+          lighten5: hslStringToHex('hsl(248, 9%, 37%)'),
+          lighten4: hslStringToHex('hsl(248, 9%, 33%)'),
+          lighten3: hslStringToHex('hsl(248, 9%, 29%)'),
+          lighten2: hslStringToHex('hsl(248, 9%, 25%)'),
           lighten1: hslStringToHex('hsl(254, 9%, 21%)'),
-          lighten2: hslStringToHex('hsl(248, 9%, 25%)')
+          darken1: hslStringToHex('hsl(251, 9%, 18%)'),
+          darken2: hslStringToHex('hsl(251, 9%, 14%)'),
+          darken3: hslStringToHex('hsl(251, 9%, 10%)'),
+          darken4: hslStringToHex('hsl(251, 9%, 5%)')
         },
         delete: '#391616',
         delete_text: '#ff4343',
