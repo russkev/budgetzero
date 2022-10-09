@@ -1,7 +1,6 @@
 <template>
   <v-sheet width="100%" height="100%" color="background lighten-1">
-    <div v-if="editedTransaction._id === DEFAULT_TRANSACTION._id"></div>
-    <div v-else>
+    <div v-if="editedTransaction._id !== DEFAULT_TRANSACTION._id">
       <div class="transaction-details-grid">
         <div class="text-h5">Date</div>
         <select-date data-testid="edit-row-date" v-model="transactionDate" />
@@ -25,6 +24,70 @@
         </v-btn>
       </div>
     </div>
+    <transaction-details-buttons
+      v-else-if="selectedTransactions.length > 0"
+      icon="mdi-file-document-multiple"
+      :subtitle="`${selectedTransactions.length} transactions selected`"
+    >
+      <template>
+        <details-button
+          data-testid="clear-selected-button"
+          icon="mdi-alpha-c-circle"
+          label="Clear"
+          @click="onClearSelected"
+        />
+        <details-button
+          data-testid="unclear-selected-button"
+          icon="mdi-alpha-c-circle-outline"
+          label="Unclear"
+          @click="onUnclearSelected"
+        />
+        <v-menu v-model="categoryMenu" :close-on-content-click="false">
+          <template #activator="{ on, attrs }">
+            <details-button
+              data-testid="categorize-as-button"
+              icon="mdi-shape"
+              label="Categorize"
+              :on="on"
+              :attrs="attrs"
+            />
+          </template>
+          <transaction-category-select @selected="onCategorySelected" />
+        </v-menu>
+        <details-button
+          data-testid="delete-selected-transactions-button"
+          icon="mdi-delete"
+          label="Delete"
+          @click="deleteSelectedTransactions"
+        />
+      </template>
+    </transaction-details-buttons>
+    <transaction-details-buttons
+      v-else
+      icon="mdi-file-document-outline"
+      subtitle="No transactions selected"
+    >
+      <template>
+        <details-button
+          data-testid="create-transaction-button"
+          icon="mdi-plus"
+          label="Create"
+          @click="addTransaction"
+        />
+        <details-button
+          data-testid="import-transactions-button"
+          icon="mdi-cloud-upload"
+          label="Import"
+          @click.stop="importModalIsVisible = true"
+        />
+        <import-transactions
+          :visible="importModalIsVisible"
+          :account="accountId"
+          @close="onImportModalClose"
+          @apply="onImportModalApply"
+        />
+      </template>
+    </transaction-details-buttons>
   </v-sheet>
 </template>
 
@@ -38,6 +101,9 @@ import TransactionMemo from "./TransactionMemo.vue";
 import TransactionNote from "./TransactionNote.vue";
 import TransactionFlowDirection from "./TransactionFlowDirection.vue";
 import TransactionStatus from "./TransactionStatus.vue";
+import DetailsButton from "./DetailsButton.vue";
+import TransactionCategorySelect from "./TransactionCategorySelect.vue";
+import TransactionDetailsButtons from "./TransactionDetailsButtons.vue";
 
 export default {
   components: {
@@ -48,6 +114,9 @@ export default {
     TransactionNote,
     TransactionFlowDirection,
     TransactionStatus,
+    DetailsButton,
+    TransactionCategorySelect,
+    TransactionDetailsButtons,
   },
   props: {
     item: {
@@ -59,10 +128,16 @@ export default {
   data() {
     return {
       DEFAULT_TRANSACTION,
+      categoryMenu: false,
+      importModalIsVisible: false,
     };
   },
   computed: {
-    ...mapGetters("accountTransactions", ["editedTransaction"]),
+    ...mapGetters("accountTransactions", [
+      "editedTransaction",
+      "selectedTransactions",
+      "accountId",
+    ]),
     transactionDate: {
       get() {
         return this.editedTransaction.date;
@@ -80,12 +155,37 @@ export default {
       "SET_EDITED_TRANSACTION_CATEGORY",
       "CLEAR_EDITED_TRANSACTION",
     ]),
-    ...mapActions("accountTransactions", ["save"]),
+    ...mapActions("accountTransactions", [
+      "addTransaction",
+      "deleteSelectedTransactions",
+      "getTransactions",
+      "setClearedSelectedTransactions",
+      "categorizeSelectedTransactions",
+      "save",
+      "cancel",
+    ]),
     onSave() {
       this.save(this.item);
     },
     onCancel() {
-      this.CLEAR_EDITED_TRANSACTION();
+      this.cancel();
+    },
+    onClearSelected() {
+      this.setClearedSelectedTransactions({ cleared_value: true });
+    },
+    onUnclearSelected() {
+      this.setClearedSelectedTransactions({ cleared_value: false });
+    },
+    onCategorySelected(categoryId) {
+      this.categorizeSelectedTransactions({ categoryId });
+      this.categoryMenu = false;
+    },
+    onImportModalClose() {
+      this.importModalIsVisible = false;
+    },
+    onImportModalApply() {
+      this.importModalIsVisible = false;
+      this.getTransactions();
     },
   },
 };

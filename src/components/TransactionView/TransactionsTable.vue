@@ -44,7 +44,7 @@
           {{ formatDate(items[0].date) }}
         </td>
       </template>
-      <template #item="{ item, expand, select, isSelected }">
+      <template #item="{ item, select, isSelected }">
         <tr :class="`transaction-row ${isSelected ? 'info darken-4' : ''}`" :key="item._id">
           <td class="row-checkbox pa-0 ma-0">
             <toggle-checked :is-selected="isSelected" @input="select($event)" />
@@ -59,26 +59,14 @@
             <transaction-description :item="item"/>
           </td>
           <td class="row-outflow">
-            <transaction-flow :item="item" @expand="expand(item)" is-outflow />
+            {{item.value > 0 ? '' : intlCurrency.format(Math.abs(item.value / 100)) }}
           </td>
           <td class="row-inflow">
-            <transaction-flow :item="item" @expand="expand(item)" />
+            {{item.value > 0 ? intlCurrency.format(item.value / 100) : ''}}
           </td>
           <td class="row-balance">
             <transaction-balance :item="item" />
           </td>
-        </tr>
-      </template>
-      <template #expanded-item="{ item }">
-        <tr v-for="(split, index) in editedTransaction.splits" :key="index">
-          <transaction-split
-            :split="split"
-            :index="index"
-            :disabled="index === editedTransaction.splits.length - 1"
-          />
-        </tr>
-        <tr>
-          <transaction-expanded :item="item" />
         </tr>
       </template>
     </v-data-table>
@@ -90,20 +78,16 @@ import { mapGetters, mapMutations, mapActions } from "vuex";
 import { DEFAULT_TRANSACTIONS_PER_PAGE } from "../../constants";
 import ToggleChecked from "./ToggleChecked.vue";
 import SelectCategory from "./SelectCategory.vue";
-import TransactionFlow from "./TransactionFlow.vue";
 import TransactionBalance from "./TransactionBalance.vue";
 import TransactionExpanded from "./TransactionExpanded.vue";
-import TransactionSplit from "./TransactionSplit.vue";
 import TransactionDescription from "./TransactionDescription.vue";
 
 export default {
   components: {
     ToggleChecked,
     SelectCategory,
-    TransactionFlow,
     TransactionBalance,
     TransactionExpanded,
-    TransactionSplit,
     TransactionDescription,
   },
   computed: {
@@ -119,7 +103,7 @@ export default {
       "itemsPerPage",
       "isCreatingNewTransaction",
     ]),
-    ...mapGetters(["selectedBudgetId", "accounts"]),
+    ...mapGetters(["selectedBudgetId", "accounts", "intlCurrency"]),
     numTransactionsTotal() {
       return this.isCreatingNewTransaction
         ? this.numServerTransactions + 1
@@ -130,7 +114,7 @@ export default {
         return this.selectedTransactions;
       },
       set(transactions) {
-        this.SET_SELECTED_TRANSACTIONS(transactions);
+        this.setSelectedTransactions(transactions);
       },
     },
     expanded: {
@@ -176,7 +160,7 @@ export default {
       "SET_ACCOUNT_OPTIONS",
       "SET_ITEMS_PER_PAGE",
     ]),
-    ...mapActions("accountTransactions", ["getTransactions"]),
+    ...mapActions("accountTransactions", ["getTransactions", "setSelectedTransactions"]),
     ...mapActions(["commitDocToPouchAndVuex"]),
     // Convert date to weekday, day, month, year words
     formatDate(date) {

@@ -18,7 +18,7 @@ const DEFAULT_ACCOUNT_TRANSACTIONS_STATE = {
   itemsPerPage: DEFAULT_TRANSACTIONS_PER_PAGE,
   expandedTransactions: [],
   selectedTransactions: [],
-  isCreatingNewTransaction: false,
+  isCreatingNewTransaction: false
 }
 
 export default {
@@ -214,24 +214,16 @@ export default {
           .catch((error) => {
             console.log(error)
           })
-          .finally(() => {
-            return dispatch('cancel')
-          })
       })
     },
-    cancel({ commit }) {
-      commit('CLEAR_EXPANDED_TRANSACTIONS')
-      commit('CLEAR_EXPANDED_TRANSACTIONS')
-      commit('CLEAR_EDITED_TRANSACTION')
+    cancel({ commit, getters }) {
+      commit('SET_EDITED_TRANSACTION', JSON.parse(JSON.stringify(getters.transactions[getters.editedTransactionIndex])))
     },
     editTransaction({ commit, getters }, transaction) {
       commit('SET_IS_CREATING_NEW_TRANSACTION', false)
       commit('CLEAR_EDITED_TRANSACTION')
       commit('SET_EDITED_TRANSACTION_INDEX', getters.transactions.indexOf(transaction))
-      commit('SET_EDITED_TRANSACTION', 
-        JSON.parse(JSON.stringify(getters.transactions[getters.editedTransactionIndex]))
-        // ...getters.transactions[getters.editedTransactionIndex]
-      )
+      commit('SET_EDITED_TRANSACTION', JSON.parse(JSON.stringify(getters.transactions[getters.editedTransactionIndex])))
     },
     prepareEditedItem({ commit, getters, rootGetters }) {
       if (getters.isCreatingNewTransaction && getters.editedTransactionInitialDate !== getters.editedTransaction.date) {
@@ -297,7 +289,7 @@ export default {
         commit('CLEAR_SELECTED_TRANSACTIONS')
       })
     },
-    deleteSelectedTransactions({ getters, dispatch }) {
+    deleteSelectedTransactions({ commit, getters, dispatch }) {
       if (getters.selectedTransactions.length < 1) {
         return
       }
@@ -322,6 +314,7 @@ export default {
           return null
         })
         .then(() => {
+          commit('CLEAR_SELECTED_TRANSACTIONS')
           dispatch('getTransactions')
         })
     },
@@ -343,6 +336,15 @@ export default {
         commit('CLEAR_SELECTED_TRANSACTIONS')
       })
     },
+    setSelectedTransactions({ getters, commit, dispatch }, transactions) {
+      console.log("TRANSACTIONS", transactions)
+      commit('SET_SELECTED_TRANSACTIONS', transactions)
+      if (transactions.length === 1 && transactions[0]._id !== getters.editedTransaction._id) {
+        dispatch('editTransaction', transactions[0])
+      } else if (transactions.length !== 1 && getters.editedTransaction._id !== DEFAULT_TRANSACTION._id) {
+        commit('CLEAR_EDITED_TRANSACTION')
+      }
+    },
     setEditedTransactionSplitValue({ commit, getters }, { index, value }) {
       commit('SET_EDITED_TRANSACTION_SPLIT_VALUE', { index: index, value: value })
       let remainder = getters.editedTransaction.value
@@ -355,7 +357,7 @@ export default {
   }
 }
 
-const headerClass =  'transaction-table-header text-body-2'
+const headerClass = 'transaction-table-header text-body-2'
 const dataTableHeaders = [
   {
     text: '',

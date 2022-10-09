@@ -14,7 +14,7 @@
           </v-col>
           <!-- </div> -->
         </v-row>
-        <transactions-edit-multiple />
+        <!-- <transactions-edit-multiple /> -->
       </v-sheet>
     </v-container>
   </div>
@@ -70,7 +70,7 @@ export default {
 
 <style scoped>
 .flex-sheet {
-  height: calc(100vh - 200px);
+  height: calc(100vh - 70px);
   display: flex;
   flex-direction: column;
 }

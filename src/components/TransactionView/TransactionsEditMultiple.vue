@@ -52,7 +52,7 @@
 </template>
 
 <script>
-import { mapActions, mapMutations } from "vuex";
+import { mapActions } from "vuex";
 import ImportTransactions from "./ImportTransactions.vue";
 
 export default {
