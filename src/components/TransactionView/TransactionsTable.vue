@@ -55,7 +55,7 @@
               <transaction-cleared :item="item" :hover="hover" />
             </td>
             <td class="row-category pa-0">
-              <transaction-category :item="item" @selected="onCategorySelected" />
+              <transaction-categories :item="item" />
             </td>
             <td class="row-description pa-0">
               <transaction-description :item="item" />
@@ -91,6 +91,7 @@ import TransactionChecked from "./TransactionChecked.vue";
 import TransactionBalance from "./TransactionBalance.vue";
 import TransactionDescription from "./TransactionDescription.vue";
 import TransactionCleared from "./TransactionCleared.vue";
+import TransactionCategories from "./TransactionCategories.vue";
 import DeleteButton from "../CategoryView/DeleteButton.vue";
 
 export default {
@@ -99,6 +100,7 @@ export default {
     TransactionBalance,
     TransactionDescription,
     TransactionCleared,
+    TransactionCategories,
     DeleteButton,
   },
   computed: {
@@ -182,14 +184,14 @@ export default {
       const year = date_obj.toLocaleString("en-us", { year: "numeric" });
       return `${weekday}, ${day} ${month}, ${year}`;
     },
-    onCategorySelected({ item, categoryId }) {
-      console.log("onCategorySelected", categoryId);
-      const current = { ...item, category: categoryId };
-      const previous = item;
-      this.commitDocToPouchAndVuex({ current, previous }).then(() => {
-        this.getTransactions();
-      });
-    },
+    // onCategorySelected({ item, categoryId }) {
+    //   console.log("onCategorySelected", categoryId);
+    //   const current = { ...item, category: categoryId };
+    //   const previous = item;
+    //   this.commitDocToPouchAndVuex({ current, previous }).then(() => {
+    //     this.getTransactions();
+    //   });
+    // },
     onDeleteTransaction(transaction) {
       // this.commitDocToPouchAndVuex({ current: null, previous: transaction }).then(() => {
       //   this.getTransactions();

@@ -1,6 +1,6 @@
 <template>
   <div v-if="!isSplit">
-    <transaction-category :item="editedTransaction" @selected="onCategorySelected" />
+    <category-menu :item="editedTransaction" @selected="onCategorySelected" />
     <v-card color="transparent" flat tile @click="onSplitCategoryAdd">
       <v-icon>mdi-plus</v-icon>
       Add split category
@@ -9,7 +9,7 @@
   <div v-else>
     <div class="splits-grid">
       <template v-for="(split, index) in splits">
-        <transaction-category
+        <category-menu
           :key="`category-${index}`"
           :item="split"
           @selected="
@@ -44,9 +44,10 @@ import { mapGetters, mapMutations } from "vuex";
 import { NONE } from "../../constants";
 import CurrencyInput from "./CurrencyInput.vue";
 import SplitsValue from "./SplitsValue.vue";
+import CategoryMenu from "./CategoryMenu.vue";
 
 export default {
-  components: { CurrencyInput, SplitsValue },
+  components: { CurrencyInput, SplitsValue, CategoryMenu },
   computed: {
     ...mapGetters("accountTransactions", ["editedTransaction"]),
     isSplit() {
@@ -74,7 +75,7 @@ export default {
       "CLEAR_EDITED_TRANSACTION_SPLIT",
       "SET_EDITED_TRANSACTION_SPLIT_CATEGORY",
     ]),
-    onCategorySelected({ item, categoryId }) {
+    onCategorySelected(categoryId) {
       this.SET_EDITED_TRANSACTION_CATEGORY(categoryId);
     },
     onSplitCategoryAdd() {
@@ -86,7 +87,7 @@ export default {
       }
       this.PUSH_EDITED_TRANSACTION_SPLIT({ category: NONE._id, value: 0 });
     },
-    onSplitCategorySelected(index, { item, categoryId }) {
+    onSplitCategorySelected(index, categoryId) {
       this.SET_EDITED_TRANSACTION_SPLIT_CATEGORY({ index, categoryId });
     },
   },

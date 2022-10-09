@@ -1,7 +1,7 @@
 <template>
   <v-chip class="category-chip pl-0" small label pill v-on="on" :color="categoryBackgroundColor">
-    <v-sheet width="5px" :color="color" height="100%" class="mr-2" />
-    {{ name }}
+    <v-sheet width="5px" :color="selectedCategoryColor" height="100%" class="mr-2" />
+    {{ selectedCategoryName }}
   </v-chip>
 </template>
 
@@ -10,26 +10,26 @@ import { mapGetters } from "vuex";
 
 export default {
   props: {
-    // item: {
-    //   type: Object,
-    //   required: true,
-    // },
+    item: {
+      type: Object,
+      required: true,
+    },
     on: {
       type: Object,
       required: false,
     },
-    color: {
-      type: String,
-      required: false,
-    },
-    name: {
-      type: String,
-      required: false,
-    },
-    value: {
-      type: Number,
-      required: false,
-    },
+    // color: {
+    //   type: String,
+    //   required: false,
+    // },
+    // name: {
+    //   type: String,
+    //   required: false,
+    // },
+    // value: {
+    //   type: Number,
+    //   required: false,
+    // },
   },
   computed: {
     ...mapGetters([
@@ -53,7 +53,7 @@ export default {
       return category.name;
     },
     categoryBackgroundColor() {
-      return `${this.color}55`;
+      return `${this.selectedCategoryColor}55`;
     },
   },
 };
