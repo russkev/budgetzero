@@ -16,7 +16,6 @@ const DEFAULT_ACCOUNT_TRANSACTIONS_STATE = {
   accountOptions: {},
   numServerTransactions: 0,
   itemsPerPage: DEFAULT_TRANSACTIONS_PER_PAGE,
-  expandedTransactions: [],
   selectedTransactions: [],
   isCreatingNewTransaction: false
 }
@@ -38,7 +37,6 @@ export default {
     numServerTransactions: (state) => state.numServerTransactions,
     itemsPerPage: (state) => state.itemsPerPage,
     accountDoc: (state, getters, rootState, rootGetters) => rootGetters.accountsById[getters.accountId],
-    expandedTransactions: (state) => state.expandedTransactions,
     selectedTransactions: (state) => state.selectedTransactions,
     isCreatingNewTransaction: (state) => state.isCreatingNewTransaction,
     dataTableHeaders: () => dataTableHeaders
@@ -141,12 +139,6 @@ export default {
     },
     SET_ITEMS_PER_PAGE(state, num_items) {
       Vue.set(state, 'itemsPerPage', num_items)
-    },
-    SET_EXPANDED_TRANSACTIONS(state, transactions) {
-      Vue.set(state, 'expandedTransactions', transactions)
-    },
-    CLEAR_EXPANDED_TRANSACTIONS(state) {
-      Vue.set(state, 'expandedTransactions', [])
     },
     SET_SELECTED_TRANSACTIONS(state, transactions) {
       Vue.set(state, 'selectedTransactions', transactions)
@@ -251,7 +243,6 @@ export default {
       commit('SET_EDITED_TRANSACTION_INITIAL_DATE', getters.editedTransaction.date)
       commit('PUSH_TRANSACTION', getters.editedTransaction)
       commit('SET_EDITED_TRANSACTION_INDEX', getters.transactions.indexOf(getters.editedTransaction))
-      commit('SET_EXPANDED_TRANSACTIONS', [getters.editedTransaction])
     },
     updateSelectedTransactionsCleared({ getters, dispatch, commit }, { is_cleared }) {
       if (getters.selectedTransactions.length < 1) {
@@ -337,7 +328,6 @@ export default {
       })
     },
     setSelectedTransactions({ getters, commit, dispatch }, transactions) {
-      console.log("TRANSACTIONS", transactions)
       commit('SET_SELECTED_TRANSACTIONS', transactions)
       if (transactions.length === 1 && transactions[0]._id !== getters.editedTransaction._id) {
         dispatch('editTransaction', transactions[0])

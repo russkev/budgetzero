@@ -183,29 +183,29 @@ export default {
   },
 };
 
-export function deleteIconColor(hover, deleteButtonHover) {
-  if (hover) {
-    if (deleteButtonHover) {
-      return "delete_text";
-    } else {
-      return "white";
-    }
-  } else {
-    return "transparent";
-  }
-}
+// export function deleteIconColor(hover, deleteButtonHover) {
+//   if (hover) {
+//     if (deleteButtonHover) {
+//       return "delete_text";
+//     } else {
+//       return "white";
+//     }
+//   } else {
+//     return "transparent";
+//   }
+// }
 
-export function unhideIconColor(hover, unhideButtonHover) {
-  if (hover) {
-    if (unhideButtonHover) {
-      return "unhide_text";
-    } else {
-      return "white";
-    }
-  } else {
-    return "transparent";
-  }
-}
+// export function unhideIconColor(hover, unhideButtonHover) {
+//   if (hover) {
+//     if (unhideButtonHover) {
+//       return "unhide_text";
+//     } else {
+//       return "white";
+//     }
+//   } else {
+//     return "transparent";
+//   }
+// }
 </script>
 
 <style>

@@ -1,10 +1,20 @@
 <template>
   <v-btn icon @click="toggleCleared()">
-    <v-icon v-if="isCleared" class="cleared-icon">
+    <v-icon
+      v-if="isCleared"
+      :size="size"
+      class="cleared-icon"
+      color="success"
+    >
       mdi-alpha-c-circle
     </v-icon>
-    <v-icon v-else class="uncleared-icon" color="grey">
-      mdi-alpha-c-circle-outline
+    <v-icon
+      v-else 
+      :size="size"
+      class="uncleared-icon" 
+      :color="hover ? 'grey' : 'transparent'"
+    >
+      mdi-alpha-c-circle
     </v-icon>
   </v-btn>
 </template>
@@ -16,6 +26,15 @@ export default {
   props: {
     item: {
       type: Object
+    },
+    hover: {
+      type: Boolean,
+      default: false,
+    },
+  },
+  data() {
+    return {
+      size: 20,
     }
   },
   computed: {
@@ -54,6 +73,9 @@ export default {
         this.getTransactions()
       );
       this.CLEAR_EDITED_TRANSACTION()
+    },
+    isVisible(hover) {
+      return hover || this.isCleared;
     },
   },
 };

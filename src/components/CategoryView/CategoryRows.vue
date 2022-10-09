@@ -87,9 +87,22 @@
                 </v-col>
               </v-row>
             </v-col>
-
-            <button-hide-category v-if="isStandard()" :category="category" :hover="hover" />
-            <button-unhide-category v-else :category="category" :hover="hover" />
+            <delete-button
+              v-if="isStandard()"
+              :data-testid="`btn-hide-category-${category.id}`"
+              :hover="hover"
+              icon="mdi-eye-off-outline"
+              @click="onHideCategory(category.id)"
+            />
+            <delete-button
+              v-else
+              :data-testid="`btn-restore-category-${category.id}`"
+              :hover="hover"
+              icon="mdi-restore"
+              @click="onUnhideCategory(category.id)"
+              active-color="unhide_text"
+              active-background-color="unhide"
+            />
 
             <v-sheet width="20px" color="transparent" />
           </v-row>
@@ -120,10 +133,9 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import draggable from "vuedraggable";
-import ButtonHideCategory from "./ButtonHideCategory.vue";
-import ButtonUnhideCategory from "./ButtonUnhideCategory.vue";
 import { nextTick } from "vue";
 import { NONE, HIDDEN } from "../../constants";
+import DeleteButton from "./DeleteButton.vue";
 
 export default {
   props: {
@@ -138,8 +150,7 @@ export default {
   },
   components: {
     draggable,
-    ButtonHideCategory,
-    ButtonUnhideCategory,
+    DeleteButton,
   },
   computed: {
     ...mapGetters(["intlCurrency", "categories", "categoryColors"]),
@@ -158,6 +169,7 @@ export default {
       "onEditCategoryName",
       "onEditCategoryBudget",
       "onHideCategory",
+      "onUnhideCategory",
       "newCategory",
     ]),
     onNewCategory(master_category) {

@@ -77,23 +77,11 @@
       </span>
     </template>
     <template #delete="{hover}">
-      <v-hover v-slot="{ hover: deleteButtonHover }">
-        <v-btn
-          tile
-          elevation="0"
-          small
-          class="pa-0 ma-0 delete-button"
-          min-width="20px"
-          height="auto"
-          :data-testid="`btn-delete-master-category-${masterCategory.id}`"
-          :color="deleteButtonHover ? 'delete' : 'transparent'"
-          @click="onDeleteMasterCategory(masterCategory)"
-        >
-          <v-icon small :color="deleteIconColor(hover, deleteButtonHover)">
-            mdi-delete-outline
-          </v-icon>
-        </v-btn>
-      </v-hover>
+      <delete-button
+        :hover="hover"
+        :data-testid="`btn-delete-master-category-${masterCategory.id}`"
+        @click="onDeleteMasterCategory(masterCategory)"
+      />
     </template>
     <template #collapse>
       <v-btn
@@ -117,8 +105,8 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from "vuex";
-import { deleteIconColor } from "./CategoryGrid.vue";
 import HeaderRow from "./HeaderRow.vue";
+import DeleteButton from "./DeleteButton.vue";
 
 export default {
   props: {
@@ -137,6 +125,7 @@ export default {
   },
   components: {
     HeaderRow,
+    DeleteButton,
   },
   data() {
     return {
@@ -171,10 +160,6 @@ export default {
       "newMasterCategory",
       "newCategory",
     ]),
-
-    deleteIconColor(hover, deleteButtonHover) {
-      return deleteIconColor(hover, deleteButtonHover);
-    },
     onColorSelected() {
       console.log("Color selected", this.masterCategory);
     },

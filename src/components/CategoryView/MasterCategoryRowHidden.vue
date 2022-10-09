@@ -66,7 +66,6 @@
 
 <script>
 import { mapGetters, mapActions } from "vuex";
-import { deleteIconColor } from "./CategoryGrid.vue";
 import HeaderRow from "./HeaderRow.vue";
 
 export default {
@@ -103,10 +102,6 @@ export default {
       "newMasterCategory",
       "newCategory",
     ]),
-
-    deleteIconColor(hover, deleteButtonHover) {
-      return deleteIconColor(hover, deleteButtonHover);
-    },
   },
 };
 </script>

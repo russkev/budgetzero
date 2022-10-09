@@ -22,10 +22,10 @@
       }"
       :header-props="{
         'disable-sort': true,
-        'class': 'text-body-2',
+        class: 'text-body-2',
       }"
       class="flex-table-main background lighten-1"
-      >
+    >
       <!-- :expanded.sync="expanded" -->
       <template #header.data-table-select="{ on, props }">
         <v-simple-checkbox
@@ -37,7 +37,7 @@
         />
       </template>
       <template #header="{ name }">
-        <span class="text-body-2">{{name}}</span>
+        <span class="text-body-2">{{ name }}</span>
       </template>
       <template #group.header="{items}">
         <td colspan="20" class="date-row background">
@@ -45,29 +45,40 @@
         </td>
       </template>
       <template #item="{ item, select, isSelected }">
-        <tr :class="`transaction-row ${isSelected ? 'info darken-4' : ''}`" :key="item._id">
-          <td class="row-checkbox pa-0 ma-0">
-            <transaction-checked :is-selected="isSelected" @input="select($event)" />
-          </td>
-          <td class="row-cleared pa-0">
-            <toggle-cleared :item="item" />
-          </td>
-          <td class="row-category">
-            <transaction-category :item="item" @selected="onCategorySelected" />
-          </td>
-          <td class="row-description pa-0">
-            <transaction-description :item="item"/>
-          </td>
-          <td class="row-outflow">
-            {{item.value > 0 ? '' : intlCurrency.format(Math.abs(item.value / 100)) }}
-          </td>
-          <td class="row-inflow">
-            {{item.value > 0 ? intlCurrency.format(item.value / 100) : ''}}
-          </td>
-          <td class="row-balance">
-            <transaction-balance :item="item" />
-          </td>
-        </tr>
+        <v-hover v-slot="{ hover: hover }">
+          <tr :class="`transaction-row ${isSelected ? 'info darken-4' : ''}`" :key="item._id">
+            <td class="row-checkbox pa-0 ma-0">
+              <!-- <transaction-checked :hover="hover" :is-selected="isSelected" @input="tempSelect($event)" /> -->
+              <transaction-checked :hover="hover" :is-selected="isSelected" @input="select($event)" />
+            </td>
+            <td class="row-cleared pa-0">
+              <transaction-cleared :item="item" :hover="hover" />
+            </td>
+            <td class="row-category">
+              <transaction-category :item="item" @selected="onCategorySelected" />
+            </td>
+            <td class="row-description pa-0">
+              <transaction-description :item="item" />
+            </td>
+            <td class="row-outflow">
+              {{ item.value > 0 ? "" : intlCurrency.format(Math.abs(item.value / 100)) }}
+            </td>
+            <td class="row-inflow">
+              {{ item.value > 0 ? intlCurrency.format(item.value / 100) : "" }}
+            </td>
+            <td class="row-balance">
+              <transaction-balance :item="item" />
+            </td>
+            <td class="pa-0 ma-0">
+              <delete-button
+                :hover="hover"
+                :data-testid="`btn-delete-transaction-${item._id}`"
+                @click="onDeleteTransaction(item)"
+                height="100%"
+              />
+            </td>
+          </tr>
+        </v-hover>
       </template>
     </v-data-table>
   </v-sheet>
@@ -79,12 +90,16 @@ import { DEFAULT_TRANSACTIONS_PER_PAGE } from "../../constants";
 import TransactionChecked from "./TransactionChecked.vue";
 import TransactionBalance from "./TransactionBalance.vue";
 import TransactionDescription from "./TransactionDescription.vue";
+import TransactionCleared from "./TransactionCleared.vue";
+import DeleteButton from "../CategoryView/DeleteButton.vue";
 
 export default {
   components: {
     TransactionChecked,
     TransactionBalance,
     TransactionDescription,
+    TransactionCleared,
+    DeleteButton,
   },
   computed: {
     ...mapGetters("accountTransactions", [
@@ -167,7 +182,7 @@ export default {
       const year = date_obj.toLocaleString("en-us", { year: "numeric" });
       return `${weekday}, ${day} ${month}, ${year}`;
     },
-    onCategorySelected({item, categoryId}) {
+    onCategorySelected({ item, categoryId }) {
       console.log("onCategorySelected", categoryId);
       const current = { ...item, category: categoryId };
       const previous = item;
@@ -175,12 +190,20 @@ export default {
         this.getTransactions();
       });
     },
+    onDeleteTransaction(transaction) {
+      // this.commitDocToPouchAndVuex({ current: null, previous: transaction }).then(() => {
+      //   this.getTransactions();
+      // });
+      console.log("onDeleteTransaction", transaction);
+    },
+    tempSelect(event) {
+      console.log("TEMP SELECT", event);
+    }
   },
 };
 </script>
 
 <style scoped>
-
 table {
   table-layout: fixed;
 }
@@ -192,8 +215,6 @@ tbody tr:hover {
 table tr.transaction-row > td {
   border-bottom: 1px solid var(--v-background-base) !important;
 }
-
-
 
 .flex-table-main {
   display: flex;
@@ -213,7 +234,6 @@ table tr.transaction-row > td {
 } */
 </style>
 <style>
-
 .date-row {
   min-height: 12px;
 }
