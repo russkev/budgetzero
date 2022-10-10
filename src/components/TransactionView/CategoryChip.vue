@@ -1,18 +1,30 @@
 <template>
-  <v-chip
-    class="simple-ellipsis pl-0"
-    small
-    label
-    pill
-    v-on="on"
-    :color="categoryBackgroundColor"
-  >
-
-    <v-sheet width="5px" min-width="5px" :color="selectedCategoryColor" height="100%" class="mr-2" />
-    <div class="simple-ellipsis">
-      {{ selectedCategoryName }}
-      </div>
-  </v-chip>
+  <v-tooltip bottom color="background">
+    <template #activator="{ on: onTooltip, attrs }">
+      <v-chip
+        class="simple-ellipsis pl-0"
+        small
+        label
+        pill
+        v-bind="attrs"
+        v-on="{ ...on, ...onTooltip }"
+        :color="categoryBackgroundColor"
+        :disabled="disabled"
+      >
+        <v-sheet
+          width="5px"
+          min-width="5px"
+          :color="selectedCategoryColor"
+          height="100%"
+          class="mr-2"
+        />
+        <div class="simple-ellipsis">
+          {{ selectedCategoryName }}
+        </div>
+      </v-chip>
+    </template>
+    <span> {{ selectedCategoryName }}</span>
+  </v-tooltip>
 </template>
 
 <script>
@@ -27,6 +39,11 @@ export default {
     on: {
       type: Object,
       required: false,
+    },
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   computed: {

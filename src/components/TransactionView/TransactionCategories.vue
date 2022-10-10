@@ -4,7 +4,7 @@
     class="transaction-categories-container mr-2"
     :style="`grid-template-columns: ${templateColumns}`"
   >
-    <category-menu :item="item" @selected="onCategorySelected" />
+    <category-menu :item="item" @selected="onCategorySelected" :disabled="selectedTransactions.length > 0"/>
   </div>
   <div 
     v-else 
@@ -15,6 +15,7 @@
       <category-menu 
         :key="`category-${index}`"
         :item="split" 
+        :disabled="selectedTransactions.length > 0"
         @selected="
           (categoryId) => {
             onSplitCategorySelected(index, categoryId);
@@ -28,7 +29,7 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
+import { mapActions, mapGetters } from "vuex";
 import CategoryMenu from "./CategoryMenu.vue";
 
 export default {
@@ -39,6 +40,7 @@ export default {
   },
   components: { CategoryMenu },
   computed: {
+    ...mapGetters("accountTransactions", ["selectedTransactions"]),
     templateColumns() {
       return this.isSplit ? `repeat(${this.item.splits.length}, 1fr)` : "1fr";
     },

@@ -1,6 +1,7 @@
 <template>
   <v-btn icon @click="toggleCleared()">
-    <v-icon
+  <!-- <v-btn icon @click="toggleCleared()" v-if="selectedTransactions.length === 0"> -->
+    <!-- <v-icon
       v-if="isCleared"
       :size="size"
       class="cleared-icon"
@@ -15,12 +16,23 @@
       :color="hover ? 'grey' : 'transparent'"
     >
       mdi-alpha-c-circle
-    </v-icon>
+    </v-icon> -->
+    <cleared-icon 
+      :isCleared="this.item.cleared"
+      :hover="hover"
+    />
   </v-btn>
+  <!-- <sheet v-else width="36px" height="36px">
+        <cleared-icon 
+      :isCleared="this.item.cleared"
+      :hover="hover"
+    />
+  </sheet> -->
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapActions } from "vuex";
+import ClearedIcon from "./ClearedIcon.vue";
 
 export default {
   props: {
@@ -32,6 +44,9 @@ export default {
       default: false,
     },
   },
+  components: {
+    ClearedIcon,
+  },
   data() {
     return {
       size: 20,
@@ -42,14 +57,15 @@ export default {
       "editedTransactionIndex",
       "transactions",
       "editedTransaction",
+      "selectedTransactions",
     ]),
-    isCleared() {
-      if(this.editedTransaction._id === this.item._id) {
-        return this.editedTransaction.cleared
-      } else {
-        return this.item.cleared
-      }
-    },
+    // isCleared() {
+    //   if(this.editedTransaction._id === this.item._id) {
+    //     return this.editedTransaction.cleared
+    //   } else {
+    //     return this.item.cleared
+    //   }
+    // },
   },
   methods: {
     ...mapMutations("accountTransactions", [

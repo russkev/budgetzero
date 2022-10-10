@@ -9,6 +9,7 @@
         <category-chip
           :on="on"
           :item="item"
+          :disabled="disabled"
         />
       </template>
       <category-select @selected="onSelected" />
@@ -28,6 +29,11 @@ export default {
     item: {
       type: Object,
     },
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false,
+    },
   },
   data() {
     return {
@@ -37,6 +43,7 @@ export default {
   },
   computed: {
     ...mapGetters(["categoryColors", "categoriesById"]),    
+    ...mapGetters("accountTransactions", ["selectedTransactions"]),
   },
   methods: {
     onSelected(categoryId) {
