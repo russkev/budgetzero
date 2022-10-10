@@ -1,5 +1,5 @@
 <template>
-  <v-btn icon @click="toggleCleared()">
+  <!-- <v-btn icon @click="toggleCleared()" :disabled="selectedTransactions.length > 0"> -->
   <!-- <v-btn icon @click="toggleCleared()" v-if="selectedTransactions.length === 0"> -->
     <!-- <v-icon
       v-if="isCleared"
@@ -17,17 +17,40 @@
     >
       mdi-alpha-c-circle
     </v-icon> -->
-    <cleared-icon 
+    <!-- <cleared-icon 
       :isCleared="this.item.cleared"
       :hover="hover"
-    />
-  </v-btn>
+      :disabled="selectedTransactions.length > 0"
+    /> -->
+  <!-- </v-btn> -->
   <!-- <sheet v-else width="36px" height="36px">
         <cleared-icon 
       :isCleared="this.item.cleared"
       :hover="hover"
     />
   </sheet> -->
+  <v-icon
+    v-if="this.item.cleared"
+    :size="size"
+    class="cleared-icon px-1"
+    color="success"
+    @click="toggleCleared()"
+    :disabled="disabled"
+    :style="disabled ? 'color: var(--v-background-lighten5) !important;' : ''"
+  >
+    mdi-alpha-c-circle
+  </v-icon>
+  <v-icon
+    v-else
+    :size="size"
+    class="cleared-icon px-1"
+    :color="hover ? 'background lighten-5' : 'transparent'"
+    :style="disabled ? 'color: transparent !important;' : ''"
+    :disabled="disabled"
+    @click="toggleCleared()"
+    >
+    mdi-alpha-c-circle
+  </v-icon>
 </template>
 
 <script>
@@ -59,6 +82,9 @@ export default {
       "editedTransaction",
       "selectedTransactions",
     ]),
+    disabled() {
+      return this.selectedTransactions.length > 0;
+    }
     // isCleared() {
     //   if(this.editedTransaction._id === this.item._id) {
     //     return this.editedTransaction.cleared

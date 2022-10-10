@@ -1,12 +1,15 @@
 <template>
-  <div v-if="item._id !== editedTransaction._id" class="text-body-2">
-    {{ intlCurrency.format(item.balance / 100) }}
-  </div>
+  <!-- <div v-if="item._id !== editedTransaction._id" class="text-body-2"> -->
+    <span>
+
+      {{ intlCurrency.format(item.balance / 100) }}
+    </span>
+  <!-- </div>
   <div v-else>
     <v-btn icon @click="toggleSplit" data-testid="splits-button">
       <v-icon>mdi-call-split</v-icon>
     </v-btn>
-  </div>
+  </div> -->
 </template>
 
 <script>

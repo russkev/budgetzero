@@ -12,7 +12,9 @@
     :size="size"
     class="cleared-icon"
     :color="hover ? 'background lighten-5' : 'transparent'"
-  >
+
+    :style="disabled ? 'color: transparent !important;' : ''"
+    >
     mdi-alpha-c-circle
   </v-icon>
 </template>
@@ -27,9 +29,13 @@ export default {
     },
     size: {
       type: Number,
-      default: 24
+      default: 20
     },
     hover: {
+      type: Boolean,
+      default: false
+    },
+    disabled: {
       type: Boolean,
       default: false
     }
