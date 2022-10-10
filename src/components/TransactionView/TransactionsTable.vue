@@ -46,16 +46,16 @@
       </template>
       <template #item="{ item, select, isSelected }">
         <v-hover v-slot="{ hover: hover }">
-          <tr :class="`transaction-row ${isSelected ? 'info darken-4' : ''}`" :key="item._id">
+          <tr :class="`transaction-row ${isHighlighted(item, isSelected) ? 'info darken-4' : ''}`" :key="item._id">
             <td class="row-checkbox pa-0 ma-0">
               <!-- <transaction-checked :hover="hover" :is-selected="isSelected" @input="tempSelect($event)" /> -->
               <transaction-checked :hover="hover" :is-selected="isSelected" @input="select($event)" />
             </td>
             <td class="row-cleared pa-0">
-              <transaction-cleared :item="item" :hover="hover" />
+              <transaction-cleared :item="item" :hover="hover" :highlighted="isHighlighted(item, isSelected)"/>
             </td>
             <td class="row-category pa-0">
-              <transaction-categories :item="item" />
+              <transaction-categories :item="item" :highlighted="isHighlighted(item, isSelected)"/>
             </td>
             <td class="row-description pa-0">
               <transaction-description :item="item" />
@@ -183,6 +183,9 @@ export default {
       const month = date_obj.toLocaleString("en-us", { month: "long" });
       const year = date_obj.toLocaleString("en-us", { year: "numeric" });
       return `${weekday}, ${day} ${month}, ${year}`;
+    },
+    isHighlighted(item, isSelected) {
+      return isSelected || item._id === this.editedTransaction._id;
     },
     // onCategorySelected({ item, categoryId }) {
     //   console.log("onCategorySelected", categoryId);

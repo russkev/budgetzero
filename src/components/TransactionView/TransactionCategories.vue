@@ -4,28 +4,30 @@
     class="transaction-categories-container mr-2"
     :style="`grid-template-columns: ${templateColumns}`"
   >
-    <category-menu :item="item" @selected="onCategorySelected" :disabled="selectedTransactions.length > 0"/>
+    <category-menu
+      :item="item"
+      @selected="onCategorySelected"
+      :disabled="isDisabled"
+    />
   </div>
-  <div 
-    v-else 
-    class="transaction-categories-container mr-2" 
+  <div
+    v-else
+    class="transaction-categories-container mr-2"
     :style="`grid-template-columns: ${templateColumns}`"
   >
     <template v-for="(split, index) in this.item.splits">
-      <category-menu 
+      <category-menu
         :key="`category-${index}`"
-        :item="split" 
-        :disabled="selectedTransactions.length > 0"
+        :item="split"
+        :disabled="isDisabled"
         @selected="
           (categoryId) => {
             onSplitCategorySelected(index, categoryId);
           }
-        " 
+        "
       />
     </template>
-    
   </div>
-
 </template>
 
 <script>
@@ -37,6 +39,10 @@ export default {
     item: {
       type: Object,
     },
+    highlighted: {
+      type: Boolean,
+      default: false,
+    },
   },
   components: { CategoryMenu },
   computed: {
@@ -46,6 +52,9 @@ export default {
     },
     isSplit() {
       return this.item.splits && this.item.splits.length > 1;
+    },
+    isDisabled() {
+      return this.highlighted || this.selectedTransactions.length > 0;
     },
   },
   methods: {
@@ -72,7 +81,7 @@ export default {
         this.getTransactions();
       });
     },
-  }
+  },
 };
 </script>
 

@@ -1,5 +1,5 @@
 <template>
-  <v-tooltip bottom color="background">
+  <v-tooltip bottom color="background" outlined>
     <template #activator="{ on: onTooltip, attrs }">
       <v-chip
         class="simple-ellipsis pl-0"
