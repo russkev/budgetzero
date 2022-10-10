@@ -61,10 +61,12 @@
               <transaction-description :item="item" />
             </td>
             <td class="row-outflow">
-              {{ item.value > 0 ? "" : intlCurrency.format(Math.abs(item.value / 100)) }}
+              <!-- {{ item.value > 0 ? "" : intlCurrency.format(Math.abs(item.value / 100)) }} -->
+              <transaction-flow :item="item" :isOutflow="true" />
             </td>
             <td class="row-inflow">
-              {{ item.value > 0 ? intlCurrency.format(item.value / 100) : "" }}
+              <transaction-flow :item="item" :isOutflow="false" />
+              <!-- {{ item.value > 0 ? intlCurrency.format(item.value / 100) : "" }} -->
             </td>
             <td class="row-balance">
               <transaction-balance :item="item" />
@@ -93,6 +95,7 @@ import TransactionDescription from "./TransactionDescription.vue";
 import TransactionCleared from "./TransactionCleared.vue";
 import TransactionCategories from "./TransactionCategories.vue";
 import DeleteButton from "../CategoryView/DeleteButton.vue";
+import TransactionFlow from "./TransactionFlow.vue";
 
 export default {
   components: {
@@ -101,6 +104,7 @@ export default {
     TransactionDescription,
     TransactionCleared,
     TransactionCategories,
+    TransactionFlow,
     DeleteButton,
   },
   computed: {

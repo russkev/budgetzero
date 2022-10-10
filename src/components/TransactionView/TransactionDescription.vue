@@ -1,22 +1,13 @@
 <template>
-  <v-card
-    :disabled="selectedTransactions.length > 0"
-    class="px-0 py-1 ma-0"
-    tile
-    flat
-    color="transparent"
-    @click="onClick"
-    :ripple="false"
-  >
+  <row-element-wrapper :item="item">
     <span class="ellipsis text-body-1">
       {{ previewDescription }}
     </span>
-  </v-card>
+    </row-element-wrapper>
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import { DEFAULT_TRANSACTION } from "@/constants";
+import RowElementWrapper from "./RowElementWrapper.vue"
 
 export default {
   props: {
@@ -25,10 +16,10 @@ export default {
       required: true,
     },
   },
+  components: {
+    RowElementWrapper,
+  },
   computed: {
-    ...mapGetters("accountTransactions", [
-      "selectedTransactions",
-    ]),
     previewDescription() {
       if (this.item.note) {
         return this.item.note;
@@ -39,12 +30,6 @@ export default {
       } else {
         return "";
       }
-    },
-  },
-  methods: {
-    ...mapActions("accountTransactions", ["editTransaction"]),
-    onClick() {
-      this.editTransaction(this.item);
     },
   },
 };
@@ -58,7 +43,7 @@ export default {
   -webkit-box-orient: vertical;
 }
 
-.transaction-row-card {
-  display: flex;
+.transaction-row-sheet {
+  cursor: default;
 }
 </style>
