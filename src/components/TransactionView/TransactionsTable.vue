@@ -48,8 +48,7 @@
         <v-hover v-slot="{ hover: hover }">
           <tr :class="`transaction-row ${isHighlighted(item, isSelected) ? 'info darken-4' : ''}`" :key="item._id">
             <td class="row-checkbox pa-0 ma-0">
-              <!-- <transaction-checked :hover="hover" :is-selected="isSelected" @input="tempSelect($event)" /> -->
-              <transaction-checked :hover="hover" :is-selected="isSelected" @input="select($event)" />
+              <transaction-checked :item="item" :hover="hover" :is-selected="isSelected" @input="select($event)" />
             </td>
             <td class="row-cleared pa-0">
               <transaction-cleared :item="item" :hover="hover" :highlighted="isHighlighted(item, isSelected)"/>
@@ -60,15 +59,13 @@
             <td class="row-description pa-0">
               <transaction-description :item="item" />
             </td>
-            <td class="row-outflow">
-              <!-- {{ item.value > 0 ? "" : intlCurrency.format(Math.abs(item.value / 100)) }} -->
+            <td class="pr-0 row-outflow">
               <transaction-flow :item="item" :isOutflow="true" />
             </td>
-            <td class="row-inflow">
+            <td class="pr-0 row-inflow">
               <transaction-flow :item="item" :isOutflow="false" />
-              <!-- {{ item.value > 0 ? intlCurrency.format(item.value / 100) : "" }} -->
             </td>
-            <td class="row-balance">
+            <td class="pr-0 pl-2 row-balance">
               <transaction-balance :item="item" />
             </td>
             <td class="pa-0 ma-0">

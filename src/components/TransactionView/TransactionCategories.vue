@@ -46,7 +46,7 @@ export default {
   },
   components: { CategoryMenu },
   computed: {
-    ...mapGetters("accountTransactions", ["selectedTransactions"]),
+    ...mapGetters("accountTransactions", ["selectedTransactions", "editedTransaction"]),
     templateColumns() {
       return this.isSplit ? `repeat(${this.item.splits.length}, 1fr)` : "1fr";
     },
@@ -54,7 +54,8 @@ export default {
       return this.item.splits && this.item.splits.length > 1;
     },
     isDisabled() {
-      return this.highlighted || this.selectedTransactions.length > 0;
+      // return this.highlighted || this.selectedTransactions.length > 0;
+      return this.editedTransaction._id === this.item._id;
     },
   },
   methods: {

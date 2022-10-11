@@ -1,6 +1,6 @@
 <template>
   <row-element-wrapper :item="item">
-    <span class="ellipsis text-body-1 text-right">
+    <span :class="`ellipsis text-body-1 text-right ${textColor}--text text--lighten-3`">
       {{ value }}
     </span>
   </row-element-wrapper>
@@ -36,6 +36,9 @@ export default {
         return "";
       }
     },
+    textColor() {
+      return this.isOutflow ? "error" : "success";
+    }
   },
 };
 </script>

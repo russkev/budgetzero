@@ -5,8 +5,8 @@
     class="cleared-icon mx-1"
     color="success"
     @click="toggleCleared()"
-    :disabled="disabled"
-    :style="disabled ? 'color: var(--v-background-lighten5) !important;' : ''"
+    :disabled="isDisabled"
+    :style="isDisabled ? 'color: var(--v-background-lighten5) !important;' : ''"
   >
     mdi-alpha-c-circle
   </v-icon>
@@ -15,8 +15,8 @@
     :size="size"
     class="cleared-icon px-1"
     :color="hover ? 'background lighten-5' : 'transparent'"
-    :style="disabled ? 'color: transparent !important;' : ''"
-    :disabled="disabled"
+    :style="isDisabled ? 'color: transparent !important;' : ''"
+    :disabled="isDisabled"
     @click="toggleCleared()"
     >
     mdi-alpha-c-circle
@@ -52,8 +52,9 @@ export default {
       "editedTransaction",
       "selectedTransactions",
     ]),
-    disabled() {
-      return this.highlighted || this.selectedTransactions.length > 0;
+    isDisabled() {
+      // return this.highlighted || this.selectedTransactions.length > 0;
+      return this.editedTransaction._id === this.item._id;
     }
   },
   methods: {

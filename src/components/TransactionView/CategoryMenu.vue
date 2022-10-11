@@ -1,30 +1,58 @@
 <template>
-    <v-menu
-      v-model="menu"
-      origin="top left"
-      :close-on-content-click="false"
-      offset-y
-    >
-      <template #activator="{on}">
-        <category-chip
-          :on="on"
-          :item="item"
-          :disabled="disabled"
-        />
-      </template>
+  <v-menu offset-y>
+    <template #activator="{ on: menuOn }">
+      <v-tooltip bottom class="pa-0" color="transparent" :open-delay="500">
+        <template #activator="{ on: tooltipOn }">
+          <v-chip
+            small
+            label
+            class="simple-ellipsis pl-0"
+            v-on="{...tooltipOn, ...menuOn}"
+            :color="categoryBackgroundColor"
+            :disabled="disabled"
+          >
+          <v-sheet
+            width="5px"
+            min-width="5px"
+            :color="selectedCategoryColor"
+            height="100%"
+            class="mr-2"
+          />
+          <div v-if="isUncategorized" class="simple-ellipsis info--text text--lighten-1 font-weight-bold" >
+              {{ selectedCategoryName }}
+          </div>
+          <div v-else class="simple-ellipsis">
+            {{ selectedCategoryName }}
+          </div>
+          </v-chip>
+        </template>
+        <v-card flat outlined color="outline background" class="ma-0 px-4 py-1">
+          <v-card-subtitle class="ma-0 pa-0">
+            Category:
+          </v-card-subtitle>
+          <v-card-title class="ma-0 pa-0" v-if="!isUncategorized">
+            {{masterCategoryName}}: {{selectedCategoryName}}
+          </v-card-title>
+          <v-card-title class="ma-0 pa-0" v-else>
+            {{selectedCategoryName}}
+          </v-card-title>
+        </v-card>
+      </v-tooltip>
+    </template>
       <category-select @selected="onSelected" />
-    </v-menu>
+
+  </v-menu>
+
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import CategoryChip from "./CategoryChip.vue";
-import { ID_LENGTH } from "../../constants";
+import { ID_LENGTH, NONE } from "../../constants";
 import CategorySelect from "./CategorySelect.vue";
 
 export default {
   emits: ["selected"],
-  components: { CategoryChip, CategorySelect },
+  components: { CategorySelect },
   props: {
     item: {
       type: Object,
@@ -42,8 +70,43 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["categoryColors", "categoriesById"]),    
+    ...mapGetters(["categoryColors", "categoriesById", "masterCategoriesById"]),    
     ...mapGetters("accountTransactions", ["selectedTransactions"]),
+
+    selectedCategoryColor() {
+      const id = this.item.category;
+      const color = this.categoryColors[id];
+      if (color === undefined) {
+        return "#444444";
+      }
+      return color;
+    },
+    selectedCategoryName() {
+      const id = this.item.category;
+      const category = this.categoriesById[id];
+      if (category === undefined) {
+        return "None";
+      }
+      return category.name;
+    },
+    masterCategoryName() {
+      const id = this.item.category;
+      const category = this.categoriesById[id];
+      if (category === undefined || category.masterCategory === undefined) {
+        return "None";
+      }
+      const masterCategory = this.masterCategoriesById[category.masterCategory];
+      if (masterCategory === undefined) {
+        return "None";
+      }
+      return masterCategory.name;
+    },
+    categoryBackgroundColor() {
+      return `${this.selectedCategoryColor}55`;
+    },
+    isUncategorized() {
+      return this.item.category === undefined || this.item.category === NONE._id;
+    },
   },
   methods: {
     onSelected(categoryId) {
@@ -58,3 +121,14 @@ export default {
 };
 </script>
 
+<style>
+.outline {
+  outline: 1px solid var(--v-background-lighten5)
+}
+
+.simple-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+</style>

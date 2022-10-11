@@ -1,12 +1,7 @@
 <template>
-  <div class="pl-2">
-
-    <v-icon
-    v-if="isSelected"
-      :size="size"
-      @click="toggleSelected"
-      color="primary"
-      >
+  <div class="checkbox-container pl-0" style="height: 100%">
+    <v-sheet width="3px" min-width="3px" :color="leftColor" height="100%" class="ml-0 mr-2" />
+    <v-icon v-if="isSelected" :size="size" @click="toggleSelected" color="primary">
       mdi-checkbox-marked
     </v-icon>
     <v-icon
@@ -14,14 +9,15 @@
       :size="size"
       @click="toggleSelected"
       :color="isVisible(hover) ? 'grey lighten-2' : 'background lighten-3'"
-      >
+    >
       mdi-checkbox-blank-outline
     </v-icon>
-</div>
+  </div>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
+import { NONE } from "../../constants";
 
 export default {
   props: {
@@ -33,14 +29,24 @@ export default {
       type: Boolean,
       default: false,
     },
+    item: {
+      type: Object,
+    },
   },
   data() {
     return {
       size: 20,
-    }
+    };
   },
   computed: {
     ...mapGetters("accountTransactions", ["selectedTransactions", "isCreatingNewTransaction"]),
+    leftColor() {
+      if (this.item.category === NONE._id) {
+        return "primary darken-1";
+      } else {
+        return "transparent";
+      }
+    }
   },
   methods: {
     toggleSelected() {
@@ -51,12 +57,16 @@ export default {
       return !this.isCreatingNewTransaction && (hover || this.selectedTransactions.length > 0);
       // return hover
     },
+
   },
 };
 </script>
 
 <style>
-/* .transaction-checkbox .v-icon {
-  color: inherit !important;
-} */
+
+.checkbox-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 </style>
