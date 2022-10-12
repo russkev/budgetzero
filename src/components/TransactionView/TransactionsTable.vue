@@ -69,12 +69,19 @@
               <transaction-balance :item="item" />
             </td>
             <td class="pa-0 ma-0">
-              <delete-button
-                :hover="hover"
-                :data-testid="`btn-delete-transaction-${item._id}`"
-                @click="onDeleteTransaction(item)"
-                height="100%"
-              />
+              <delete-confirm >
+                <template #activator="{on, open}">
+
+                  <delete-button
+                    :hover="hover"
+                    :dialog-open="open"
+                    :data-testid="`btn-delete-transaction-${item._id}`"
+                    height="100%"
+                    :on="on"
+                    />
+                    <!-- @click="onDeleteTransaction(item)" -->
+                </template>
+                </delete-confirm>
             </td>
           </tr>
         </v-hover>
@@ -91,8 +98,9 @@ import TransactionBalance from "./TransactionBalance.vue";
 import TransactionDescription from "./TransactionDescription.vue";
 import TransactionCleared from "./TransactionCleared.vue";
 import TransactionCategories from "./TransactionCategories.vue";
-import DeleteButton from "../CategoryView/DeleteButton.vue";
+import DeleteButton from "../Shared/DeleteButton.vue";
 import TransactionFlow from "./TransactionFlow.vue";
+import DeleteConfirm from "../Shared/DeleteConfirm.vue";
 
 export default {
   components: {
@@ -103,6 +111,7 @@ export default {
     TransactionCategories,
     TransactionFlow,
     DeleteButton,
+    DeleteConfirm,
   },
   computed: {
     ...mapGetters("accountTransactions", [

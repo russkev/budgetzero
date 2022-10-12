@@ -106,7 +106,7 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import HeaderRow from "./HeaderRow.vue";
-import DeleteButton from "./DeleteButton.vue";
+import DeleteButton from "../Shared/DeleteButton.vue";
 
 export default {
   props: {

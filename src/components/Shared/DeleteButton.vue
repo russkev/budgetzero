@@ -10,6 +10,7 @@
       :data-testid="dataTestid"
       :color="deleteButtonHover ? activeBackgroundColor : 'transparent'"
       @click="onClick()"
+      v-on="on"
     >
       <slot>
         <v-icon small :color="deleteIconColor(deleteButtonHover)">
@@ -21,7 +22,6 @@
 </template>
 
 <script>
-
 export default {
   emits: ["click"],
   props: {
@@ -49,15 +49,24 @@ export default {
       type: String,
       default: "auto",
     },
+    on: {
+      type: Object,
+    },
+    dialogOpen: {
+      type: Boolean,
+      default: false,
+    },
   },
+  computed: {},
 
   methods: {
     onClick() {
       this.$emit("click");
     },
     deleteIconColor(deleteButtonHover) {
-      if (this.hover) {
-        if (deleteButtonHover) {
+      console.log("DIALOG OPEN", this.dialogOpen);
+      if (this.hover || this.dialogOpen) {
+        if (deleteButtonHover || this.dialogOpen) {
           return this.activeColor;
         } else {
           return "white";

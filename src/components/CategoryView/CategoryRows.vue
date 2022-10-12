@@ -135,7 +135,7 @@ import { mapGetters, mapActions, mapMutations } from "vuex";
 import draggable from "vuedraggable";
 import { nextTick } from "vue";
 import { NONE, HIDDEN } from "../../constants";
-import DeleteButton from "./DeleteButton.vue";
+import DeleteButton from "../Shared/DeleteButton.vue";
 
 export default {
   props: {
