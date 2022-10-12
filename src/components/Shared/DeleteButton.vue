@@ -1,11 +1,12 @@
 <template>
   <v-hover v-slot="{ hover: deleteButtonHover }">
     <v-btn
+      v-if="!disabled"
       tile
       elevation="0"
       small
       class="pa-0 ma-0 delete-button"
-      min-width="20px"
+      :min-width="width"
       :height="height"
       :data-testid="dataTestid"
       :color="deleteButtonHover ? activeBackgroundColor : 'transparent'"
@@ -18,10 +19,12 @@
         </v-icon>
       </slot>
     </v-btn>
+    <v-sheet :min-width="width" color="transparent" v-else></v-sheet>
   </v-hover>
 </template>
 
 <script>
+
 export default {
   emits: ["click"],
   props: {
@@ -56,15 +59,21 @@ export default {
       type: Boolean,
       default: false,
     },
+    disabled: {
+      type: Boolean,
+      default: true,
+    },
   },
-  computed: {},
-
+  data() {
+    return {
+      width: "20px"
+    }
+  },
   methods: {
     onClick() {
       this.$emit("click");
     },
     deleteIconColor(deleteButtonHover) {
-      console.log("DIALOG OPEN", this.dialogOpen);
       if (this.hover || this.dialogOpen) {
         if (deleteButtonHover || this.dialogOpen) {
           return this.activeColor;

@@ -221,24 +221,22 @@ export default {
     },
 
     async commitTransactionToVuex(context, { current, previous }) {
-      const account = context.getters.accountsById[current.account]
+      let account = null
+      if (current) {
+        account = context.getters.accountsById[current.account]
+      } else if (previous) {
+        account = context.getters.accountsById[previous.account]
+      }
+      if (!account) {
+        console.error('account not found from either current or previous', current, previous)
+        return
+      }
       const transaction_payload = this._vm.calculateTransactionBalanceUpdate(current, previous, account)
       this.commit('UPDATE_ACCOUNT_BALANCES', transaction_payload)
 
       await context.dispatch('updateCategoryBalance', { current, previous })
       return true
     },
-
-    // updateBalances(context) {
-    //   return Promise.all([context.dispatch('fetchAccountBalances'), context.dispatch('fetchBudgetBalances')])
-    //     .then((response) => {
-    //       return response
-    //       // return context.dispatch('calculateMonthlyCategoryData')
-    //     })
-    //     .catch((error) => {
-    //       context.commit('API_FAILURE', error)
-    //     })
-    // },
 
     resetAllCurrentBudgetData(context) {
       context.commit('RESET_ACCOUNT_STATE')

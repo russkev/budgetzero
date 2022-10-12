@@ -309,6 +309,15 @@ export default {
           dispatch('getTransactions')
         })
     },
+    deleteTransaction({ commit, getters, dispatch }, transaction) {
+      const payload = { current: null, previous: transaction }
+      dispatch('commitDocToPouchAndVuex', payload, { root: true }).then(() => {
+        dispatch('updateRunningBalance', { transaction: transaction, isDeleted: true }, { root: true }).then(() => {
+          commit('CLEAR_SELECTED_TRANSACTIONS')
+          dispatch('getTransactions')
+        })
+      })
+    },
     setClearedSelectedTransactions({ getters, dispatch, commit }, { cleared_value }) {
       if (getters.selectedTransactions.length < 1) {
         return
@@ -406,6 +415,6 @@ const dataTableHeaders = [
   },
   {
     text: '',
-    class: headerClass,
+    class: headerClass
   }
 ]

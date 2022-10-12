@@ -1,18 +1,19 @@
 <template>
   <v-hover v-slot="{ hover }">
-    <v-textarea
-      v-model="note"
-      class="text-body-1"
-      dense
-      flat
-      solo
-      hide-details
-      @focus="isFocused = true"
-      @blur="isFocused = false"
-      :background-color="isFocused || hover ? 'background lighten-2' : 'transparent'"
-      :readonly="!isFocused"
-    />
-
+    <div>
+      <v-textarea
+        v-model="note"
+        class="text-body-1"
+        dense
+        flat
+        solo
+        hide-details
+        @focus="isFocused = true"
+        @blur="isFocused = false"
+        :background-color="isFocused || hover ? 'background lighten-2' : 'transparent'"
+        :readonly="!isFocused"
+      />
+    </div>
   </v-hover>
 </template>
 
@@ -38,7 +39,6 @@ export default {
   },
   methods: {
     ...mapMutations("accountTransactions", ["SET_EDITED_TRANSACTION_NOTE"]),
-  }
-}
-
+  },
+};
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div class="checkbox-container pl-0" style="height: 100%">
+  <div class="checkbox-container pl-0" style="height: 100%;">
     <v-sheet width="3px" min-width="3px" :color="leftColor" height="100%" class="ml-0 mr-2" />
     <v-icon v-if="isSelected" :size="size" @click="toggleSelected" color="primary">
       mdi-checkbox-marked
@@ -41,29 +41,28 @@ export default {
   computed: {
     ...mapGetters("accountTransactions", ["selectedTransactions", "isCreatingNewTransaction"]),
     leftColor() {
-      if (this.item.category === NONE._id) {
+      if (
+        this.item.category === NONE._id &&
+        (this.item.splits === undefined || this.item.splits.length === 0)
+      ) {
         return "primary darken-1";
       } else {
         return "transparent";
       }
-    }
+    },
   },
   methods: {
     toggleSelected() {
-      // this.isSelected = !this.isSelected;
       this.$emit("input", !this.isSelected);
     },
     isVisible(hover) {
       return !this.isCreatingNewTransaction && (hover || this.selectedTransactions.length > 0);
-      // return hover
     },
-
   },
 };
 </script>
 
 <style>
-
 .checkbox-container {
   display: flex;
   align-items: center;

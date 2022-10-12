@@ -10,7 +10,7 @@ const DEFAULT_CATEGORY_STATE = {
   masterCategories: [],
   masterHiddenCategory: JSON.parse(JSON.stringify(HIDDEN)),
   categories: [],
-  monthBalances: {},
+  monthBalances: {}
 }
 
 export default {
@@ -23,7 +23,7 @@ export default {
       return Object.keys(state.allCategoryBalances).sort((a, b) => compareAscii(a, b))
     },
     masterCategories: (state) => {
-      return [...state.masterCategories, state.masterHiddenCategory, {...NONE}]
+      return [...state.masterCategories, state.masterHiddenCategory, { ...NONE }]
     },
     masterCategoriesById: (state, getters) => {
       return getters.masterCategories.reduce((partial, masterCategory) => {
@@ -80,7 +80,7 @@ export default {
         let l_current = l_max
         categories.forEach((category) => {
           const category_id = category._id.slice(-ID_LENGTH.category)
-          const color = hslToHex(h, s*100, l_current*100)
+          const color = hslToHex(h, s * 100, l_current * 100)
           partial[category_id] = color
           l_current -= l_step
         })
@@ -120,18 +120,18 @@ export default {
       return monthBalances
     },
     colorSwatches: () => {
-      const rows = 4;
-      const cols = 3;
+      const rows = 4
+      const cols = 3
       const saturation = 0.7
       const lightness = 0.5
-      const step = 360 / (rows * cols);
+      const step = 360 / (rows * cols)
       let colors = []
       for (const i of Array(rows).keys()) {
         let color_row = []
         for (const j of Array(cols).keys()) {
           const index = i * cols + j
           const hue = index * step
-          const hex =  hslToHex(hue, saturation * 100, lightness * 100)
+          const hex = hslToHex(hue, saturation * 100, lightness * 100)
           color_row.push({
             alpha: 1,
             hex,
@@ -140,9 +140,9 @@ export default {
               h: hue,
               s: saturation,
               l: lightness,
-              a: 1,
+              a: 1
             },
-            hue            
+            hue
           })
         }
         colors.push(color_row)
@@ -232,25 +232,25 @@ export default {
         return null
       }
     },
-    
-    initMasterCategories: async ({state, getters, dispatch}) => {
+
+    initMasterCategories: async ({ state, getters, dispatch }) => {
       await dispatch('fetchMasterCategories')
       const docs = state.masterCategories.reduce((partial, master_category) => {
         if (master_category.color === undefined || typeof master_category.color !== 'object') {
           const color = getRandomColor(getters.colorSwatches)
           partial.push({
-            current: {...master_category, color: color},
-            previous: master_category,
+            current: { ...master_category, color: color },
+            previous: master_category
           })
         }
         return partial
       }, [])
-      console.log("DOCS", docs)
+      console.log('DOCS', docs)
       if (docs.length > 0) {
         dispatch('commitBulkDocsToPouchAndVuex', docs)
       }
     },
-    updateMasterColor( {getters, dispatch}, { masterId, colorObject }) {
+    updateMasterColor({ getters, dispatch }, { masterId, colorObject }) {
       const master_category = getters.masterCategoriesById[masterId]
       if (master_category && master_category.color.hex !== colorObject.hex) {
         const new_master_category = {
@@ -273,7 +273,7 @@ export default {
       return category._id.slice(-ID_LENGTH.category)
     },
 
-    masterCategoryDocument: async ({rootState, getters, dispatch}, { name, sort }) => {
+    masterCategoryDocument: async ({ rootState, getters, dispatch }, { name, sort }) => {
       const prefix = `b_${rootState.selectedBudgetId}${ID_NAME.masterCategory}`
       const id = await dispatch('generateUniqueShortId', { prefix, sort })
       const color = getRandomColor(getters.colorSwatches)
@@ -357,11 +357,11 @@ export default {
     },
     setMasterCategoriesCollapsed({ getters, dispatch }, expanded_indices) {
       if (expanded_indices.includes(getters.masterCategories.length)) {
-        if(masterHiddenCategory.collapsed) {
+        if (masterHiddenCategory.collapsed) {
           commit('SET_HIDDEN_COLLAPSED', false)
-        } 
+        }
       } else {
-        if(!masterHiddenCategory.collapsed) {
+        if (!masterHiddenCategory.collapsed) {
           commit('SET_HIDDEN_COLLAPSED', true)
         }
       }
@@ -401,18 +401,18 @@ export default {
       //Get the category that was moved
       const old_index = payload.oldIndex
       const new_index = payload.newIndex
-      console.log("old index: " + old_index + " new index: " + new_index)
+      console.log('old index: ' + old_index + ' new index: ' + new_index)
       const master_id_from = payload.from.id.slice(-ID_LENGTH.category)
       const master_id_to = payload.to.id.slice(-ID_LENGTH.category)
 
       let updated_by_master = {}
 
       let temp_index = new_index - 0.5
-      if(master_id_from === master_id_to && new_index > old_index) {
+      if (master_id_from === master_id_to && new_index > old_index) {
         temp_index = new_index + 0.5
       }
 
-      console.log("temp index: " + temp_index)
+      console.log('temp index: ' + temp_index)
       updated_by_master[master_id_from] = context.getters.categoriesByMaster[master_id_from].map((category, i) => {
         const sort = i === old_index ? temp_index : i
         const master_id = sort === temp_index ? master_id_to : category.masterCategory
@@ -422,20 +422,20 @@ export default {
             category = { ...category, hidden: false }
           }
           if (master_id_from !== HIDDEN._id && master_id_to === HIDDEN._id) {
-            return { 
-              ...category, 
-              sort: sort, 
-              hidden: true, 
+            return {
+              ...category,
+              sort: sort,
+              hidden: true
             }
           }
         }
 
         //  else {
-          return {
-            ...category,
-            masterCategory: master_id,
-            sort: sort
-          }
+        return {
+          ...category,
+          masterCategory: master_id,
+          sort: sort
+        }
         // }
       })
       if (master_id_to !== master_id_from) {
@@ -466,7 +466,7 @@ export default {
       context.dispatch('commitBulkDocsToPouchAndVuex', updated_payload)
     },
 
-    async initializeIncomeCategory({dispatch, getters}) {
+    async initializeIncomeCategory({ dispatch, getters }) {
       const master_category_payload = {
         name: 'Income',
         sort: 0,
@@ -575,18 +575,20 @@ export default {
       const current_value = current ? current.value : 0
       const previous_value = previous ? previous.value : 0
 
-      if (getters.allCategoryBalances[current_month] === undefined) {
-        commit('INIT_CATEGORY_BALANCES_MONTH', {
-          month: current_month,
-          categories: getters.categories,
-          monthCategories: getters.monthCategories,
-          getters: getters
-        })
-      }
+      if (current_month !== null) {
+        if (getters.allCategoryBalances[current_month] === undefined) {
+          commit('INIT_CATEGORY_BALANCES_MONTH', {
+            month: current_month,
+            categories: getters.categories,
+            monthCategories: getters.monthCategories,
+            getters: getters
+          })
+        }
 
-      if (getters.allCategoryBalances[current_month] === undefined) {
-        console.warn(`Unable to init category balances month with: ${current_month}`)
-        return
+        if (getters.allCategoryBalances[current_month] === undefined) {
+          console.warn(`Unable to init category balances month with: ${current_month}`)
+          return
+        }
       }
 
       let category_balances = []

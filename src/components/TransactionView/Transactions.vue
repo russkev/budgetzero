@@ -6,10 +6,10 @@
         <v-row class="ma-0 pa-0">
 
           <!-- <div class="flex-sheet"> -->
-          <v-col class="flex-sheet" cols="8">
+          <v-col class="flex-sheet pa-1" cols="8">
             <transactions-table />
           </v-col>
-          <v-col cols="4">
+          <v-col cols="4" class="pa-1">
             <details />
           </v-col>
           <!-- </div> -->

@@ -1,25 +1,26 @@
 <template>
-  <v-sheet width="100%" height="100%" color="background lighten-1">
+  <v-card width="100%" height="100%" flat color="background lighten-1" class="ma-0">
     <div v-if="editedTransaction._id !== DEFAULT_TRANSACTION._id">
-      <div class="transaction-details-grid">
-        <div class="text-h5">Date</div>
+      <v-card-title class="primary darken-3 pa-3">Edit Transaction</v-card-title>
+      <div class="transaction-details-grid pa-2 pb-0">
+        <div class="text-h5" :style="borderRight['date']">Date</div>
         <details-date data-testid="edit-row-date" v-model="transactionDate" />
-        <div class="text-h5">Amount</div>
+        <div class="text-h5" :style="borderRight['value']">Amount</div>
         <details-value />
-        <div class="text-h5">Status</div>
+        <div class="text-h5" :style="borderRight['cleared']">Status</div>
         <details-status />
-        <div class="text-h5">Category</div>
+        <div class="text-h5" :style="borderRight['category']">Category</div>
         <details-category />
-        <div class="text-h5">Memo</div>
+        <div class="text-h5" :style="borderRight['memo']">Memo</div>
         <details-memo />
-        <div class="text-h5">Note</div>
+        <div class="text-h5" :style="borderRight['note']">Note</div>
         <details-note />
       </div>
-      <div class="save-cancel-container">
+      <div class="save-cancel-container pa-2">
         <v-btn text small @click="onCancel">
           Cancel
         </v-btn>
-        <v-btn small elevation="0" color="primary darken-1" @click="onSave">
+        <v-btn small elevation="0" color="primary darken-3" class="ml-2" @click="onSave">
           Save
         </v-btn>
       </div>
@@ -62,11 +63,7 @@
         />
       </template>
     </details-buttons>
-    <details-buttons
-      v-else
-      icon="mdi-file-document-outline"
-      subtitle="No transactions selected"
-    >
+    <details-buttons v-else icon="mdi-file-document-outline" subtitle="No transactions selected">
       <template>
         <details-button
           data-testid="create-transaction-button"
@@ -88,7 +85,7 @@
         />
       </template>
     </details-buttons>
-  </v-sheet>
+  </v-card>
 </template>
 
 <script>
@@ -116,13 +113,6 @@ export default {
     DetailsButton,
     DetailsButtons,
   },
-  props: {
-    item: {
-      type: Object,
-      required: false,
-      default: null,
-    },
-  },
   data() {
     return {
       DEFAULT_TRANSACTION,
@@ -135,6 +125,8 @@ export default {
       "editedTransaction",
       "selectedTransactions",
       "accountId",
+      "transactions",
+      "editedTransactionIndex"
     ]),
     transactionDate: {
       get() {
@@ -144,6 +136,28 @@ export default {
         this.SET_EDITED_TRANSACTION_DATE(value);
       },
     },
+    borderRight() {
+      const item = this.transactions[this.editedTransactionIndex]
+      if (!item || !this.editedTransaction) {
+        return {};
+      }
+      const result = Object.keys(item).reduce((partial, key) => {
+        const itemValue = item[key];
+        const editedValue = this.editedTransaction[key];
+        if (itemValue !== editedValue) {
+          partial[key] = "border-right-color: var(--v-warning-base)" ;
+        } else {
+          partial[key] = "";
+        }
+        return partial
+      }, {})
+      console.log("BORDER RIGHHT", result['date'])
+      if (item.splits !== this.editedTransaction.splits) {
+        result['category'] = "border-right-color: var(--v-warning-base)";
+      } 
+      // return result
+      return result
+    }
   },
   methods: {
     ...mapMutations("accountTransactions", [
@@ -163,7 +177,8 @@ export default {
       "cancel",
     ]),
     onSave() {
-      this.save(this.item);
+      const item = this.transactions[this.editedTransactionIndex]
+      this.save(item);
     },
     onCancel() {
       this.cancel();
@@ -185,6 +200,17 @@ export default {
       this.importModalIsVisible = false;
       this.getTransactions();
     },
+    // borderRight(attribute) {
+    //   if (
+    //     this.editedTransaction &&
+    //     this.item &&
+    //     this.editedTransaction[attribute] !== this.item[attribute]
+    //   ) {
+    //     return "border-right-color: var(--v-warning-base)";
+    //   } else {
+    //     return "";
+    //   }
+    // },
   },
 };
 </script>
@@ -204,12 +230,16 @@ div.transaction-details-grid {
   text-align: right;
   border-right: 1px solid var(--v-secondary-darken1);
   padding-right: 5px;
+  padding-top: 3px;
+}
+
+.transaction-details-grid > * {
   padding-bottom: 5px;
 }
 
 .save-cancel-container {
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
+  margin-top: 0px;
 }
 </style>

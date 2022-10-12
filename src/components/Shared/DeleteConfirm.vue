@@ -10,28 +10,24 @@
         />
       </slot>
     </template>
-    <v-card >
-      <v-card-title class="headline">Delete Transaction</v-card-title>
+    <v-card color="background">
+
+      <v-alert text color="error" icon="mdi-alert-circle" type="error">
+        <h3 class="text-h4 error--text text--lighten-1">Delete Transaction</h3>
+      </v-alert>
       <v-card-text>
-        Are you sure you want to delete this transaction?
+        <span class="text-body-1">Are you sure you want to delete this transaction?</span>
       </v-card-text>
       <v-card-actions>
+
         <v-spacer />
-        <v-btn
-          color="error"
-          text
-          data-testid="delete-confirm-button"
-          @click="onDelete"
+        <v-btn text @click="onCancel">Cancel</v-btn>
+        <v-btn 
+          color="primary darken-2"
+          elevation="0"
+          @click="onConfirm"
         >
-          Delete
-        </v-btn>
-        <v-btn
-          color="primary"
-          text
-          data-testid="delete-cancel-button"
-          @click="onCancel"
-        >
-          Cancel
+          <span>Confirm</span>
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -47,14 +43,12 @@ export default {
     };
   },
   methods: {
-    onDelete() {
-      console.log("Delete");
-      // this.$emit("delete");
+    onConfirm() {
+      this.$emit("confirm");
+      this.show = false
     },
     onCancel() {
-      console.log("Cancel");
       this.show = false;
-      // this.$emit("cancel");
     },
   },
 }

@@ -69,19 +69,7 @@
               <transaction-balance :item="item" />
             </td>
             <td class="pa-0 ma-0">
-              <delete-confirm >
-                <template #activator="{on, open}">
-
-                  <delete-button
-                    :hover="hover"
-                    :dialog-open="open"
-                    :data-testid="`btn-delete-transaction-${item._id}`"
-                    height="100%"
-                    :on="on"
-                    />
-                    <!-- @click="onDeleteTransaction(item)" -->
-                </template>
-                </delete-confirm>
+              <transaction-delete :item="item" :hover="hover" />
             </td>
           </tr>
         </v-hover>
@@ -98,9 +86,8 @@ import TransactionBalance from "./TransactionBalance.vue";
 import TransactionDescription from "./TransactionDescription.vue";
 import TransactionCleared from "./TransactionCleared.vue";
 import TransactionCategories from "./TransactionCategories.vue";
-import DeleteButton from "../Shared/DeleteButton.vue";
 import TransactionFlow from "./TransactionFlow.vue";
-import DeleteConfirm from "../Shared/DeleteConfirm.vue";
+import TransactionDelete from "./TransactionDelete.vue";
 
 export default {
   components: {
@@ -110,8 +97,7 @@ export default {
     TransactionCleared,
     TransactionCategories,
     TransactionFlow,
-    DeleteButton,
-    DeleteConfirm,
+    TransactionDelete,
   },
   computed: {
     ...mapGetters("accountTransactions", [
@@ -183,7 +169,7 @@ export default {
       "SET_ACCOUNT_OPTIONS",
       "SET_ITEMS_PER_PAGE",
     ]),
-    ...mapActions("accountTransactions", ["getTransactions", "setSelectedTransactions"]),
+    ...mapActions("accountTransactions", ["getTransactions", "setSelectedTransactions", "deleteTransaction"]),
     ...mapActions(["commitDocToPouchAndVuex"]),
     // Convert date to weekday, day, month, year words
     formatDate(date) {
@@ -205,15 +191,12 @@ export default {
     //     this.getTransactions();
     //   });
     // },
-    onDeleteTransaction(transaction) {
-      // this.commitDocToPouchAndVuex({ current: null, previous: transaction }).then(() => {
-      //   this.getTransactions();
-      // });
-      console.log("onDeleteTransaction", transaction);
-    },
-    tempSelect(event) {
-      console.log("TEMP SELECT", event);
-    }
+    // onDeleteTransaction(transaction) {
+    //   console.log("onDeleteTransaction", transaction);
+    // },
+    // tempSelect(event) {
+    //   console.log("TEMP SELECT", event);
+    // }
   },
 };
 </script>
