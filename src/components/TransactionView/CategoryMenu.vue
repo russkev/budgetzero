@@ -110,7 +110,6 @@ export default {
   },
   methods: {
     onSelected(categoryId) {
-      console.log("onSelected", categoryId);
       const id = categoryId.slice(-ID_LENGTH.category);
       if (id !== this.item.category) {
         this.$emit("selected", id );

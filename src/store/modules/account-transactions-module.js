@@ -10,6 +10,9 @@ const DEFAULT_ACCOUNT_TRANSACTIONS_STATE = {
   editedTransaction: {
     ...DEFAULT_TRANSACTION
   },
+  originalTransaction: {
+    ...DEFAULT_TRANSACTION
+  },
   editedTransactionInitialDate: moment(new Date()).format('YYYY-MM-DD'),
   editedTransactionIndex: -1,
   accountId: '',
@@ -309,7 +312,7 @@ export default {
           dispatch('getTransactions')
         })
     },
-    deleteTransaction({ commit, getters, dispatch }, transaction) {
+    deleteTransaction({ commit, dispatch }, transaction) {
       const payload = { current: null, previous: transaction }
       dispatch('commitDocToPouchAndVuex', payload, { root: true }).then(() => {
         dispatch('updateRunningBalance', { transaction: transaction, isDeleted: true }, { root: true }).then(() => {

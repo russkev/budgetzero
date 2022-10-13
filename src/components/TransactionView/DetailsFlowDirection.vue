@@ -1,19 +1,18 @@
 <template>
-  <v-radio-group dense hide-details v-model="isInflow" column class="pa-0 ma-0 small-radio">
-    <template #label="{ label }">
-      <span class="text-body-1">{{ label }}</span>
-    </template>
-    <v-radio small :value="true">
-      <template #label>
-        <span class="text-body-1">Inflow</span>
-      </template>
-    </v-radio>
-    <v-radio label="Outflow" :value="false">
-      <template #label>
-        <span class="text-body-1">Outflow</span>
-      </template>
-    </v-radio>
-  </v-radio-group>
+  <div class="ml-3">
+    <div class="pb-2">
+      <v-icon left small :color="isInflow ? 'primary' : ''" @click="isInflow = true">
+        {{ isInflow ? "mdi-radiobox-marked" : "mdi-radiobox-blank" }}
+      </v-icon>
+      Inflow
+    </div>
+    <div>
+      <v-icon left small :color="isInflow ? '' : 'primary'" @click="isInflow = false">
+        {{ isInflow ? "mdi-radiobox-blank" : "mdi-radiobox-marked" }}
+      </v-icon>
+      Outflow
+    </div>
+  </div>
 </template>
 
 <script>

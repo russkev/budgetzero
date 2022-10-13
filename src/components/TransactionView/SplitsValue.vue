@@ -1,7 +1,5 @@
 <template>
-  <div>
     <currency-input id="splits-total" v-model="splitValue" right />
-  </div>
 </template>
 
 <script>
@@ -30,8 +28,22 @@ export default {
       set(value) {
         const negative = this.editedTransaction.value < 0 ? -1 : 1;
         this.SET_EDITED_TRANSACTION_SPLIT_VALUE({ index: this.index, value: value * negative });
-        this.recalculateSplits()
+        this.recalculateSplits();
       },
+    },
+    editedTransactionValue() {
+      return this.editedTransaction.value;
+    },
+    editedSplitsLength() {
+      return this.editedTransaction.splits.length;
+    },
+  },
+  watch: {
+    editedTransactionValue() {
+      this.recalculateSplits();
+    },
+    editedSplitsLength() {
+      this.recalculateSplits();
     },
   },
   methods: {
@@ -50,7 +62,7 @@ export default {
         return;
       }
 
-      let i = this.index+1;
+      let i = this.index + 1;
       while (difference !== 0) {
         if (i >= this.editedTransaction.splits.length) {
           i = 0;

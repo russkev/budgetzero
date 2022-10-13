@@ -15,6 +15,8 @@
         <details-memo />
         <div class="text-h5" :style="borderRight['note']">Note</div>
         <details-note />
+        <div class="text-h5" :style="borderRight['payee']">Danger</div>
+        <details-delete />
       </div>
       <div class="save-cancel-container pa-2">
         <v-btn text small @click="onCancel">
@@ -100,6 +102,7 @@ import DetailsFlowDirection from "./DetailsFlowDirection.vue";
 import DetailsStatus from "./DetailsStatus.vue";
 import DetailsButton from "./DetailsButton.vue";
 import DetailsButtons from "./DetailsButtons.vue";
+import DetailsDelete from "./DetailsDelete.vue";
 
 export default {
   components: {
@@ -112,6 +115,7 @@ export default {
     DetailsStatus,
     DetailsButton,
     DetailsButtons,
+    DetailsDelete
   },
   data() {
     return {
@@ -126,7 +130,7 @@ export default {
       "selectedTransactions",
       "accountId",
       "transactions",
-      "editedTransactionIndex"
+      "editedTransactionIndex",
     ]),
     transactionDate: {
       get() {
@@ -137,27 +141,44 @@ export default {
       },
     },
     borderRight() {
-      const item = this.transactions[this.editedTransactionIndex]
+      const item = this.transactions[this.editedTransactionIndex];
       if (!item || !this.editedTransaction) {
         return {};
       }
+      const borderStyle = "border-right-color: var(--v-warning-base)";
       const result = Object.keys(item).reduce((partial, key) => {
         const itemValue = item[key];
         const editedValue = this.editedTransaction[key];
         if (itemValue !== editedValue) {
-          partial[key] = "border-right-color: var(--v-warning-base)" ;
+          partial[key] = borderStyle;
         } else {
           partial[key] = "";
         }
-        return partial
-      }, {})
-      console.log("BORDER RIGHHT", result['date'])
-      if (item.splits !== this.editedTransaction.splits) {
-        result['category'] = "border-right-color: var(--v-warning-base)";
-      } 
-      // return result
-      return result
-    }
+        return partial;
+      }, {});
+      if (result.category !== "") {
+        return result;
+      }
+      if (typeof(item.category) !== typeof(this.editedTransaction.category)) {
+        result.category = borderStyle;
+      } else if (Array.isArray(item.splits) && Array.isArray(this.editedTransaction.splits)) {
+        if (item.splits.length !== this.editedTransaction.splits.length) {
+          result.category = borderStyle;
+        } else {
+          for (let i = 0; i < item.splits.length; i++) {
+            for(let [key, value] of Object.entries(item.splits[i])) {
+              if (value !== this.editedTransaction.splits[i][key]) {
+                result.category = borderStyle;
+                break;
+              }
+            }
+          }
+        }
+      } else if (item.category !== this.editedTransaction.category) {
+        result.category = borderStyle;
+      }
+      return result;
+    },
   },
   methods: {
     ...mapMutations("accountTransactions", [
@@ -177,7 +198,7 @@ export default {
       "cancel",
     ]),
     onSave() {
-      const item = this.transactions[this.editedTransactionIndex]
+      const item = this.transactions[this.editedTransactionIndex];
       this.save(item);
     },
     onCancel() {
@@ -234,7 +255,7 @@ div.transaction-details-grid {
 }
 
 .transaction-details-grid > * {
-  padding-bottom: 5px;
+  padding-bottom: 10px;
 }
 
 .save-cancel-container {

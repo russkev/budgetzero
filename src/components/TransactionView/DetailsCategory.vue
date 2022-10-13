@@ -1,8 +1,14 @@
 <template>
   <div v-if="!isSplit">
     <category-menu :item="editedTransaction" @selected="onCategorySelected" />
-    <v-card color="transparent" flat tile @click="onSplitCategoryAdd">
-      <v-icon>mdi-plus</v-icon>
+    <v-card
+      color="transparent"
+      flat
+      tile
+      @click="onSplitCategoryAdd"
+      class="ml-2 mt-2 secondary--text text--lighten-2"
+    >
+      <v-icon color="secondary lighten-2">mdi-plus</v-icon>
       Add split category
     </v-card>
   </div>
@@ -19,19 +25,23 @@
           "
         />
         <splits-value :index="index" :key="`amount-${index}`" />
+        <v-icon small :key="index" @click="onRemoveSplit(index)" class="mt-1">
+          mdi-close
+        </v-icon>
       </template>
-      <v-card color="transparent" flat tile @click="onSplitCategoryAdd" class="splits-full-width">
+      <v-card
+        color="transparent"
+        flat
+        tile
+        @click="onSplitCategoryAdd"
+        class="splits-full-width ml-2 mt-2"
+      >
         <v-icon>mdi-plus</v-icon>
         Add split category
       </v-card>
-      <currency-input
-        class="splits-full-width"
-        :value="splitsSum"
-        right
-        disabled
-      />
-      <div v-if=" splitsSum !== Math.abs(editedTransaction.value)" class="splits-full-width">
-        <v-alert color="error" text prominent class="text-h5 pa-1 pl-4">
+      <currency-input class="splits-full-width" :value="splitsSum" right disabled />
+      <div v-if="splitsSum !== Math.abs(editedTransaction.value)" class="splits-full-width">
+        <v-alert color="error" text prominent class="pa-1 pl-4" style="font-size: 1rem;">
           Splits must add up to the transaction value
         </v-alert>
       </div>
@@ -73,6 +83,7 @@ export default {
       "SET_EDITED_TRANSACTION_CATEGORY",
       "PUSH_EDITED_TRANSACTION_SPLIT",
       "CLEAR_EDITED_TRANSACTION_SPLIT",
+      "REMOVE_EDITED_TRANSACTION_SPLIT",
       "SET_EDITED_TRANSACTION_SPLIT_CATEGORY",
     ]),
     onCategorySelected(categoryId) {
@@ -90,6 +101,13 @@ export default {
     onSplitCategorySelected(index, categoryId) {
       this.SET_EDITED_TRANSACTION_SPLIT_CATEGORY({ index, categoryId });
     },
+    onRemoveSplit(index) {
+      this.REMOVE_EDITED_TRANSACTION_SPLIT(index);
+      if(this.splits.length === 1) {
+        this.onCategorySelected(this.splits[0].category);
+        this.CLEAR_EDITED_TRANSACTION_SPLIT();
+      }
+    },
   },
 };
 </script>
@@ -97,7 +115,7 @@ export default {
 <style>
 div.splits-grid {
   display: grid;
-  grid-template-columns: minmax(50px, auto) 100px;
+  grid-template-columns: minmax(50px, auto) 100px 20px;
 }
 /* #add-split-category {
   grid-column: 1 / 3;
