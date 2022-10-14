@@ -1,6 +1,6 @@
 <template>
-  <row-element-wrapper :item="item">
-    <span :class="`ellipsis text-body-1 text-right ${textColor}--text text--lighten-3`">
+  <row-element-wrapper :item="item" right>
+    <span :class="`my-auto ellipsis text-body-1 text-right ${textColor}--text text--lighten-3`">
       {{ value }}
     </span>
   </row-element-wrapper>

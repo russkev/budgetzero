@@ -7,6 +7,7 @@
     color="transparent"
     @click="onClick"
     :ripple="false"
+    :style="right ? 'justifyContent: flex-end' : ''"
   >
   <slot></slot>
   </v-sheet>
@@ -22,6 +23,10 @@ export default {
       type: Object,
       required: true,
     },
+    right: {
+      type: Boolean,
+      default: false,
+    }
   },
   computed: {
     ...mapGetters("accountTransactions", [
@@ -44,3 +49,13 @@ export default {
   },
 };
 </script>
+
+
+<style>
+.transaction-row-sheet {
+  cursor: default;
+  height: 100%;
+  display: flex;
+
+}
+</style>

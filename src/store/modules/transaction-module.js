@@ -318,7 +318,10 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     const account_doc = getters.accountsById[account_id]
     const working = row.doc.value
     const month = row.doc.date.slice(0, 7)
-    const category_id = row.doc.category
+    let category_id = row.doc.category
+    if (category_id === undefined || category_id === null) {
+      category_id = NONE._id
+    }
     const cleared = row.doc.cleared ? working : 0
     const uncleared = row.doc.cleared ? 0 : working
     const splits = row.doc.splits ? row.doc.splits : []
@@ -384,7 +387,16 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
   return balances
 }
 
-export { calculateTransactionBalanceUpdate, parseAllTransactions }
+const isUncategorized = (transaction) => {
+  const categoryId = transaction.category
+  const splits = transaction.splits
+  return (
+    (categoryId === undefined || categoryId === null || categoryId === NONE._id) &&
+    (splits === undefined || splits.length === 0)
+  )
+}
+
+export { calculateTransactionBalanceUpdate, parseAllTransactions, isUncategorized }
 
 function getUpdatedDoc(transaction_doc, running_balance) {
   let updated_transaction_doc = null

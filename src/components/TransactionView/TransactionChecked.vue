@@ -17,7 +17,7 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { NONE } from "../../constants";
+import { isUncategorized } from "../../store/modules/transaction-module";
 
 export default {
   props: {
@@ -41,10 +41,7 @@ export default {
   computed: {
     ...mapGetters("accountTransactions", ["selectedTransactions", "isCreatingNewTransaction"]),
     leftColor() {
-      if (
-        this.item.category === NONE._id &&
-        (this.item.splits === undefined || this.item.splits.length === 0)
-      ) {
+      if (isUncategorized(this.item)) {
         return "primary darken-1";
       } else {
         return "transparent";

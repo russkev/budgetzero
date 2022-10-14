@@ -49,6 +49,7 @@
 import { mapGetters } from "vuex";
 import { ID_LENGTH, NONE } from "../../constants";
 import CategorySelect from "./CategorySelect.vue";
+import { isUncategorized } from "../../store/modules/transaction-module";
 
 export default {
   emits: ["selected"],
@@ -77,7 +78,7 @@ export default {
       const id = this.item.category;
       const color = this.categoryColors[id];
       if (color === undefined) {
-        return "#444444";
+        return NONE.hexColor;
       }
       return color;
     },
@@ -85,19 +86,19 @@ export default {
       const id = this.item.category;
       const category = this.categoriesById[id];
       if (category === undefined) {
-        return "None";
+        return NONE.name;
       }
       return category.name;
     },
     masterCategoryName() {
       const id = this.item.category;
       const category = this.categoriesById[id];
-      if (category === undefined || category.masterCategory === undefined) {
-        return "None";
+      if (category === undefined || category === null || category.masterCategory === undefined) {
+        return NONE.name;
       }
       const masterCategory = this.masterCategoriesById[category.masterCategory];
       if (masterCategory === undefined) {
-        return "None";
+        return NONE.name;
       }
       return masterCategory.name;
     },
@@ -105,7 +106,8 @@ export default {
       return `${this.selectedCategoryColor}55`;
     },
     isUncategorized() {
-      return this.item.category === undefined || this.item.category === NONE._id;
+      // return this.item.category === undefined || this.item.category === NONE._id;
+      return isUncategorized(this.item);
     },
   },
   methods: {
@@ -119,6 +121,7 @@ export default {
   },
 };
 </script>
+
 
 <style>
 .outline {

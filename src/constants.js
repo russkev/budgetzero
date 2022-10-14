@@ -51,6 +51,7 @@ export const NONE = {
   name: 'Uncategorized',
   masterCategory: ':::',
   collapsed: false,
+  hexColor: '#444444',
 }
 
 export const HIDDEN = {
@@ -62,7 +63,7 @@ export const HIDDEN = {
 
 export const DEFAULT_TRANSACTION = {
   account: '',
-  category: null,
+  category: NONE._id,
   cleared: true,
   approved: true,
   value: 0,

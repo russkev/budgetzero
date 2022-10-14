@@ -836,5 +836,5 @@ export {
   prevUsedMonth,
   getCarryover,
   parseAllMonthCategories,
-  updateMonthBalances
+  updateMonthBalances,
 }

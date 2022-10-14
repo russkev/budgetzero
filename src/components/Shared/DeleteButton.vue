@@ -42,7 +42,7 @@ export default {
     },
     activeColor: {
       type: String,
-      default: "delete_text",
+      default: "error lighten-2",
     },
     activeBackgroundColor: {
       type: String,

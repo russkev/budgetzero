@@ -1,7 +1,7 @@
 <template>
   <v-card width="100%" height="100%" flat color="background lighten-1" class="ma-0">
     <div v-if="editedTransaction._id !== DEFAULT_TRANSACTION._id">
-      <v-card-title class="primary darken-3 pa-3">Edit Transaction</v-card-title>
+      <v-card-title :class="`${titleColor} darken-3 pa-3`">{{title}}</v-card-title>
       <div class="transaction-details-grid pa-2 pb-0">
         <div class="text-h5" :style="borderRight['date']">Date</div>
         <details-date data-testid="edit-row-date" v-model="transactionDate" />
@@ -131,6 +131,7 @@ export default {
       "accountId",
       "transactions",
       "editedTransactionIndex",
+      "isCreatingNewTransaction",
     ]),
     transactionDate: {
       get() {
@@ -179,6 +180,20 @@ export default {
       }
       return result;
     },
+    title() {
+      if (this.isCreatingNewTransaction) {
+        return "New Transaction";
+      } else {
+        return "Edit Transaction";
+      }
+    },
+    titleColor() {
+      if (this.isCreatingNewTransaction) {
+        return "success";
+      } else {
+        return "primary";
+      }
+    },
   },
   methods: {
     ...mapMutations("accountTransactions", [
@@ -221,17 +236,6 @@ export default {
       this.importModalIsVisible = false;
       this.getTransactions();
     },
-    // borderRight(attribute) {
-    //   if (
-    //     this.editedTransaction &&
-    //     this.item &&
-    //     this.editedTransaction[attribute] !== this.item[attribute]
-    //   ) {
-    //     return "border-right-color: var(--v-warning-base)";
-    //   } else {
-    //     return "";
-    //   }
-    // },
   },
 };
 </script>

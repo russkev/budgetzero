@@ -19,7 +19,7 @@ const DEFAULT_ACCOUNT_TRANSACTIONS_STATE = {
   accountOptions: {},
   numServerTransactions: 0,
   itemsPerPage: DEFAULT_TRANSACTIONS_PER_PAGE,
-  selectedTransactions: [],
+  selectedTransactionIds: [],
   isCreatingNewTransaction: false
 }
 
@@ -34,13 +34,19 @@ export default {
       return { ...state.accountOptions, accountId: state.accountId }
     },
     transactions: (state) => state.transactions,
+    transactionsById: (state) =>
+      state.transactions.reduce((partial, transaction) => {
+        partial[transaction._id] = transaction
+        return partial
+      }, {}),
     editedTransaction: (state) => state.editedTransaction,
     editedTransactionInitialDate: (state) => state.editedTransactionInitialDate,
     editedTransactionIndex: (state) => state.editedTransactionIndex,
     numServerTransactions: (state) => state.numServerTransactions,
     itemsPerPage: (state) => state.itemsPerPage,
     accountDoc: (state, getters, rootState, rootGetters) => rootGetters.accountsById[getters.accountId],
-    selectedTransactions: (state) => state.selectedTransactions,
+    selectedTransactions: (state, getters) =>
+      state.selectedTransactionIds.map((transactionId) => getters.transactionsById[transactionId]),
     isCreatingNewTransaction: (state) => state.isCreatingNewTransaction,
     dataTableHeaders: () => dataTableHeaders
   },
@@ -144,10 +150,11 @@ export default {
       Vue.set(state, 'itemsPerPage', num_items)
     },
     SET_SELECTED_TRANSACTIONS(state, transactions) {
-      Vue.set(state, 'selectedTransactions', transactions)
+      const transactionIds = transactions.map((transaction) => transaction._id)
+      Vue.set(state, 'selectedTransactionIds', transactionIds)
     },
     CLEAR_SELECTED_TRANSACTIONS(state) {
-      Vue.set(state, 'selectedTransactions', [])
+      Vue.set(state, 'selectedTransactionIds', [])
     },
     SET_IS_CREATING_NEW_TRANSACTION(state, is_creating) {
       Vue.set(state, 'isCreatingNewTransaction', is_creating)
@@ -169,20 +176,23 @@ export default {
           const doc = row.doc
           const category_name = _.get(rootGetters.categoriesById, [doc.category, 'name'], '')
           const sign = getters.accountDoc.sign
-          return {
+          const updatedDoc = {
             ...doc,
             value: doc.value * sign,
             ['category_name']: category_name,
             balance: doc.balance * sign
           }
+
+          return updatedDoc
         })
         commit('SET_TRANSACTIONS', transactions)
       })
     },
-    async save({ getters, dispatch }, item) {
+    async save({ getters, dispatch, commit }, item) {
       let previous = getters.isCreatingNewTransaction ? null : item
       await dispatch('prepareEditedItem')
       const transaction = JSON.parse(JSON.stringify(getters.editedTransaction))
+      commit('CLEAR_EDITED_TRANSACTION')
       return dispatch(
         'createOrUpdateTransaction',
         {
@@ -211,8 +221,9 @@ export default {
           })
       })
     },
-    cancel({ commit, getters }) {
-      commit('SET_EDITED_TRANSACTION', JSON.parse(JSON.stringify(getters.transactions[getters.editedTransactionIndex])))
+    cancel({ commit }) {
+      // commit('SET_EDITED_TRANSACTION', JSON.parse(JSON.stringify(getters.transactions[getters.editedTransactionIndex])))
+      commit('CLEAR_EDITED_TRANSACTION')
     },
     editTransaction({ commit, getters }, transaction) {
       commit('SET_IS_CREATING_NEW_TRANSACTION', false)
@@ -247,24 +258,24 @@ export default {
       commit('PUSH_TRANSACTION', getters.editedTransaction)
       commit('SET_EDITED_TRANSACTION_INDEX', getters.transactions.indexOf(getters.editedTransaction))
     },
-    updateSelectedTransactionsCleared({ getters, dispatch, commit }, { is_cleared }) {
-      if (getters.selectedTransactions.length < 1) {
-        return
-      }
-      const documents = getters.selectedTransactions.map((doc) => {
-        return {
-          current: {
-            ...doc,
-            cleared: is_cleared
-          },
-          previous: doc
-        }
-      })
-      dispatch('commitBulkDocsToPouchAndVuex', documents, { root: true }).then(() => {
-        dispatch('getTransactions')
-        commit('CLEAR_SELECTED_TRANSACTIONS')
-      })
-    },
+    // updateSelectedTransactionsCleared({ getters, dispatch, commit }, { is_cleared }) {
+    //   if (getters.selectedTransactions.length < 1) {
+    //     return
+    //   }
+    //   const documents = getters.selectedTransactions.map((doc) => {
+    //     return {
+    //       current: {
+    //         ...doc,
+    //         cleared: is_cleared
+    //       },
+    //       previous: doc
+    //     }
+    //   })
+    //   dispatch('commitBulkDocsToPouchAndVuex', documents, { root: true }).then(() => {
+    //     dispatch('getTransactions')
+    //     // commit('CLEAR_SELECTED_TRANSACTIONS')
+    //   })
+    // },
     categorizeSelectedTransactions({ getters, dispatch, commit }, { categoryId }) {
       if (getters.selectedTransactions.length < 1) {
         return
@@ -280,7 +291,7 @@ export default {
       })
       dispatch('commitBulkDocsToPouchAndVuex', documents, { root: true }).then(() => {
         dispatch('getTransactions')
-        commit('CLEAR_SELECTED_TRANSACTIONS')
+        // commit('CLEAR_SELECTED_TRANSACTIONS')
       })
     },
     deleteSelectedTransactions({ commit, getters, dispatch }) {
@@ -336,7 +347,7 @@ export default {
       })
       dispatch('commitBulkDocsToPouchAndVuex', documents, { root: true }).then(() => {
         dispatch('getTransactions')
-        commit('CLEAR_SELECTED_TRANSACTIONS')
+        // commit('CLEAR_SELECTED_TRANSACTIONS')
       })
     },
     setSelectedTransactions({ getters, commit, dispatch }, transactions) {

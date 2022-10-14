@@ -2,7 +2,7 @@
   <v-tooltip bottom class="pa-0" color="transparent" :open-delay="500">
     <template #activator="{on}">
       <row-element-wrapper :item="item">
-        <span class="ellipsis text-body-1" v-on="on">
+        <span class="my-auto ellipsis text-body-1" v-on="on">
           {{ previewDescription }}
         </span>
       </row-element-wrapper>
@@ -59,7 +59,5 @@ export default {
   -webkit-box-orient: vertical;
 }
 
-.transaction-row-sheet {
-  cursor: default;
-}
+
 </style>
