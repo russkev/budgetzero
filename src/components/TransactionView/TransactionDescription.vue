@@ -39,8 +39,6 @@ export default {
     previewDescription() {
       if (this.item.note) {
         return this.item.note;
-      } else if (this.item.payee) {
-        return this.item.payee;
       } else if (this.item.memo) {
         return this.item.memo;
       } else {
