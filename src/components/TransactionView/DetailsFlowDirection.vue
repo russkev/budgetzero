@@ -1,13 +1,13 @@
 <template>
   <div class="ml-3">
     <div class="pb-2">
-      <v-icon left small :color="isInflow ? 'primary' : ''" @click="isInflow = true">
+      <v-icon data-testid="details-inflow-button" left small :color="isInflow ? 'primary' : ''" @click="isInflow = true">
         {{ isInflow ? "mdi-radiobox-marked" : "mdi-radiobox-blank" }}
       </v-icon>
       Inflow
     </div>
     <div>
-      <v-icon left small :color="isInflow ? '' : 'primary'" @click="isInflow = false">
+      <v-icon data-testid="details-outflow-button" left small :color="isInflow ? '' : 'primary'" @click="isInflow = false">
         {{ isInflow ? "mdi-radiobox-blank" : "mdi-radiobox-marked" }}
       </v-icon>
       Outflow

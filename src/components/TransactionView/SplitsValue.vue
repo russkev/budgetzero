@@ -1,5 +1,5 @@
 <template>
-    <currency-input id="splits-total" v-model="splitValue" right />
+    <currency-input id="splits-total" v-model="splitValue" right :input-testid="inputTestid" />
 </template>
 
 <script>
@@ -11,6 +11,10 @@ export default {
   props: {
     index: {
       type: Number,
+      required: true,
+    },
+    inputTestid: {
+      type: String,
       required: true,
     },
   },

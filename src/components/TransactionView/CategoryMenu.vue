@@ -7,42 +7,45 @@
             small
             label
             class="simple-ellipsis pl-0"
-            v-on="{...tooltipOn, ...menuOn}"
+            v-on="{ ...tooltipOn, ...menuOn }"
             :color="categoryBackgroundColor"
             :disabled="disabled"
+            :data-testid="buttonTestid"
           >
-          <v-sheet
-            width="5px"
-            min-width="5px"
-            :color="selectedCategoryColor"
-            height="100%"
-            class="mr-2"
-          />
-          <div v-if="isUncategorized" class="simple-ellipsis info--text text--lighten-1 font-weight-bold" >
+            <v-sheet
+              width="5px"
+              min-width="5px"
+              :color="selectedCategoryColor"
+              height="100%"
+              class="mr-2"
+            />
+            <div
+              v-if="isUncategorized"
+              class="simple-ellipsis info--text text--lighten-1 font-weight-bold"
+            >
               {{ selectedCategoryName }}
-          </div>
-          <div v-else class="simple-ellipsis">
-            {{ selectedCategoryName }}
-          </div>
+            </div>
+            <div v-else class="simple-ellipsis">
+              {{ selectedCategoryName }}
+            </div>
           </v-chip>
         </template>
-        <v-card flat outlined color="outline background" class="ma-0 px-4 py-1">
+        <v-card v-if="!menu" flat outlined color="outline background" class="ma-0 px-4 py-1">
           <v-card-subtitle class="ma-0 pa-0">
             Category:
           </v-card-subtitle>
           <v-card-title class="ma-0 pa-0" v-if="!isUncategorized">
-            {{masterCategoryName}}: {{selectedCategoryName}}
+            {{ masterCategoryName }}: {{ selectedCategoryName }}
           </v-card-title>
           <v-card-title class="ma-0 pa-0" v-else>
-            {{selectedCategoryName}}
+            {{ selectedCategoryName }}
           </v-card-title>
         </v-card>
+        <div v-else></div>
       </v-tooltip>
     </template>
-      <category-select @selected="onSelected" />
-
+    <category-select @selected="onSelected" />
   </v-menu>
-
 </template>
 
 <script>
@@ -63,6 +66,11 @@ export default {
       required: false,
       default: false,
     },
+    buttonTestid: {
+      type: String,
+      required: false,
+      default: "",
+    },
   },
   data() {
     return {
@@ -71,7 +79,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["categoryColors", "categoriesById", "masterCategoriesById"]),    
+    ...mapGetters(["categoryColors", "categoriesById", "masterCategoriesById"]),
     ...mapGetters("accountTransactions", ["selectedTransactions"]),
 
     selectedCategoryColor() {
@@ -114,7 +122,7 @@ export default {
     onSelected(categoryId) {
       const id = categoryId.slice(-ID_LENGTH.category);
       if (id !== this.item.category) {
-        this.$emit("selected", id );
+        this.$emit("selected", id);
       }
       this.menu = false;
     },
@@ -122,10 +130,9 @@ export default {
 };
 </script>
 
-
 <style>
 .outline {
-  outline: 1px solid var(--v-background-lighten5)
+  outline: 1px solid var(--v-background-lighten5);
 }
 
 .simple-ellipsis {

@@ -1,6 +1,6 @@
 <template>
   <v-hover v-slot="{ hover }">
-    <div>
+    <div data-testid="details-memo">
       <v-textarea
         v-model="memo"
         class="text-body-1"

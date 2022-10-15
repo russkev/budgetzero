@@ -251,6 +251,7 @@ export default {
       commit('SET_EDITED_TRANSACTION', {
         ...DEFAULT_TRANSACTION,
         account: getters.accountId,
+        cleared: false,
         date: moment(new Date()).format('YYYY-MM-DD'),
         _id: `b_${rootGetters.selectedBudgetId}${ID_NAME.transaction}${generateId()}`
       })

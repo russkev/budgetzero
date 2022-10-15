@@ -245,7 +245,6 @@ export default {
         }
         return partial
       }, [])
-      console.log('DOCS', docs)
       if (docs.length > 0) {
         dispatch('commitBulkDocsToPouchAndVuex', docs)
       }

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <currency-input v-model="valueData" class="pb-2" />
+    <currency-input input-testid="details-value" v-model="valueData" class="pb-2" />
     <details-flow-direction />
   </div>
 </template>

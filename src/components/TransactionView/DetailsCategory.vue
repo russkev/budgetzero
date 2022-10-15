@@ -1,11 +1,12 @@
 <template>
   <div v-if="!isSplit">
-    <category-menu :item="editedTransaction" @selected="onCategorySelected" />
+    <category-menu button-testid="details-category" :item="editedTransaction" @selected="onCategorySelected" />
     <v-card
       color="transparent"
       flat
       tile
       @click="onSplitCategoryAdd"
+      data-testid="add-split-button"
       class="ml-2 mt-2 secondary--text text--lighten-2"
     >
       <v-icon color="secondary lighten-2">mdi-plus</v-icon>
@@ -23,8 +24,9 @@
               onSplitCategorySelected(index, payload);
             }
           "
+          :button-testid="`details-category-split-${index}`"
         />
-        <splits-value :index="index" :key="`amount-${index}`" />
+        <splits-value :inputTestid="`split-${index}-value`" :index="index" :key="`amount-${index}`" />
         <v-icon small :key="index" @click="onRemoveSplit(index)" class="mt-1">
           mdi-close
         </v-icon>
@@ -34,6 +36,7 @@
         flat
         tile
         @click="onSplitCategoryAdd"
+        data-testid="add-split-button"
         class="splits-full-width ml-2 mt-2"
       >
         <v-icon>mdi-plus</v-icon>

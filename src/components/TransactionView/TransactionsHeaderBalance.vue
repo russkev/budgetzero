@@ -3,7 +3,7 @@
     <div :class="headingStyle !== 'h4' ? `text-${headingStyle}` : 'transactions-header-heading'">
       {{ heading }}
     </div>
-    <div v-if="subheading!== ''" class="transactions-header-subheading">
+    <div v-if="subheading !== ''" class="transactions-header-subheading">
       {{ subheading }}
     </div>
   </v-sheet>

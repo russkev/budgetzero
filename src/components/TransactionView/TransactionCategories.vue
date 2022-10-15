@@ -8,6 +8,7 @@
       :item="item"
       @selected="onCategorySelected"
       :disabled="isDisabled"
+      
     />
   </div>
   <div

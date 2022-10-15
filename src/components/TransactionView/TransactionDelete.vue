@@ -5,6 +5,7 @@
         :hover="hover"
         :dialog-open="open"
         :data-testid="`btn-delete-transaction-${item._id}`"
+        class="row-delete"
         height="100%"
         :on="on"
         :disabled="item._id === editedTransaction._id"

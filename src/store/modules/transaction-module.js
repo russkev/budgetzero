@@ -390,10 +390,14 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
 const isUncategorized = (transaction) => {
   const categoryId = transaction.category
   const splits = transaction.splits
-  return (
+  if (
     (categoryId === undefined || categoryId === null || categoryId === NONE._id) &&
     (splits === undefined || splits.length === 0)
-  )
+  ) {
+    return true
+  } else if (splits !== undefined && splits.length > 1) {
+    return splits.some((split) => split.category === NONE._id)
+  }
 }
 
 export { calculateTransactionBalanceUpdate, parseAllTransactions, isUncategorized }

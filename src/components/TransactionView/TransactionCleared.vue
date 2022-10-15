@@ -13,7 +13,7 @@
   <v-icon
     v-else
     :size="size"
-    class="cleared-icon px-1"
+    class="uncleared-icon px-1"
     :color="hover ? 'background lighten-5' : 'transparent'"
     :style="isDisabled ? 'color: transparent !important;' : ''"
     :disabled="isDisabled"

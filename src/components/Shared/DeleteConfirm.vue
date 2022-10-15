@@ -21,8 +21,9 @@
       <v-card-actions>
 
         <v-spacer />
-        <v-btn text @click="onCancel">Cancel</v-btn>
+        <v-btn data-testid="delete-cancel-button" text @click="onCancel">Cancel</v-btn>
         <v-btn 
+        data-testid="delete-confirm-button"
           color="primary darken-2"
           elevation="0"
           @click="onConfirm"

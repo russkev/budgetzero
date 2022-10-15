@@ -17,6 +17,7 @@
       @focus="onFocus"
       @blur="onBlur"
       :background-color="isFocused || hover ? 'background lighten-2' : 'transparent'"
+      :data-testid="inputTestid"
     />
   </v-hover>
 </template>
@@ -46,6 +47,10 @@ export default {
     rules: {
       type: Array,
       default: () => [],
+    },
+    inputTestid: {
+      type: String,
+      default: "",
     },
   },
   data() {

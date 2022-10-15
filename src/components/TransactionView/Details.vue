@@ -1,10 +1,10 @@
 <template>
   <v-card width="100%" height="100%" flat color="background lighten-1" class="ma-0">
     <div v-if="editedTransaction._id !== DEFAULT_TRANSACTION._id">
-      <v-card-title :class="`${titleColor} darken-3 pa-3`">{{title}}</v-card-title>
+      <v-card-title :class="`${titleColor} darken-3 pa-3`">{{ title }}</v-card-title>
       <div class="transaction-details-grid pa-2 pb-0">
         <div class="text-h5" :style="borderRight['date']">Date</div>
-        <details-date data-testid="edit-row-date" v-model="transactionDate" />
+        <details-date v-model="transactionDate" />
         <div class="text-h5" :style="borderRight['value']">Amount</div>
         <details-value />
         <div class="text-h5" :style="borderRight['cleared']">Status</div>
@@ -19,10 +19,17 @@
         <details-delete />
       </div>
       <div class="save-cancel-container pa-2">
-        <v-btn text small @click="onCancel">
+        <v-btn data-testid="cancel-edit-butotn" text small @click="onCancel">
           Cancel
         </v-btn>
-        <v-btn small elevation="0" color="primary darken-3" class="ml-2" @click="onSave">
+        <v-btn
+          data-testid="save-edit-button"
+          small
+          elevation="0"
+          color="primary darken-3"
+          class="ml-2"
+          @click="onSave"
+        >
           Save
         </v-btn>
       </div>
@@ -57,12 +64,16 @@
           </template>
           <category-select @selected="onCategorySelected" />
         </v-menu>
-        <details-button
-          data-testid="delete-selected-transactions-button"
-          icon="mdi-delete"
-          label="Delete"
-          @click="deleteSelectedTransactions"
-        />
+        <delete-confirm @confirm="deleteSelectedTransactions">
+          <template #activator="{on}">
+            <details-button
+              data-testid="delete-selected-transactions-button"
+              icon="mdi-delete"
+              label="Delete"
+              :on="on"
+              />
+          </template>
+        </delete-confirm>
       </template>
     </details-buttons>
     <details-buttons v-else icon="mdi-file-document-outline" subtitle="No transactions selected">
@@ -103,6 +114,7 @@ import DetailsStatus from "./DetailsStatus.vue";
 import DetailsButton from "./DetailsButton.vue";
 import DetailsButtons from "./DetailsButtons.vue";
 import DetailsDelete from "./DetailsDelete.vue";
+import DeleteConfirm from "../Shared/DeleteConfirm.vue";
 
 export default {
   components: {
@@ -115,7 +127,8 @@ export default {
     DetailsStatus,
     DetailsButton,
     DetailsButtons,
-    DetailsDelete
+    DetailsDelete,
+    DeleteConfirm,
   },
   data() {
     return {
@@ -160,14 +173,14 @@ export default {
       if (result.category !== "") {
         return result;
       }
-      if (typeof(item.category) !== typeof(this.editedTransaction.category)) {
+      if (typeof item.category !== typeof this.editedTransaction.category) {
         result.category = borderStyle;
       } else if (Array.isArray(item.splits) && Array.isArray(this.editedTransaction.splits)) {
         if (item.splits.length !== this.editedTransaction.splits.length) {
           result.category = borderStyle;
         } else {
           for (let i = 0; i < item.splits.length; i++) {
-            for(let [key, value] of Object.entries(item.splits[i])) {
+            for (let [key, value] of Object.entries(item.splits[i])) {
               if (value !== this.editedTransaction.splits[i][key]) {
                 result.category = borderStyle;
                 break;

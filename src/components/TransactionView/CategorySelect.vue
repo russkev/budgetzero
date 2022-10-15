@@ -4,6 +4,7 @@
         <v-col class="ma-2">
           Search
           <v-text-field
+            data-testid="category-search"
             flat
             solo
             autofocus
@@ -16,7 +17,7 @@
         </v-col>
       </v-row>
       <!-- <v-divider /> -->
-      <v-list dense subheader color="background">
+      <v-list dense subheader color="background" data-testid="category-list">
         <template v-for="[masterId, categories] in Object.entries(searchedMasterCategories)">
           <v-subheader class="master-category-list-item text-h5" v-bind:key="masterId">
             {{ listMasterCategoryName(masterId) }}
@@ -70,6 +71,7 @@ import { ID_LENGTH, NONE, HIDDEN } from "../../constants";
 
 export default {
   emits: ["selected"],
+
   data() {
     return {
       search: "",

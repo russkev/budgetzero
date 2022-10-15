@@ -7,7 +7,7 @@
         </span>
       </row-element-wrapper>
     </template>
-    <v-card max-width="400px" flat outlined color="outline background" class="ma-0 px-4 py-1">
+    <v-card max-width="400px" flat outlined color="outline background" class="transaction-description ma-0 px-4 py-1">
       <v-card-subtitle class="ma-0 pa-0">
         Memo:
       </v-card-subtitle>

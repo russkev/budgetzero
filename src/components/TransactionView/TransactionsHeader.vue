@@ -1,6 +1,10 @@
 <template>
   <div id="transactions-header">
-    <transactions-header-balance left :heading="accountName" />
+    <transactions-header-balance
+      data-testid="transactions-account-name"
+      left
+      :heading="accountName"
+    />
     <v-alert
       border="left"
       align="right"
@@ -8,25 +12,30 @@
       text
       class="pa-2 ma-2"
       icon="false"
-      :class="accountBalance.working < 0 ? 'error--text text--lighten-1' : 'success--text text--lighten-1'"
+      :class="
+        accountBalance.working < 0 ? 'error--text text--lighten-1' : 'success--text text--lighten-1'
+      "
     >
       <template #prepend>
         <div class="mr-2"></div>
       </template>
 
       <transactions-header-balance
+        data-testid="account-balance-cleared"
         :heading="intlCurrency.format(accountBalance.cleared / 100)"
         headingStyle="h4"
         subheading="Cleared"
       />
       <transactions-header-balance heading="+" headingStyle="h3" />
       <transactions-header-balance
+        data-testid="account-balance-uncleared"
         :heading="intlCurrency.format(accountBalance.uncleared / 100)"
         headingStyle="h4"
         subheading="Uncleared"
       />
       <transactions-header-balance heading="=" headingStyle="h3" />
       <transactions-header-balance
+        data-testid="account-balance-working"
         :heading="intlCurrency.format(accountBalance.working / 100)"
         headingStyle="h3"
       />

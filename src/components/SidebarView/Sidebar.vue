@@ -39,12 +39,12 @@
           <v-img max-height="120" max-width="250" src="/logo3.png" />
         </v-list-item-title>
       </v-list-item-content>
-      <v-list-item-icon v-if="mini" class="my-1 pb-2 ml-2">
+      <v-list-item-icon data-testid="toggle-sidebar" v-if="mini" class="my-1 pb-2 ml-2">
         <v-btn class="mt-1" icon @click.stop="mini = !mini">
           <v-icon> mdi-chevron-right </v-icon>
         </v-btn>
       </v-list-item-icon>
-      <v-list-item-icon v-if="!mini" class="my-1 pb-2">
+      <v-list-item-icon data-testid="toggle-sidebar" v-if="!mini" class="my-1 pb-2">
         <v-btn class="mt-1" icon @click.stop="mini = !mini">
           <v-icon> mdi-chevron-left </v-icon>
         </v-btn>

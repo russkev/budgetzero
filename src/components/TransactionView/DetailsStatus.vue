@@ -1,12 +1,12 @@
 <template>
-  <div v-if="clearedStatus" class="ml-2">
-    <v-icon left :size="size" color="success" @click="clearedStatus = false">
+  <div data-testid="details-status" v-if="clearedStatus" class="ml-2">
+    <v-icon data-testid="details-cleared" left :size="size" color="success" @click="clearedStatus = false">
       mdi-alpha-c-circle
     </v-icon>
     Cleared
   </div>
-  <div v-else class="ml-2">
-    <v-icon left :size="size" color="grey" @click="clearedStatus = true">
+  <div data-testid="details-status" v-else class="ml-2">
+    <v-icon data-testid="details-cleared" left :size="size" color="grey" @click="clearedStatus = true">
       mdi-alpha-c-circle
     </v-icon>
     Uncleared
