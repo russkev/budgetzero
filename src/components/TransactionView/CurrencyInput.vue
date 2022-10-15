@@ -78,7 +78,7 @@ export default {
       },
       set(input_value) {
         let result_value = this.parseCurrencyValue(input_value);
-        result_value = parseInt(result_value * 100);
+        result_value = parseInt(Math.round(result_value * 100));
         if (!isNaN(result_value)) {
           this.$emit("input", result_value);
         }

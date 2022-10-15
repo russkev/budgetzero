@@ -540,4 +540,17 @@ describe('Test categories (budget) page', () => {
         .should('have.length', 1)
     })
   })
+
+  context.only('Tests math rounding', () => {
+    beforeEach(() => {
+      cy.initPath('budget/2022-08')
+    })
+
+    it('Checks that 18.99 is stored as 18.99', () => {
+      cy.get('[data-testid="category-budget-input-gpe"]').click()
+      cy.get('[data-testid="category-budget-input-gpe"]').clear().type('18.99')
+      cy.get('[data-testid="category-budget-input-gpe"]').blur()
+      cy.get('[data-testid="category-budget-input-gpe"]').should('have.value', '$18.99')
+    })
+  })
 })

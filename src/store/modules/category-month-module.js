@@ -115,8 +115,7 @@ export default {
       }
       const target_value = event.target.value
       const month = getters.selectedMonth
-
-      let budget_value = parseInt(parseFloat(target_value) * 100)
+      let budget_value = parseInt(Math.round(parseFloat(target_value) * 100))
       let current = null
       if (isNaN(budget_value)) {
         console.warn('Budget value is NaN')
