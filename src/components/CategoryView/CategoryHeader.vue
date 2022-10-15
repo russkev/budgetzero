@@ -1,33 +1,54 @@
 <template>
-  <v-alert
-    align="right"
-    border="left"
-    :type="availableToBudget < 0 ? 'error' : 'success'"
-    text
-    class="pa-2"
-    icon="false"
-  >
-    <template #prepend>
-      <div class="mr-2"></div>
+  <v-tooltip bottom class="pa-0" color="transparent" :open-delay="500">
+    <template #activator="{on}">
+      <v-alert
+        align="right"
+        border="left"
+        :type="availableToBudget < 0 ? 'error' : 'success'"
+        text
+        class="pa-2"
+        icon="false"
+        v-on="on"
+        >
+        <template #prepend>
+          <div class="mr-2"></div>
+        </template>
+        <div class="text-h5" data-testid="total-balance-title">
+          <span v-if="availableToBudget < 0">
+            Amount over budget:
+          </span>
+          <span v-else>
+            Amount left to budget:
+          </span>
+        </div>
+        <div class="text-h3" data-testid="total-balance">
+          <span v-if="availableToBudget < 0">
+            {{ intlCurrency.format(-availableToBudget / 100) }}
+            <!-- {{  }} -->
+          </span>
+          <span v-else>
+            {{ intlCurrency.format(availableToBudget / 100) }}
+          </span>
+        </div>
+      </v-alert>
     </template>
-    <div class="text-h5" data-testid="total-balance-title">
-      <span v-if="availableToBudget < 0">
-        Amount over budget:
-      </span>
-      <span v-else>
-        Amount left to budget:
-      </span>
-    </div>
-    <div class="text-h3" data-testid="total-balance">
-      <span v-if="availableToBudget < 0">
-        {{ intlCurrency.format(-availableToBudget / 100) }}
-        <!-- {{  }} -->
-      </span>
-      <span v-else>
-        {{ intlCurrency.format(availableToBudget / 100) }}
-      </span>
-    </div>
-  </v-alert>
+    <v-card max-width="600px" flat outlined color="outline background" class="ma-0 px-4 py-1">
+      <div class="header-balance-grid">
+        <div>Left over from last month:</div>
+        <div></div>
+        <div>{{ intlCurrency.format(monthStats.available_last_month / 100)}}</div>
+        <div>Income this month</div>
+        <div>+</div>
+        <div>{{ intlCurrency.format(monthStats.income_this_month / 100)}}</div>
+        <div>Budgeted this month</div>
+        <div>-</div>
+        <div>{{ intlCurrency.format(monthStats.budgeted_this_month / 100)}}</div>
+        <div>Available to budget</div>
+        <div>=</div>
+        <div>{{ intlCurrency.format(monthStats.available_this_month / 100)}}</div>
+      </div>
+    </v-card>
+  </v-tooltip>
 </template>
 
 <script>
@@ -67,7 +88,6 @@ export default {
         }
       }
 
-
       if (this.monthBalances[this.selectedMonth]) {
         stats.income_this_month = this.monthBalances[this.selectedMonth].income;
         stats.budgeted_this_month = this.monthBalances[this.selectedMonth].budgeted;
@@ -87,3 +107,17 @@ export default {
   methods: {},
 };
 </script>
+
+
+<style>
+div.header-balance-grid {
+  display: grid;
+  grid-template-columns: auto auto 100px;
+}
+
+div.header-balance-grid > :nth-child(3n) {
+  text-align: right;
+}
+
+
+</style>
