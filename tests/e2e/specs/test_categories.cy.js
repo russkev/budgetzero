@@ -541,7 +541,7 @@ describe('Test categories (budget) page', () => {
     })
   })
 
-  context.only('Tests math rounding', () => {
+  context('Tests math rounding', () => {
     beforeEach(() => {
       cy.initPath('budget/2022-08')
     })
