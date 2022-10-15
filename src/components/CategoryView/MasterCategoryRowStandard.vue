@@ -72,7 +72,7 @@
         Balance
       </span>
       <br />
-      <span class="text-body-1">
+      <span :class="`text-body-1 ${balanceColor}`">
         {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].balance / 100) }}
       </span>
     </template>
@@ -144,6 +144,16 @@ export default {
     },
     masterCategoryDoc() {
       return this.masterCategoriesById[this.masterCategory.id];
+    },
+    balanceColor() {
+      const balance = this.masterCategoriesStats[this.masterCategory.id].balance
+      if (balance < 0) {
+        return `error--text text--lighten-3`;
+      } else if (balance > 0) {
+        return `success--text text--lighten-3`;
+      } else {
+        return "";
+      }
     },
   },
   methods: {

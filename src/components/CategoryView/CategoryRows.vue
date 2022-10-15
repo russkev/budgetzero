@@ -81,7 +81,7 @@
                 <v-col
                   :data-testid="`category-balance-${category.id}`"
                   align="right"
-                  class="pa-0 my-auto"
+                  :class="`pa-0 my-auto ${balanceColor(category)}`"
                 >
                   {{ intlCurrency.format(category.balance / 100) }}
                 </v-col>
@@ -205,6 +205,15 @@ export default {
         return false;
       } else {
         return category_id === this.editedCategoryNameId;
+      }
+    },
+    balanceColor(category) {
+      if (category.balance < 0) {
+        return `error--text text--lighten-3`;
+      } else if (category.balance > 0) {
+        return `success--text text--lighten-3`;
+      } else {
+        return "";
       }
     },
 
