@@ -1,5 +1,5 @@
 <template>
-  <row-element-wrapper :item="item" class="text-right">
+  <row-element-wrapper :item="item" class="text-right" right>
     <span class="my-auto">
       {{ intlCurrency.format(item.balance / 100) }}
     </span>

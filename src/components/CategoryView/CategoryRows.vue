@@ -87,23 +87,7 @@
                 </v-col>
               </v-row>
             </v-col>
-            <delete-button
-              v-if="isStandard()"
-              :data-testid="`btn-hide-category-${category.id}`"
-              :hover="hover"
-              icon="mdi-eye-off-outline"
-              @click="onHideCategory(category.id)"
-            />
-            <delete-button
-              v-else
-              :data-testid="`btn-restore-category-${category.id}`"
-              :hover="hover"
-              icon="mdi-restore"
-              @click="onUnhideCategory(category.id)"
-              active-color="unhide_text"
-              active-background-color="unhide"
-            />
-
+            <category-hide :masterCategory="masterCategory" :category="category" :hover="hover"/>
             <v-sheet width="20px" color="transparent" />
           </v-row>
         </v-hover>
@@ -135,7 +119,7 @@ import { mapGetters, mapActions, mapMutations } from "vuex";
 import draggable from "vuedraggable";
 import { nextTick } from "vue";
 import { NONE, HIDDEN } from "../../constants";
-import DeleteButton from "../Shared/DeleteButton.vue";
+import CategoryHide from "./CategoryHide.vue";
 
 export default {
   props: {
@@ -150,7 +134,7 @@ export default {
   },
   components: {
     draggable,
-    DeleteButton,
+    CategoryHide,
   },
   computed: {
     ...mapGetters(["intlCurrency", "categories", "categoryColors"]),
@@ -173,8 +157,6 @@ export default {
       "newCategory",
     ]),
     onNewCategory(master_category) {
-      // this.createCategory({ name: "Name", master_id: master_category.id }).then((id) => {
-      //   this.SET_EDITED_CATEGORY_NAME_ID(id);
       this.newCategory(master_category).then((id) => {
         const element_id = `category-name-input-${id}`;
 
@@ -225,9 +207,7 @@ export default {
         return category_id === this.editedCategoryNameId;
       }
     },
-    isStandard() {
-      return ![HIDDEN._id, NONE._id].includes(this.masterCategory.id);
-    },
+
   },
 };
 </script>

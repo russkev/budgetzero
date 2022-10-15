@@ -77,11 +77,7 @@
       </span>
     </template>
     <template #delete="{hover}">
-      <delete-button
-        :hover="hover"
-        :data-testid="`btn-delete-master-category-${masterCategory.id}`"
-        @click="onDeleteMasterCategory(masterCategory)"
-      />
+      <master-category-delete :hover="hover" :master-category="masterCategory" />
     </template>
     <template #collapse>
       <v-btn
@@ -106,7 +102,7 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import HeaderRow from "./HeaderRow.vue";
-import DeleteButton from "../Shared/DeleteButton.vue";
+import MasterCategoryDelete from "./MasterCategoryDelete.vue";
 
 export default {
   props: {
@@ -125,7 +121,7 @@ export default {
   },
   components: {
     HeaderRow,
-    DeleteButton,
+    MasterCategoryDelete,
   },
   data() {
     return {

@@ -18,6 +18,7 @@
 import { mapActions, mapGetters } from "vuex";
 import DeleteConfirm from "../Shared/DeleteConfirm.vue";
 import DeleteButton from "../Shared/DeleteButton.vue";
+import { ID_LENGTH } from "../../constants";
 
 export default {
   name: "TransactionDelete",
@@ -37,11 +38,13 @@ export default {
   },
   computed: {
     ...mapGetters("accountTransactions", ["editedTransaction"]),
+    itemId() {
+      return this.item._id.slice(-ID_LENGTH.transaction);
+    },
   },
   methods: {
     ...mapActions("accountTransactions", ["deleteTransaction"]),
     onDeleteTransaction(item) {
-      // console.log("onDeleteTransaction", item);
       this.deleteTransaction(item)
     },
   },

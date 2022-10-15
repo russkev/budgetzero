@@ -6,7 +6,7 @@
           <v-chip
             small
             label
-            class="simple-ellipsis pl-0"
+            class="category-chip simple-ellipsis pl-0"
             v-on="{ ...tooltipOn, ...menuOn }"
             :color="categoryBackgroundColor"
             :disabled="disabled"
