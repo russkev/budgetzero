@@ -1,10 +1,10 @@
 <template>
   <header-row
-    :drag-id="`drag-master-category-${masterCategory.id}`"
-    :title-id="`master-category-name-${masterCategory.id}`"
-    :budgeted-id="`master-category-budget-${masterCategory.id}`"
-    :spent-id="`master-category-spent-${masterCategory.id}`"
-    :balance-id="`master-category-balance-${masterCategory.id}`"
+    :drag-id="`drag-master-category-${masterCategory._id}`"
+    :title-id="`master-category-name-${masterCategory._id}`"
+    :budgeted-id="`master-category-budget-${masterCategory._id}`"
+    :spent-id="`master-category-spent-${masterCategory._id}`"
+    :balance-id="`master-category-balance-${masterCategory._id}`"
   >
     <template #drag="{hover}">
       <v-icon v-if="hover" small class="master-handle ma-auto">
@@ -40,11 +40,11 @@
     <template #title>
       <category-grid-input
         background-color="background lighten-1"
-        :id="`master-category-name-input-${masterCategory.id}`"
-        :data-testid="`master-category-name-input-${masterCategory.id}`"
-        :is-editing="editedMasterCategoryId == masterCategory.id"
+        :id="`master-category-name-input-${masterCategory._id}`"
+        :data-testid="`master-category-name-input-${masterCategory._id}`"
+        :is-editing="editedMasterCategoryId == masterCategory._id"
         :value="masterCategory.name"
-        @edit="onEditMasterCategoryName(masterCategory.id)"
+        @edit="onEditMasterCategoryName(masterCategory._id)"
         @apply="onMasterCategoryNameChange"
         text="h4"
       />
@@ -55,7 +55,7 @@
       </span>
       <br />
       <span class="text-body-1">
-        {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].budget / 100) }}
+        {{ intlCurrency.format(masterCategoriesStats[masterCategory._id].budget / 100) }}
       </span>
     </template>
     <template #spent>
@@ -64,7 +64,7 @@
       </span>
       <br />
       <span class="text-body-1">
-        {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].spent / 100) }}
+        {{ intlCurrency.format(masterCategoriesStats[masterCategory._id].spent / 100) }}
       </span>
     </template>
     <template #balance>
@@ -73,7 +73,7 @@
       </span>
       <br />
       <span :class="`text-body-1 ${balanceColor}`">
-        {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].balance / 100) }}
+        {{ intlCurrency.format(masterCategoriesStats[masterCategory._id].balance / 100) }}
       </span>
     </template>
     <template #delete="{hover}">
@@ -88,8 +88,8 @@
         min-width="20px"
         height="auto"
         color="transparent"
-        :data-testid="`btn-expand-${masterCategory.id}`"
-        @click="toggleMasterCategoryCollapsed(masterCategory.id)"
+        :data-testid="`btn-expand-${masterCategory._id}`"
+        @click="toggleMasterCategoryCollapsed(masterCategory._id)"
       >
         <v-icon small>
           {{ masterCategory.collapsed ? "mdi-chevron-down" : "mdi-chevron-up" }}
@@ -143,10 +143,10 @@ export default {
       });
     },
     masterCategoryDoc() {
-      return this.masterCategoriesById[this.masterCategory.id];
+      return this.masterCategoriesById[this.masterCategory._id];
     },
     balanceColor() {
-      const balance = this.masterCategoriesStats[this.masterCategory.id].balance
+      const balance = this.masterCategoriesStats[this.masterCategory._id].balance
       if (balance < 0) {
         return `error--text text--lighten-3`;
       } else if (balance > 0) {
@@ -170,7 +170,7 @@ export default {
       console.log("Color selected", this.masterCategory);
     },
     onColorChange(color) {
-      this.updateMasterColor({ masterId: this.masterCategory.id, colorObject: color })
+      this.updateMasterColor({ masterId: this.masterCategory._id, colorObject: color })
     },
   },
 };

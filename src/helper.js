@@ -72,7 +72,7 @@ function docTypeFromId(id) {
   else if (id.startsWith(ID_NAME.budget)) {
     return ID_NAME.budget
   } else {
-    const type_regex = /(?<=b_[0-9a-zA-Z_\-\.]{3})_[0-9a-zA-Z\-]+_(?=[0-9a-zA-Z_\-\.]+)/
+    const type_regex = /(?<=b_[0-9a-zA-Z_\-\.]{3})_[0-9a-zA-Z\-]+_(?=[0-9a-zA-Z_\-\.\:]+)/
     const regex_result = id.match(type_regex)
     return regex_result ? regex_result[0] : null
   }

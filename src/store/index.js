@@ -16,7 +16,7 @@ import pouchdbRemote from './pouchdb/pouchdb-remote'
 import accountTransactions from './modules/account-transactions-module'
 import categoryMonth from './modules/category-month-module'
 import { generateId, generateShortId, validateId, compareAscii } from './modules/id-module'
-import { updateSingleCategory, defaultCategoryBalance, getCategoryBalance, getCarryover } from './modules/category-module'
+import { updateSingleCategory, getCategoryBalance, getCarryover } from './modules/category-module'
 import { updateAccountBalances } from './modules/account-module'
 import { calculateTransactionBalanceUpdate } from './modules/transaction-module'
 import { validateDate, validateMonth } from '../helper'
@@ -28,7 +28,6 @@ Vue.mixin({
     generateShortId,
     validateId,
     compareAscii,
-    defaultCategoryBalance,
     updateAccountBalances,
     updateSingleCategory,
     getCategoryBalance,

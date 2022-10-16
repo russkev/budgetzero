@@ -1,14 +1,14 @@
 <template>
   <header-row
-    :drag-id="`drag-master-category-${masterCategory.id}`"
-    :title-id="`master-category-name-${masterCategory.id}`"
-    :budgeted-id="`master-category-budget-${masterCategory.id}`"
-    :spent-id="`master-category-spent-${masterCategory.id}`"
-    :balance-id="`master-category-balance-${masterCategory.id}`"
+    :drag-id="`drag-master-category-${masterHiddenCategory._id}`"
+    :title-id="`master-category-name-${masterHiddenCategory._id}`"
+    :budgeted-id="`master-category-budget-${masterHiddenCategory._id}`"
+    :spent-id="`master-category-spent-${masterHiddenCategory._id}`"
+    :balance-id="`master-category-balance-${masterHiddenCategory._id}`"
   >
     <template #title>
       <span class="text-h4 ml-3 secondary--text text--lighten-2">
-        {{ masterCategory.name }}
+        {{ masterHiddenCategory.name }}
       </span>
     </template>
     <template #budgeted>
@@ -18,7 +18,7 @@
         </span>
         <br />
         <span class="text-body-1">
-          {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].budget / 100) }}
+          {{ intlCurrency.format(masterCategoriesStats[masterHiddenCategory._id].budget / 100) }}
         </span>
       </div>
     </template>
@@ -29,7 +29,7 @@
         </span>
         <br />
         <span class="text-body-1">
-          {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].spent / 100) }}
+          {{ intlCurrency.format(masterCategoriesStats[masterHiddenCategory._id].spent / 100) }}
         </span>
       </div>
     </template>
@@ -40,7 +40,7 @@
         </span>
         <br />
         <span class="text-body-1">
-          {{ intlCurrency.format(masterCategoriesStats[masterCategory.id].balance / 100) }}
+          {{ intlCurrency.format(masterCategoriesStats[masterHiddenCategory._id].balance / 100) }}
         </span>
       </div>
     </template>
@@ -53,11 +53,11 @@
         min-width="20px"
         height="auto"
         color="transparent"
-        :data-testid="`btn-expand-${masterCategory.id}`"
-        @click="toggleMasterCategoryCollapsed(masterCategory.id)"
+        :data-testid="`btn-expand-${masterHiddenCategory._id}`"
+        @click="toggleMasterCategoryCollapsed(masterHiddenCategory._id)"
       >
         <v-icon small>
-          {{ masterCategory.collapsed ? "mdi-chevron-down" : "mdi-chevron-up" }}
+          {{ masterHiddenCategory.collapsed ? "mdi-chevron-down" : "mdi-chevron-up" }}
         </v-icon>
       </v-btn>
     </template>
@@ -69,25 +69,11 @@ import { mapGetters, mapActions } from "vuex";
 import HeaderRow from "./HeaderRow.vue";
 
 export default {
-  props: {
-    masterCategory: {
-      type: Object,
-      default: {},
-    },
-    masterIndex: {
-      type: Number,
-      default: 0,
-    },
-    nameCols: {
-      type: Number,
-      default: 5,
-    },
-  },
   components: {
     HeaderRow,
   },
   computed: {
-    ...mapGetters(["intlCurrency"]),
+    ...mapGetters(["intlCurrency", "masterHiddenCategory"]),
     ...mapGetters("categoryMonth", ["editedMasterCategoryId", "masterCategoriesStats"]),
     data() {
       return "data";

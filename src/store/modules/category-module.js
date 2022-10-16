@@ -1,14 +1,22 @@
 import Vue from 'vue'
 import _, { isArray, split } from 'lodash'
 import { logPerformanceTime, extractMonthCategoryMonth, hslToHex } from '../../helper'
-import { DEFAULT_MONTH_BALANCE, ID_LENGTH, ID_NAME, NONE, HIDDEN } from '../../constants'
+import {
+  DEFAULT_MONTH_BALANCE,
+  ID_LENGTH,
+  ID_NAME,
+  NONE,
+  INCOME,
+  HIDDEN,
+  DEFAULT_CATEGORY_BALANCE
+} from '../../constants'
 import { compareAscii } from './id-module'
 
 const DEFAULT_CATEGORY_STATE = {
   allCategoryBalances: {},
-  // monthCategoryBudgets: [],
   masterCategories: [],
   masterHiddenCategory: JSON.parse(JSON.stringify(HIDDEN)),
+  masterIncomeCategory: JSON.parse(JSON.stringify(INCOME)),
   categories: [],
   monthBalances: {}
 }
@@ -23,7 +31,7 @@ export default {
       return Object.keys(state.allCategoryBalances).sort((a, b) => compareAscii(a, b))
     },
     masterCategories: (state) => {
-      return [...state.masterCategories, state.masterHiddenCategory, { ...NONE }]
+      return [state.masterIncomeCategory, ...state.masterCategories, state.masterHiddenCategory, { ...NONE }]
     },
     masterCategoriesById: (state, getters) => {
       return getters.masterCategories.reduce((partial, masterCategory) => {
@@ -32,7 +40,19 @@ export default {
       }, {})
     },
     masterHiddenCategory: (state) => state.masterHiddenCategory,
+    masterIncomeCategory: (state) => state.masterIncomeCategory,
     categories: (state) => {
+      // let hasIncome = false
+      // let result = state.categories.map((category) => {
+      //   if (category.masterCategory === INCOME._id) {
+      //     hasIncome = true
+      //   }
+      //   return category
+      // })
+      // result.push({ ...NONE })
+      // if (!hasIncome) {
+      //   result.unshift(INCOME)
+      // }
       return [...state.categories, { ...NONE }]
     },
     categoriesById: (state, getters) => {
@@ -171,6 +191,9 @@ export default {
     SET_HIDDEN_COLLAPSED(state, value) {
       Vue.set(state.masterHiddenCategory, 'collapsed', value)
     },
+    SET_INCOME_COLLAPSED(state, value) {
+      Vue.set(state.masterIncomeCategory, 'collapsed', value)
+    },
     SET_CATEGORIES(state, categories) {
       Vue.set(state, 'categories', categories)
     },
@@ -249,6 +272,27 @@ export default {
         dispatch('commitBulkDocsToPouchAndVuex', docs)
       }
     },
+    initCategories: async ({ dispatch, rootState }) => {
+      const categories = await dispatch('fetchCategories')
+      const hasBaseIncome = categories.some((category) => category._id.slice(-ID_LENGTH.category) === INCOME._id)
+      if (!hasBaseIncome) {
+        const baseIncomeCategory = {
+          // _id: `b_${rootState.selectedBudgetId}${ID_NAME.category}${INCOME._id}`,
+          // hidden: false,
+          // masterCategory: INCOME._id,
+          // name: INCOME.name,
+          // sort: 0
+
+          _id: `b_${rootState.selectedBudgetId}${ID_NAME.category}${INCOME._id}`,
+          name: INCOME.name,
+          sort: 0,
+          hidden: false,
+          masterCategory: INCOME._id
+        }
+        console.log('DOC', { current: baseIncomeCategory, previous: null })
+        dispatch('commitDocToPouchAndVuex', { current: baseIncomeCategory, previous: null })
+      }
+    },
     updateMasterColor({ getters, dispatch }, { masterId, colorObject }) {
       const master_category = getters.masterCategoriesById[masterId]
       if (master_category && master_category.color.hex !== colorObject.hex) {
@@ -298,7 +342,7 @@ export default {
     },
     reorderMasterCategories(context, master_categories) {
       const docs = master_categories.reduce((partial, master_category, i) => {
-        const previous = _.get(context.getters.masterCategoriesById, [master_category.id], null)
+        const previous = _.get(context.getters.masterCategoriesById, [master_category._id], null)
         if (previous) {
           const current = { ...previous, sort: i }
           partial.push({ current, previous })
@@ -355,13 +399,27 @@ export default {
       }
     },
     setMasterCategoriesCollapsed({ getters, dispatch }, expanded_indices) {
+      console.log('main expanded', expanded_indices)
+      
+      // Set hidden category
       if (expanded_indices.includes(getters.masterCategories.length)) {
-        if (masterHiddenCategory.collapsed) {
+        if (getters.masterHiddenCategory.collapsed) {
           commit('SET_HIDDEN_COLLAPSED', false)
         }
       } else {
-        if (!masterHiddenCategory.collapsed) {
+        if (!getters.masterHiddenCategory.collapsed) {
           commit('SET_HIDDEN_COLLAPSED', true)
+        }
+      }
+
+      // Set income category
+      if (expanded_indices.includes(0)) {
+        if (getters.masterIncomeCategory.collapsed) {
+          commit('SET_INCOME_COLLAPSED', false)
+        }
+      } else {
+        if (!getters.masterIncomeCategory.collapsed) {
+          commit('SET_INCOME_COLLAPSED', true)
         }
       }
       const docs = getters.masterCategories.reduce((partial, master_category, i) => {
@@ -388,6 +446,8 @@ export default {
       }
       if (master_id === HIDDEN._id) {
         commit('SET_HIDDEN_COLLAPSED', !master_category.collapsed)
+      } else if (master_id === INCOME._id) {
+        commit('SET_INCOME_COLLAPSED', !master_category.collapsed)
       } else {
         dispatch('commitDocToPouchAndVuex', {
           current: { ...master_category, collapsed: !master_category.collapsed },
@@ -400,7 +460,6 @@ export default {
       //Get the category that was moved
       const old_index = payload.oldIndex
       const new_index = payload.newIndex
-      console.log('old index: ' + old_index + ' new index: ' + new_index)
       const master_id_from = payload.from.id.slice(-ID_LENGTH.category)
       const master_id_to = payload.to.id.slice(-ID_LENGTH.category)
 
@@ -779,8 +838,8 @@ const updateSingleCategory = (existing_month_balances, category_id, { spent, car
   // const sign = 1
   // spent *= sign
 
-  const default_balance = defaultCategoryBalance(category_id)
-  month_balances = _.defaultsDeep(month_balances, default_balance)
+  // const default_balance = defaultCategoryBalance(category_id)
+  month_balances = _.defaultsDeep(month_balances, { [category_id]: DEFAULT_CATEGORY_BALANCE })
 
   let carryover_difference = 0
   if (carryover !== undefined) {
@@ -791,20 +850,21 @@ const updateSingleCategory = (existing_month_balances, category_id, { spent, car
     month_balances[category_id].doc = doc
   }
 
-  month_balances[category_id].spent += spent === undefined ? 0 : spent * sign
+  let amount = 0
+  if (typeof spent === 'number') {
+    amount = spent * sign
+  }
+
+  if (amount < 0) {
+    month_balances[category_id].spent += amount
+  } else {
+    month_balances[category_id].income += amount
+  }
+
+  // month_balances[category_id].spent += spent === undefined ? 0 : spent * sign
   month_balances[category_id].carryover += carryover_difference
 
   return month_balances
-}
-
-const defaultCategoryBalance = (category_id) => {
-  return {
-    [category_id]: {
-      doc: null,
-      spent: 0,
-      carryover: 0
-    }
-  }
 }
 
 const updateMonthBalances = (month_balances, account, month, amount) => {
@@ -830,10 +890,9 @@ const getRandomColor = (colorSwatches) => {
 export {
   initCategoryBalancesMonth,
   updateSingleCategory,
-  defaultCategoryBalance,
   getCategoryBalance,
   prevUsedMonth,
   getCarryover,
   parseAllMonthCategories,
-  updateMonthBalances,
+  updateMonthBalances
 }

@@ -64,7 +64,7 @@ export default {
         const date = moment(new Date()).format('YYYY-MM-DD')
         if (payload.initialBalance) {
           const initTransaction = {
-            account: response.id.slice(-ID_LENGTH.account),
+            account: response._id.slice(-ID_LENGTH.account),
             category: null,
             cleared: true,
             approved: true,

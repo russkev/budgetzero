@@ -108,11 +108,11 @@ export default {
         // If payload is an object, then it's an existing payee. Otherwise we need to create the payee.
         return null
       } else if (typeof payee_id != 'string') {
-        return payee_id.id
+        return payee_id._id
       } else {
         // Payload is a string. Need to create payee to get an uuid
         let payee = await context.dispatch('createPayee', payee_id)
-        return payee.id.slice(-ID_LENGTH.payee)
+        return payee._id.slice(-ID_LENGTH.payee)
       }
     }
   }

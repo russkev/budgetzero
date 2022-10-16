@@ -2,16 +2,16 @@
   <v-container class="pa-0 category-rows-container">
     <draggable
       class="categories-container"
-      :data-testid="`categories-container-${masterCategory.id}`"
-      :id="`categories-container-${masterCategory.id}`"
-      :group="{ name: masterCategory.id, put: true }"
+      :data-testid="`categories-container-${masterCategory._id}`"
+      :id="`categories-container-${masterCategory._id}`"
+      :group="{ name: masterCategory._id, put: true }"
       @end="onCategoryOrderChanged"
       handle=".handle"
     >
       <div
         class="ma-0 pa-0"
-        v-for="(category, index) in categoriesData[masterCategory.id]"
-        :key="category.id"
+        v-for="(category, index) in categoriesData[masterCategory._id]"
+        :key="category._id"
       >
         <v-divider v-if="index == 0" />
         <v-hover v-slot="{ hover }">
@@ -20,7 +20,7 @@
               width="20px"
               color="transparent"
               class="row-side-widget"
-              :data-testid="`drag-category-${category.id}`"
+              :data-testid="`drag-category-${category._id}`"
             >
               <v-icon v-if="hover" small class="handle ma-auto">
                 mdi-drag-vertical
@@ -31,9 +31,9 @@
                 width="3px"
                 height="18px"
                 :color="
-                  categoryColors[category.id] === undefined
+                  categoryColors[category._id] === undefined
                     ? 'transparent'
-                    : categoryColors[category.id]
+                    : categoryColors[category._id]
                 "
               />
             </v-sheet>
@@ -42,44 +42,44 @@
                 <v-col
                   :cols="nameCols"
                   class="pa-0 ma-0 my-1"
-                  :data-testid="`category-name-${category.id}`"
+                  :data-testid="`category-name-${category._id}`"
                 >
                   <category-grid-input
                     class="category-name-input"
-                    :id="`category-name-input-${category.id}`"
-                    :data-testid="`category-name-input-${category.id}`"
-                    :is-editing="isEditingName(category.id)"
+                    :id="`category-name-input-${category._id}`"
+                    :data-testid="`category-name-input-${category._id}`"
+                    :is-editing="isEditingName(category._id)"
                     :value="category.name"
-                    @edit="onEditCategoryName(category.id)"
+                    @edit="onEditCategoryName(category._id)"
                     @apply="onCategoryNameChange"
                   />
                 </v-col>
-                <v-col :id="`category-budget-${category.id}`" class="pa-0 my-1">
+                <v-col :id="`category-budget-${category._id}`" class="pa-0 my-1">
                   <category-grid-input
                     class="category-budget-input"
-                    :id="`category-budget-input-${category.id}`"
-                    :data-testid="`category-budget-input-${category.id}`"
+                    :id="`category-budget-input-${category._id}`"
+                    :data-testid="`category-budget-input-${category._id}`"
                     :value="category.budgetDisplay"
-                    :is-editing="editedCategoryBudgetId == category.id"
+                    :is-editing="editedCategoryBudgetId == category._id"
                     currency
-                    @edit="onEditCategoryBudget(category.id)"
+                    @edit="onEditCategoryBudget(category._id)"
                     @apply="
                       (event) => {
-                        onCategoryBudgetChanged({ category_id: category.id, event: event });
+                        onCategoryBudgetChanged({ category_id: category._id, event: event });
                       }
                     "
                     @enter="(event) => onCategoryBudgetEnter(category, event)"
                   />
                 </v-col>
                 <v-col
-                  :data-testid="`category-spent-${category.id}`"
+                  :data-testid="`category-spent-${category._id}`"
                   align="right"
                   class="pa-0 my-auto"
                 >
                   {{ intlCurrency.format(category.spent / 100) }}
                 </v-col>
                 <v-col
-                  :data-testid="`category-balance-${category.id}`"
+                  :data-testid="`category-balance-${category._id}`"
                   align="right"
                   :class="`pa-0 my-auto ${balanceColor(category)}`"
                 >
@@ -101,7 +101,7 @@
           tile
           text
           class="text-none"
-          :data-testid="`btn-new-category-${masterCategory.id}`"
+          :data-testid="`btn-new-category-${masterCategory._id}`"
           @click="onNewCategory(masterCategory)"
         >
           <v-icon small class="ma-1" color="primary">mdi-plus</v-icon>
@@ -171,7 +171,7 @@ export default {
       });
     },
     onCategoryBudgetEnter(category, event) {
-      // this.onCategoryBudgetChanged({ category_id: category.id, event: event });
+      // this.onCategoryBudgetChanged({ category_id: category._id, event: event });
       const next_id = this.categoryIdFromIndex(category.index + 1);
       document.activeElement.blur();
       if (next_id !== undefined) {
@@ -194,7 +194,7 @@ export default {
       for (let categories_from_master of Object.values(this.categoriesData)) {
         for (let category_data of categories_from_master) {
           if (category_data.index === index) {
-            return category_data.id;
+            return category_data._id;
           }
         }
       }

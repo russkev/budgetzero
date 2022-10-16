@@ -270,7 +270,7 @@ export default {
     async calculateAllValues({ commit, dispatch, getters }) {
       let month_category_balances = {} // Month Category Balances
       return Promise.all([
-        dispatch('fetchCategories'),
+        dispatch('initCategories'),
         dispatch('initMasterCategories'),
         dispatch('fetchMonthCategories')
       ])

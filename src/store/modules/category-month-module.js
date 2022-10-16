@@ -78,7 +78,7 @@ export default {
             const name = _.get(rootGetters.categoriesById, [category_id, 'name'], '')
             const budget_display = (budget / 100).toFixed(2)
             const result = {
-              id: category_id,
+              _id: category_id,
               name: name,
               budget: budget,
               budgetDisplay: budget_display,
@@ -194,13 +194,13 @@ export default {
       })
     },
     newCategory({ commit, dispatch }, master_category) {
-      return dispatch('createCategory', { name: 'Name', master_id: master_category.id }, { root: true }).then((id) => {
+      return dispatch('createCategory', { name: 'Name', master_id: master_category._id }, { root: true }).then((id) => {
         commit('SET_EDITED_CATEGORY_NAME_ID', id)
         return id
       })
     },
     onDeleteMasterCategory({ dispatch }, master_category) {
-      dispatch('deleteMasterCategory', master_category.id, { root: true })
+      dispatch('deleteMasterCategory', master_category._id, { root: true })
     },
 
     onCategoryNameChange({ getters, commit, dispatch, rootGetters }, event) {

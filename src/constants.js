@@ -46,6 +46,13 @@ export const DEFAULT_MONTH_CATEGORY = {
   note: ''
 }
 
+export const DEFAULT_CATEGORY_BALANCE = {
+  doc: null,
+  spent: 0,
+  carryover: 0,
+  income: 0,
+}
+
 export const NONE = {
   _id: ':::', // ':' Is never used in an id and is URL safe
   name: 'Uncategorized',
@@ -59,6 +66,13 @@ export const HIDDEN = {
   name: 'Hidden',
   masterCategory: '::0',
   collapsed: true,
+}
+
+export const INCOME = {
+  _id: ':in',
+  name: 'Income',
+  masterCategory: ':in',
+  collapsed: false,
 }
 
 export const DEFAULT_TRANSACTION = {

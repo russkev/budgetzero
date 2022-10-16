@@ -10,45 +10,47 @@
         </v-col>
       </v-row>
       <uncategorized-row />
-      <v-expansion-panels data-testid="all-categories-container" flat multiple accordion v-model="masterCategoriesExpanded">
-        <draggable v-model="masterCategoriesData" handle=".master-handle" style="width: inherit;">
 
-          <!-- STANDARD -->
-          <v-expansion-panel
-            v-for="(master_category, master_index) in masterCategoriesData"
-            :key="master_index"
-            class="master-category-row category-card background lighten-1 rounded-1 ma-0 pa-0 mb-2"
-            style="box-shadow: none;"
-          >
+      <!-- INCOME -->
+      <collapsed :master-category="masterIncomeCategory">
+        <template #header>
+          <master-category-row-income :name-cols="nameCols" />
+        </template>
+        <template #body>
+          <category-rows :master-category="masterIncomeCategory" :name-cols="nameCols" />
+        </template>
+      </collapsed>
+
+      <!-- STANDARD -->
+      <draggable v-model="masterCategoriesData" handle=".master-handle" style="width: inherit;">
+        <collapsed
+          v-for="(master_category, master_index) in masterCategoriesData"
+          :key="master_index"
+          :master-category="master_category"
+        >
+          <template #header>
             <master-category-row-standard
               :name-cols="nameCols"
               :master-category="master_category"
               :master-index="master_index"
             />
-            <v-expansion-panel-content class="pa-0 ma-0" color="transparent">
-              <category-rows :masterCategory="master_category" :nameCols="nameCols" />
-            </v-expansion-panel-content>
-          </v-expansion-panel>
+          </template>
+          <template #body>
+            <category-rows :masterCategory="master_category" :nameCols="nameCols" />
+          </template>
+        </collapsed>
+      </draggable>
 
-          <!-- HIDDEN -->
-          <v-expansion-panel
-            slot="footer"
-            :key="masterCategoriesData.length"
-            class="master-category-row category-card background lighten-1 ma-0 pa-0 mb-2"
-            style="box-shadow: none;"
-          >
-            <master-category-row-hidden
-              :name-cols="nameCols"
-              :master-category="hiddenMasterData"
-              :master-index="masterCategoriesData.length"
-            />
-            <v-expansion-panel-content class="pa-0 ma-0" color="transparent">
-              <category-rows :masterCategory="hiddenMasterData" :nameCols="nameCols" />
-            </v-expansion-panel-content>
-          </v-expansion-panel>
+      <!-- HIDDEN -->
+      <collapsed :master-category="masterHiddenCategory">
+        <template #header>
+          <master-category-row-hidden />
+        </template>
+        <template #body>
+          <category-rows :masterCategory="masterHiddenCategory" :nameCols="nameCols" />
+        </template>
+      </collapsed>
 
-        </draggable>
-      </v-expansion-panels>
       <category-card>
         <v-row class="ma-0 pa-0">
           <v-col class="pa-0 ma-0" align="center">
@@ -78,12 +80,14 @@ import CategoryHeader from "./CategoryHeader.vue";
 import CategoryMonthSelector from "./CategoryMonthSelector.vue";
 import MasterCategoryRowHidden from "./MasterCategoryRowHidden.vue";
 import MasterCategoryRowStandard from "./MasterCategoryRowStandard.vue";
+import MasterCategoryRowIncome from "./MasterCategoryRowIncome.vue";
+import Collapsed from "./Collapsed.vue";
 import CategoryRows from "./CategoryRows.vue";
 import CategoryCard from "./CategoryCard.vue";
 import UncategorizedRow from "./UncategorizedRow.vue";
 import _ from "lodash";
 import draggable from "vuedraggable";
-import { ID_LENGTH, NONE, HIDDEN } from "../../constants";
+import { ID_LENGTH, NONE, HIDDEN, INCOME } from "../../constants";
 
 export default {
   name: "CategoryGrid",
@@ -96,6 +100,8 @@ export default {
     UncategorizedRow,
     MasterCategoryRowHidden,
     MasterCategoryRowStandard,
+    MasterCategoryRowIncome,
+    Collapsed,
   },
   data() {
     return {
@@ -103,7 +109,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["masterHiddenCategory"]),
+    ...mapGetters(["masterHiddenCategory", "masterIncomeCategory"]),
     masterCategories: {
       get() {
         return this.$store.getters.masterCategories;
@@ -116,11 +122,11 @@ export default {
       get() {
         const masterCategories = this.masterCategories.filter((masterCategory) => {
           // return masterCategory._id !== NONE._id;
-          return ![HIDDEN._id, NONE._id].includes(masterCategory._id);
+          return ![HIDDEN._id, NONE._id, INCOME._id].includes(masterCategory._id);
         });
         return masterCategories.map((master_category) => {
           return {
-            id: master_category._id.slice(-ID_LENGTH.category),
+            _id: master_category._id.slice(-ID_LENGTH.category),
             name: master_category.name,
             collapsed: master_category.collapsed,
           };
@@ -129,30 +135,6 @@ export default {
       set(values) {
         this.$store.dispatch("reorderMasterCategories", values);
       },
-    },
-    masterCategoriesExpanded: {
-      get() {
-        const data = this.masterCategoriesData.concat(this.hiddenMasterData);
-        const expanded = data.reduce((partial, master_category, index) => {
-          if (master_category.collapsed === undefined || !master_category.collapsed) {
-            // partial.push(index + 1);
-            partial.push(index);
-          }
-          return partial;
-        }, []);
-        return expanded;
-      },
-      set(indices) {
-        console.log("main expanded", indices);
-        this.setMasterCategoriesCollapsed(indices);
-      },
-    },
-    hiddenMasterData() {
-      return {
-          id: this.masterHiddenCategory._id,
-          name: this.masterHiddenCategory.name,
-          collapsed: this.masterHiddenCategory.collapsed,
-        }
     },
   },
   mounted() {
@@ -233,5 +215,4 @@ export default {
 .category-card {
   border-radius: 4px;
 }
-
 </style>
