@@ -64,7 +64,7 @@
       </span>
       <br />
       <span class="text-body-1">
-        {{ intlCurrency.format(masterCategoriesStats[masterCategory._id].spent / 100) }}
+        {{ spentValue }}
       </span>
     </template>
     <template #balance>
@@ -155,6 +155,14 @@ export default {
         return "";
       }
     },
+    spentValue() {
+      const spent = this.masterCategoriesStats[this.masterCategory._id].spent
+      if (spent === 0) {
+        return this.intlCurrency.format(0)
+      } else {
+        return this.intlCurrency.format(-1 * spent / 100) 
+      }
+    },
   },
   methods: {
     ...mapMutations(["SET_MASTER_CATEGORY_COLOR"]),
@@ -172,6 +180,7 @@ export default {
     onColorChange(color) {
       this.updateMasterColor({ masterId: this.masterCategory._id, colorObject: color })
     },
+    
   },
 };
 </script>

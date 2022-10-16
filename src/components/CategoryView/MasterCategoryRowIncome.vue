@@ -5,25 +5,14 @@
     :balance-id="`master-category-balance-${masterIncomeCategory._id}`"
   >
     <template #title>
-      <span class="text-h4 ml-3 secondary--text text--lighten-2">
+      <span class="text-h4 ml-3">
         {{ masterIncomeCategory.name }}
       </span>
     </template>
-    <template #spent>
-      <div class="secondary--text text--lighten-2">
-        <span class="text-h5">
-          Spent
-        </span>
-        <br />
-        <span class="text-body-1">
-          {{ intlCurrency.format(masterCategoriesStats[masterIncomeCategory._id].spent / 100) }}
-        </span>
-      </div>
-    </template>
     <template #balance>
-      <div class="secondary--text text--lighten-2">
+      <div>
         <span class="text-h5">
-          Balance
+          This Month
         </span>
         <br />
         <span class="text-body-1">
@@ -66,9 +55,6 @@ export default {
   },
   methods: {
     ...mapActions(["toggleMasterCategoryCollapsed"]),
-    // toggleMasterCategoryCollapsed() {
-    //   console.log("MASTER CATEGORY TOGGLE")
-    // },
   },
 };
 </script>

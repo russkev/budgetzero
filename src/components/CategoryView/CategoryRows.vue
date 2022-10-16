@@ -1,5 +1,16 @@
 <template>
   <v-container class="pa-0 category-rows-container">
+    <v-divider/>
+    <category-row 
+      v-if="freezeFirstRow && frozenCategory"
+      :category="frozenCategory"
+      :master-category="masterCategory"
+      freeze
+      :hideBudgeted="hideBudgeted"
+      :hideSpent="hideSpent"
+      :hideBalance="hideBalance"
+      :isIncome="isIncome"
+    />
     <draggable
       class="categories-container"
       :data-testid="`categories-container-${masterCategory._id}`"
@@ -8,90 +19,16 @@
       @end="onCategoryOrderChanged"
       handle=".handle"
     >
-      <div
-        class="ma-0 pa-0"
-        v-for="(category, index) in categoriesData[masterCategory._id]"
-        :key="category._id"
-      >
-        <v-divider v-if="index == 0" />
-        <v-hover v-slot="{ hover }">
-          <v-row class="ma-0 pa-0 category-row">
-            <v-sheet
-              width="20px"
-              color="transparent"
-              class="row-side-widget"
-              :data-testid="`drag-category-${category._id}`"
-            >
-              <v-icon v-if="hover" small class="handle ma-auto">
-                mdi-drag-vertical
-              </v-icon>
-            </v-sheet>
-            <v-sheet width="3px" class="mr-2 color-swatch-container" color="transparent">
-              <v-sheet
-                width="3px"
-                height="18px"
-                :color="
-                  categoryColors[category._id] === undefined
-                    ? 'transparent'
-                    : categoryColors[category._id]
-                "
-              />
-            </v-sheet>
-            <v-col class="pa-0 ma-0">
-              <v-row class="ma-0 pa-0">
-                <v-col
-                  :cols="nameCols"
-                  class="pa-0 ma-0 my-1"
-                  :data-testid="`category-name-${category._id}`"
-                >
-                  <category-grid-input
-                    class="category-name-input"
-                    :id="`category-name-input-${category._id}`"
-                    :data-testid="`category-name-input-${category._id}`"
-                    :is-editing="isEditingName(category._id)"
-                    :value="category.name"
-                    @edit="onEditCategoryName(category._id)"
-                    @apply="onCategoryNameChange"
-                  />
-                </v-col>
-                <v-col :id="`category-budget-${category._id}`" class="pa-0 my-1">
-                  <category-grid-input
-                    class="category-budget-input"
-                    :id="`category-budget-input-${category._id}`"
-                    :data-testid="`category-budget-input-${category._id}`"
-                    :value="category.budgetDisplay"
-                    :is-editing="editedCategoryBudgetId == category._id"
-                    currency
-                    @edit="onEditCategoryBudget(category._id)"
-                    @apply="
-                      (event) => {
-                        onCategoryBudgetChanged({ category_id: category._id, event: event });
-                      }
-                    "
-                    @enter="(event) => onCategoryBudgetEnter(category, event)"
-                  />
-                </v-col>
-                <v-col
-                  :data-testid="`category-spent-${category._id}`"
-                  align="right"
-                  class="pa-0 my-auto"
-                >
-                  {{ intlCurrency.format(category.spent / 100) }}
-                </v-col>
-                <v-col
-                  :data-testid="`category-balance-${category._id}`"
-                  align="right"
-                  :class="`pa-0 my-auto ${balanceColor(category)}`"
-                >
-                  {{ intlCurrency.format(category.balance / 100) }}
-                </v-col>
-              </v-row>
-            </v-col>
-            <category-hide :masterCategory="masterCategory" :category="category" :hover="hover"/>
-            <v-sheet width="20px" color="transparent" />
-          </v-row>
-        </v-hover>
-      </div>
+      <category-row 
+        v-for="(category, index) in draggableCategories" 
+        :key="index"
+        :category="category"
+        :master-category="masterCategory"
+        :hideBudgeted="hideBudgeted"
+        :hideSpent="hideSpent"
+        :hideBalance="hideBalance"
+        :isIncome="isIncome"
+      /> 
     </draggable>
     <v-row class="ma-0 pa-0">
       <v-sheet width="20px" color="transparent" class="row-side-widget" />
@@ -104,8 +41,8 @@
           :data-testid="`btn-new-category-${masterCategory._id}`"
           @click="onNewCategory(masterCategory)"
         >
-          <v-icon small class="ma-1" color="primary">mdi-plus</v-icon>
-          <span class="primary--text">
+          <v-icon small class="ma-1" color="secondary lighten-3">mdi-plus</v-icon>
+          <span class="secondary--text text--lighten-3">
             New Category
           </span>
         </v-btn>
@@ -115,11 +52,11 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapMutations } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import draggable from "vuedraggable";
 import { nextTick } from "vue";
-import { NONE, HIDDEN } from "../../constants";
 import CategoryHide from "./CategoryHide.vue";
+import CategoryRow from "./CategoryRow.vue";
 
 export default {
   props: {
@@ -131,27 +68,61 @@ export default {
       type: Number,
       default: 5,
     },
+    hideBudgeted: {
+      type: Boolean,
+      default: false,
+    },
+    hideSpent: {
+      type: Boolean,
+      default: false,
+    },
+    hideBalance: {
+      type: Boolean,
+      default: false,
+    },
+    isIncome: {
+      type: Boolean,
+      default: false,
+    },
+    freezeFirstRow: {
+      type: Boolean,
+      default: false,
+    },
   },
   components: {
     draggable,
     CategoryHide,
   },
   computed: {
-    ...mapGetters(["intlCurrency", "categories", "categoryColors"]),
+    ...mapGetters(["categories"]),
     ...mapGetters("categoryMonth", [
       "editedCategoryBudgetId",
       "editedCategoryNameId",
       "categoriesData",
     ]),
+    draggableCategories() {
+      if (!this.freezeFirstRow) {
+        return this.categoriesData[this.masterCategory._id]
+      } else {
+        return this.categoriesData[this.masterCategory._id].slice(1)
+      }
+    },
+    frozenCategory() {
+      if (this.freezeFirstRow && this.categoriesData[this.masterCategory._id].length > 0) {
+        return this.categoriesData[this.masterCategory._id][0]
+      } else {
+        return null
+      }
+    }
   },
   methods: {
-    ...mapMutations("categoryMonth", ["SET_EDITED_CATEGORY_BUDGET_ID"]),
+    // ...mapMutations("categoryMonth", ["SET_EDITED_CATEGORY_BUDGET_ID"]),
     ...mapActions("categoryMonth", [
       "onCategoryOrderChanged",
-      "onCategoryNameChange",
-      "onCategoryBudgetChanged",
-      "onEditCategoryName",
-      "onEditCategoryBudget",
+      // "onCategoryNameChange",
+      // "onCategoryBudgetChanged",
+      // "onEditCategoryName",
+      // "onEditCategoryBudget",
       "onHideCategory",
       "onUnhideCategory",
       "newCategory",
@@ -200,23 +171,33 @@ export default {
       }
       return undefined;
     },
-    isEditingName(category_id) {
-      if (category_id === NONE._id) {
+    // spentValue(category) {
+    //   if (category.spent === 0) {
+    //     return this.intlCurrency.format(0)
+    //   } else {
+    //     return this.intlCurrency.format(this.negativeMultiplier * category.spent / 100) 
+    //   }
+    // },
+    
+    // balanceColor(category) {
+    //   if (category.balance < 0) {
+    //     return `error--text text--lighten-3`;
+    //   } else if (category.balance > 0) {
+    //     return `success--text text--lighten-3`;
+    //   } else {
+    //     return "";
+    //   }
+    // },
+    canDrag(hover, index) {
+      if(!hover) {
         return false;
+      }
+      if (this.freezeFirstRow) {
+        return index > 0;
       } else {
-        return category_id === this.editedCategoryNameId;
+        return true;
       }
     },
-    balanceColor(category) {
-      if (category.balance < 0) {
-        return `error--text text--lighten-3`;
-      } else if (category.balance > 0) {
-        return `success--text text--lighten-3`;
-      } else {
-        return "";
-      }
-    },
-
   },
 };
 </script>
