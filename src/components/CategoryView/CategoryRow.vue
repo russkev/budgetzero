@@ -1,6 +1,5 @@
 <template>
   <div class="ma-0 pa-0" :key="category._id">
-    <!-- <v-divider v-if="index == 0" /> -->
     <v-hover v-slot="{ hover }">
       <v-row class="ma-0 pa-0 category-row">
         <v-sheet
@@ -87,7 +86,8 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex';
-import { NONE, INCOME } from "../../constants";
+import { NONE } from "../../constants";
+import { nextTick } from "vue";
 
 export default {
   props: {
@@ -123,20 +123,11 @@ export default {
       type: Boolean,
       default: false,
     },
-    // categoryColors: {
-    //   type: Object,
-    //   default: () => ({}),
-    // },
-    // editedCategoryBudgetId: {
-    //   type: String,
-    //   default: null,
-    // },
   },
   computed: {
     ...mapGetters(["intlCurrency", "categoryColors", "categories"]),
     ...mapGetters("categoryMonth", [
       "editedCategoryBudgetId",
-      // "editedCategoryNameId",
       "categoriesData",
     ]),
     negativeMultiplier() {
@@ -146,14 +137,10 @@ export default {
   methods: {
     ...mapMutations("categoryMonth", ["SET_EDITED_CATEGORY_BUDGET_ID"]),
     ...mapActions("categoryMonth", [
-      // "onCategoryOrderChanged",
       "onCategoryNameChange",
       "onCategoryBudgetChanged",
       "onEditCategoryName",
       "onEditCategoryBudget",
-      // "onHideCategory",
-      // "onUnhideCategory",
-      // "newCategory",
     ]),
     isEditingName(category_id) {
       if (category_id === NONE._id) {
@@ -176,7 +163,6 @@ export default {
       return undefined;
     },
     onCategoryBudgetEnter(category, event) {
-      // this.onCategoryBudgetChanged({ category_id: category._id, event: event });
       const next_id = this.categoryIdFromIndex(category.index + 1);
       document.activeElement.blur();
       if (next_id !== undefined) {

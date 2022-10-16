@@ -56,7 +56,6 @@ import { mapGetters, mapActions } from "vuex";
 import draggable from "vuedraggable";
 import { nextTick } from "vue";
 import CategoryHide from "./CategoryHide.vue";
-import CategoryRow from "./CategoryRow.vue";
 
 export default {
   props: {
@@ -116,15 +115,8 @@ export default {
     }
   },
   methods: {
-    // ...mapMutations("categoryMonth", ["SET_EDITED_CATEGORY_BUDGET_ID"]),
     ...mapActions("categoryMonth", [
       "onCategoryOrderChanged",
-      // "onCategoryNameChange",
-      // "onCategoryBudgetChanged",
-      // "onEditCategoryName",
-      // "onEditCategoryBudget",
-      "onHideCategory",
-      "onUnhideCategory",
       "newCategory",
     ]),
     onNewCategory(master_category) {
@@ -140,63 +132,6 @@ export default {
           new_element.select();
         });
       });
-    },
-    onCategoryBudgetEnter(category, event) {
-      // this.onCategoryBudgetChanged({ category_id: category._id, event: event });
-      const next_id = this.categoryIdFromIndex(category.index + 1);
-      document.activeElement.blur();
-      if (next_id !== undefined) {
-        this.SET_EDITED_CATEGORY_BUDGET_ID(next_id);
-        const element_id = `category-budget-input-${next_id}`;
-        const element = document.getElementById(element_id);
-        if (!element) {
-          return;
-        }
-        element.focus();
-        nextTick().then(() => {
-          element.select();
-        });
-      }
-    },
-    categoryIdFromIndex(index) {
-      if (index >= this.categories.length) {
-        return undefined;
-      }
-      for (let categories_from_master of Object.values(this.categoriesData)) {
-        for (let category_data of categories_from_master) {
-          if (category_data.index === index) {
-            return category_data._id;
-          }
-        }
-      }
-      return undefined;
-    },
-    // spentValue(category) {
-    //   if (category.spent === 0) {
-    //     return this.intlCurrency.format(0)
-    //   } else {
-    //     return this.intlCurrency.format(this.negativeMultiplier * category.spent / 100) 
-    //   }
-    // },
-    
-    // balanceColor(category) {
-    //   if (category.balance < 0) {
-    //     return `error--text text--lighten-3`;
-    //   } else if (category.balance > 0) {
-    //     return `success--text text--lighten-3`;
-    //   } else {
-    //     return "";
-    //   }
-    // },
-    canDrag(hover, index) {
-      if(!hover) {
-        return false;
-      }
-      if (this.freezeFirstRow) {
-        return index > 0;
-      } else {
-        return true;
-      }
     },
   },
 };
