@@ -7,7 +7,7 @@
     <template #activator="{on}">
       <delete-button
         :hover="hover"
-        :data-testid="`btn-delete-master-category-${masterCategory.id}`"
+        :data-testid="`btn-delete-master-category-${masterCategory._id}`"
         :on="on"
       />
     </template>

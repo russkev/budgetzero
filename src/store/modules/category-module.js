@@ -85,17 +85,21 @@ export default {
       return result
     },
     categoryColors: (state, getters) => {
-      return getters.masterCategories.reduce((partial, master_category) => {
-        const master_id = master_category._id.slice(-ID_LENGTH.category)
+      const income_base_category = getters.categoriesById[INCOME._id]
+      const color_categories = income_base_category
+        ? getters.masterCategories.concat(income_base_category)
+        : getters.masterCategories
+      return color_categories.reduce((partial, color_category) => {
+        const master_id = color_category._id.slice(-ID_LENGTH.category)
         const categories = getters.categoriesByMaster[master_id]
-        if (categories.length === 0 || master_category.color === undefined) {
+        if (categories.length === 0 || color_category.color === undefined) {
           return partial
         }
-        const h = master_category.color.hsla.h
-        const s = master_category.color.hsla.s
-        const l = master_category.color.hsla.l
-        const l_min = 0.1
-        const l_max = 0.5
+        const h = color_category.color.hsla.h
+        const s = color_category.color.hsla.s
+        const l = color_category.color.hsla.l
+        const l_min = 0.2
+        const l_max = 0.6
         const l_step = (l_max - l_min) / categories.length
         let l_current = l_max
         categories.forEach((category) => {
@@ -141,7 +145,7 @@ export default {
     },
     colorSwatches: () => {
       const rows = 4
-      const cols = 3
+      const cols = 6
       const saturation = 0.7
       const lightness = 0.5
       const step = 360 / (rows * cols)
@@ -272,25 +276,30 @@ export default {
         dispatch('commitBulkDocsToPouchAndVuex', docs)
       }
     },
-    initCategories: async ({ dispatch, rootState }) => {
+    initCategories: async ({ dispatch, rootState, getters }) => {
       const categories = await dispatch('fetchCategories')
-      const hasBaseIncome = categories.some((category) => category._id.slice(-ID_LENGTH.category) === INCOME._id)
-      if (!hasBaseIncome) {
+      // const hasBaseIncome = categories.some((category) => category._id.slice(-ID_LENGTH.category) === INCOME._id)
+      const baseIncomeIndex = categories.findIndex((category) => category._id.slice(-ID_LENGTH.category) === INCOME._id)
+      if (baseIncomeIndex === -1) {
+        const color = getRandomColor(getters.colorSwatches)
         const baseIncomeCategory = {
-          // _id: `b_${rootState.selectedBudgetId}${ID_NAME.category}${INCOME._id}`,
-          // hidden: false,
-          // masterCategory: INCOME._id,
-          // name: INCOME.name,
-          // sort: 0
-
           _id: `b_${rootState.selectedBudgetId}${ID_NAME.category}${INCOME._id}`,
           name: INCOME.name,
           sort: 0,
           hidden: false,
-          masterCategory: INCOME._id
+          masterCategory: INCOME._id,
+          color: color
         }
-        console.log('DOC', { current: baseIncomeCategory, previous: null })
         dispatch('commitDocToPouchAndVuex', { current: baseIncomeCategory, previous: null })
+      } else if (
+        categories[baseIncomeIndex].color === undefined ||
+        typeof categories[baseIncomeIndex].color !== 'object'
+      ) {
+        const color = getRandomColor(getters.colorSwatches)
+        dispatch('commitDocToPouchAndVuex', {
+          current: { ...categories[baseIncomeIndex], color: color },
+          previous: categories[baseIncomeIndex]
+        })
       }
     },
     updateMasterColor({ getters, dispatch }, { masterId, colorObject }) {
@@ -301,6 +310,16 @@ export default {
           color: colorObject
         }
         dispatch('commitDocToPouchAndVuex', { current: new_master_category, previous: master_category })
+      }
+    },
+    updateIncomeColor({ getters, dispatch }, colorObject) {
+      const previous = getters.categoriesById[INCOME._id]
+      if (previous && previous.color && previous.color.hex !== colorObject.hex) {
+        const new_category = {
+          ...getters.categoriesById[INCOME._id],
+          color: colorObject
+        }
+        dispatch('commitDocToPouchAndVuex', { current: new_category, previous })
       }
     },
     createCategory: async (context, { name, master_id }) => {
@@ -400,7 +419,7 @@ export default {
     },
     setMasterCategoriesCollapsed({ getters, dispatch }, expanded_indices) {
       console.log('main expanded', expanded_indices)
-      
+
       // Set hidden category
       if (expanded_indices.includes(getters.masterCategories.length)) {
         if (getters.masterHiddenCategory.collapsed) {
@@ -470,7 +489,6 @@ export default {
         temp_index = new_index + 0.5
       }
 
-      console.log('temp index: ' + temp_index)
       updated_by_master[master_id_from] = context.getters.categoriesByMaster[master_id_from].map((category, i) => {
         const sort = i === old_index ? temp_index : i
         const master_id = sort === temp_index ? master_id_to : category.masterCategory

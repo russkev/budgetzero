@@ -1,28 +1,28 @@
 <template>
   <delete-confirm
-    v-if="isStandard" @confirm="onHideCategory(category.id)"
+    v-if="isStandard"
+    @confirm="onHideCategory(category._id)"
     titleText="Hide Category"
     bodyText="Are you sure you want to hide this category?"
   >
-  <template #activator="{on}">
-    <delete-button
-      
-      :data-testid="`btn-hide-category-${category.id}`"
-      :hover="hover"
-      icon="mdi-eye-off-outline"
-      :on="on"
+    <template #activator="{on}">
+      <delete-button
+        :data-testid="`btn-hide-category-${category._id}`"
+        :hover="hover"
+        icon="mdi-eye-off-outline"
+        :on="on"
       />
     </template>
   </delete-confirm>
-      <delete-button
-      v-else
-      :data-testid="`btn-restore-category-${category.id}`"
-      :hover="hover"
-      icon="mdi-restore"
-      active-color="unhide_text"
-      active-background-color="unhide"
-      @click="onUnhideCategory(category.id)"
-    />
+  <delete-button
+    v-else
+    :data-testid="`btn-restore-category-${category._id}`"
+    :hover="hover"
+    icon="mdi-restore"
+    active-color="unhide_text"
+    active-background-color="unhide"
+    @click="onUnhideCategory(category._id)"
+  />
 </template>
 
 <script>
@@ -53,11 +53,14 @@ export default {
   },
   computed: {
     isStandard() {
-      return ![HIDDEN._id, NONE._id].includes(this.masterCategory.id);
+      return ![HIDDEN._id, NONE._id].includes(this.masterCategory._id);
     },
   },
   methods: {
     ...mapActions("categoryMonth", ["onHideCategory", "onUnhideCategory"]),
+    testConfirm() {
+      console.log("testConform");
+    },
   },
 };
 </script>

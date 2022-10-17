@@ -12,30 +12,11 @@
       </v-icon>
     </template>
     <template #color="{hover}">
-      <v-menu offset-y v-model="colorIsOpen">
-        <template #activator="{ on }">
-          <!-- tile -->
-          <v-btn
-            elevation="0"
-            min-width="10px"
-            width="10px"
-            height="14px"
-            class="pa-0 ma-auto"
-            v-on="on"
-            :color="hover || colorIsOpen ? masterCategoryDoc.color.hex : 'transparent'"
-          />
-        </template>
-        <v-color-picker
-          show-swatches
-          hide-canvas
-          hide-inputs
-          hide-mode-switch
-          hide-sliders
-          :swatches="hexSwatches"
-          :value="masterCategoryDoc.color.hex"
-          @update:color="onColorChange"
-        />
-      </v-menu>
+      <master-category-color
+        :color="masterCategory.color.hex"
+        :hover="hover"
+        @updated="onColorChange"
+      />
     </template>
     <template #title>
       <category-grid-input
@@ -102,6 +83,7 @@
 <script>
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import HeaderRow from "./HeaderRow.vue";
+import MasterCategoryColor from "./MasterCategoryColor.vue";
 import MasterCategoryDelete from "./MasterCategoryDelete.vue";
 
 export default {
@@ -121,6 +103,7 @@ export default {
   },
   components: {
     HeaderRow,
+    MasterCategoryColor,
     MasterCategoryDelete,
   },
   data() {
@@ -135,18 +118,12 @@ export default {
     data() {
       return "data";
     },
-    hexSwatches() {
-      return this.colorSwatches.map((colorSwatchRow) => {
-        return colorSwatchRow.map((colorSwatch) => {
-          return colorSwatch.hex;
-        });
-      });
-    },
+
     masterCategoryDoc() {
       return this.masterCategoriesById[this.masterCategory._id];
     },
     balanceColor() {
-      const balance = this.masterCategoriesStats[this.masterCategory._id].balance
+      const balance = this.masterCategoriesStats[this.masterCategory._id].balance;
       if (balance < 0) {
         return `error--text text--lighten-3`;
       } else if (balance > 0) {
@@ -156,11 +133,11 @@ export default {
       }
     },
     spentValue() {
-      const spent = this.masterCategoriesStats[this.masterCategory._id].spent
+      const spent = this.masterCategoriesStats[this.masterCategory._id].spent;
       if (spent === 0) {
-        return this.intlCurrency.format(0)
+        return this.intlCurrency.format(0);
       } else {
-        return this.intlCurrency.format(-1 * spent / 100) 
+        return this.intlCurrency.format((-1 * spent) / 100);
       }
     },
   },
@@ -174,13 +151,9 @@ export default {
       "newMasterCategory",
       "newCategory",
     ]),
-    onColorSelected() {
-      console.log("Color selected", this.masterCategory);
-    },
     onColorChange(color) {
-      this.updateMasterColor({ masterId: this.masterCategory._id, colorObject: color })
+      this.updateMasterColor({ masterId: this.masterCategory._id, colorObject: color });
     },
-    
   },
 };
 </script>

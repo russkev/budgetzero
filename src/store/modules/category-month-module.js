@@ -226,6 +226,7 @@ export default {
       }
     },
     onHideCategory({ dispatch, rootGetters }, category_id) {
+      console.log('onHideCategory', category_id)
       const doc = rootGetters.categoriesById[category_id]
       if (doc !== undefined) {
         dispatch(
@@ -239,6 +240,7 @@ export default {
       }
     },
     onUnhideCategory({ dispatch, rootGetters }, category_id) {
+      console.log("onUnhideCategory", category_id)
       const doc = rootGetters.categoriesById[category_id]
       if (doc === undefined) {
         return

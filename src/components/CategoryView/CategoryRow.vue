@@ -8,7 +8,7 @@
           class="row-side-widget"
           :data-testid="`drag-category-${category._id}`"
         >
-          <v-icon v-if="hover &&!freeze" small class="handle ma-auto">
+          <v-icon v-if="hover && !freeze" small class="handle ma-auto">
             mdi-drag-vertical
           </v-icon>
         </v-sheet>
@@ -75,7 +75,12 @@
             </v-col>
           </v-row>
         </v-col>
-        <category-hide v-if="!freeze" :masterCategory="masterCategory" :category="category" :hover="hover" />
+        <category-hide
+          v-if="!freeze"
+          :masterCategory="masterCategory"
+          :category="category"
+          :hover="hover"
+        />
         <v-sheet v-else width="20px" color="transparent" />
         <v-sheet width="20px" color="transparent" />
       </v-row>
@@ -83,9 +88,8 @@
   </div>
 </template>
 
-
 <script>
-import { mapGetters, mapActions, mapMutations } from 'vuex';
+import { mapGetters, mapActions, mapMutations } from "vuex";
 import { NONE } from "../../constants";
 import { nextTick } from "vue";
 
@@ -126,10 +130,7 @@ export default {
   },
   computed: {
     ...mapGetters(["intlCurrency", "categoryColors", "categories"]),
-    ...mapGetters("categoryMonth", [
-      "editedCategoryBudgetId",
-      "categoriesData",
-    ]),
+    ...mapGetters("categoryMonth", ["editedCategoryBudgetId", "categoriesData"]),
     negativeMultiplier() {
       return this.isIncome ? 1 : -1;
     },
@@ -189,11 +190,11 @@ export default {
     },
     spentValue(category) {
       if (category.spent === 0) {
-        return this.intlCurrency.format(0)
+        return this.intlCurrency.format(0);
       } else {
-        return this.intlCurrency.format(this.negativeMultiplier * category.spent / 100) 
+        return this.intlCurrency.format((this.negativeMultiplier * category.spent) / 100);
       }
     },
-  }
-}
+  },
+};
 </script>

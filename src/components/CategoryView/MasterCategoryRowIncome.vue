@@ -4,6 +4,9 @@
     :spent-id="`master-category-spent-${masterIncomeCategory._id}`"
     :balance-id="`master-category-balance-${masterIncomeCategory._id}`"
   >
+  <template #color="{hover}">
+    <master-category-color :color="incomeColor" :hover="hover" @updated="onColorChange" />
+  </template>
     <template #title>
       <span class="text-h4 ml-3">
         {{ masterIncomeCategory.name }}
@@ -44,17 +47,29 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import HeaderRow from "./HeaderRow.vue";
+import { INCOME } from "../../constants";
 
 export default {
   components: {
     HeaderRow,
   },
   computed: {
-    ...mapGetters(["intlCurrency",  "masterIncomeCategory"]),
+    ...mapGetters(["intlCurrency",  "masterIncomeCategory" , "categoriesById"]),
     ...mapGetters("categoryMonth", ["masterCategoriesStats"]),
+    incomeColor() {
+      const incomeBaseCategory = this.categoriesById[INCOME._id]
+      if (incomeBaseCategory) {
+        return incomeBaseCategory.color.hex
+      } else {
+        return "000000"
+      }
+    },
   },
   methods: {
-    ...mapActions(["toggleMasterCategoryCollapsed"]),
+    ...mapActions(["toggleMasterCategoryCollapsed",  "updateIncomeColor"]),
+        onColorChange(color) {
+      this.updateIncomeColor(color)
+    }
   },
 };
 </script>

@@ -136,6 +136,7 @@ export default {
             _id: master_category._id.slice(-ID_LENGTH.category),
             name: master_category.name,
             collapsed: master_category.collapsed,
+            color: master_category.color,
           };
         });
       },
