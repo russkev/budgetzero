@@ -17,11 +17,11 @@
       :id="`categories-container-${masterCategory._id}`"
       :group="{ name: masterCategory._id, put: true }"
       handle=".handle"
-      v-model="draggableCategoriesData"
+      v-model="draggableCategories"
     >
       <!-- <div v-for="(category, index) in draggableCategories" :key="category._id"> -->
         <category-row
-          v-for="(category, index) in draggableCategoriesData"
+          v-for="(category, index) in draggableCategories"
           :key="category._id"
           :category="category"
           :master-category="masterCategory"
