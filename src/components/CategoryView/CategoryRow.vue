@@ -30,6 +30,7 @@
               class="pa-0 ma-0 my-1"
               :data-testid="`category-name-${category._id}`"
             >
+              {{`i: ${index} s: ${category.sort} id: ${category._id}`}}
               <category-grid-input
                 class="category-name-input"
                 :id="`category-name-input-${category._id}`"
@@ -127,6 +128,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    index: {
+      type: Number,
+      default: 0,
+    },
   },
   computed: {
     ...mapGetters(["intlCurrency", "categoryColors", "categories"]),
@@ -150,21 +155,24 @@ export default {
         return category_id === this.editedCategoryNameId;
       }
     },
-    categoryIdFromIndex(index) {
-      if (index >= this.categories.length) {
-        return undefined;
-      }
-      for (let categories_from_master of Object.values(this.categoriesData)) {
-        for (let category_data of categories_from_master) {
-          if (category_data.index === index) {
-            return category_data._id;
-          }
-        }
-      }
-      return undefined;
-    },
+    // categoryIdFromIndex(index) {
+    //   if (index >= this.categories.length) {
+    //     return undefined;
+    //   }
+    //   for (let categories_from_master of Object.values(this.categoriesData)) {
+    //     for (let category_data of categories_from_master) {
+    //       if (category_data.index === index) {
+    //         return category_data._id;
+    //       }
+    //     }
+    //   }
+    //   return undefined;
+    // },
     onCategoryBudgetEnter(category, event) {
-      const next_id = this.categoryIdFromIndex(category.index + 1);
+      console.log("onCategoryBudgetEnter", category, event);
+
+      // const next_id = this.categoryIdFromIndex(category.index + 1);
+      const next_id = category.sort + 1;
       document.activeElement.blur();
       if (next_id !== undefined) {
         this.SET_EDITED_CATEGORY_BUDGET_ID(next_id);

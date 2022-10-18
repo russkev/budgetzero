@@ -475,7 +475,7 @@ export default {
       }
     },
 
-    reorderCategory(context, payload) {
+    reorderCategory({getters, dispatch}, payload) {
       //Get the category that was moved
       const old_index = payload.oldIndex
       const new_index = payload.newIndex
@@ -489,7 +489,9 @@ export default {
         temp_index = new_index + 0.5
       }
 
-      updated_by_master[master_id_from] = context.getters.categoriesByMaster[master_id_from].map((category, i) => {
+      console.log("GETTERS CATEGORIES", JSON.parse(JSON.stringify(getters.categoriesByMaster[master_id_from])))
+
+      updated_by_master[master_id_from] = getters.categoriesByMaster[master_id_from].map((category, i) => {
         const sort = i === old_index ? temp_index : i
         const master_id = sort === temp_index ? master_id_to : category.masterCategory
 
@@ -514,8 +516,9 @@ export default {
         }
         // }
       })
+      console.log("UPDATED BY MASTER", JSON.parse(JSON.stringify(updated_by_master)))
       if (master_id_to !== master_id_from) {
-        updated_by_master[master_id_to] = context.getters.categoriesByMaster[master_id_to].map((category, i) => {
+        updated_by_master[master_id_to] = getters.categoriesByMaster[master_id_to].map((category, i) => {
           return {
             ...category,
             sort: i
@@ -527,19 +530,18 @@ export default {
 
       const updated_payload = Object.values(updated_by_master).reduce((partial, categories) => {
         categories.sort((a, b) => a.sort - b.sort)
+        console.log("UPDATED BY MASTER", JSON.parse(JSON.stringify(categories)))
         const updated_categories = categories.map((category, i) => {
-          return {
-            previous: context.getters.categoriesById[category._id.slice(-ID_LENGTH.category)],
-            current: {
-              ...category,
-              sort: i
-            }
-          }
+          const current = { ...category, sort: i }
+          const previous = getters.categoriesById[category._id.slice(-ID_LENGTH.category)]
+          console.log("CURRENT", JSON.parse(JSON.stringify(current)))
+          return { current, previous }
         })
         partial = partial.concat(updated_categories)
         return partial
       }, [])
-      context.dispatch('commitBulkDocsToPouchAndVuex', updated_payload)
+      console.log("UPDATED PAYLOAD", updated_payload)
+      dispatch('commitBulkDocsToPouchAndVuex', updated_payload)
     },
 
     async initializeIncomeCategory({ dispatch, getters }) {

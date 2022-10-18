@@ -81,7 +81,7 @@ export default {
     fetchTransactionsWithImportId: async (context, options) => {
       const db = Vue.prototype.$pouch
       const budget_id = context.getters.selectedBudgetId
-      if(!budget_id) {
+      if (!budget_id) {
         return []
       }
 
@@ -89,7 +89,7 @@ export default {
         .query('stats/transactions_by_import_id', {
           include_docs: false,
           startkey: [budget_id, options.account_id, options.import_id],
-          endkey: [budget_id, options.account_id, options.import_id],
+          endkey: [budget_id, options.account_id, options.import_id]
         })
         .then((result) => {
           return result.rows
@@ -112,7 +112,7 @@ export default {
           endkey: [budget_id, options.accountId, ''],
           limit: options.itemsPerPage,
           skip: skip_amount,
-          descending: true,
+          descending: true
           // startkey: [budget_id, options.account_id, '\ufff0'],
           // limit: options.itemsPerPage,
           // skip: skip_amount,
@@ -151,7 +151,7 @@ export default {
           }
         })
     },
-    fetchPrecedingTransaction: async (context, {transaction, isDeleted}) => {
+    fetchPrecedingTransaction: async (context, { transaction, isDeleted }) => {
       const t1 = performance.now()
 
       const db = Vue.prototype.$pouch
@@ -165,9 +165,10 @@ export default {
           endkey: [budget_id, transaction.account, ''],
           limit: limit,
           descending: true
-        }).then((result) => {
+        })
+        .then((result) => {
           logPerformanceTime('fetchPrecedingTransaction', t1)
-          if(result.rows.length > 0) {
+          if (result.rows.length > 0) {
             return result.rows[result.rows.length - 1]
           } else {
             return null
@@ -175,10 +176,10 @@ export default {
         })
     },
     /**
-     * 
-     * @param {*} context 
+     *
+     * @param {*} context
      * @param {*} transaction Start transaction
-     * @returns All transactions including and later than start transaction 
+     * @returns All transactions including and later than start transaction
      */
     fetchAllSucceedingTransactions: async (context, transaction) => {
       const t1 = performance.now()
@@ -191,7 +192,8 @@ export default {
           startkey: [budget_id, transaction.account, transaction._id.slice(-ID_LENGTH.transaction)],
           endkey: [budget_id, transaction.account, '\ufff0'],
           descending: false
-        }).then((result) => {
+        })
+        .then((result) => {
           logPerformanceTime('fetchAllSucceedingTransactions', t1)
           return result.rows
         })
@@ -261,7 +263,6 @@ export default {
 const fetchDocsByType = (context, db, budget_id, id_name, function_name) => {
   const t2 = performance.now()
   const id_prefix = `b_${budget_id}${id_name}`
-
 
   return db
     .allDocs({

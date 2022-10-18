@@ -1,7 +1,7 @@
 <template>
   <v-container class="pa-0 category-rows-container">
-    <v-divider/>
-    <category-row 
+    <v-divider />
+    <category-row
       v-if="freezeFirstRow && frozenCategory"
       :category="frozenCategory"
       :master-category="masterCategory"
@@ -16,19 +16,22 @@
       :data-testid="`categories-container-${masterCategory._id}`"
       :id="`categories-container-${masterCategory._id}`"
       :group="{ name: masterCategory._id, put: true }"
-      @end="onCategoryOrderChanged"
       handle=".handle"
+      v-model="draggableCategoriesData"
     >
-      <category-row 
-        v-for="(category, index) in draggableCategories" 
-        :key="index"
-        :category="category"
-        :master-category="masterCategory"
-        :hideBudgeted="hideBudgeted"
-        :hideSpent="hideSpent"
-        :hideBalance="hideBalance"
-        :isIncome="isIncome"
-      /> 
+      <!-- <div v-for="(category, index) in draggableCategories" :key="category._id"> -->
+        <category-row
+          v-for="(category, index) in draggableCategoriesData"
+          :key="category._id"
+          :category="category"
+          :master-category="masterCategory"
+          :hideBudgeted="hideBudgeted"
+          :hideSpent="hideSpent"
+          :hideBalance="hideBalance"
+          :isIncome="isIncome"
+          :index="index"
+        />
+      <!-- </div> -->
     </draggable>
     <v-row class="ma-0 pa-0">
       <v-sheet width="20px" color="transparent" class="row-side-widget" />
@@ -92,33 +95,97 @@ export default {
     draggable,
     CategoryHide,
   },
+  data() {
+    return {
+      draggableCategoriesData: [],
+      offset: this.freezeFirstRow ? 1 : 0,
+    };
+  },
+  watch: {
+    categoriesData: {
+      handler: function (val) {
+        const data = val[this.masterCategory._id];
+        if (data) {
+          this.draggableCategoriesData = data.slice(this.offset);
+        } else {
+          return [];
+        }
+      },
+      deep: true,
+    },
+  },
   computed: {
-    ...mapGetters(["categories"]),
+    ...mapGetters(["categories", "categoriesById"]),
     ...mapGetters("categoryMonth", [
       "editedCategoryBudgetId",
       "editedCategoryNameId",
       "categoriesData",
     ]),
-    draggableCategories() {
-      if (!this.freezeFirstRow) {
-        return this.categoriesData[this.masterCategory._id]
-      } else {
-        return this.categoriesData[this.masterCategory._id].slice(1)
-      }
+    draggableCategories: {
+      get() {
+        return this.draggableCategoriesData;
+      },
+      set(value) {
+        this.draggableCategoriesData = value;
+        console.log(
+          "set categoriesGroup",
+          value.map((item) => "id: " + item._id + " | name: " + item.name)
+        );
+        const updated_categories = value.reduce((partial, category_data, index) => {
+          const previous = this.categoriesById[category_data._id];
+          if (!previous) {
+            console.warn("Category not found in categoriesById", category_data._id);
+            return partial;
+          }
+          const current = {
+            ...previous,
+            sort: index + this.offset,
+            masterCategory: this.masterCategory._id,
+          };
+          partial.push({ current, previous });
+          return partial;
+        }, []);
+        console.log(
+          "updated_categories",
+          updated_categories.map(
+            (item) =>
+              "id: " +
+              item.current._id +
+              " | name: " +
+              item.current.name +
+              " | sort: " +
+              item.current.sort
+          )
+        );
+        this.commitBulkDocsToPouchAndVuex(updated_categories);
+
+        // this.setCategoriesOrder(value);
+      },
     },
+    // draggableStart() {
+    //   return this.freezeFirstRow ? 1 : 0;
+    // },
+    // draggableCategories() {
+    //   if (!this.freezeFirstRow) {
+    //     if(this.masterCategory._id === "JR9") {
+    //       console.log("DRAGGABLE", this.categoriesData["JR9"])
+    //     }
+    //     return this.categoriesData[this.masterCategory._id]
+    //   } else {
+    //     return this.categoriesData[this.masterCategory._id].slice(1)
+    //   }
+    // },
     frozenCategory() {
       if (this.freezeFirstRow && this.categoriesData[this.masterCategory._id].length > 0) {
-        return this.categoriesData[this.masterCategory._id][0]
+        return this.categoriesData[this.masterCategory._id][0];
       } else {
-        return null
+        return null;
       }
-    }
+    },
   },
   methods: {
-    ...mapActions("categoryMonth", [
-      "onCategoryOrderChanged",
-      "newCategory",
-    ]),
+    ...mapActions("categoryMonth", ["onCategoryOrderChanged", "newCategory"]),
+    ...mapActions(["commitBulkDocsToPouchAndVuex"]),
     onNewCategory(master_category) {
       this.newCategory(master_category).then((id) => {
         const element_id = `category-name-input-${id}`;
