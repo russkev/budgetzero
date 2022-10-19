@@ -4,8 +4,8 @@
     :spent-id="`master-category-spent-${masterIncomeCategory._id}`"
     :balance-id="`master-category-balance-${masterIncomeCategory._id}`"
   >
-  <template #color="{hover}">
-    <master-category-color :color="incomeColor" :hover="hover" @updated="onColorChange" />
+  <template #color>
+    <master-category-color :color="incomeColor" @updated="onColorChange" />
   </template>
     <template #title>
       <span class="text-h4 ml-3">

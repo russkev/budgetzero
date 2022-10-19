@@ -143,7 +143,7 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["masterHiddenCategory", "masterIncomeCategory"]),
+    ...mapGetters(["masterHiddenCategory", "masterIncomeCategory", "masterCategoriesById"]),
     masterCategories: {
       get() {
         return this.$store.getters.masterCategories;
@@ -157,6 +157,7 @@ export default {
         return this.draggableMasterCategoriesData;
       },
       set(values) {
+        console.log("VALUES", values);
         this.draggableMasterCategoriesData = values;
         this.counter += 1;
         this.$store.dispatch("reorderMasterCategories", values);

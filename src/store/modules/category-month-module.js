@@ -56,7 +56,6 @@ export default {
     },
     categoriesData: (state, getters, rootState, rootGetters) => {
       
-      // let index = 0
       const masterCategories = rootGetters.masterCategories
       return masterCategories.reduce((partial, master_category) => {
         const master_id = master_category._id.slice(-ID_LENGTH.category)
@@ -67,7 +66,6 @@ export default {
 
         
         let categories_data = rootGetters.categoriesByMaster[master_id]
-          // .sort((a, b) => a.sort - b.sort)
           .map((category) => {
             const category_id = category._id.slice(-ID_LENGTH.category)
             const budget = _.get(
@@ -89,15 +87,9 @@ export default {
               carryover: carryover,
               balance: budget + spent + carryover,
               sort: sort,
-              // index: index
             }
-            // index += 1
             return result
           })
-        categories_data.sort((a, b) => a.sort - b.sort)
-        if (master_id === 'JR9') {
-        }
-        
         partial[master_id] = categories_data
         return partial
       }, {})

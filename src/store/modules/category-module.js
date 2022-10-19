@@ -42,17 +42,6 @@ export default {
     masterHiddenCategory: (state) => state.masterHiddenCategory,
     masterIncomeCategory: (state) => state.masterIncomeCategory,
     categories: (state) => {
-      // let hasIncome = false
-      // let result = state.categories.map((category) => {
-      //   if (category.masterCategory === INCOME._id) {
-      //     hasIncome = true
-      //   }
-      //   return category
-      // })
-      // result.push({ ...NONE })
-      // if (!hasIncome) {
-      //   result.unshift(INCOME)
-      // }
       return [...state.categories, { ...NONE }]
     },
     categoriesById: (state, getters) => {
@@ -82,6 +71,9 @@ export default {
         }
         return partial
       }, initial)
+      Object.keys(result).forEach((master_id) => {
+        result[master_id].sort((a, b) => a.sort - b.sort)
+      })
       return result
     },
     categoryColors: (state, getters) => {
@@ -359,23 +351,23 @@ export default {
         masterCategory: master_id
       }
     },
-    reorderMasterCategories(context, master_categories) {
+    reorderMasterCategories({ getters, dispatch, commit }, master_categories) {
+      let tempUpdatedMasterCategories = []
       const docs = master_categories.reduce((partial, master_category, i) => {
-        const previous = _.get(context.getters.masterCategoriesById, [master_category._id], null)
+        const previous = _.get(getters.masterCategoriesById, [master_category._id], null)
         if (previous) {
           const current = { ...previous, sort: i }
           partial.push({ current, previous })
+          tempUpdatedMasterCategories.push(current)
         }
         return partial
       }, [])
 
-      // // Temporarily set the master categories state for faster feedback while documents are sent
-      // // and retrieved from database
-      // context.commit(
-      //   'SET_MASTER_CATEGORIES',
-      //   docs.map((doc) => doc.current)
-      // )
-      return context.dispatch('commitBulkDocsToPouchAndVuex', docs)
+      // Temporarily set the master categories state for faster feedback while documents are sent
+      // and retrieved from database
+      commit('SET_MASTER_CATEGORIES', tempUpdatedMasterCategories)
+
+      return dispatch('commitBulkDocsToPouchAndVuex', docs)
     },
 
     updateCategory(context, payload) {

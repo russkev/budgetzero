@@ -11,10 +11,9 @@
         mdi-drag-vertical
       </v-icon>
     </template>
-    <template #color="{hover}">
+    <template #color>
       <master-category-color
         :color="masterCategory.color.hex"
-        :hover="hover"
         @updated="onColorChange"
       />
     </template>

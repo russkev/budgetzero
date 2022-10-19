@@ -9,7 +9,7 @@
         class="pa-0 ma-auto"
         v-on="on"
         :color="hover || colorIsOpen ? color : 'transparent'"
-      />
+        />
     </template>
     <v-color-picker
       show-swatches
@@ -37,7 +37,7 @@ export default {
     },
     hover: {
       type: Boolean,
-      default: false,
+      default: true,
     },
   },
   data() {
