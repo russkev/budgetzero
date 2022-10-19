@@ -18,7 +18,7 @@
       :group="{ name: masterCategory._id, put: true }"
       handle=".handle"
       v-model="draggableCategories"
-      >
+    >
       <category-row
         v-for="(category, index) in draggableCategories"
         :key="`${category._id}-${counter}`"
@@ -103,15 +103,13 @@ export default {
   watch: {
     categoriesData: {
       handler: function (val) {
-        const data = val[this.masterCategory._id];
-        if (data) {
-          this.draggableCategoriesData = data.slice(this.offset);
-        } else {
-          return [];
-        }
+        this.updateDraggableCategories(val)
       },
       deep: true,
     },
+  },
+  created() {
+    this.updateDraggableCategories(this.categoriesData)
   },
   computed: {
     ...mapGetters(["categories", "categoriesById"]),
@@ -168,6 +166,14 @@ export default {
           new_element.select();
         });
       });
+    },
+    updateDraggableCategories(categoriesData) {
+      const data = categoriesData[this.masterCategory._id];
+      if (data) {
+        this.draggableCategoriesData = data.slice(this.offset);
+      } else {
+        return [];
+      }
     },
   },
 };

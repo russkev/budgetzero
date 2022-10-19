@@ -126,21 +126,14 @@ export default {
   },
   watch: {
     masterCategories: {
-      handler: function (value) {
-        const masterCategories = value.filter((masterCategory) => {
-          return ![HIDDEN._id, NONE._id, INCOME._id].includes(masterCategory._id);
-        });
-        this.draggableMasterCategoriesData = masterCategories.map((master_category) => {
-          return {
-            _id: master_category._id.slice(-ID_LENGTH.category),
-            name: master_category.name,
-            collapsed: master_category.collapsed,
-            color: master_category.color,
-          };
-        });
+      handler: function (masterCategories) {
+        this.updateDraggableMasterCategories(masterCategories);
       },
       deep: true,
     },
+  },
+  created() {
+    this.updateDraggableMasterCategories(this.masterCategories);
   },
   computed: {
     ...mapGetters(["masterHiddenCategory", "masterIncomeCategory", "masterCategoriesById"]),
@@ -189,9 +182,22 @@ export default {
         });
       });
     },
+    updateDraggableMasterCategories(masterCategories) {
+      const masterCategoriesComplete = masterCategories.filter((masterCategory) => {
+        return ![HIDDEN._id, NONE._id, INCOME._id].includes(masterCategory._id);
+      });
+      this.draggableMasterCategoriesData = masterCategoriesComplete.map((master_category) => {
+        return {
+          _id: master_category._id.slice(-ID_LENGTH.category),
+          name: master_category.name,
+          collapsed: master_category.collapsed,
+          color: master_category.color,
+        };
+      });
+    },
     checkMove(event, originalEvent) {
-      return originalEvent.target.classList.contains("master-categories"); 
-    }
+      return originalEvent.target.classList.contains("master-categories");
+    },
   },
 };
 </script>
