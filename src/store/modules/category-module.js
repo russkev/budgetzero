@@ -369,12 +369,12 @@ export default {
         return partial
       }, [])
 
-      // Temporarily set the master categories state for faster feedback while documents are sent
-      // and retrieved from database
-      context.commit(
-        'SET_MASTER_CATEGORIES',
-        docs.map((doc) => doc.current)
-      )
+      // // Temporarily set the master categories state for faster feedback while documents are sent
+      // // and retrieved from database
+      // context.commit(
+      //   'SET_MASTER_CATEGORIES',
+      //   docs.map((doc) => doc.current)
+      // )
       return context.dispatch('commitBulkDocsToPouchAndVuex', docs)
     },
 
@@ -473,75 +473,6 @@ export default {
           previous: master_category
         })
       }
-    },
-
-    reorderCategory({getters, dispatch}, payload) {
-      //Get the category that was moved
-      const old_index = payload.oldIndex
-      const new_index = payload.newIndex
-      const master_id_from = payload.from.id.slice(-ID_LENGTH.category)
-      const master_id_to = payload.to.id.slice(-ID_LENGTH.category)
-
-      let updated_by_master = {}
-
-      let temp_index = new_index - 0.5
-      if (master_id_from === master_id_to && new_index > old_index) {
-        temp_index = new_index + 0.5
-      }
-
-      console.log("GETTERS CATEGORIES", JSON.parse(JSON.stringify(getters.categoriesByMaster[master_id_from])))
-
-      updated_by_master[master_id_from] = getters.categoriesByMaster[master_id_from].map((category, i) => {
-        const sort = i === old_index ? temp_index : i
-        const master_id = sort === temp_index ? master_id_to : category.masterCategory
-
-        if (i == old_index) {
-          if (master_id_from === HIDDEN._id && master_id !== HIDDEN._id) {
-            category = { ...category, hidden: false }
-          }
-          if (master_id_from !== HIDDEN._id && master_id_to === HIDDEN._id) {
-            return {
-              ...category,
-              sort: sort,
-              hidden: true
-            }
-          }
-        }
-
-        //  else {
-        return {
-          ...category,
-          masterCategory: master_id,
-          sort: sort
-        }
-        // }
-      })
-      console.log("UPDATED BY MASTER", JSON.parse(JSON.stringify(updated_by_master)))
-      if (master_id_to !== master_id_from) {
-        updated_by_master[master_id_to] = getters.categoriesByMaster[master_id_to].map((category, i) => {
-          return {
-            ...category,
-            sort: i
-          }
-        })
-        updated_by_master[master_id_to].push(updated_by_master[master_id_from][old_index])
-        updated_by_master[master_id_from].splice(old_index, 1)
-      }
-
-      const updated_payload = Object.values(updated_by_master).reduce((partial, categories) => {
-        categories.sort((a, b) => a.sort - b.sort)
-        console.log("UPDATED BY MASTER", JSON.parse(JSON.stringify(categories)))
-        const updated_categories = categories.map((category, i) => {
-          const current = { ...category, sort: i }
-          const previous = getters.categoriesById[category._id.slice(-ID_LENGTH.category)]
-          console.log("CURRENT", JSON.parse(JSON.stringify(current)))
-          return { current, previous }
-        })
-        partial = partial.concat(updated_categories)
-        return partial
-      }, [])
-      console.log("UPDATED PAYLOAD", updated_payload)
-      dispatch('commitBulkDocsToPouchAndVuex', updated_payload)
     },
 
     async initializeIncomeCategory({ dispatch, getters }) {

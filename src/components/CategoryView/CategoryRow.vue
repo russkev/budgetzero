@@ -30,7 +30,7 @@
               class="pa-0 ma-0 my-1"
               :data-testid="`category-name-${category._id}`"
             >
-              {{`i: ${index} s: ${category.sort} id: ${category._id}`}}
+              <!-- {{`i: ${index} s: ${category.sort} id: ${category._id}`}} -->
               <category-grid-input
                 class="category-name-input"
                 :id="`category-name-input-${category._id}`"

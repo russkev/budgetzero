@@ -29,11 +29,18 @@
       </collapsed>
 
       <!-- STANDARD -->
-      <draggable v-model="masterCategoriesData" handle=".master-handle" style="width: inherit;">
+      <draggable
+        v-model="draggableMasterCategories"
+        handle=".master-handle"
+        style="width: inherit;"
+        :move="checkMove"
+        :group="{ name: 'master-categories' }"
+      >
         <collapsed
-          v-for="(master_category, master_index) in masterCategoriesData"
+          v-for="(master_category, master_index) in draggableMasterCategories"
           :key="master_index"
           :master-category="master_category"
+          class="master-categories"
         >
           <template #header>
             <master-category-row-standard
@@ -113,7 +120,27 @@ export default {
   data() {
     return {
       nameCols: 5,
+      draggableMasterCategoriesData: [],
+      counter: 0,
     };
+  },
+  watch: {
+    masterCategories: {
+      handler: function (value) {
+        const masterCategories = value.filter((masterCategory) => {
+          return ![HIDDEN._id, NONE._id, INCOME._id].includes(masterCategory._id);
+        });
+        this.draggableMasterCategoriesData = masterCategories.map((master_category) => {
+          return {
+            _id: master_category._id.slice(-ID_LENGTH.category),
+            name: master_category.name,
+            collapsed: master_category.collapsed,
+            color: master_category.color,
+          };
+        });
+      },
+      deep: true,
+    },
   },
   computed: {
     ...mapGetters(["masterHiddenCategory", "masterIncomeCategory"]),
@@ -125,22 +152,13 @@ export default {
         this.$store.commit("REORDER_MASTER_CATEGORIES", value);
       },
     },
-    masterCategoriesData: {
+    draggableMasterCategories: {
       get() {
-        const masterCategories = this.masterCategories.filter((masterCategory) => {
-          // return masterCategory._id !== NONE._id;
-          return ![HIDDEN._id, NONE._id, INCOME._id].includes(masterCategory._id);
-        });
-        return masterCategories.map((master_category) => {
-          return {
-            _id: master_category._id.slice(-ID_LENGTH.category),
-            name: master_category.name,
-            collapsed: master_category.collapsed,
-            color: master_category.color,
-          };
-        });
+        return this.draggableMasterCategoriesData;
       },
       set(values) {
+        this.draggableMasterCategoriesData = values;
+        this.counter += 1;
         this.$store.dispatch("reorderMasterCategories", values);
       },
     },
@@ -170,6 +188,9 @@ export default {
         });
       });
     },
+    checkMove(event, originalEvent) {
+      return originalEvent.target.classList.contains("master-categories"); 
+    }
   },
 };
 </script>
