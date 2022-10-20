@@ -197,10 +197,11 @@ export default {
       }
     },
     spentValue(category) {
-      if (category.spent === 0) {
-        return this.intlCurrency.format(0);
+      const amount = category.income - category.expense;
+      if (this.isIncome || amount == 0) {
+        return this.intlCurrency.format(amount / 100);
       } else {
-        return this.intlCurrency.format((this.negativeMultiplier * category.spent) / 100);
+        return this.intlCurrency.format(-amount / 100)
       }
     },
   },

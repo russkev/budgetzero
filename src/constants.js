@@ -28,7 +28,7 @@ export const DEFAULT_ACCOUNT_BALANCE = {
   uncleared: 0,
   working: 0,
   income: 0,
-  spent: 0,
+  expense: 0,
 }
 
 export const DEFAULT_MONTH_BALANCE = {
@@ -40,7 +40,7 @@ export const DEFAULT_MONTH_BALANCE = {
 export const DEFAULT_MONTH_CATEGORY = {
   _id: '',
   budget: 0,
-  spent: 0,
+  // spent: 0,
   overspending: null,
   hidden: null,
   note: ''
@@ -48,9 +48,17 @@ export const DEFAULT_MONTH_CATEGORY = {
 
 export const DEFAULT_CATEGORY_BALANCE = {
   doc: null,
-  spent: 0,
+  expense: 0,
   carryover: 0,
   income: 0,
+}
+
+export const DEFAULT_MASTER_CATEGORY_BALANCE = {
+  budget: 0,
+  expense: 0,
+  income: 0,
+  carryover: 0,
+  balance: 0
 }
 
 export const NONE = {

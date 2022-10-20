@@ -141,7 +141,7 @@
         "name": "Paycheck 1",
         "sort": 0,
         "hidden": false,
-        "masterCategory": "fVM",
+        "masterCategory": ":in",
         "_id": "b_N8Q_category_gpe",
         "_rev": "1-b07eed15d0df486a365ead642f7afb41"
       }
@@ -169,18 +169,6 @@
         "collapsed": false,
         "_id": "b_N8Q_masterCategory_3ks",
         "_rev": "3-ca523f3da22d44bdf4d596d958f0de3c"
-      }
-    },
-    {
-      "id": "b_N8Q_masterCategory_fVM",
-      "key": "b_N8Q_masterCategory_fVM",
-      "value": { "rev": "2-66d6c50a86cb07e2c47c16615749663d" },
-      "doc": {
-        "name": "Income",
-        "sort": 0,
-        "collapsed": false,
-        "_id": "b_N8Q_masterCategory_fVM",
-        "_rev": "2-66d6c50a86cb07e2c47c16615749663d"
       }
     },
     {

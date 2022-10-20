@@ -29,7 +29,7 @@
         </span>
         <br />
         <span class="text-body-1">
-          {{ intlCurrency.format(masterCategoriesStats[masterHiddenCategory._id].spent / 100) }}
+          {{ spentValue }}
         </span>
       </div>
     </template>
@@ -77,6 +77,16 @@ export default {
     ...mapGetters("categoryMonth", ["editedMasterCategoryId", "masterCategoriesStats"]),
     data() {
       return "data";
+    },
+    spentValue() {
+      const value =
+        this.masterCategoriesStats[this.masterHiddenCategory._id].expense -
+        this.masterCategoriesStats[this.masterHiddenCategory._id].income;
+      if (value === 0) {
+        return this.intlCurrency.format(0);
+      } else {
+        return this.intlCurrency.format(value / 100);
+      }
     },
   },
   methods: {

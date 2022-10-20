@@ -350,7 +350,9 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
         balances.category[month] = initCategoryBalancesMonth(balances.category, month, getters.categories)
       }
       balances.category[month] = updateSingleCategory(balances.category[month], item.category, {
-        spent: item.value,
+        // expense: -item.value < 0 ? item.value : 0,
+        // income: item.value > 0 ? item.value : 0,
+        amount: item.value,
         account: account_doc
       })
     })

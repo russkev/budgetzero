@@ -12,10 +12,7 @@
       </v-icon>
     </template>
     <template #color>
-      <master-category-color
-        :color="masterCategory.color.hex"
-        @updated="onColorChange"
-      />
+      <master-category-color :color="masterCategoryColor" @updated="onColorChange" />
     </template>
     <template #title>
       <category-grid-input
@@ -84,6 +81,8 @@ import { mapGetters, mapActions, mapMutations } from "vuex";
 import HeaderRow from "./HeaderRow.vue";
 import MasterCategoryColor from "./MasterCategoryColor.vue";
 import MasterCategoryDelete from "./MasterCategoryDelete.vue";
+import { NONE } from "../../constants"
+import _ from "lodash";
 
 export default {
   props: {
@@ -112,7 +111,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(["intlCurrency", "colorSwatches", "masterCategoriesById", "categoryColors"]),
+    ...mapGetters(["intlCurrency", "colorSwatches", "masterCategoriesById", "masterCategories", "categoryColors"]),
     ...mapGetters("categoryMonth", ["editedMasterCategoryId", "masterCategoriesStats"]),
     data() {
       return "data";
@@ -120,6 +119,9 @@ export default {
 
     masterCategoryDoc() {
       return this.masterCategoriesById[this.masterCategory._id];
+    },
+    masterCategoryColor() {
+      return _.get(this, ['masterCategory', 'color', 'hex'], NONE.hexColor)
     },
     balanceColor() {
       const balance = this.masterCategoriesStats[this.masterCategory._id].balance;
@@ -132,11 +134,13 @@ export default {
       }
     },
     spentValue() {
-      const spent = this.masterCategoriesStats[this.masterCategory._id].spent;
-      if (spent === 0) {
+      const value =
+        this.masterCategoriesStats[this.masterCategory._id].expense -
+        this.masterCategoriesStats[this.masterCategory._id].income;
+      if (value === 0) {
         return this.intlCurrency.format(0);
       } else {
-        return this.intlCurrency.format((-1 * spent) / 100);
+        return this.intlCurrency.format(value / 100);
       }
     },
   },

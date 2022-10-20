@@ -1,5 +1,12 @@
 import Vue from 'vue'
-import { DEFAULT_MONTH_CATEGORY, ID_LENGTH, ID_NAME, NONE, HIDDEN } from '../../constants'
+import {
+  DEFAULT_MONTH_CATEGORY,
+  ID_LENGTH,
+  ID_NAME,
+  NONE,
+  HIDDEN,
+  DEFAULT_MASTER_CATEGORY_BALANCE
+} from '../../constants'
 import { getCarryover } from '@/store/modules/category-module'
 import _ from 'lodash'
 import moment from 'moment'
@@ -64,7 +71,6 @@ export default {
           return partial
         }
 
-        
         let categories_data = rootGetters.categoriesByMaster[master_id]
           .map((category) => {
             const category_id = category._id.slice(-ID_LENGTH.category)
@@ -73,7 +79,8 @@ export default {
               [getters.selectedMonth, category_id, 'doc', 'budget'],
               0
             )
-            const spent = _.get(rootGetters.allCategoryBalances, [getters.selectedMonth, category_id, 'spent'], 0)
+            const expense = _.get(rootGetters.allCategoryBalances, [getters.selectedMonth, category_id, 'expense'], 0)
+            const income = _.get(rootGetters.allCategoryBalances, [getters.selectedMonth, category_id, 'income'], 0)
             const carryover = getCarryover(rootGetters.allCategoryBalances, getters.selectedMonth, category_id)
             const name = _.get(rootGetters.categoriesById, [category_id, 'name'], '')
             const budget_display = (budget / 100).toFixed(2)
@@ -83,9 +90,11 @@ export default {
               name: name,
               budget: budget,
               budgetDisplay: budget_display,
-              spent: spent,
+              // spent: spent,
+              income: income,
+              expense: expense,
               carryover: carryover,
-              balance: budget + spent + carryover,
+              balance: budget + income - expense + carryover,
               sort: sort,
             }
             return result
@@ -95,15 +104,18 @@ export default {
       }, {})
     },
     masterCategoriesStats: (state, getters) => {
+
       return Object.entries(getters.categoriesData).reduce((partial, [master_id, category_docs]) => {
         partial[master_id] = category_docs.reduce(
           (sum_partial, category) => {
             sum_partial.budget += category.budget
-            sum_partial.spent += category.spent
+            // sum_partial.spent += category.spent
+            sum_partial.income += category.income
+            sum_partial.expense += category.expense
             sum_partial.balance += category.balance
             return sum_partial
           },
-          { budget: 0, spent: 0, carryover: 0, balance: 0 }
+          { ...DEFAULT_MASTER_CATEGORY_BALANCE }
         )
         return partial
       }, {})

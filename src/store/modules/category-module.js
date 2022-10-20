@@ -193,11 +193,11 @@ export default {
     SET_CATEGORIES(state, categories) {
       Vue.set(state, 'categories', categories)
     },
-    UPDATE_CATEGORY_BALANCES(state, { account, month, category_id, spent, doc }) {
+    UPDATE_CATEGORY_BALANCES(state, { account, month, category_id, amount, doc }) {
       let month_balances = initCategoryBalancesMonth(state.allCategoryBalances, month, state.categories)
       month_balances = updateSingleCategory(month_balances, category_id, {
         account: account,
-        spent: spent,
+        amount: amount,
         doc: doc
       })
       Vue.set(state.allCategoryBalances, month, month_balances)
@@ -296,7 +296,11 @@ export default {
     },
     updateMasterColor({ getters, dispatch }, { masterId, colorObject }) {
       const master_category = getters.masterCategoriesById[masterId]
-      if (master_category && master_category.color.hex !== colorObject.hex) {
+      if (
+        (master_category && !master_category.color) ||
+        !master_category.color.hex ||
+        master_category.color.hex !== colorObject.hex
+      ) {
         const new_master_category = {
           ...master_category,
           color: colorObject
@@ -600,9 +604,9 @@ export default {
               account: account,
               month: current_month,
               category_id: split.category,
-              spent: split.value,
-              income: split.value > 0 ? split.value : 0,
-              expense: split.value < 0 ? split.value : 0
+              amount: split.value
+              // income: split.value > 0 ? split.value : 0,
+              // expense: split.value < 0 ? split.value : 0
             }
           })
           category_balances = category_balances.concat(this_result)
@@ -611,9 +615,9 @@ export default {
             account: account,
             month: current_month,
             category_id: current.category,
-            spent: current_value,
-            income: current_value > 0 ? current_value : 0,
-            expense: current_value < 0 ? current_value : 0
+            amount: current_value
+            // income: current_value > 0 ? current_value : 0,
+            // expense: current_value < 0 ? current_value : 0
           })
         }
       }
@@ -624,9 +628,9 @@ export default {
               account: account,
               month: previous_month,
               category_id: split.category,
-              spent: -split.value,
-              income: split.value > 0 ? -split.value : 0,
-              expense: split.value < 0 ? -split.value : 0
+              amount: -split.value
+              // income: split.value > 0 ? -split.value : 0,
+              // expense: split.value < 0 ? -split.value : 0
             }
           })
           category_balances = category_balances.concat(this_result)
@@ -635,9 +639,9 @@ export default {
             account: account,
             month: previous_month,
             category_id: previous.category,
-            spent: -previous_value,
-            income: previous_value > 0 ? -previous_value : 0,
-            expense: previous_value < 0 ? -previous_value : 0
+            amount: -previous_value
+            // income: previous_value > 0 ? -previous_value : 0,
+            // expense: previous_value < 0 ? -previous_value : 0
           })
         }
       }
@@ -677,7 +681,7 @@ export default {
         month: month,
         master_id: master_id,
         category_id: category_id,
-        spent: 0,
+        amount: 0,
         doc: current ? current : null
       }
     },
@@ -760,7 +764,8 @@ const getCarryover = (current_balances, month, category_id) => {
 const getCategoryBalance = (current_balances, month, category_id, default_carryover = 0) => {
   return (
     _.get(current_balances, [month, category_id, 'doc', 'budget'], 0) +
-    _.get(current_balances, [month, category_id, 'spent'], 0) +
+    _.get(current_balances, [month, category_id, 'income'], 0) -
+    _.get(current_balances, [month, category_id, 'expense'], 0) +
     _.get(current_balances, [month, category_id, 'carryover'], default_carryover)
   )
 }
@@ -775,7 +780,7 @@ const getCategoryBalance = (current_balances, month, category_id, default_carryo
  * @param {object|null} doc The monthCategory document. Null if this is not being updated
  * Note: Use null for carryover if not intending to update this value
  */
-const updateSingleCategory = (existing_month_balances, category_id, { spent, carryover, doc, account }) => {
+const updateSingleCategory = (existing_month_balances, category_id, { amount, carryover, doc, account }) => {
   let month_balances = existing_month_balances === undefined ? {} : existing_month_balances
   const sign = account ? account.sign : 1
   // const sign = 1
@@ -793,15 +798,13 @@ const updateSingleCategory = (existing_month_balances, category_id, { spent, car
     month_balances[category_id].doc = doc
   }
 
-  let amount = 0
-  if (typeof spent === 'number') {
-    amount = spent * sign
-  }
-
-  if (amount < 0) {
-    month_balances[category_id].spent += amount
-  } else {
-    month_balances[category_id].income += amount
+  if (typeof amount === 'number') {
+    amount *= sign
+    if (amount < 0) {
+      month_balances[category_id].expense += -1 * amount
+    } else {
+      month_balances[category_id].income += amount
+    }
   }
 
   // month_balances[category_id].spent += spent === undefined ? 0 : spent * sign

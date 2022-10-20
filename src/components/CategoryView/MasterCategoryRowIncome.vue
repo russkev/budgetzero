@@ -1,8 +1,7 @@
 <template>
   <header-row
     :title-id="`master-category-name-${masterIncomeCategory._id}`"
-    :spent-id="`master-category-spent-${masterIncomeCategory._id}`"
-    :balance-id="`master-category-balance-${masterIncomeCategory._id}`"
+    :balance-id="`master-category-this-month-${masterIncomeCategory._id}`"
   >
   <template #color>
     <master-category-color :color="incomeColor" @updated="onColorChange" />
@@ -19,7 +18,7 @@
         </span>
         <br />
         <span class="text-body-1">
-          {{ intlCurrency.format(masterCategoriesStats[masterIncomeCategory._id].balance / 100) }}
+          {{ amount }}
         </span>
       </div>
     </template>
@@ -47,7 +46,8 @@
 <script>
 import { mapGetters, mapActions } from "vuex";
 import HeaderRow from "./HeaderRow.vue";
-import { INCOME } from "../../constants";
+import { INCOME, NONE } from "../../constants";
+import _ from "lodash";
 
 export default {
   components: {
@@ -57,13 +57,18 @@ export default {
     ...mapGetters(["intlCurrency",  "masterIncomeCategory" , "categoriesById"]),
     ...mapGetters("categoryMonth", ["masterCategoriesStats"]),
     incomeColor() {
-      const incomeBaseCategory = this.categoriesById[INCOME._id]
-      if (incomeBaseCategory) {
-        return incomeBaseCategory.color.hex
-      } else {
-        return "000000"
-      }
+      return _.get(this, ['categoriesById',[INCOME._id],'color','hex'], NONE.hexColor)
     },
+    amount() {
+      const value =
+        this.masterCategoriesStats[INCOME._id].income -
+        this.masterCategoriesStats[INCOME._id].expense;
+      if (value === 0) {
+        return this.intlCurrency.format(0);
+      } else {
+        return this.intlCurrency.format(value / 100);
+      }
+    }
   },
   methods: {
     ...mapActions(["toggleMasterCategoryCollapsed",  "updateIncomeColor"]),

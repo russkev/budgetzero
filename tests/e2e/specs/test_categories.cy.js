@@ -4,17 +4,18 @@ describe('Test categories (budget) page', () => {
       cy.initPath('budget/2022-07')
     })
 
-    it('Checks category values for July', () => {
-      cy.get('[data-testid="master-category-name-input-fVM"]').should('have.value', 'Income')
+    it.only('Checks category values for July', () => {
+      cy.get('[data-testid="master-category-name-:in"]').should('have.text', ' Income ')
       // cy.get('[data-testid="master-category-name-input-fVM"]')
-      cy.get('[data-testid="master-category-budget-fVM"]').should('contain.text', ' -$1,500.00 ')
-      cy.get('[data-testid="master-category-spent-fVM"]').should('contain.text', ' $1,586.79 ')
-      cy.get('[data-testid="master-category-balance-fVM"]').should('contain.text', ' $86.79 ')
+      // cy.get('[data-testid="master-category-budget-:in"]').should('contain.text', ' -$1,500.00 ')
+      // cy.get('[data-testid="master-category-spent-:in"]').should('contain.text', ' $1,586.79 ')
+      // cy.get('[data-testid="master-category-balance-:in"]').should('contain.text', ' $86.79 ')
+      cy.get('[data-testid="master-category-this-month-:in"]').should('contain.text', ' $1,586.79 ')
 
       cy.get('[data-testid="category-name-input-gpe"]').should('have.value', 'Paycheck 1')
-      cy.get('[data-testid="category-budget-input-gpe"]').should('have.value', '-$1,500.00')
+      // cy.get('[data-testid="category-budget-input-gpe"]').should('have.value', '-$1,500.00')
       cy.get('[data-testid="category-spent-gpe"]').should('have.text', ' $1,586.79 ')
-      cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $86.79 ')
+      // cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $86.79 ')
 
       //---------------------------------------------------------------------//
 

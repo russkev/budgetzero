@@ -120,7 +120,7 @@ const updateAccountBalances = (current_balances, account, account_id, cleared, u
   if (working * account.sign > 0) {
     updated_balances.income += working * account.sign
   } else {
-    updated_balances.spent += working * account.sign * -1
+    updated_balances.expense += working * account.sign * -1
   }
 
   Vue.set(current_balances, account_id, updated_balances)
