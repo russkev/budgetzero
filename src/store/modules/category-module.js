@@ -1,6 +1,6 @@
 import Vue from 'vue'
-import _, { isArray, split } from 'lodash'
-import { logPerformanceTime, extractMonthCategoryMonth, hslToHex } from '../../helper'
+import _, { isArray } from 'lodash'
+import { extractMonthCategoryMonth, hslToHex } from '../../helper'
 import {
   DEFAULT_MONTH_BALANCE,
   ID_LENGTH,
@@ -231,10 +231,23 @@ export default {
       })
     },
     UPDATE_MONTH_BALANCES(state, monthBalancesItem) {
+      console.log("MONTH BALANCES ITEM", monthBalancesItem)
+
+      let expense = _.get(monthBalancesItem, 'expense', 0)
+      let income = _.get(monthBalancesItem, 'income', 0)
+
+      if (monthBalancesItem.category_id && monthBalancesItem.amount) {
+        if (monthBalancesItem.category_id === INCOME._id) {
+          income = monthBalancesItem.amount
+        } else {
+          expense = monthBalancesItem.amount
+        }
+      }
+
       const existing = _.defaultsDeep(state.monthBalances[monthBalancesItem.month], DEFAULT_MONTH_BALANCE)
       Vue.set(state.monthBalances, monthBalancesItem.month, {
-        income: existing.income + _.get(monthBalancesItem, 'income', 0),
-        expense: existing.expense + _.get(monthBalancesItem, 'expense', 0),
+        income: existing.income + income,
+        expense: existing.expense + expense,
         budgeted: existing.budgeted + _.get(monthBalancesItem, 'budgeted', 0)
       })
     }

@@ -357,41 +357,41 @@ describe('Test categories (budget) page', () => {
       cy.initPath('budget/2022-07')
     })
 
-    it.only('Checks the value for July and August', () => {
-      // Total income for July is    $1,592.00
-      // Total budgeted for July is    $418.26
-      // Total left for July is      $1,173.74
+    it('Checks the value for July and August', () => {
+      // Income category for July is $1,586.79
+      // Total budgeted for July is  $1,918.26
+      // Total left for July is       -$331.47
 
-      // Total income for August is    $2,884.00
-      // Total carryover from July is  $1,173.74
-      // Total budgeted for August is    $104.60
-      // Total left for August is      $3,953.14
+      // Income category for August is $2,881.64
+      // Total carryover from July is   -$331.47
+      // Total budgeted for August is    $275.50
+      // Total left for August is      $2,274.67
 
       // Total income should be: $4,476.00
 
       // cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,173.74 ')
-      cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,550.79 ')
-      cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget:')
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $331.47 ')
+      cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount over budget:')
 
       cy.get('[data-testid="next-month-button"]').click()
-      cy.get('[data-testid="total-balance"]').should('contain.text', ' $3,953.14 ')
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $2,274.67 ')
       cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget:')
 
       cy.get('[data-testid="previous-month-button"]').click()
     })
 
-    it('Checks that updating a budgeted value causes the correct total balance update', () => {
-      cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,173.74 ')
-      cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget:')
+    it.only('Checks that updating a budgeted value causes the correct total balance update', () => {
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $331.47 ')
+      cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount over budget:')
       const water_selector = '[data-testid="category-budget-input-2aW"]'
       cy.get(water_selector).click()
       cy.get(water_selector).clear()
       cy.get(water_selector).type('-1')
       cy.get(water_selector).type('{enter}')
       cy.get(water_selector).should('have.value', '-$1.00')
-      cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,189.74 ')
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $315.47 ')
       cy.get('[data-testid="next-month-button"]').click()
-      cy.get('[data-testid="total-balance"]').should('contain.text', ' $3,969.14 ')
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $2,290.67 ')
       cy.get('[data-testid="previous-month-button"]').click()
 
       cy.get(water_selector).click()
@@ -399,10 +399,10 @@ describe('Test categories (budget) page', () => {
       cy.get(water_selector).type('2000')
       cy.get(water_selector).type('{enter}')
       cy.get(water_selector).should('have.value', '$2,000.00')
-      cy.get('[data-testid="total-balance"]').should('contain.text', ' $811.26 ')
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $2,316.47 ')
       cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount over budget:')
       cy.get('[data-testid="next-month-button"]').click()
-      cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,968.14 ')
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $289.67 ')
       cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget:')
       cy.get('[data-testid="previous-month-button"]').click()
 
@@ -411,7 +411,7 @@ describe('Test categories (budget) page', () => {
       cy.get(water_selector).type('15')
       cy.get(water_selector).type('{enter}')
       cy.get(water_selector).should('have.value', '$15.00')
-      cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,173.74 ')
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $331.47 ')
     })
 
     it.only('Checks tha updating a transaction results in the correct update of total balance', () => {
@@ -438,7 +438,7 @@ describe('Test categories (budget) page', () => {
       cy.get('.transaction-row:nth-child(12) > .row-outflow').should('have.text', ' $20.21 ')
       cy.get('.transaction-row').should('have.length', 6)
 
-      // In -$42
+      // Out -$42
       cy.get('.transaction-row .row-description').eq(4).click()
       cy.get('[data-testid="details-value"]').click().clear().type('300').blur()
       cy.get('[data-testid="details-inflow-button"]').click()
@@ -446,7 +446,7 @@ describe('Test categories (budget) page', () => {
       cy.get('.transaction-row:nth-child(10) > .row-inflow').should('have.text', ' $300.00 ')
       cy.get('.transaction-row').should('have.length', 6)
 
-      // // In -$320 (August)
+      // Out -$320 (August)
       cy.get('.transaction-row .row-delete').eq(0).click()
       cy.get('[data-testid="delete-confirm-button"]').click()
       cy.get('.transaction-row').should('have.length', 5)
@@ -454,11 +454,11 @@ describe('Test categories (budget) page', () => {
       // Check categories
       cy.get('[data-testid="sidebar-button-budgets"]').click()
 
-      cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,152.74 ')
-      cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget:')
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $310.47 ')
+      cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount over budget:')
 
       cy.get('[data-testid="next-month-button"]').click()
-      cy.get('[data-testid="total-balance"]').should('contain.text', ' $3,612.14 ')
+      cy.get('[data-testid="total-balance"]').should('contain.text', ' $2,311.67 ')
       cy.get('[data-testid="sidebar-button-budgets"]').click()
     })
   })
