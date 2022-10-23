@@ -1,5 +1,9 @@
 <template>
-  <div v-if="!readonly" @blur="onBlur" @focusout="onBlur">
+  <div 
+    v-if="!readonly"
+    @blur="onBlur"
+    >
+    <!-- @focusout="onBlur" -->
     <div v-if="!isEditing">
       <v-hover v-slot="{ hover }">
         <v-text-field
@@ -12,12 +16,12 @@
           :id="id"
           :data-testid="dataTestid"
           :value="currency ? intlCurrency.format(value) : value"
-          @click="onClick"
           @focus="onClick"
           :reverse="currency"
           :background-color="hover ? activeBackgroundColor : 'transparent'"
           :height="height"
-        />
+          />
+          <!-- @click="onClick" -->
       </v-hover>
     </div>
     <div v-else>
@@ -33,13 +37,14 @@
         :data-testid="dataTestid"
         :value="value"
         @change="onApply"
+        @blur="onBlur"
         @keyup.enter="onEnterPressed"
         @click="onEditedClicked"
         :suffix="currency ? '$' : ''"
         :reverse="currency"
-        :background-color="activeBackgroundColor"
         :height="height"
-      />
+        :background-color="activeBackgroundColor"
+        />
     </div>
   </div>
   <div v-else>
@@ -134,6 +139,8 @@ export default {
     },
     onEnterPressed(event) {
       this.$emit("enter", event);
+      this.onApply(event)
+      this.isSelected = true;
     },
     onEditedClicked(event) {
       if (!this.isSelected) {
@@ -141,6 +148,9 @@ export default {
         this.isSelected = true;
       }
     },
+    testChange(event) {
+      console.log("TEST CHANGE")
+    }
   },
 };
 </script>

@@ -131,7 +131,7 @@ export default {
       let budget_value = parseInt(Math.round(parseFloat(target_value) * 100))
       let current = null
       if (isNaN(budget_value)) {
-        console.warn('Budget value is NaN')
+        console.warn(`Budget value: ${target_value} is NaN`)
         return
       }
       const previous = _.get(rootGetters.allCategoryBalances, [month, category_id, 'doc'], null)
@@ -296,6 +296,7 @@ export default {
       commit('SET_EDITED_MASTER_CATEGORY_ID', id)
     },
     onEditCategoryName({ commit }, id) {
+      console.log('onEditCategoryBudget', id)
       commit('SET_EDITED_CATEGORY_NAME_ID', id)
     },
     onEditCategoryBudget({ commit }, id) {

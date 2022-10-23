@@ -135,8 +135,11 @@ export default {
     },
     spentValue() {
       const value =
-        this.masterCategoriesStats[this.masterCategory._id].expense -
-        this.masterCategoriesStats[this.masterCategory._id].income;
+        // this.masterCategoriesStats[this.masterCategory._id].expense -
+        // this.masterCategoriesStats[this.masterCategory._id].income;
+
+        _.get(this.masterCategoriesStats, [this.masterCategory._id, "expense"], 0)
+        - _.get(this.masterCategoriesStats, [this.masterCategory._id, "income"], 0);
       if (value === 0) {
         return this.intlCurrency.format(0);
       } else {

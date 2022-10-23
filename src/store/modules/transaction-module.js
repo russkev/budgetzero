@@ -1,4 +1,5 @@
 import { isArray } from 'lodash'
+import _ from 'lodash'
 import { DEFAULT_ACCOUNT_BALANCE, DEFAULT_MONTH_BALANCE, ID_LENGTH, ID_NAME, NONE } from '../../constants'
 import { sanitizeValueInput, randomInt, randomString } from '../../helper'
 import { updateAccountBalances } from './account-module'
@@ -322,6 +323,7 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     if (category_id === undefined || category_id === null) {
       category_id = NONE._id
     }
+    const master_id = _.get(getters.categoriesById, [category_id, 'masterCategory'], null)
     const cleared = row.doc.cleared ? working : 0
     const uncleared = row.doc.cleared ? 0 : working
     const splits = row.doc.splits ? row.doc.splits : []
@@ -330,7 +332,7 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     _.defaultsDeep(balances.account, {[account_id]: DEFAULT_ACCOUNT_BALANCE})
     _.defaultsDeep(balances.month, {[month]: DEFAULT_MONTH_BALANCE})
     updateAccountBalances(balances.account, account_doc, account_id, cleared, uncleared, working)
-    updateMonthBalances(balances.month, account_doc, month, working)
+    updateMonthBalances(balances.month, master_id, account_doc, month, working)
 
     const running_balance = running_balances[account_id] + working
     running_balances[account_id] = running_balance

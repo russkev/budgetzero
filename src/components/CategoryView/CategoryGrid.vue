@@ -150,7 +150,6 @@ export default {
         return this.draggableMasterCategoriesData;
       },
       set(values) {
-        console.log("VALUES", values);
         this.draggableMasterCategoriesData = values;
         this.counter += 1;
         this.$store.dispatch("reorderMasterCategories", values);
@@ -192,6 +191,7 @@ export default {
           name: master_category.name,
           collapsed: master_category.collapsed,
           color: master_category.color,
+          sort: master_category.sort,
         };
       });
     },
@@ -203,14 +203,14 @@ export default {
 </script>
 
 <style>
-.v-expansion-panel.master-category-row {
+/* .v-expansion-panel.master-category-row {
   border: none;
   box-shadow: none;
 }
 
 .v-expansion-panel.master-category-row:not(:first-child)::after {
   border: none;
-}
+} */
 
 .v-expansion-panel-content__wrap {
   padding: 0 !important;
@@ -220,9 +220,9 @@ export default {
   box-shadow: none;
 }
 
-.master-category-row .v-expansion-panel-header {
+/* .master-category-row .v-expansion-panel-header {
   min-height: 0;
-}
+} */
 
 .category-card {
   border-radius: 4px;

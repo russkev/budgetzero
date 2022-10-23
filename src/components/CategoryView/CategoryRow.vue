@@ -91,7 +91,7 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from "vuex";
-import { NONE } from "../../constants";
+import { ID_LENGTH, NONE } from "../../constants";
 import { nextTick } from "vue";
 
 export default {
@@ -134,12 +134,19 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["intlCurrency", "categoryColors", "categories"]),
-    ...mapGetters("categoryMonth", ["editedCategoryBudgetId", "categoriesData"]),
+    ...mapGetters([
+      "intlCurrency",
+      "categoryColors",
+      "categories",
+      "categoriesByMaster",
+      "masterCategories",
+    ]),
+    ...mapGetters("categoryMonth", ["editedCategoryBudgetId", "editedCategoryNameId", "categoriesData"]),
     negativeMultiplier() {
       return this.isIncome ? 1 : -1;
     },
   },
+
   methods: {
     ...mapMutations("categoryMonth", ["SET_EDITED_CATEGORY_BUDGET_ID"]),
     ...mapActions("categoryMonth", [
@@ -169,21 +176,27 @@ export default {
     //   return undefined;
     // },
     onCategoryBudgetEnter(category, event) {
-      console.log("onCategoryBudgetEnter", category, event);
-
-      // const next_id = this.categoryIdFromIndex(category.index + 1);
-      const next_id = category.sort + 1;
       document.activeElement.blur();
-      if (next_id !== undefined) {
-        this.SET_EDITED_CATEGORY_BUDGET_ID(next_id);
-        const element_id = `category-budget-input-${next_id}`;
-        const element = document.getElementById(element_id);
-        if (!element) {
-          return;
+      let next_category = null;
+      if (category.sort < this.categoriesByMaster[this.masterCategory._id].length - 1) {
+        next_category = this.categoriesByMaster[this.masterCategory._id][category.sort + 1];
+      } else {
+        const next_master_category = this.masterCategories.find(
+          (master_category) => master_category.sort === this.masterCategory.sort + 1
+        );
+        if (next_master_category) {
+          next_category = this.categoriesByMaster[next_master_category._id.slice(-ID_LENGTH.category)][0];
         }
-        element.focus();
-        nextTick().then(() => {
-          element.select();
+      }
+      if (!next_category) {
+        return;
+      }
+      const next_budget_id = `category-budget-input-${next_category._id.slice(-ID_LENGTH.category)}`;
+      const next_category_input = document.getElementById(next_budget_id);
+      if (next_category_input) {
+        next_category_input.focus();
+        nextTick(() => {
+          next_category_input.select();
         });
       }
     },
@@ -201,7 +214,7 @@ export default {
       if (this.isIncome || amount == 0) {
         return this.intlCurrency.format(amount / 100);
       } else {
-        return this.intlCurrency.format(-amount / 100)
+        return this.intlCurrency.format(-amount / 100);
       }
     },
   },

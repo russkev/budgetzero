@@ -685,11 +685,17 @@ export default {
         doc: current ? current : null
       }
     },
-    setMonthBudgetedBalances({ commit }, monthCategoryBalances) {
+    setMonthBudgetedBalances({ commit, getters }, monthCategoryBalances) {
       // monthBalances = JSON.parse(JSON.stringify(getters.monthBalances))
       Object.entries(monthCategoryBalances).forEach(([month, categoryBalances]) => {
         const budgeted = Object.values(categoryBalances).reduce((total, categoryBalance) => {
-          return total + categoryBalance.doc.budget
+          const category_id = categoryBalance.doc._id.slice(-ID_LENGTH.category)
+          const master_id = _.get(getters.categoriesById, [category_id, 'masterCategory'], null)
+          if (master_id !== null && master_id !== INCOME._id) {
+            return total + categoryBalance.doc.budget
+          } else {
+            return total
+          }
         }, 0)
         commit('SET_MONTH_BALANCES_ATTRIBUTE', { month: month, budgeted: budgeted })
       })
@@ -710,9 +716,10 @@ export default {
 const parseAllMonthCategories = (results, getters) => {
   let month_category_balances = {}
   const month_categories = results[2]
+
   month_categories.map((month_category) => {
-    const month = extractMonthCategoryMonth(month_category._id)
     const category_id = month_category._id.slice(-ID_LENGTH.category)
+    const month = extractMonthCategoryMonth(month_category._id)
     // const master_id = getters.categoriesById[category_id]['masterCategory']
 
     month_category_balances[month] = updateSingleCategory(month_category_balances[month], category_id, {
@@ -813,10 +820,11 @@ const updateSingleCategory = (existing_month_balances, category_id, { amount, ca
   return month_balances
 }
 
-const updateMonthBalances = (month_balances, account, month, amount) => {
+const updateMonthBalances = (month_balances, master_id, account, month, amount) => {
   let updated_balances = { ...month_balances[month] }
   const final_amount = (amount *= account.sign)
-  if (final_amount > 0) {
+  if (master_id === INCOME._id) {
+    console.log('income', final_amount)
     updated_balances.income += final_amount
   } else {
     updated_balances.expense += final_amount * -1

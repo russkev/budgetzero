@@ -1,7 +1,7 @@
 <template>
   <header-row
     :title-id="`master-category-name-${masterIncomeCategory._id}`"
-    :balance-id="`master-category-this-month-${masterIncomeCategory._id}`"
+    :balance-id="`master-category-spent-${masterIncomeCategory._id}`"
   >
   <template #color>
     <master-category-color :color="incomeColor" @updated="onColorChange" />
