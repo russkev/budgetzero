@@ -194,7 +194,8 @@ export default {
       const next_budget_id = `category-budget-input-${next_category._id.slice(-ID_LENGTH.category)}`;
       const next_category_input = document.getElementById(next_budget_id);
       if (next_category_input) {
-        next_category_input.focus();
+        this.SET_EDITED_CATEGORY_BUDGET_ID(next_category._id);
+        // next_category_input.focus();
         nextTick(() => {
           next_category_input.select();
         });

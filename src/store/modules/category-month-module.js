@@ -5,6 +5,7 @@ import {
   ID_NAME,
   NONE,
   HIDDEN,
+  INCOME,
   DEFAULT_MASTER_CATEGORY_BALANCE
 } from '../../constants'
 import { getCarryover } from '@/store/modules/category-module'
@@ -255,6 +256,7 @@ export default {
     onUnhideCategory({ dispatch, rootGetters }, category_id) {
       console.log("onUnhideCategory", category_id)
       const doc = rootGetters.categoriesById[category_id]
+      console.log("onUnhideCategory", doc)
       if (doc === undefined) {
         return
       }
@@ -268,12 +270,15 @@ export default {
         !Object.keys(rootGetters.masterCategoriesById).includes(master_id)
       ) {
         for (let masterCategory of rootGetters.masterCategories) {
-          if (![NONE._id, HIDDEN._id].includes(masterCategory._id)) {
+          console.log("ID", masterCategory._id)
+          console.log("BAD IDS", [NONE._id, HIDDEN._id, INCOME._id])
+          if (![NONE._id, HIDDEN._id, INCOME._id].includes(masterCategory._id.slice(-ID_LENGTH.category))) {
             master_id = masterCategory._id.slice(-ID_LENGTH.category)
             break
           }
         }
       }
+      console.log("master_id", master_id)
 
       let sort = 0
       const destination_categories = rootGetters.categoriesByMaster[master_id]

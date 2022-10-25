@@ -237,19 +237,22 @@ export default {
       let income = _.get(monthBalancesItem, 'income', 0)
 
       if (monthBalancesItem.category_id && monthBalancesItem.amount) {
-        if (monthBalancesItem.category_id === INCOME._id) {
+        if (monthBalancesItem.master_id === INCOME._id) {
           income = monthBalancesItem.amount
         } else {
           expense = monthBalancesItem.amount
         }
       }
 
-      const existing = _.defaultsDeep(state.monthBalances[monthBalancesItem.month], DEFAULT_MONTH_BALANCE)
-      Vue.set(state.monthBalances, monthBalancesItem.month, {
-        income: existing.income + income,
-        expense: existing.expense + expense,
-        budgeted: existing.budgeted + _.get(monthBalancesItem, 'budgeted', 0)
-      })
+      const previous = _.defaultsDeep(state.monthBalances[monthBalancesItem.month], DEFAULT_MONTH_BALANCE)
+      const current = {
+        income: previous.income + income,
+        expense: previous.expense + expense,
+        budgeted: previous.budgeted + _.get(monthBalancesItem, 'budgeted', 0)
+      }
+      console.log("PREVIOUS", previous)
+      console.log("CURRENT", current)
+      Vue.set(state.monthBalances, monthBalancesItem.month, current)
     }
   },
   actions: {
@@ -580,6 +583,7 @@ export default {
     // },
 
     updateCategoryBalance({ commit, getters }, { current, previous }) {
+      console.log("updateCategoryBalance", current, previous)
       if (!current && !previous) {
         console.warn('calculateCategoryBalanceUpdate called with no current or previous data')
         return
@@ -612,23 +616,29 @@ export default {
       let category_balances = []
       if (current) {
         if (current.splits && isArray(current.splits) && current.splits.length > 0) {
+          const master = getters.masterCategoriesByCategoryId[split.category]
+          const master_id = master._id.slice(-ID_LENGTH.category)
           const this_result = current.splits.map((split) => {
             return {
               account: account,
               month: current_month,
               category_id: split.category,
-              amount: split.value
+              master_id: master_id,
+              amount: split.value,
               // income: split.value > 0 ? split.value : 0,
               // expense: split.value < 0 ? split.value : 0
             }
           })
           category_balances = category_balances.concat(this_result)
         } else {
+          const master = getters.masterCategoriesByCategoryId[current.category]
+          const master_id = master._id.slice(-ID_LENGTH.category)
           category_balances.push({
             account: account,
             month: current_month,
             category_id: current.category,
-            amount: current_value
+            master_id: master_id,
+            amount: current_value,
             // income: current_value > 0 ? current_value : 0,
             // expense: current_value < 0 ? current_value : 0
           })
@@ -637,22 +647,28 @@ export default {
       if (previous) {
         if (previous.splits && isArray(previous.splits) && previous.splits.length > 0) {
           const this_result = previous.splits.map((split) => {
+            const master = getters.masterCategoriesByCategoryId[split.category]
+            const master_id = master._id.slice(-ID_LENGTH.category)
             return {
               account: account,
               month: previous_month,
               category_id: split.category,
-              amount: -split.value
+              master_id: master_id,
+              amount: -split.value,
               // income: split.value > 0 ? -split.value : 0,
               // expense: split.value < 0 ? -split.value : 0
             }
           })
           category_balances = category_balances.concat(this_result)
         } else {
+          const master = getters.masterCategoriesByCategoryId[previous.category]
+          const master_id = master._id.slice(-ID_LENGTH.category)
           category_balances.push({
             account: account,
             month: previous_month,
             category_id: previous.category,
-            amount: -previous_value
+            master_id: master_id,
+            amount: -previous_value,
             // income: previous_value > 0 ? -previous_value : 0,
             // expense: previous_value < 0 ? -previous_value : 0
           })
