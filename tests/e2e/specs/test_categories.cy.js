@@ -124,7 +124,7 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="previous-month-button"]').click()
     })
 
-    it.only('Checks that pressing enter on budget input causes the next one to be highlighted', () => {
+    it('Checks that pressing enter on budget input causes the next one to be highlighted', () => {
       cy.get('[data-testid="category-budget-input-2aW"]').should('have.attr', 'readonly')
       cy.get('[data-testid="category-budget-input-2aW"]').click()
       cy.get('[data-testid="category-budget-input-2aW"]').type('{enter}')
@@ -308,18 +308,15 @@ describe('Test categories (budget) page', () => {
     })
 
     it('Creates a new master category', () => {
-      cy.get('main').find('div.master-row').should('have.length', 5)
+      cy.get('.master-categories > div').should('have.length', 2)
       cy.get('[data-testid="btn-new-master-category"]').click()
-      cy.get('main').find('div.master-row').should('have.length', 6)
+      cy.get('.master-categories > div').should('have.length', 3)
       const name_input = () => cy.get('main').find('div.master-row').eq(4).find('input')
       name_input().should('not.have.attr', 'readonly')
       name_input().should('have.focus')
       name_input().type('Dividends').type('{enter}')
       name_input().should('have.value', 'Dividends')
-      cy.get('main')
-        .find('div.master-row:nth-child(5) .categories-container')
-        .children()
-        .should('have.length', 0)
+      cy.get('.categories-container').eq(3).should('not.be.visible')
     })
   })
 
@@ -502,7 +499,6 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="categories-container-3ks"] > div:nth-child(4)', {timeout: 10000})
       cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 0)
       cy.get('[data-testid="categories-container-3ks"] [data-testid="category-name-ATi"]').should('have.length', 1)
-
     })
 
     it('Checks that deleting a master category and then restoring works', () => {
@@ -534,6 +530,7 @@ describe('Test categories (budget) page', () => {
     })
 
     it('Checks that 18.99 is stored as 18.99', () => {
+      cy.get('[data-testid="category-budget-input-2aW"]').should('have.value', '$162.25')
       cy.get('[data-testid="category-budget-input-2aW"]').click()
       cy.get('[data-testid="category-budget-input-2aW"]').clear().type('18.99')
       cy.get('[data-testid="category-budget-input-2aW"]').blur()
