@@ -170,10 +170,13 @@ describe('Test transactions', () => {
     })
 
     it('Checks that budget was updated correctly', () => {
-      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      cy.visit('http://localhost:8082/budget/2022-08')
 
-      cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $497.53 ')
-      cy.get('[data-testid="master-category-balance-fVM"]').should('contain.text', ' $497.53 ')
+      cy.get('[data-testid="master-category-name-:in"]').should('have.text', ' Income ')
+      cy.get('[data-testid="master-category-spent-:in"]').should('contain.text', ' $581.64 ')
+
+      cy.get('[data-testid="category-name-input-gpe"]').should('have.value', 'Paycheck 1')
+      cy.get('[data-testid="category-spent-gpe"]').should('have.text', ' $581.64 ')
 
       cy.get('[data-testid="uncategorized-balance"]').should('contain.text', ' $2,218.68 ')
 
@@ -210,7 +213,7 @@ describe('Test transactions', () => {
     })
   })
 
-  context('Test delete transactions', () => {
+  context.only('Test delete transactions', () => {
     before(() => {
       cy.initPath('transactions/7kW')
       cy.get('[data-testid="toggle-sidebar"]').click()
@@ -328,8 +331,16 @@ describe('Test transactions', () => {
     })
 
     it('Checks that budget was updated correctly', () => {
-      cy.get('[data-testid="sidebar-button-budgets"]').click()
-      cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' -$752.47 ')
+      cy.visit('http://localhost:8082/budget/2022-08')
+
+      cy.get('[data-testid="master-category-name-:in"]').should('have.text', ' Income ')
+      cy.get('[data-testid="master-category-spent-:in"]').should('contain.text', ' $581.64 ')
+
+      cy.get('[data-testid="category-name-input-gpe"]').should('have.value', 'Paycheck 1')
+      cy.get('[data-testid="category-spent-gpe"]').should('have.text', ' $581.64 ')
+
+      // cy.get('[data-testid="sidebar-button-budgets"]').click()
+      // cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' -$752.47 ')
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $1,185.59 ')
       cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $358.10 ')
     })
