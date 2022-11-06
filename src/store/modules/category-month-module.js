@@ -91,7 +91,6 @@ export default {
               name: name,
               budget: budget,
               budgetDisplay: budget_display,
-              // spent: spent,
               income: income,
               expense: expense,
               carryover: carryover,
@@ -110,7 +109,6 @@ export default {
         partial[master_id] = category_docs.reduce(
           (sum_partial, category) => {
             sum_partial.budget += category.budget
-            // sum_partial.spent += category.spent
             sum_partial.income += category.income
             sum_partial.expense += category.expense
             sum_partial.balance += category.balance
@@ -301,7 +299,6 @@ export default {
       commit('SET_EDITED_MASTER_CATEGORY_ID', id)
     },
     onEditCategoryName({ commit }, id) {
-      console.log('onEditCategoryBudget', id)
       commit('SET_EDITED_CATEGORY_NAME_ID', id)
     },
     onEditCategoryBudget({ commit }, id) {

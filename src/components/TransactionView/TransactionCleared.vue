@@ -53,7 +53,6 @@ export default {
       "selectedTransactions",
     ]),
     isDisabled() {
-      // return this.highlighted || this.selectedTransactions.length > 0;
       return this.editedTransaction._id === this.item._id;
     }
   },
@@ -66,7 +65,6 @@ export default {
     ...mapActions("accountTransactions", ["prepareEditedItem", "getTransactions"]),
     ...mapActions(["createOrUpdateTransaction"]),
     toggleCleared() {
-      // if (this.editedTransactionIndex === this.transactions.indexOf(item)) {
       if(this.editedTransaction._id === this.item._id) {
         this.SET_EDITED_TRANSACTION_CLEARED(!this.editedTransaction.cleared);
         return;

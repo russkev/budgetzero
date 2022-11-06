@@ -339,8 +339,6 @@ describe('Test transactions', () => {
       cy.get('[data-testid="category-name-input-gpe"]').should('have.value', 'Paycheck 1')
       cy.get('[data-testid="category-spent-gpe"]').should('have.text', ' $581.64 ')
 
-      // cy.get('[data-testid="sidebar-button-budgets"]').click()
-      // cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' -$752.47 ')
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $1,185.59 ')
       cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $358.10 ')
     })

@@ -286,7 +286,6 @@ export default {
     },
     initCategories: async ({ dispatch, rootState, getters }) => {
       const categories = await dispatch('fetchCategories')
-      // const hasBaseIncome = categories.some((category) => category._id.slice(-ID_LENGTH.category) === INCOME._id)
       const baseIncomeIndex = categories.findIndex((category) => category._id.slice(-ID_LENGTH.category) === INCOME._id)
       if (baseIncomeIndex === -1) {
         const color = getRandomColor(getters.colorSwatches)
@@ -578,10 +577,6 @@ export default {
       ])
     },
 
-    // calculateMonthBalancesUpdate({ commit, getters}, {current, previous}) {
-
-    // },
-
     updateCategoryBalance({ commit, getters }, { current, previous }) {
       console.log("updateCategoryBalance", current, previous)
       if (!current && !previous) {
@@ -625,8 +620,6 @@ export default {
               category_id: split.category,
               master_id: master_id,
               amount: split.value,
-              // income: split.value > 0 ? split.value : 0,
-              // expense: split.value < 0 ? split.value : 0
             }
           })
           category_balances = category_balances.concat(this_result)
@@ -639,8 +632,6 @@ export default {
             category_id: current.category,
             master_id: master_id,
             amount: current_value,
-            // income: current_value > 0 ? current_value : 0,
-            // expense: current_value < 0 ? current_value : 0
           })
         }
       }
@@ -655,8 +646,6 @@ export default {
               category_id: split.category,
               master_id: master_id,
               amount: -split.value,
-              // income: split.value > 0 ? -split.value : 0,
-              // expense: split.value < 0 ? -split.value : 0
             }
           })
           category_balances = category_balances.concat(this_result)
@@ -669,8 +658,6 @@ export default {
             category_id: previous.category,
             master_id: master_id,
             amount: -previous_value,
-            // income: previous_value > 0 ? -previous_value : 0,
-            // expense: previous_value < 0 ? -previous_value : 0
           })
         }
       }
@@ -715,7 +702,6 @@ export default {
       }
     },
     setMonthBudgetedBalances({ commit, getters }, monthCategoryBalances) {
-      // monthBalances = JSON.parse(JSON.stringify(getters.monthBalances))
       Object.entries(monthCategoryBalances).forEach(([month, categoryBalances]) => {
         const budgeted = Object.values(categoryBalances).reduce((total, categoryBalance) => {
           const category_id = categoryBalance.doc._id.slice(-ID_LENGTH.category)
@@ -819,10 +805,7 @@ const getCategoryBalance = (current_balances, month, category_id, default_carryo
 const updateSingleCategory = (existing_month_balances, category_id, { amount, carryover, doc, account }) => {
   let month_balances = existing_month_balances === undefined ? {} : existing_month_balances
   const sign = account ? account.sign : 1
-  // const sign = 1
-  // spent *= sign
 
-  // const default_balance = defaultCategoryBalance(category_id)
   month_balances = _.defaultsDeep(month_balances, { [category_id]: DEFAULT_CATEGORY_BALANCE })
 
   let carryover_difference = 0
@@ -843,9 +826,7 @@ const updateSingleCategory = (existing_month_balances, category_id, { amount, ca
     }
   }
 
-  // month_balances[category_id].spent += spent === undefined ? 0 : spent * sign
   month_balances[category_id].carryover += carryover_difference
-
   return month_balances
 }
 

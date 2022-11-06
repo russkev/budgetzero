@@ -3,7 +3,6 @@
     v-if="!readonly"
     @blur="onBlur"
     >
-    <!-- @focusout="onBlur" -->
     <div v-if="!isEditing">
       <v-hover v-slot="{ hover }">
         <v-text-field
@@ -21,7 +20,6 @@
           :background-color="hover ? activeBackgroundColor : 'transparent'"
           :height="height"
           />
-          <!-- @click="onClick" -->
       </v-hover>
     </div>
     <div v-else>

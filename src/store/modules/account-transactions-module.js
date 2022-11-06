@@ -222,7 +222,6 @@ export default {
       })
     },
     cancel({ commit }) {
-      // commit('SET_EDITED_TRANSACTION', JSON.parse(JSON.stringify(getters.transactions[getters.editedTransactionIndex])))
       commit('CLEAR_EDITED_TRANSACTION')
     },
     editTransaction({ commit, getters }, transaction) {
@@ -259,24 +258,6 @@ export default {
       commit('PUSH_TRANSACTION', getters.editedTransaction)
       commit('SET_EDITED_TRANSACTION_INDEX', getters.transactions.indexOf(getters.editedTransaction))
     },
-    // updateSelectedTransactionsCleared({ getters, dispatch, commit }, { is_cleared }) {
-    //   if (getters.selectedTransactions.length < 1) {
-    //     return
-    //   }
-    //   const documents = getters.selectedTransactions.map((doc) => {
-    //     return {
-    //       current: {
-    //         ...doc,
-    //         cleared: is_cleared
-    //       },
-    //       previous: doc
-    //     }
-    //   })
-    //   dispatch('commitBulkDocsToPouchAndVuex', documents, { root: true }).then(() => {
-    //     dispatch('getTransactions')
-    //     // commit('CLEAR_SELECTED_TRANSACTIONS')
-    //   })
-    // },
     categorizeSelectedTransactions({ getters, dispatch, commit }, { categoryId }) {
       if (getters.selectedTransactions.length < 1) {
         return
@@ -292,7 +273,6 @@ export default {
       })
       dispatch('commitBulkDocsToPouchAndVuex', documents, { root: true }).then(() => {
         dispatch('getTransactions')
-        // commit('CLEAR_SELECTED_TRANSACTIONS')
       })
     },
     deleteSelectedTransactions({ commit, getters, dispatch }) {
@@ -348,7 +328,6 @@ export default {
       })
       dispatch('commitBulkDocsToPouchAndVuex', documents, { root: true }).then(() => {
         dispatch('getTransactions')
-        // commit('CLEAR_SELECTED_TRANSACTIONS')
       })
     },
     setSelectedTransactions({ getters, commit, dispatch }, transactions) {

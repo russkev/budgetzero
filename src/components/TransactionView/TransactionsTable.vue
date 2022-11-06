@@ -26,7 +26,6 @@
       }"
       class="flex-table-main background lighten-1"
     >
-      <!-- :expanded.sync="expanded" -->
       <template #header.data-table-select="{ on, props }">
         <v-simple-checkbox
           :ripple="false"
@@ -183,20 +182,6 @@ export default {
     isHighlighted(item, isSelected) {
       return isSelected || item._id === this.editedTransaction._id;
     },
-    // onCategorySelected({ item, categoryId }) {
-    //   console.log("onCategorySelected", categoryId);
-    //   const current = { ...item, category: categoryId };
-    //   const previous = item;
-    //   this.commitDocToPouchAndVuex({ current, previous }).then(() => {
-    //     this.getTransactions();
-    //   });
-    // },
-    // onDeleteTransaction(transaction) {
-    //   console.log("onDeleteTransaction", transaction);
-    // },
-    // tempSelect(event) {
-    //   console.log("TEMP SELECT", event);
-    // }
   },
 };
 </script>

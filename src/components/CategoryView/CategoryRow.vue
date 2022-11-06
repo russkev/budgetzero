@@ -162,19 +162,6 @@ export default {
         return category_id === this.editedCategoryNameId;
       }
     },
-    // categoryIdFromIndex(index) {
-    //   if (index >= this.categories.length) {
-    //     return undefined;
-    //   }
-    //   for (let categories_from_master of Object.values(this.categoriesData)) {
-    //     for (let category_data of categories_from_master) {
-    //       if (category_data.index === index) {
-    //         return category_data._id;
-    //       }
-    //     }
-    //   }
-    //   return undefined;
-    // },
     onCategoryBudgetEnter(category, event) {
       document.activeElement.blur();
       let next_category = null;

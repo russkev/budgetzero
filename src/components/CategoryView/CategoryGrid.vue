@@ -1,6 +1,6 @@
 <template>
-  <v-container fluid class="pt-0">
-    <v-sheet max-width="800px" justify="center" class="mx-auto pa-2" color="transparent">
+  <v-container fluid class="py-0">
+    <v-sheet max-width="800px" justify="center" id="categories-container-sheet" class="mx-auto pa-2" color="transparent">
       <v-row class="ma-0 pa-0" style="flex-wrap: nowrap; justify-content: space-between;">
         <v-col class="ma-0 mr-auto pa-0 mb-2" cols="auto">
           <category-month-selector />
@@ -9,80 +9,79 @@
           <category-header />
         </v-col>
       </v-row>
+      <div id="categories-list-container">
       <uncategorized-row />
 
-      <!-- INCOME -->
-      <collapsed :master-category="masterIncomeCategory">
-        <template #header>
-          <master-category-row-income :name-cols="nameCols" />
-        </template>
-        <template #body>
-          <category-rows
-            :master-category="masterIncomeCategory"
-            :name-cols="nameCols"
-            hide-budgeted
-            hide-balance
-            is-income
-            freeze-first-row
-          />
-        </template>
-      </collapsed>
-
-      <!-- STANDARD -->
-      <draggable
-        v-model="draggableMasterCategories"
-        handle=".master-handle"
-        style="width: inherit;"
-        :move="checkMove"
-        :group="{ name: 'master-categories' }"
-      >
-        <collapsed
-          v-for="(master_category, master_index) in draggableMasterCategories"
-          :key="master_index"
-          :master-category="master_category"
-          class="master-categories"
-        >
+        <!-- INCOME -->
+        <collapsed :master-category="masterIncomeCategory">
           <template #header>
-            <master-category-row-standard
-              :name-cols="nameCols"
-              :master-category="master_category"
-              :master-index="master_index"
-            />
+            <master-category-row-income :name-cols="nameCols" />
           </template>
           <template #body>
-            <category-rows :masterCategory="master_category" :nameCols="nameCols" />
+            <category-rows
+              :master-category="masterIncomeCategory"
+              :name-cols="nameCols"
+              hide-budgeted
+              hide-balance
+              is-income
+              freeze-first-row
+            />
           </template>
         </collapsed>
-      </draggable>
-
-      <!-- HIDDEN -->
-      <collapsed :master-category="masterHiddenCategory">
-        <template #header>
-          <master-category-row-hidden />
-        </template>
-        <template #body>
-          <category-rows :masterCategory="masterHiddenCategory" :nameCols="nameCols" />
-        </template>
-      </collapsed>
-
-      <category-card>
-        <v-row class="ma-0 pa-0">
-          <v-col class="pa-0 ma-0" align="center">
-            <v-btn
-              tile
-              text
-              class="text-none my-2"
-              :data-testid="`btn-new-master-category`"
-              @click="onNewMasterCategory()"
-            >
-              <v-icon color="primary" class="mr-2">
-                mdi-plus
-              </v-icon>
-              New Group
-            </v-btn>
-          </v-col>
-        </v-row>
-      </category-card>
+        <!-- STANDARD -->
+        <draggable
+          v-model="draggableMasterCategories"
+          handle=".master-handle"
+          style="width: inherit;"
+          :move="checkMove"
+          :group="{ name: 'master-categories' }"
+        >
+          <collapsed
+            v-for="(master_category, master_index) in draggableMasterCategories"
+            :key="master_index"
+            :master-category="master_category"
+            class="master-categories"
+          >
+            <template #header>
+              <master-category-row-standard
+                :name-cols="nameCols"
+                :master-category="master_category"
+                :master-index="master_index"
+              />
+            </template>
+            <template #body>
+              <category-rows :masterCategory="master_category" :nameCols="nameCols" />
+            </template>
+          </collapsed>
+        </draggable>
+        <!-- HIDDEN -->
+        <collapsed :master-category="masterHiddenCategory">
+          <template #header>
+            <master-category-row-hidden />
+          </template>
+          <template #body>
+            <category-rows :masterCategory="masterHiddenCategory" :nameCols="nameCols" />
+          </template>
+        </collapsed>
+        <category-card>
+          <v-row class="ma-0 pa-0">
+            <v-col class="pa-0 ma-0" align="center">
+              <v-btn
+                tile
+                text
+                class="text-none my-2"
+                :data-testid="`btn-new-master-category`"
+                @click="onNewMasterCategory()"
+              >
+                <v-icon color="primary" class="mr-2">
+                  mdi-plus
+                </v-icon>
+                New Group
+              </v-btn>
+            </v-col>
+          </v-row>
+        </category-card>
+      </div>
     </v-sheet>
   </v-container>
 </template>
@@ -203,14 +202,6 @@ export default {
 </script>
 
 <style>
-/* .v-expansion-panel.master-category-row {
-  border: none;
-  box-shadow: none;
-}
-
-.v-expansion-panel.master-category-row:not(:first-child)::after {
-  border: none;
-} */
 
 .v-expansion-panel-content__wrap {
   padding: 0 !important;
@@ -220,11 +211,18 @@ export default {
   box-shadow: none;
 }
 
-/* .master-category-row .v-expansion-panel-header {
-  min-height: 0;
-} */
-
 .category-card {
   border-radius: 4px;
+}
+
+#categories-container-sheet {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 1px);
+}
+
+#categories-list-container {
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 </style>

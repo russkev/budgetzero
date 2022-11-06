@@ -79,4 +79,7 @@ export default {
 #app {
   background-color: var(--v-background-base);
 }
+html {
+  overflow: auto;
+}
 </style>

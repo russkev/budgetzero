@@ -120,12 +120,6 @@ div.splits-grid {
   display: grid;
   grid-template-columns: minmax(50px, auto) 100px 20px;
 }
-/* #add-split-category {
-  grid-column: 1 / 3;
-}
-#splits-total {
-  grid-column: 1 / 3;
-} */
 .splits-full-width {
   grid-column: 1 / 3;
 }

@@ -44,7 +44,6 @@ import VueSweetalert2 from 'vue-sweetalert2'
 const options = {
   confirmButtonColor: '#263238',
   cancelButtonColor: '#ff7674'
-  // background: '#990000'
 }
 
 Vue.use(VueSweetalert2, options)

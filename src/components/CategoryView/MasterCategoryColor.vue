@@ -58,7 +58,6 @@ export default {
   methods: {
     ...mapActions(["updateMasterColor"]),
     onColorChange(color) {
-      // this.updateMasterColor({ masterId: this.masterCategory._id, colorObject: color });
       this.$emit('updated', color);
     },
   },

@@ -126,10 +126,4 @@ const updateAccountBalances = (current_balances, account, account_id, cleared, u
   Vue.set(current_balances, account_id, updated_balances)
 }
 
-
-// const defaultAccountBalance = (account_id) => {
-//   return {
-//     [account_id]: DEFAULT_ACCOUNT_BALANCE
-//   }
-// }
 export { updateAccountBalances }

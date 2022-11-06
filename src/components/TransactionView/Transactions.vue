@@ -1,18 +1,15 @@
 <template>
   <div>
-    <v-container fluid class="pt-0">
+    <v-container fluid class="py-0">
       <v-sheet justify="center" class="mx-auto" color="transparent">
         <transactions-header :selected_account_id="accountId" />
         <v-row class="ma-0 pa-0">
-
-          <!-- <div class="flex-sheet"> -->
           <v-col class="flex-sheet pa-1" cols="8">
             <transactions-table />
           </v-col>
           <v-col cols="4" class="pa-1">
             <details />
           </v-col>
-          <!-- </div> -->
         </v-row>
       </v-sheet>
     </v-container>

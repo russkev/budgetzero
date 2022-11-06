@@ -124,7 +124,6 @@ export default {
         .filter((trans) => trans.cleared)
 
       //Update reconciled field
-      // transactionsToLock.map((x) => (x.reconciled = true))
       context.commit('UPDATE_RECONCILED', transactionsToLock)
 
       //Commit to pouchdb
@@ -132,7 +131,6 @@ export default {
     },
 
     async createMockTransactions(context, { amount, start, end }) {
-      // return new Promise((resolve, reject) => {
       const num_transactions = parseInt(amount)
       if (!num_transactions) {
         throw 'Invalid amount'
@@ -342,9 +340,6 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     }
 
     initFromMonthCategory(month)
-
-    // if (splits.length < 1) {
-
     const category_items = splits.length > 0 ? splits : [{category: category_id, value: working}]
 
     category_items.map((item) => {
@@ -352,8 +347,6 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
         balances.category[month] = initCategoryBalancesMonth(balances.category, month, getters.categories)
       }
       balances.category[month] = updateSingleCategory(balances.category[month], item.category, {
-        // expense: -item.value < 0 ? item.value : 0,
-        // income: item.value > 0 ? item.value : 0,
         amount: item.value,
         account: account_doc
       })

@@ -1,13 +1,5 @@
-// var Validator = require('jsonschema').Validator
-// var validateSchema = new Validator()
-// var ID_LENGTH = require('../constants').ID_LENGTH
-// var ID_NAME = require('../constants').ID_NAME
-
 import validateSchema from 'json-schema'
 import { ID_LENGTH, ID_NAME } from '../constants'
-
-// const Validator = jsonSchema.V
-// const validateSchema = new jsonSchema.Validator()
 
 const account_id_length = 'b_'.length + ID_LENGTH.budget + ID_NAME.account.length + ID_LENGTH.account
 const schema_account = {

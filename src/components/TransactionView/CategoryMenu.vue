@@ -114,7 +114,6 @@ export default {
       return `${this.selectedCategoryColor}55`;
     },
     isUncategorized() {
-      // return this.item.category === undefined || this.item.category === NONE._id;
       return isUncategorized(this.item);
     },
   },
