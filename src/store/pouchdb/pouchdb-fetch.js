@@ -1,5 +1,6 @@
 import { ID_NAME, ID_LENGTH, NONE } from '../../constants'
 import { logPerformanceTime, prevMonth } from '../../helper'
+import { base64Date } from '../modules/id-module'
 import Vue from 'vue'
 
 export default {
@@ -113,22 +114,41 @@ export default {
           limit: options.itemsPerPage,
           skip: skip_amount,
           descending: true
-          // startkey: [budget_id, options.account_id, '\ufff0'],
-          // limit: options.itemsPerPage,
-          // skip: skip_amount,
-          // descending: true
         })
         .then((result) => {
           logPerformanceTime('fetchTransactionsForAccount', t1)
           return result
         })
-
-      // return fetchDocsByType(context, db, budget_id, ID_NAME.transaction, 'fetchTransactions').then((result) => {
-      //   return context.commit('SET_TRANSACTIONS', result)
-      // })
     },
-    // fetchTransactionsFrom
-
+    fetchTransactionsForMonth: async (context, month) => {
+      console.log('fetchTransactionsForMonth')
+      const t1 = performance.now()
+      const db = Vue.prototype.$pouch
+      const budget_id = context.getters.selectedBudgetId
+      if (!budget_id) {
+        return []
+      }
+      const start_date_encoded = base64Date(`${month}-00`)
+      const end_date_encoded = base64Date(`${month}-32`)
+      const start_key = `b_${budget_id}${ID_NAME.transaction}${start_date_encoded}`;
+      const end_key = `b_${budget_id}${ID_NAME.transaction}${end_date_encoded}\ufff0`;
+      // const start_key = `b_${budget_id}${ID_NAME.transaction}`;
+      // const end_key = `b_${budget_id}${ID_NAME.transaction}\ufff0`;
+      console.log('start_key', start_key)
+      console.log(`end_key`, end_key)
+      return db
+        .allDocs({
+          include_docs: true,
+          startkey: end_key,
+          endkey: start_key,
+          descending: true
+        })
+        .then((result) => {
+          logPerformanceTime('fetchTransactionsForMonth', t1)
+          console.log('FETCH TRANSACTIONS RESULT', result)
+          return result.rows.map((row) => row.doc)
+        })
+    },
     fetchSucceedingTransaction: async (context, transaction) => {
       const t1 = performance.now()
 
@@ -198,25 +218,6 @@ export default {
           return result.rows
         })
     },
-    // fetchAccountBalances: (context) => {
-    //   // const db = Vue.prototype.$pouch
-    //   // const t1 = performance.now()
-    //   // const budget_id = context.rootState.selectedBudgetId
-    //   // return db
-    //   //   .query('stats/sum_transaction_by_account', {
-    //   //     group: true,
-    //   //     // group_level: 3,
-    //   //     startkey: [`${budget_id}`, '', ''],
-    //   //     endkey: [`${budget_id}`, '\ufff0', '\ufff0']
-    //   //   })
-    //   //   .then((result) => {
-    //   //     logPerformanceTime('fetchAccountBalances', t1)
-    //   //     return result.rows
-    //   //   })
-    //   //   .then((result) => {
-    //   //     return context.commit('SET_ACCOUNT_BALANCES', result)
-    //   //   })
-    // },
     fetchBudgetBalances: (context) => {
       const db = Vue.prototype.$pouch
       const t1 = performance.now()

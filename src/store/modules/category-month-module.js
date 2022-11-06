@@ -12,12 +12,14 @@ import { getCarryover } from '@/store/modules/category-module'
 import _ from 'lodash'
 import moment from 'moment'
 import { prevMonth, nextMonth } from '../../helper'
+import { compareAscii } from '../../store/modules/id-module'
 
 const DEFAULT_MONTH_CATEGORIES_STATE = {
   editedMasterCategoryId: '',
   editedCategoryBudgetId: '',
   editedCategoryNameId: '',
-  selectedMonth: moment(new Date()).format('YYYY-MM')
+  selectedMonth: moment(new Date()).format('YYYY-MM'),
+  monthTransactions: [],
 }
 
 export default {
@@ -46,6 +48,9 @@ export default {
     },
     UPDATE_SELECTED_MONTH(state, year_month) {
       Vue.set(state, 'selectedMonth', year_month)
+    },
+    SET_MONTH_TRANSACTIONS(state, transactions) {
+      Vue.set(state, 'monthTransactions', transactions)
     }
   },
   getters: {
@@ -63,7 +68,6 @@ export default {
       return moment(new Date()).format('YYYY-MM')
     },
     categoriesData: (state, getters, rootState, rootGetters) => {
-      
       const masterCategories = rootGetters.masterCategories
       return masterCategories.reduce((partial, master_category) => {
         const master_id = master_category._id.slice(-ID_LENGTH.category)
@@ -72,39 +76,37 @@ export default {
           return partial
         }
 
-        let categories_data = rootGetters.categoriesByMaster[master_id]
-          .map((category) => {
-            const category_id = category._id.slice(-ID_LENGTH.category)
-            const budget = _.get(
-              rootGetters.allCategoryBalances,
-              [getters.selectedMonth, category_id, 'doc', 'budget'],
-              0
-            )
-            const expense = _.get(rootGetters.allCategoryBalances, [getters.selectedMonth, category_id, 'expense'], 0)
-            const income = _.get(rootGetters.allCategoryBalances, [getters.selectedMonth, category_id, 'income'], 0)
-            const carryover = getCarryover(rootGetters.allCategoryBalances, getters.selectedMonth, category_id)
-            const name = _.get(rootGetters.categoriesById, [category_id, 'name'], '')
-            const budget_display = (budget / 100).toFixed(2)
-            const sort = category.sort
-            const result = {
-              _id: category_id,
-              name: name,
-              budget: budget,
-              budgetDisplay: budget_display,
-              income: income,
-              expense: expense,
-              carryover: carryover,
-              balance: budget + income - expense + carryover,
-              sort: sort,
-            }
-            return result
-          })
+        let categories_data = rootGetters.categoriesByMaster[master_id].map((category) => {
+          const category_id = category._id.slice(-ID_LENGTH.category)
+          const budget = _.get(
+            rootGetters.allCategoryBalances,
+            [getters.selectedMonth, category_id, 'doc', 'budget'],
+            0
+          )
+          const expense = _.get(rootGetters.allCategoryBalances, [getters.selectedMonth, category_id, 'expense'], 0)
+          const income = _.get(rootGetters.allCategoryBalances, [getters.selectedMonth, category_id, 'income'], 0)
+          const carryover = getCarryover(rootGetters.allCategoryBalances, getters.selectedMonth, category_id)
+          const name = _.get(rootGetters.categoriesById, [category_id, 'name'], '')
+          const budget_display = (budget / 100).toFixed(2)
+          const sort = category.sort
+          const result = {
+            _id: category_id,
+            name: name,
+            budget: budget,
+            budgetDisplay: budget_display,
+            income: income,
+            expense: expense,
+            carryover: carryover,
+            balance: budget + income - expense + carryover,
+            sort: sort
+          }
+          return result
+        })
         partial[master_id] = categories_data
         return partial
       }, {})
     },
     masterCategoriesStats: (state, getters) => {
-
       return Object.entries(getters.categoriesData).reduce((partial, [master_id, category_docs]) => {
         partial[master_id] = category_docs.reduce(
           (sum_partial, category) => {
@@ -118,7 +120,43 @@ export default {
         )
         return partial
       }, {})
-    }
+    },
+    monthStats: (state, getters, rootState, rootGetters) => {
+      let stats = {
+        available_last_month: 0,
+        income_this_month: 0,
+        budgeted_this_month: 0,
+        available_this_month: 0
+      }
+
+      const sortedMonths = Object.keys(rootGetters.monthBalances).sort((a, b) => compareAscii(a, b))
+      if (sortedMonths.length > 0) {
+        let previous_month = sortedMonths[0]
+        if (compareAscii(previous_month, getters.selectedMonth) < 0) {
+          for (let i = 1; i < sortedMonths.length; i++) {
+            if (compareAscii(sortedMonths[i], getters.selectedMonth) >= 0) {
+              break
+            }
+            previous_month = sortedMonths[i]
+          }
+          stats.available_last_month = rootGetters.monthBalances[previous_month].available
+        }
+      }
+
+      if (rootGetters.monthBalances[getters.selectedMonth]) {
+        stats.income_this_month = rootGetters.monthBalances[getters.selectedMonth].income
+        stats.budgeted_this_month = rootGetters.monthBalances[getters.selectedMonth].budgeted
+        stats.available_this_month = rootGetters.monthBalances[getters.selectedMonth].available
+      } else {
+        stats.income_this_month = 0
+        stats.budgeted_this_month = 0
+        stats.available_this_month = stats.available_last_month
+      }
+
+      return stats
+    },
+    transactionHeaders: () => transactionHeaders,
+    monthTransactions: (state) => state.monthTransactions,
   },
   actions: {
     onCategoryBudgetChanged({ commit, getters, dispatch, rootGetters }, { category_id, event }) {
@@ -194,6 +232,29 @@ export default {
         )
       }
     },
+    getMonthTransactions({ commit, dispatch, getters, rootGetters }) {
+      if (rootGetters.accounts.length < 1 || !rootGetters.selectedBudgetId) {
+        return
+      }
+      dispatch('fetchTransactionsForMonth', getters.selectedMonth, { root: true }).then((transactions) => {
+        const monthTransactions = transactions.reduce((partial, transaction) => {
+          const account = rootGetters.accountsById[transaction.account]
+          // console.log("PARTIAL", partial)
+          if (account === undefined) {
+            return partial
+          }
+          const data = {
+            date: transaction.date,
+            memo: transaction.memo,
+            account: account.name,
+            amount: transaction.value * account.sign
+          }
+          partial.push(data)
+          return partial
+        }, [])
+        commit('SET_MONTH_TRANSACTIONS', monthTransactions)
+      })
+    },
     newMasterCategory({ commit, dispatch, rootGetters }) {
       const index = rootGetters.masterCategories.length
       return dispatch(
@@ -252,9 +313,9 @@ export default {
       }
     },
     onUnhideCategory({ dispatch, rootGetters }, category_id) {
-      console.log("onUnhideCategory", category_id)
+      console.log('onUnhideCategory', category_id)
       const doc = rootGetters.categoriesById[category_id]
-      console.log("onUnhideCategory", doc)
+      console.log('onUnhideCategory', doc)
       if (doc === undefined) {
         return
       }
@@ -268,15 +329,15 @@ export default {
         !Object.keys(rootGetters.masterCategoriesById).includes(master_id)
       ) {
         for (let masterCategory of rootGetters.masterCategories) {
-          console.log("ID", masterCategory._id)
-          console.log("BAD IDS", [NONE._id, HIDDEN._id, INCOME._id])
+          console.log('ID', masterCategory._id)
+          console.log('BAD IDS', [NONE._id, HIDDEN._id, INCOME._id])
           if (![NONE._id, HIDDEN._id, INCOME._id].includes(masterCategory._id.slice(-ID_LENGTH.category))) {
             master_id = masterCategory._id.slice(-ID_LENGTH.category)
             break
           }
         }
       }
-      console.log("master_id", master_id)
+      console.log('master_id', master_id)
 
       let sort = 0
       const destination_categories = rootGetters.categoriesByMaster[master_id]
@@ -306,3 +367,23 @@ export default {
     }
   }
 }
+
+
+const transactionHeaders = [
+  {
+    text: 'Date',
+    value: 'date',
+  },
+  {
+    text: 'Memo',
+    value: 'memo',
+  },
+  {
+    text: 'Account',
+    value: 'account',
+  },
+  {
+    text: 'Amount',
+    value: 'amount',
+  }
+]

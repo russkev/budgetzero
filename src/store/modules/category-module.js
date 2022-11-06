@@ -834,7 +834,6 @@ const updateMonthBalances = (month_balances, master_id, account, month, amount) 
   let updated_balances = { ...month_balances[month] }
   const final_amount = (amount *= account.sign)
   if (master_id === INCOME._id) {
-    console.log('income', final_amount)
     updated_balances.income += final_amount
   } else {
     updated_balances.expense += final_amount * -1

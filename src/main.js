@@ -21,7 +21,7 @@ import Settings from './components/Settings.vue'
 import Transactions from './components/TransactionView/Transactions.vue'
 
 import Accounts from './components/AccountView/Accounts.vue'
-import CategoryGrid from './components/CategoryView/CategoryGrid.vue'
+import Categories from './components/CategoryView/Categories.vue'
 import CreateBudget from './components/CreateBudget.vue'
 import Manage from './components/Manage.vue'
 import Reports from './components/Reports.vue'
@@ -107,7 +107,7 @@ export var router = new VueRouter({
     },
     {
       path: '/budget/:month',
-      component: CategoryGrid
+      component: Categories
     },
     {
       path: '/create',
