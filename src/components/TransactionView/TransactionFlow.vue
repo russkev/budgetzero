@@ -1,5 +1,5 @@
 <template>
-  <row-element-wrapper :item="item" right>
+  <row-element-wrapper @click="onTransactionDetailsClick(item)" right>
     <span :class="`my-auto ellipsis text-body-1 text-right ${textColor}--text text--lighten-3`">
       {{ value }}
     </span>
@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import RowElementWrapper from "./RowElementWrapper.vue";
 
 export default {
@@ -40,5 +40,8 @@ export default {
       return this.isOutflow ? "error" : "success";
     }
   },
+  methods: {
+    ...mapActions("accountTransactions", ["onTransactionDetailsClick"]),
+  }
 };
 </script>

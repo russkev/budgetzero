@@ -1,4 +1,4 @@
-import Vue from 'vue'
+import Vue, { nextTick } from 'vue'
 import { DEFAULT_TRANSACTION, DEFAULT_TRANSACTIONS_PER_PAGE, ID_LENGTH, ID_NAME, NONE } from '../../constants'
 import { compareAscii } from '@/store/modules/id-module.js'
 import { generateId } from './id-module'
@@ -346,7 +346,18 @@ export default {
         remainder -= splits[i].value
       }
       commit('SET_EDITED_TRANSACTION_SPLIT_VALUE', { index: splits.length - 1, value: remainder })
+    },
+    onTransactionDetailsClick({getters, commit, dispatch}, item) {
+      if(getters.selectedTransactions.length > 0) {
+        commit('CLEAR_SELECTED_TRANSACTIONS')
+        nextTick(() => {
+          dispatch('editTransaction', item)
+        });
+      } else {
+        dispatch('editTransaction', item)
+      }
     }
+
   }
 }
 

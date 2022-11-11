@@ -5,7 +5,7 @@
     tile
     flat
     color="transparent"
-    @click="onClick"
+    @click="$emit('click')"
     :ripple="false"
     :style="right ? 'justifyContent: flex-end' : ''"
   >
@@ -14,15 +14,10 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapMutations } from "vuex";
-import { nextTick } from "vue";
+import { mapGetters } from "vuex";
 
 export default {
   props: {
-    item: {
-      type: Object,
-      required: true,
-    },
     right: {
       type: Boolean,
       default: false,
@@ -32,20 +27,6 @@ export default {
     ...mapGetters("accountTransactions", [
       "selectedTransactions",
     ]),
-  },
-  methods: {
-    ...mapActions("accountTransactions", ["editTransaction"]),
-    ...mapMutations("accountTransactions", ["CLEAR_SELECTED_TRANSACTIONS"]),
-    onClick() {
-      if (this.selectedTransactions.length > 0) {
-        this.CLEAR_SELECTED_TRANSACTIONS();
-        nextTick(() => {
-          this.editTransaction(this.item);
-        });
-      } else {
-        this.editTransaction(this.item);
-      }
-    },
   },
 };
 </script>

@@ -233,13 +233,13 @@ export default {
       }
     },
     getMonthTransactions({ commit, dispatch, getters, rootGetters }) {
+      console.log("Get momth transacyions")
       if (rootGetters.accounts.length < 1 || !rootGetters.selectedBudgetId) {
         return
       }
       dispatch('fetchTransactionsForMonth', getters.selectedMonth, { root: true }).then((transactions) => {
         const monthTransactions = transactions.reduce((partial, transaction) => {
           const account = rootGetters.accountsById[transaction.account]
-          // console.log("PARTIAL", partial)
           if (account === undefined) {
             return partial
           }

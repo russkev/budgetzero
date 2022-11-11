@@ -3,20 +3,24 @@
     <v-card-title class="primary darken-3 pa-3">Working</v-card-title>
     <categories-working />
     <v-card-title class="primary darken-3 pa-3">Transactions</v-card-title>
-    <v-data-table :headers="transactionHeaders" :items="monthTransactions">
+    <v-data-table :headers="transactionHeaders" :items="monthTransactions" dense>
       <template #item="{ item }">
         <tr>
           <td>
             {{ item.date }}
           </td>
           <td>
-            <div class="ellipsis">{{ item.memo }}</div>
+            <description-tooltip :item="item">
+              <template #activator="{on}">
+                <div class="ellipsis" v-on="on">{{ item.memo }}</div>
+              </template>
+            </description-tooltip>
           </td>
           <td>
             {{ item.account }}
           </td>
           <td>
-            {{ item.amount }}
+            {{ intlCurrency.format(item.amount / 100) }}
           </td>
         </tr>
       </template>
@@ -26,6 +30,7 @@
 
 <script>
 import CategoriesWorking from './CategoriesWorking.vue'
+import DescriptionTooltip from "../Shared/DescriptionTooltip.vue"
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -36,8 +41,15 @@ export default {
   mounted() {
     this.getMonthTransactions()
   },
+  watch: {
+    masterCategoriesById: {
+      handler: function () {
+        this.getMonthTransactions()
+      }
+    }
+  },
   computed: {
-    ...mapGetters(['masterCategoriesById', 'selectedBudgetId']),
+    ...mapGetters(['masterCategoriesById', 'selectedBudgetId', 'intlCurrency']),
     ...mapGetters('categoryMonth', ['selectedMonth', 'transactionHeaders', 'monthTransactions']),
     transactions() {
       let mc = this.masterCategoriesById

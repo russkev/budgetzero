@@ -1,52 +1,45 @@
 <template>
-  <v-tooltip bottom class="pa-0" color="transparent" :open-delay="500">
-    <template #activator="{on}">
-      <row-element-wrapper :item="item">
+  <description-tooltip :item="item">
+    <template #activator="{ on }">
+      <row-element-wrapper @click="onTransactionDetailsClick(item)">
         <span class="my-auto ellipsis text-body-1" v-on="on">
           {{ previewDescription }}
         </span>
       </row-element-wrapper>
     </template>
-    <v-card max-width="400px" flat outlined color="outline background" class="transaction-description ma-0 px-4 py-1">
-      <v-card-subtitle class="ma-0 pa-0">
-        Memo:
-      </v-card-subtitle>
-      {{ item.memo }}
-      <div v-if="item.note !== undefined && item.note !== ''">
-        <v-card-subtitle class="ma-0 mt-2 pa-0">
-          Note:
-        </v-card-subtitle>
-        {{ item.note }}
-      </div>
-    </v-card>
-  </v-tooltip>
+  </description-tooltip>
 </template>
 
 <script>
-import RowElementWrapper from "./RowElementWrapper.vue";
+import RowElementWrapper from './RowElementWrapper.vue'
+import DescriptionTooltip from "../Shared/DescriptionTooltip.vue"
+import { mapActions } from 'vuex'
 
 export default {
   props: {
     item: {
       type: Object,
-      required: true,
-    },
+      required: true
+    }
   },
   components: {
-    RowElementWrapper,
+    RowElementWrapper
   },
   computed: {
     previewDescription() {
       if (this.item.note) {
-        return this.item.note;
+        return this.item.note
       } else if (this.item.memo) {
-        return this.item.memo;
+        return this.item.memo
       } else {
-        return "";
+        return ''
       }
-    },
+    }
   },
-};
+  methods: {
+    ...mapActions("accountTransactions", ["onTransactionDetailsClick"]),
+  },
+}
 </script>
 
 <style>
@@ -56,6 +49,4 @@ export default {
   -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
 }
-
-
 </style>

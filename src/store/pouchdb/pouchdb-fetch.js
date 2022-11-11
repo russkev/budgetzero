@@ -132,10 +132,6 @@ export default {
       const end_date_encoded = base64Date(`${month}-32`)
       const start_key = `b_${budget_id}${ID_NAME.transaction}${start_date_encoded}`;
       const end_key = `b_${budget_id}${ID_NAME.transaction}${end_date_encoded}\ufff0`;
-      // const start_key = `b_${budget_id}${ID_NAME.transaction}`;
-      // const end_key = `b_${budget_id}${ID_NAME.transaction}\ufff0`;
-      console.log('start_key', start_key)
-      console.log(`end_key`, end_key)
       return db
         .allDocs({
           include_docs: true,
@@ -145,7 +141,6 @@ export default {
         })
         .then((result) => {
           logPerformanceTime('fetchTransactionsForMonth', t1)
-          console.log('FETCH TRANSACTIONS RESULT', result)
           return result.rows.map((row) => row.doc)
         })
     },

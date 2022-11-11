@@ -1,5 +1,5 @@
 <template>
-  <row-element-wrapper :item="item" class="text-right" right>
+  <row-element-wrapper @click="onTransactionDetailsClick(item)" class="text-right" right>
     <span class="my-auto">
       {{ intlCurrency.format(item.balance / 100) }}
     </span>
@@ -7,7 +7,7 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
+import { mapGetters, mapActions } from "vuex";
 import RowElementWrapper from "./RowElementWrapper.vue";
 
 export default {
@@ -22,6 +22,9 @@ export default {
   computed: {
     ...mapGetters(["intlCurrency"]),
   },
+  methods: {
+    ...mapActions("accountTransactions", ["onTransactionDetailsClick"]),
+  }
 };
 </script>
 
