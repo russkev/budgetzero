@@ -233,7 +233,7 @@ export default {
       }
     },
     getMonthTransactions({ commit, dispatch, getters, rootGetters }) {
-      console.log("Get momth transacyions")
+      console.log("Get momth transactions")
       if (rootGetters.accounts.length < 1 || !rootGetters.selectedBudgetId) {
         return
       }

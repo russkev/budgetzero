@@ -38,6 +38,7 @@ export default {
     };
   },
   beforeRouteUpdate(to, from, next) {
+    console.log("TRANSACTIONS BEFORE ROOT UPDATE")
     this.getTransactions(to.params.account_id);
     next();
   },

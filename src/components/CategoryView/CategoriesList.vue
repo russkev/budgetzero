@@ -139,15 +139,7 @@ export default {
       },
     },
   },
-  mounted() {
-    this.UPDATE_SELECTED_MONTH(this.$route.params.month);
-  },
-  beforeRouteUpdate(to, from, next) {
-    this.UPDATE_SELECTED_MONTH(to.params.month);
-    next();
-  },
   methods: {
-    ...mapMutations("categoryMonth", ["UPDATE_SELECTED_MONTH"]),
     ...mapActions("categoryMonth", ["reorderMasterCategories", "newMasterCategory"]),
     ...mapActions(["setMasterCategoriesCollapsed"]),
     onNewMasterCategory() {

@@ -20,12 +20,25 @@
 import CategoriesHeader from "./CategoriesHeader.vue";
 import CategoryDetails from "./CategoryDetails.vue";
 import CategoriesList from "./CategoriesList.vue";
+import { mapMutations, mapActions } from "vuex";
 
 export default {
   components: {
     CategoriesHeader,
     CategoryDetails,
     CategoriesList,
+  },
+  mounted() {
+    this.UPDATE_SELECTED_MONTH(this.$route.params.month);
+    this.getMonthTransactions();
+  },
+  beforeRouteUpdate(to, from) {
+    this.UPDATE_SELECTED_MONTH(to.params.month);
+    this.getMonthTransactions();
+  },
+  methods: {
+    ...mapMutations("categoryMonth", ["UPDATE_SELECTED_MONTH"]),
+    ...mapActions("categoryMonth", ["getMonthTransactions"]),
   },
 };
 </script>
