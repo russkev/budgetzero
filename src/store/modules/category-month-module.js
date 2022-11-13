@@ -55,7 +55,7 @@ export default {
     },
     SET_SELECTED_CATEGORY(state, category) {
       console.log("Setting", category)
-      Vue.set(state, 'selectedCategoryId', category)
+      Vue.set(state, 'selectedCategory', category)
     },
   },
   getters: {
@@ -162,6 +162,7 @@ export default {
     },
     transactionHeaders: () => transactionHeaders,
     monthTransactions: (state) => state.monthTransactions,
+    selectedCategory: (state) => state.selectedCategory,
   },
   actions: {
     onCategoryBudgetChanged({ commit, getters, dispatch, rootGetters }, { category_id, event }) {

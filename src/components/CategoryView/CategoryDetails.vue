@@ -11,7 +11,7 @@
           </td>
           <td>
             <description-tooltip :item="item">
-              <template #activator="{on}">
+              <template #activator="{ on }">
                 <div class="ellipsis" v-on="on">{{ item.memo }}</div>
               </template>
             </description-tooltip>
@@ -30,7 +30,7 @@
 
 <script>
 import CategoriesWorking from './CategoriesWorking.vue'
-import DescriptionTooltip from "../Shared/DescriptionTooltip.vue"
+import DescriptionTooltip from '../Shared/DescriptionTooltip.vue'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -47,12 +47,19 @@ export default {
   },
   computed: {
     ...mapGetters(['masterCategoriesById', 'selectedBudgetId', 'intlCurrency']),
-    ...mapGetters('categoryMonth', ['selectedMonth', 'transactionHeaders', 'monthTransactions']),
+    ...mapGetters('categoryMonth', ['selectedMonth', 'transactionHeaders', 'monthTransactions', 'selectedCategory']),
     transactions() {
+      console.log("COMPUTED TRANSACTIONS")
       let mc = this.masterCategoriesById
-      this.getMonthTransactions().then(() => {
-        return this.monthTransactions
-      })
+      // this.getMonthTransactions().then(() => {
+        console.log("selectedCategoryId", this.selectedCategory._id)
+        console.log("transactions", this.monthTransactions)
+        if (this.selectedCategory) {
+          return this.momnthTransactions.filter((transaction) => transaction.category === this.selectedCategory._id)
+        } else {
+          return this.monthTransactions
+        }
+      // })
     }
   },
   methods: {
