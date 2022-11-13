@@ -19,6 +19,7 @@ const DEFAULT_MONTH_CATEGORIES_STATE = {
   editedCategoryBudgetId: '',
   editedCategoryNameId: '',
   selectedMonth: moment(new Date()).format('YYYY-MM'),
+  selectedCategory: null,
   monthTransactions: [],
 }
 
@@ -51,7 +52,11 @@ export default {
     },
     SET_MONTH_TRANSACTIONS(state, transactions) {
       Vue.set(state, 'monthTransactions', transactions)
-    }
+    },
+    SET_SELECTED_CATEGORY(state, category) {
+      console.log("Setting", category)
+      Vue.set(state, 'selectedCategoryId', category)
+    },
   },
   getters: {
     editedMasterCategoryId: (state) => state.editedMasterCategoryId,

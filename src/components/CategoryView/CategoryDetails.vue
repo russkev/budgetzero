@@ -38,13 +38,6 @@ export default {
   components: {
     CategoriesWorking
   },
-  mounted() {
-    this.getMonthTransactions()
-  },
-  beforeRouteUpdate(to, from, next) {
-    this.getMonthTransactions();
-    next();
-  },
   watch: {
     masterCategoriesById: {
       handler: function () {

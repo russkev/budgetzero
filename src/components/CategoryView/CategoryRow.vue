@@ -58,14 +58,16 @@
                 @enter="(event) => onCategoryBudgetEnter(category, event)"
               />
             </v-col>
-            <v-col
-              :data-testid="`category-spent-${category._id}`"
-              align="right"
-              class="pa-0 my-auto"
-              v-if="!hideSpent"
-            >
-              {{ spentValue(category) }}
-            </v-col>
+            <row-element-wrapper @click="onCategoryDetailsClick">
+              <v-col
+                :data-testid="`category-spent-${category._id}`"
+                align="right"
+                class="pa-0 my-auto"
+                v-if="!hideSpent"
+              >
+                {{ spentValue(category) }}
+              </v-col>
+            </row-element-wrapper>
             <v-col
               :data-testid="`category-balance-${category._id}`"
               align="right"
@@ -148,7 +150,7 @@ export default {
   },
 
   methods: {
-    ...mapMutations("categoryMonth", ["SET_EDITED_CATEGORY_BUDGET_ID"]),
+    ...mapMutations("categoryMonth", ["SET_EDITED_CATEGORY_BUDGET_ID", "SET_SELECTED_CATEGORY"]),
     ...mapActions("categoryMonth", [
       "onCategoryNameChange",
       "onCategoryBudgetChanged",
@@ -204,6 +206,9 @@ export default {
       } else {
         return this.intlCurrency.format(-amount / 100);
       }
+    },
+    onCategoryDetailsClick() {
+      this.SET_SELECTED_CATEGORY(this.category)
     },
   },
 };
