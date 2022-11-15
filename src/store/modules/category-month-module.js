@@ -54,7 +54,7 @@ export default {
       Vue.set(state, 'monthTransactions', transactions)
     },
     SET_SELECTED_CATEGORY(state, category) {
-      console.log("Setting", category)
+      console.log("Setting", category._id)
       Vue.set(state, 'selectedCategory', category)
     },
   },
@@ -253,7 +253,8 @@ export default {
             date: transaction.date,
             memo: transaction.memo,
             account: account.name,
-            amount: transaction.value * account.sign
+            amount: transaction.value * account.sign,
+            category: transaction.category,
           }
           partial.push(data)
           return partial
