@@ -378,10 +378,10 @@ export default {
 
 
 const transactionHeaders = [
-  // {
-  //   text: 'Date',
-  //   value: 'date',
-  // },
+  {
+    text: 'Date',
+    value: 'date',
+  },
   {
     text: 'Memo',
     value: 'memo',

@@ -3,12 +3,20 @@
     <v-card-title class="primary darken-3 pa-3">Working</v-card-title>
     <categories-working />
     <v-card-title class="primary darken-3 pa-3">Transactions</v-card-title>
-    <v-data-table :headers="transactionHeaders" :items="transactions" dense>
+    <v-data-table
+      :headers="transactionHeaders"
+      :items="transactions"
+      group-by="date"
+      dense
+
+    >
+    <template #group.header="{items}">
+      <td colspan="20" >
+        {{ items[0].date }}
+      </td>
+    </template>
       <template #item="{ item }">
         <tr>
-          <!-- <td>
-            {{ item.date }}
-          </td> -->
           <td>
             <description-tooltip :item="item">
               <template #activator="{ on }">
@@ -51,24 +59,20 @@ export default {
     ...mapGetters(['masterCategoriesById', 'intlCurrency']),
     ...mapGetters('categoryMonth', ['transactionHeaders', 'monthTransactions', 'selectedCategory']),
     transactions() {
-      // this.monthTransactions.reduce((partial, monthTransaction))
       let balance = 0
-      return this.monthTransactions.reverse().reduce((partial, monthTransaction) => {
-        if (!this.selectedCategory || monthTransaction.category === this.selectedCategory._id) {
-          balance += monthTransaction.amount
-          partial.push({
-            ...monthTransaction,
-            balance: balance,
-          })
-        }
-        return partial
-      }, []).reverse()
-
-      // if (this.selectedCategory) {
-      //   return this.monthTransactions.filter((transaction) => transaction.category === this.selectedCategory._id)
-      // } else {
-      //   return this.monthTransactions
-      // }
+      return this.monthTransactions
+        .reverse()
+        .reduce((partial, monthTransaction) => {
+          if (!this.selectedCategory || monthTransaction.category === this.selectedCategory._id) {
+            balance += monthTransaction.amount
+            partial.push({
+              ...monthTransaction,
+              balance: balance
+            })
+          }
+          return partial
+        }, [])
+        .reverse()
     }
   },
   methods: {
