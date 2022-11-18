@@ -8,11 +8,13 @@
       :items="transactions"
       group-by="date"
       dense
-
+      disable-sort
+      sort-desc
+      sort-by="date"
     >
     <template #group.header="{items}">
       <td colspan="20" >
-        {{ items[0].date }}
+        {{ formatDate(items[0].date) }}
       </td>
     </template>
       <template #item="{ item }">
@@ -41,6 +43,7 @@
 
 <script>
 import CategoriesWorking from './CategoriesWorking.vue'
+import { formatDate } from "../../helper"
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -60,8 +63,8 @@ export default {
     ...mapGetters('categoryMonth', ['transactionHeaders', 'monthTransactions', 'selectedCategory']),
     transactions() {
       let balance = 0
-      return this.monthTransactions
-        .reverse()
+      let monthTransactions = JSON.parse(JSON.stringify(this.monthTransactions))
+      return monthTransactions
         .reduce((partial, monthTransaction) => {
           if (!this.selectedCategory || monthTransaction.category === this.selectedCategory._id) {
             balance += monthTransaction.amount
@@ -72,12 +75,12 @@ export default {
           }
           return partial
         }, [])
-        .reverse()
     }
   },
   methods: {
     ...mapActions(['fetchTransactionsForMonth']),
-    ...mapActions('categoryMonth', ['getMonthTransactions'])
+    ...mapActions('categoryMonth', ['getMonthTransactions']),
+    formatDate: formatDate,
   }
 }
 </script>
@@ -85,5 +88,6 @@ export default {
 <style>
 .category-details-title {
   width: 100%;
+  overflow-y: auto;
 }
 </style>

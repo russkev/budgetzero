@@ -80,6 +80,7 @@
 <script>
 import { mapGetters, mapMutations, mapActions } from "vuex";
 import { DEFAULT_TRANSACTIONS_PER_PAGE } from "../../constants";
+import { formatDate } from "../../helper";
 import TransactionChecked from "./TransactionChecked.vue";
 import TransactionBalance from "./TransactionBalance.vue";
 import TransactionDescription from "./TransactionDescription.vue";
@@ -170,15 +171,7 @@ export default {
     ]),
     ...mapActions("accountTransactions", ["getTransactions", "setSelectedTransactions", "deleteTransaction"]),
     ...mapActions(["commitDocToPouchAndVuex"]),
-    // Convert date to weekday, day, month, year words
-    formatDate(date) {
-      const date_obj = new Date(date);
-      const weekday = date_obj.toLocaleString("en-us", { weekday: "long" });
-      const day = date_obj.toLocaleString("en-us", { day: "numeric" });
-      const month = date_obj.toLocaleString("en-us", { month: "long" });
-      const year = date_obj.toLocaleString("en-us", { year: "numeric" });
-      return `${weekday}, ${day} ${month}, ${year}`;
-    },
+    formatDate: formatDate,
     isHighlighted(item, isSelected) {
       return isSelected || item._id === this.editedTransaction._id;
     },

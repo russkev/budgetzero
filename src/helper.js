@@ -66,10 +66,9 @@ function logPerformanceTime(name, t1) {
 }
 
 function docTypeFromId(id) {
-  if(id === NONE._id) {
+  if (id === NONE._id) {
     return ID_NAME.none
-  }
-  else if (id.startsWith(ID_NAME.budget)) {
+  } else if (id.startsWith(ID_NAME.budget)) {
     return ID_NAME.budget
   } else {
     const type_regex = /(?<=b_[0-9a-zA-Z_\-\.]{3})_[0-9a-zA-Z\-]+_(?=[0-9a-zA-Z_\-\.\:]+)/
@@ -101,8 +100,8 @@ function documentExists(db, id) {
 }
 
 /**
- * 
- * @param {string} date 
+ *
+ * @param {string} date
  * @returns true if date is of format 'YYYY-MM-DD'
  */
 function validateDate(date) {
@@ -111,16 +110,14 @@ function validateDate(date) {
 }
 
 /**
- * 
- * @param {string} month 
+ *
+ * @param {string} month
  * @returns true if month is of format 'YYYY-MM'
  */
 function validateMonth(month) {
   const pattern = /^\d{4}\-(0[1-9]|1[012])$/
   return pattern.test(month)
 }
-
-
 
 function hslStringToHex(hsl) {
   hsl = hsl.replace('hsl(', '').replace(')', '').split(',')
@@ -144,12 +141,12 @@ function hslToHex(h, s, l) {
   return `#${f(0)}${f(8)}${f(4)}`
 }
 
-
-
 // Convert hex to HSL
 function hexToHsl(hex) {
   // Convert hex to RGB first
-  let r = 0, g = 0, b = 0
+  let r = 0,
+    g = 0,
+    b = 0
   if (hex.length == 4) {
     r = '0x' + hex[1] + hex[1]
     g = '0x' + hex[2] + hex[2]
@@ -163,8 +160,11 @@ function hexToHsl(hex) {
   r /= 255
   g /= 255
   b /= 255
-  const max = Math.max(r, g, b), min = Math.min(r, g, b)
-  let h = 0, s = 0, l = (max + min) / 2
+  const max = Math.max(r, g, b),
+    min = Math.min(r, g, b)
+  let h = 0,
+    s = 0,
+    l = (max + min) / 2
 
   if (max == min) {
     h = s = 0 // achromatic
@@ -172,9 +172,15 @@ function hexToHsl(hex) {
     const d = max - min
     s = l > 0.5 ? d / (2 - max - min) : d / (max + min)
     switch (max) {
-      case r: h = (g - b) / d + (g < b ? 6 : 0); break
-      case g: h = (b - r) / d + 2; break
-      case b: h = (r - g) / d + 4; break
+      case r:
+        h = (g - b) / d + (g < b ? 6 : 0)
+        break
+      case g:
+        h = (b - r) / d + 2
+        break
+      case b:
+        h = (r - g) / d + 4
+        break
     }
     h /= 6
   }
@@ -183,6 +189,16 @@ function hexToHsl(hex) {
   l = +(l * 100).toFixed(1)
 
   return `hsl(${h * 360},${s}%,${l}%)`
+}
+
+// Convert date to weekday, day, month, year words
+function formatDate(date) {
+  const date_obj = new Date(date)
+  const weekday = date_obj.toLocaleString('en-us', { weekday: 'long' })
+  const day = date_obj.toLocaleString('en-us', { day: 'numeric' })
+  const month = date_obj.toLocaleString('en-us', { month: 'long' })
+  const year = date_obj.toLocaleString('en-us', { year: 'numeric' })
+  return `${weekday}, ${day} ${month}, ${year}`
 }
 
 export {
@@ -201,4 +217,5 @@ export {
   hslStringToHex,
   hslToHex,
   hexToHsl,
+  formatDate,
 }
