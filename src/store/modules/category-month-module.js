@@ -244,6 +244,7 @@ export default {
         return
       }
       dispatch('fetchTransactionsForMonth', getters.selectedMonth, { root: true }).then((transactions) => {
+        console.log("MONTH TRANSACTIONS", transactions)
         const monthTransactions = transactions.reduce((partial, transaction) => {
           const account = rootGetters.accountsById[transaction.account]
           if (account === undefined) {
@@ -377,10 +378,10 @@ export default {
 
 
 const transactionHeaders = [
-  {
-    text: 'Date',
-    value: 'date',
-  },
+  // {
+  //   text: 'Date',
+  //   value: 'date',
+  // },
   {
     text: 'Memo',
     value: 'memo',
@@ -392,5 +393,9 @@ const transactionHeaders = [
   {
     text: 'Amount',
     value: 'amount',
+  },
+  {
+    text: 'Balance',
+    value: 'balance'
   }
 ]

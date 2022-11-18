@@ -6,9 +6,9 @@
     <v-data-table :headers="transactionHeaders" :items="transactions" dense>
       <template #item="{ item }">
         <tr>
-          <td>
+          <!-- <td>
             {{ item.date }}
-          </td>
+          </td> -->
           <td>
             <description-tooltip :item="item">
               <template #activator="{ on }">
@@ -21,6 +21,9 @@
           </td>
           <td>
             {{ intlCurrency.format(item.amount / 100) }}
+          </td>
+          <td>
+            {{ intlCurrency.format(item.balance / 100) }}
           </td>
         </tr>
       </template>
@@ -48,11 +51,24 @@ export default {
     ...mapGetters(['masterCategoriesById', 'intlCurrency']),
     ...mapGetters('categoryMonth', ['transactionHeaders', 'monthTransactions', 'selectedCategory']),
     transactions() {
-      if (this.selectedCategory) {
-        return this.monthTransactions.filter((transaction) => transaction.category === this.selectedCategory._id)
-      } else {
-        return this.monthTransactions
-      }
+      // this.monthTransactions.reduce((partial, monthTransaction))
+      let balance = 0
+      return this.monthTransactions.reverse().reduce((partial, monthTransaction) => {
+        if (!this.selectedCategory || monthTransaction.category === this.selectedCategory._id) {
+          balance += monthTransaction.amount
+          partial.push({
+            ...monthTransaction,
+            balance: balance,
+          })
+        }
+        return partial
+      }, []).reverse()
+
+      // if (this.selectedCategory) {
+      //   return this.monthTransactions.filter((transaction) => transaction.category === this.selectedCategory._id)
+      // } else {
+      //   return this.monthTransactions
+      // }
     }
   },
   methods: {
