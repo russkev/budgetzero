@@ -3,20 +3,12 @@
     <v-card-title class="primary darken-3 pa-3">Working</v-card-title>
     <categories-working />
     <v-card-title class="primary darken-3 pa-3">Transactions</v-card-title>
-    <v-data-table
-      :headers="transactionHeaders"
-      :items="transactions"
-      group-by="date"
-      dense
-      disable-sort
-      sort-desc
-      sort-by="date"
-    >
-    <template #group.header="{items}">
-      <td colspan="20" >
-        {{ formatDate(items[0].date) }}
-      </td>
-    </template>
+    <v-data-table :headers="transactionHeaders" :items="transactions" dense group-by="group" disable-sort>
+      <template #group.header="{ items }">
+        <td colspan="20">
+          {{ formatDate(items[0].date) }}
+        </td>
+      </template>
       <template #item="{ item }">
         <tr>
           <td>
@@ -43,7 +35,7 @@
 
 <script>
 import CategoriesWorking from './CategoriesWorking.vue'
-import { formatDate } from "../../helper"
+import { formatDate } from '../../helper'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -64,23 +56,25 @@ export default {
     transactions() {
       let balance = 0
       let monthTransactions = JSON.parse(JSON.stringify(this.monthTransactions))
-      return monthTransactions
-        .reduce((partial, monthTransaction) => {
-          if (!this.selectedCategory || monthTransaction.category === this.selectedCategory._id) {
-            balance += monthTransaction.amount
-            partial.push({
-              ...monthTransaction,
-              balance: balance
-            })
-          }
-          return partial
-        }, [])
+      const length = monthTransactions.length
+      let result = []
+      for (let i = length - 1; i >= 0; i--) {
+        const monthTransaction = monthTransactions[i]
+        if (!this.selectedCategory || monthTransaction.category === this.selectedCategory._id) {
+          balance += monthTransaction.amount
+          result.push({
+            ...monthTransaction,
+            balance: balance
+          })
+        }
+      }
+      return result.reverse()
     }
   },
   methods: {
     ...mapActions(['fetchTransactionsForMonth']),
     ...mapActions('categoryMonth', ['getMonthTransactions']),
-    formatDate: formatDate,
+    formatDate: formatDate
   }
 }
 </script>

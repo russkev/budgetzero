@@ -244,16 +244,22 @@ export default {
         return
       }
       dispatch('fetchTransactionsForMonth', getters.selectedMonth, { root: true }).then((transactions) => {
-        console.log("MONTH TRANSACTIONS", transactions)
+        let group = 0;
+        let currentDate = null;
         const monthTransactions = transactions.reduce((partial, transaction) => {
           const account = rootGetters.accountsById[transaction.account]
           if (account === undefined) {
             return partial
           }
+          if (transaction.date !== currentDate) {
+            currentDate = transaction.date
+            group += 1
+          }
           const base_data = {
             date: transaction.date,
             memo: transaction.memo,
             account: account.name,
+            group: group,
           }
           if (transaction.splits && transaction.splits.length > 1)
           {
@@ -395,8 +401,8 @@ export default {
 
 const transactionHeaders = [
   {
-    text: 'Date',
-    value: 'date',
+    text: 'Group',
+    value: 'group',
   },
   {
     text: 'Memo',
@@ -413,5 +419,9 @@ const transactionHeaders = [
   {
     text: 'Balance',
     value: 'balance'
-  }
+  },
+  // {
+  //   text: "ID",
+  //   value: "_id",
+  // }
 ]
