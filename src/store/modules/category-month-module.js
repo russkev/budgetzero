@@ -250,14 +250,30 @@ export default {
           if (account === undefined) {
             return partial
           }
-          const data = {
+          const base_data = {
             date: transaction.date,
             memo: transaction.memo,
             account: account.name,
-            amount: transaction.value * account.sign,
-            category: transaction.category,
           }
-          partial.push(data)
+          if (transaction.splits && transaction.splits.length > 1)
+          {
+            transaction.splits.forEach((split) => {
+              const data = {
+                ...base_data,
+                amount: split.value * account.sign,
+                category: split.category
+              }
+              partial.push(data)
+            })
+            return partial
+          } else {
+            const data = {
+              ...base_data,
+              amount: transaction.value * account.sign,
+              category: transaction.category,
+            }
+            partial.push(data)
+          }
           return partial
         }, [])
         commit('SET_MONTH_TRANSACTIONS', monthTransactions)
