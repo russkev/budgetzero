@@ -81,7 +81,7 @@ import { mapGetters, mapActions, mapMutations } from "vuex";
 import HeaderRow from "./HeaderRow.vue";
 import MasterCategoryColor from "./MasterCategoryColor.vue";
 import MasterCategoryDelete from "./MasterCategoryDelete.vue";
-import { NONE } from "../../constants"
+import { NONE, AMOUNT_RED, AMOUNT_GREEN } from "../../constants"
 import _ from "lodash";
 
 export default {
@@ -126,9 +126,9 @@ export default {
     balanceColor() {
       const balance = this.masterCategoriesStats[this.masterCategory._id].balance;
       if (balance < 0) {
-        return `error--text text--lighten-3`;
+        return AMOUNT_RED;
       } else if (balance > 0) {
-        return `success--text text--lighten-3`;
+        return AMOUNT_GREEN;
       } else {
         return "";
       }

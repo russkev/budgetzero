@@ -9,7 +9,7 @@
         class="pa-2"
         icon="false"
         v-on="on"
-        >
+      >
         <template #prepend>
           <div class="mr-2"></div>
         </template>
@@ -33,7 +33,12 @@
       </v-alert>
     </template>
     <v-card max-width="600px" flat outlined color="outline background" class="ma-0 px-4 py-1">
-      <categories-working />
+      <categories-working
+        :last-month="monthStats.available_last_month"
+        :income="monthStats.income_this_month"
+        :budgeted="monthStats.budgeted_this_month"
+        :available="monthStats.available_this_month"
+      />
     </v-card>
   </v-tooltip>
 </template>
@@ -63,5 +68,3 @@ export default {
   methods: {},
 };
 </script>
-
-

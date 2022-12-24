@@ -100,4 +100,7 @@ export const DEFAULT_TRANSACTION = {
   _rev: ''
 }
 
+export const AMOUNT_RED = `error--text text--lighten-3`
+export const AMOUNT_GREEN = `success--text text--lighten-3`
+
 export const LOCAL_DB_NAME = 'budgetzero_local_db'

@@ -1,7 +1,11 @@
 <template>
   <div class="ma-0 pa-0" :key="category._id">
     <v-hover v-slot="{ hover }">
-      <v-row class="ma-0 pa-0 category-row">
+      <v-row
+        :class="`ma-0 pa-0 category-row ${
+          isSelected ? 'info darken-4' : ''
+        }`"
+      >
         <v-sheet
           width="20px"
           color="transparent"
@@ -31,7 +35,7 @@
               :data-testid="`category-name-${category._id}`"
             >
               <!-- {{`i: ${index} s: ${category.sort} id: ${category._id}`}} -->
-              <category-grid-input
+              <!-- <category-grid-input
                 class="category-name-input"
                 :id="`category-name-input-${category._id}`"
                 :data-testid="`category-name-input-${category._id}`"
@@ -39,10 +43,13 @@
                 :value="category.name"
                 @edit="onEditCategoryName(category._id)"
                 @apply="onCategoryNameChange"
-              />
+              /> -->
+              <row-element-wrapper @click="onCategoryDetailsClick" class="mr-1">
+                {{ category.name }}
+              </row-element-wrapper>
             </v-col>
             <v-col :id="`category-budget-${category._id}`" class="pa-0 my-1" v-if="!hideBudgeted">
-              <category-grid-input
+              <!-- <category-grid-input
                 class="category-budget-input"
                 :id="`category-budget-input-${category._id}`"
                 :data-testid="`category-budget-input-${category._id}`"
@@ -56,25 +63,30 @@
                   }
                 "
                 @enter="(event) => onCategoryBudgetEnter(category, event)"
-              />
+                /> -->
+              <row-element-wrapper @click="onCategoryDetailsClick" class="justify-end ml-1">
+                {{ intlCurrency.format(category.budgetDisplay) }}
+              </row-element-wrapper>
             </v-col>
-            <row-element-wrapper @click="onCategoryDetailsClick">
-              <v-col
-                :data-testid="`category-spent-${category._id}`"
-                align="right"
-                class="pa-0 my-auto"
-                v-if="!hideSpent"
-              >
+            <v-col
+              :data-testid="`category-spent-${category._id}`"
+              v-if="!hideSpent"
+              align="right"
+              class="pa-0 my-auto"
+            >
+              <row-element-wrapper @click="onCategoryDetailsClick" class="justify-end ml-1">
                 {{ spentValue(category) }}
-              </v-col>
-            </row-element-wrapper>
+              </row-element-wrapper>
+            </v-col>
             <v-col
               :data-testid="`category-balance-${category._id}`"
               align="right"
               :class="`pa-0 my-auto ${balanceColor(category)}`"
               v-if="!hideBalance"
             >
-              {{ intlCurrency.format(category.balance / 100) }}
+              <row-element-wrapper @click="onCategoryDetailsClick" class="justify-end ml-1">
+                {{ intlCurrency.format(category.balance / 100) }}
+              </row-element-wrapper>
             </v-col>
           </v-row>
         </v-col>
@@ -143,10 +155,22 @@ export default {
       "categoriesByMaster",
       "masterCategories",
     ]),
-    ...mapGetters("categoryMonth", ["editedCategoryBudgetId", "editedCategoryNameId", "categoriesData"]),
+    ...mapGetters("categoryMonth", [
+      "editedCategoryBudgetId",
+      "editedCategoryNameId",
+      "categoriesData",
+      "selectedCategory",
+    ]),
     negativeMultiplier() {
       return this.isIncome ? 1 : -1;
     },
+    isSelected() {
+      if (!this.selectedCategory) {
+        return false;
+      } else {
+        return this.selectedCategory._id === this.category._id;
+      }
+    }
   },
 
   methods: {
@@ -174,13 +198,17 @@ export default {
           (master_category) => master_category.sort === this.masterCategory.sort + 1
         );
         if (next_master_category) {
-          next_category = this.categoriesByMaster[next_master_category._id.slice(-ID_LENGTH.category)][0];
+          next_category = this.categoriesByMaster[
+            next_master_category._id.slice(-ID_LENGTH.category)
+          ][0];
         }
       }
       if (!next_category) {
         return;
       }
-      const next_budget_id = `category-budget-input-${next_category._id.slice(-ID_LENGTH.category)}`;
+      const next_budget_id = `category-budget-input-${next_category._id.slice(
+        -ID_LENGTH.category
+      )}`;
       const next_category_input = document.getElementById(next_budget_id);
       if (next_category_input) {
         this.SET_EDITED_CATEGORY_BUDGET_ID(next_category._id);
@@ -208,8 +236,14 @@ export default {
       }
     },
     onCategoryDetailsClick() {
-      this.SET_SELECTED_CATEGORY(this.category)
+      this.SET_SELECTED_CATEGORY(this.category);
     },
   },
 };
 </script>
+
+<style>
+.justify-end {
+  justify-content: flex-end;
+}
+</style>

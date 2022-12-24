@@ -33,11 +33,11 @@
               :data-testid="budgetedId"
               align="right"
             >
-              <v-row>
-                <v-col class="pa-0 pr-6">
+              <!-- <v-row> -->
+                <!-- <v-col class="pa-0"> -->
                   <slot name="budgeted"></slot>
-                </v-col>
-              </v-row>
+                <!-- </v-col> -->
+              <!-- </v-row> -->
 
             </v-col>
             <v-col
