@@ -231,7 +231,6 @@ export default {
       })
     },
     UPDATE_MONTH_BALANCES(state, monthBalancesItem) {
-      console.log("MONTH BALANCES ITEM", monthBalancesItem)
 
       let expense = _.get(monthBalancesItem, 'expense', 0)
       let income = _.get(monthBalancesItem, 'income', 0)
@@ -250,8 +249,6 @@ export default {
         expense: previous.expense + expense,
         budgeted: previous.budgeted + _.get(monthBalancesItem, 'budgeted', 0)
       }
-      console.log("PREVIOUS", previous)
-      console.log("CURRENT", current)
       Vue.set(state.monthBalances, monthBalancesItem.month, current)
     }
   },

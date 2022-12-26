@@ -184,9 +184,6 @@ table {
   table-layout: fixed;
 }
 
-tbody tr:hover {
-  background-color: var(--v-background-base) !important;
-}
 
 table tr.transaction-row > td {
   border-bottom: 1px solid var(--v-background-base) !important;
@@ -205,17 +202,25 @@ table tr.transaction-row > td {
   overflow: hidden;
 }
 
-/* td.row-checkbox {
-
-} */
 </style>
 <style>
+tbody tr:hover {
+  background-color: var(--v-background-base) !important;
+}
+
 .date-row {
   min-height: 12px;
+  color: var(--v-secondary-lighten3);
+  padding-left: 0px;
+  height: 20px !important;
+  transition: height 0s !important;
+}
+
+tr.v-data-table__empty-wrapper td {
+  transition: height 0s !important;
 }
 
 #transactions-table th {
-  padding: 0;
   min-width: min-content !important;
   background: var(--v-background-base);
   border: none;

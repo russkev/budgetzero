@@ -54,9 +54,11 @@ export default {
       Vue.set(state, 'monthTransactions', transactions)
     },
     SET_SELECTED_CATEGORY(state, category) {
-      console.log("Setting", category._id)
       Vue.set(state, 'selectedCategory', category)
     },
+    RESET_SELECTED_CATEGORY(state) {
+      Vue.set(state, 'selectedCategory', null)
+    }
   },
   getters: {
     editedMasterCategoryId: (state) => state.editedMasterCategoryId,
@@ -108,6 +110,14 @@ export default {
           return result
         })
         partial[master_id] = categories_data
+        return partial
+      }, {})
+    },
+    categoriesDataById: (state, getters) => {
+      return Object.entries(getters.categoriesData).reduce((partial, [master_id, category_docs]) => {
+        category_docs.forEach((category) => {
+          partial[category._id] = category
+        })
         return partial
       }, {})
     },
@@ -191,7 +201,13 @@ export default {
           budget: budget_value
         }
       }
+
       dispatch('updateMonthCategory', { current, previous }, { root: true })
+      .then(() => {
+        if (getters.selectedCategory._id === category_id) {
+          commit('SET_SELECTED_CATEGORY', getters.categoriesDataById[category_id])
+        }
+      });
       commit('CLEAR_EDITED_CATEGORY_BUDGET_ID')
     },
     onMasterCategoryNameChange({ getters, commit, dispatch, rootGetters }, event) {
