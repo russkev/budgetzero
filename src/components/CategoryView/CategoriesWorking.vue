@@ -93,7 +93,7 @@ div.header-balance-grid {
 div.header-balance-grid > :nth-child(3n + 2) {
   text-align: right;
   margin-left: 15px;
-  width: 70px;
+  width: 90px;
 }
 
 div.header-balance-grid > :nth-child(3n) {

@@ -7,8 +7,8 @@
     class="pa-0 ma-0"
     height="auto"
     plain
-    :to="{ path: destination}"
-  >
+    :to="{ name: 'budget', params: { month: destination } }"
+    >
     <v-icon>
       {{icon}}
     </v-icon>
@@ -17,7 +17,7 @@
 
 <script>
 export default {
-  emits: ['click'],
+  // emits: ['click'],
   name: "MonthNextPrevButton",
   props: {
     icon: {
@@ -26,7 +26,7 @@ export default {
     },
     destination: {
       type: String,
-      default: "/",
+      default: "",
     },
   },
 };

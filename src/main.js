@@ -75,10 +75,10 @@ Vue.use(Fragment.Plugin)
 export var router = new VueRouter({
   mode: import.meta.env.IS_ELECTRON ? 'hash' : 'history',
   routes: [
-    {
-      path: '*',
-      redirect: `/budget/${moment(new Date()).format('YYYY-MM')}`
-    },
+    // {
+    //   path: '*',
+    //   redirect: `/budget/${moment(new Date()).format('YYYY-MM')}`
+    // },
     {
       path: '/settings',
       component: Settings
@@ -107,6 +107,7 @@ export var router = new VueRouter({
     },
     {
       path: '/budget/:month',
+      name: 'budget',
       component: Categories
     },
     {

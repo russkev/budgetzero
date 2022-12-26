@@ -32,9 +32,10 @@ export default {
     this.UPDATE_SELECTED_MONTH(this.$route.params.month);
     this.getMonthTransactions();
   },
-  beforeRouteUpdate(to, from) {
+  beforeRouteUpdate(to, from, next) {
     this.UPDATE_SELECTED_MONTH(to.params.month);
     this.getMonthTransactions();
+    next();
   },
   methods: {
     ...mapMutations("categoryMonth", ["UPDATE_SELECTED_MONTH"]),

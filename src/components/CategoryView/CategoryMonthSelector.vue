@@ -3,7 +3,7 @@
     <v-row class="pa-0 ma-0">
       <month-next-prev-button
         icon="mdi-chevron-left"
-        :destination="`/budget/${prevMonth}`"
+        :destination="prevMonth"
         data-testid="previous-month-button"
       />
       <v-col class="pa-0 ma-0">
@@ -42,7 +42,7 @@
       <month-next-prev-button
         data-testid="next-month-button"
         icon="mdi-chevron-right"
-        :destination="`/budget/${nextMonth}`"
+        :destination="nextMonth"
       />
     </v-row>
   </v-card>
