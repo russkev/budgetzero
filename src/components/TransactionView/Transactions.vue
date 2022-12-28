@@ -8,7 +8,7 @@
             <transactions-table />
           </v-col>
           <v-col cols="4" class="pa-1">
-            <details />
+            <transaction-details />
           </v-col>
         </v-row>
       </v-sheet>
@@ -20,13 +20,13 @@
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import TransactionsHeader from "./TransactionsHeader.vue";
 import TransactionsTable from "./TransactionsTable.vue";
-import Details from "./Details.vue";
+import TransactionDetails from "./Details.vue";
 
 export default {
   components: {
     TransactionsHeader,
     TransactionsTable,
-    Details,
+    TransactionDetails,
   },
   data() {
     return {

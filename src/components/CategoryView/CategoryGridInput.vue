@@ -5,6 +5,7 @@
     >
     <div v-if="!isEditing">
       <v-hover v-slot="{ hover }">
+        <!-- Not read only and not editing -->
         <v-text-field
           :class="`ma-0 pa-0 text-${text}`"
           dense
@@ -16,12 +17,15 @@
           :data-testid="dataTestid"
           :value="currency ? intlCurrency.format(value) : value"
           @focus="onClick"
-          :reverse="currency"
+          :reverse="currency && !currencyLeft"
           :background-color="hover ? activeBackgroundColor : 'transparent'"
           :height="height"
+          :loading="loading"
+          :disabled="loading"
           />
       </v-hover>
     </div>
+    <!-- Not read only and editing -->
     <div v-else>
       <v-text-field
         hide-details
@@ -42,9 +46,12 @@
         :reverse="currency"
         :height="height"
         :background-color="activeBackgroundColor"
+        :loading="loading"
+        :disabled="loading"
         />
     </div>
   </div>
+  <!-- Read only and editing -->
   <div v-else>
     <div>
       <v-text-field
@@ -57,9 +64,11 @@
         :id="id"
         :data-testid="dataTestid"
         :value="currency ? intlCurrency.format(value) : value"
-        :reverse="currency"
+        :reverse="currency || !currencyLeft"
         background-color="transparent"
         :height="height"
+        :loading="loading"
+        :disabled="loading"
       />
     </div>
   </div>
@@ -88,6 +97,10 @@ export default {
       type: Boolean,
       default: false,
     },
+    currencyLeft: {
+      type: Boolean,
+      default: false,
+    },
     id: {
       type: String,
       default: "",
@@ -97,6 +110,10 @@ export default {
       default: "body-1",
     },
     readonly: {
+      type: Boolean,
+      default: false,
+    },
+    loading: {
       type: Boolean,
       default: false,
     },

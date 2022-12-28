@@ -384,9 +384,9 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
   return balances
 }
 
-const isUncategorized = (transaction) => {
-  const categoryId = transaction.category
-  const splits = transaction.splits
+const isUncategorized = (categoryId, splits) => {
+  // const categoryId = transaction.category
+  // const splits = transaction.splits
   if (
     (categoryId === undefined || categoryId === null || categoryId === NONE._id) &&
     (splits === undefined || splits.length === 0)

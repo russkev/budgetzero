@@ -1,6 +1,6 @@
 <template>
   <div class="ml-3">
-    <div class="pb-2">
+    <!-- <div class="pb-2">
       <v-icon data-testid="details-inflow-button" left small :color="isInflow ? 'primary' : ''" @click="isInflow = true">
         {{ isInflow ? "mdi-radiobox-marked" : "mdi-radiobox-blank" }}
       </v-icon>
@@ -11,12 +11,27 @@
         {{ isInflow ? "mdi-radiobox-blank" : "mdi-radiobox-marked" }}
       </v-icon>
       Outflow
-    </div>
+    </div> -->
+    <details-radio
+      :selected="isInflow"
+      testid="details-inflow-button"
+      @click="isInflow = true"
+    >
+      Inflow
+    </details-radio>
+    <details-radio
+      :selected="!isInflow"
+      testid="details-outflow-button"
+      @click="isInflow = false"
+    >
+      Outflow
+    </details-radio>
   </div>
 </template>
 
 <script>
 import { mapGetters, mapMutations } from "vuex";
+import DetailsRadio from "../Shared/DetailsRadio.vue";
 
 export default {
   props: {
@@ -24,6 +39,9 @@ export default {
       type: Boolean,
       default: true,
     },
+  },
+  components: {
+    DetailsRadio,
   },
   computed: {
     ...mapGetters("accountTransactions", ["editedTransaction"]),

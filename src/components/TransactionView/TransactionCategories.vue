@@ -4,8 +4,10 @@
     class="transaction-categories-container mr-2"
     :style="`grid-template-columns: ${templateColumns}`"
   >
+  <!-- :item="item" -->
     <category-menu
-      :item="item"
+      :category-id="item.category? item.category : ''"
+      :splits="item.splits"
       @selected="onCategorySelected"
       :disabled="isDisabled"
       
@@ -18,22 +20,23 @@
   >
     <template v-for="(split, index) in this.item.splits">
       <category-menu
-        :key="`category-${index}`"
-        :item="split"
-        :disabled="isDisabled"
-        @selected="
+      :key="`category-${index}`"
+      :category-id="split.category ? split.category : ''"
+      :disabled="isDisabled"
+      @selected="
           (categoryId) => {
             onSplitCategorySelected(index, categoryId);
           }
-        "
+          "
       />
+      <!-- :item="split" -->
     </template>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from "vuex";
-import CategoryMenu from "./CategoryMenu.vue";
+import CategoryMenu from "../Shared/CategoryMenu.vue";
 
 export default {
   props: {

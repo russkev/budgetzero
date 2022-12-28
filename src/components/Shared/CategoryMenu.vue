@@ -20,7 +20,7 @@
               class="mr-2"
             />
             <div
-              v-if="isUncategorized"
+              v-if="itemIsUncategorized"
               class="simple-ellipsis info--text text--lighten-1 font-weight-bold"
             >
               {{ selectedCategoryName }}
@@ -34,7 +34,7 @@
           <v-card-subtitle class="ma-0 pa-0">
             Category:
           </v-card-subtitle>
-          <v-card-title class="ma-0 pa-0" v-if="!isUncategorized">
+          <v-card-title class="ma-0 pa-0" v-if="!itemIsUncategorized">
             {{ masterCategoryName }}: {{ selectedCategoryName }}
           </v-card-title>
           <v-card-title class="ma-0 pa-0" v-else>
@@ -44,7 +44,7 @@
         <div v-else></div>
       </v-tooltip>
     </template>
-    <category-select @selected="onSelected" />
+    <category-select @selected="onSelected" :show-balance="showBalance"/>
   </v-menu>
 </template>
 
@@ -58,8 +58,18 @@ export default {
   emits: ["selected"],
   components: { CategorySelect },
   props: {
-    item: {
-      type: Object,
+    // item: {
+    //   required: true,
+    //   type: Object,
+    // },
+    categoryId: {
+      required: true,
+      type: String,
+    },
+    splits: {
+      required: false,
+      type: Array,
+      default: () => [],
     },
     disabled: {
       type: Boolean,
@@ -70,6 +80,11 @@ export default {
       type: String,
       required: false,
       default: "",
+    },
+    showBalance: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
   },
   data() {
@@ -83,7 +98,7 @@ export default {
     ...mapGetters("accountTransactions", ["selectedTransactions"]),
 
     selectedCategoryColor() {
-      const id = this.item.category;
+      const id = this.categoryId;
       const color = this.categoryColors[id];
       if (color === undefined) {
         return NONE.hexColor;
@@ -91,7 +106,7 @@ export default {
       return color;
     },
     selectedCategoryName() {
-      const id = this.item.category;
+      const id = this.categoryId;
       const category = this.categoriesById[id];
       if (category === undefined) {
         return NONE.name;
@@ -99,7 +114,7 @@ export default {
       return category.name;
     },
     masterCategoryName() {
-      const id = this.item.category;
+      const id = this.categoryId;
       const category = this.categoriesById[id];
       if (category === undefined || category === null || category.masterCategory === undefined) {
         return NONE.name;
@@ -113,14 +128,14 @@ export default {
     categoryBackgroundColor() {
       return `${this.selectedCategoryColor}55`;
     },
-    isUncategorized() {
-      return isUncategorized(this.item);
+    itemIsUncategorized() {
+      return isUncategorized({ categoryId: this.categoryId, splits: this.splits } );
     },
   },
   methods: {
     onSelected(categoryId) {
       const id = categoryId.slice(-ID_LENGTH.category);
-      if (id !== this.item.category) {
+      if (id !== this.categoryId) {
         this.$emit("selected", id);
       }
       this.menu = false;

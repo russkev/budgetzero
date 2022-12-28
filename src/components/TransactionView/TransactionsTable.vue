@@ -25,6 +25,7 @@
         class: 'text-body-2',
       }"
       class="flex-table-main background lighten-1"
+      :loading="isLoading"
     >
       <template #header.data-table-select="{ on, props }">
         <v-simple-checkbox
@@ -111,6 +112,7 @@ export default {
       "numServerTransactions",
       "itemsPerPage",
       "isCreatingNewTransaction",
+      "isLoading",
     ]),
     ...mapGetters(["selectedBudgetId", "accounts", "intlCurrency"]),
     numTransactionsTotal() {

@@ -17,10 +17,13 @@ import { compareAscii } from '../../store/modules/id-module'
 const DEFAULT_MONTH_CATEGORIES_STATE = {
   editedMasterCategoryId: '',
   editedCategoryBudgetId: '',
+  editedCategoryBudgetLoading: false,
   editedCategoryNameId: '',
+  editedCategoryNameLoading: false,
+
   selectedMonth: moment(new Date()).format('YYYY-MM'),
   selectedCategory: null,
-  monthTransactions: [],
+  monthTransactions: []
 }
 
 export default {
@@ -41,8 +44,14 @@ export default {
     CLEAR_EDITED_CATEGORY_BUDGET_ID(state) {
       Vue.set(state, 'editedCategoryBudgetId', DEFAULT_MONTH_CATEGORIES_STATE.editedCategoryBudgetId)
     },
+    SET_EDITED_CATEGORY_BUDGET_LOADING(state, loading) {
+      Vue.set(state, 'editedCategoryBudgetLoading', loading)
+    },
     SET_EDITED_CATEGORY_NAME_ID(state, id) {
       Vue.set(state, 'editedCategoryNameId', id)
+    },
+    SET_EDITED_CATEGORY_NAME_LOADING(state, loading) {
+      Vue.set(state, 'editedCategoryNameLoading', loading)
     },
     CLEAR_EDITED_CATEGORY_NAME_ID(state) {
       Vue.set(state, 'editedCategoryNameId', DEFAULT_MONTH_CATEGORIES_STATE.editedCategoryNameId)
@@ -56,14 +65,22 @@ export default {
     SET_SELECTED_CATEGORY(state, category) {
       Vue.set(state, 'selectedCategory', category)
     },
+    SET_SELECTED_CATEGORY_ATTRIBUTE(state, { attribute, value }) {
+      Vue.set(state.selectedCategory, attribute, value)
+    },
     RESET_SELECTED_CATEGORY(state) {
       Vue.set(state, 'selectedCategory', null)
-    }
+    },
+    // SET_SELECTED_MOVING_TO_CLICKED(state, value) {
+    //   Vue.set(state.selectedCategory, 'isMovingTo', value)
+    // }
   },
   getters: {
     editedMasterCategoryId: (state) => state.editedMasterCategoryId,
     editedCategoryBudgetId: (state) => state.editedCategoryBudgetId,
+    editedCategoryBudgetLoading: (state) => state.editedCategoryBudgetLoading,
     editedCategoryNameId: (state) => state.editedCategoryNameId,
+    editedCategoryNameLoading: (state) => state.editedCategoryNameLoading,
     selectedMonth: (state) => state.selectedMonth,
     prevMonth: (state, getters) => {
       return prevMonth(getters.selectedMonth)
@@ -96,15 +113,18 @@ export default {
           const name = _.get(rootGetters.categoriesById, [category_id, 'name'], '')
           const budget_display = (budget / 100).toFixed(2)
           const sort = category.sort
+          const balance = budget + income - expense + carryover
+          const isIncome = category.masterCategory === INCOME._id
           const result = {
             _id: category_id,
             name: name,
             budget: budget,
             budgetDisplay: budget_display,
             income: income,
+            isIncome: isIncome,
             expense: expense,
             carryover: carryover,
-            balance: budget + income - expense + carryover,
+            balance: balance,
             sort: sort
           }
           return result
@@ -120,6 +140,17 @@ export default {
         })
         return partial
       }, {})
+    },
+    categoriesDataSortedByBalance: (state, getters) => {
+      return Object.values(getters.categoriesDataById)
+        .filter((category) => {
+          if ([NONE._id, HIDDEN._id, INCOME._id].includes(category._id) || category.isIncome)
+            return false
+          return true
+        })
+        .sort((a, b) => {
+          return b.balance - a.balance
+        })
     },
     masterCategoriesStats: (state, getters) => {
       return Object.entries(getters.categoriesData).reduce((partial, [master_id, category_docs]) => {
@@ -172,13 +203,14 @@ export default {
     },
     transactionHeaders: () => transactionHeaders,
     monthTransactions: (state) => state.monthTransactions,
-    selectedCategory: (state) => state.selectedCategory,
+    selectedCategory: (state) => state.selectedCategory
   },
   actions: {
     onCategoryBudgetChanged({ commit, getters, dispatch, rootGetters }, { category_id, event }) {
       if (!event.target) {
         return
       }
+      commit('SET_EDITED_CATEGORY_BUDGET_LOADING', true)
       const target_value = event.target.value
       const month = getters.selectedMonth
       let budget_value = parseInt(Math.round(parseFloat(target_value) * 100))
@@ -203,12 +235,88 @@ export default {
       }
 
       dispatch('updateMonthCategory', { current, previous }, { root: true })
-      .then(() => {
-        if (getters.selectedCategory._id === category_id) {
-          commit('SET_SELECTED_CATEGORY', getters.categoriesDataById[category_id])
-        }
-      });
+        .then(() => {
+          if (getters.selectedCategory._id === category_id) {
+            dispatch('syncSelectedCategory')
+          }
+        })
+        .finally(() => {
+          commit('SET_EDITED_CATEGORY_BUDGET_LOADING', false)
+        })
       commit('CLEAR_EDITED_CATEGORY_BUDGET_ID')
+    },
+    selectCategory({ commit, getters, dispatch, rootGetters }, category) {
+      const move_amount = Math.abs(category.balance)
+      const is_moving_to = move_amount > 0
+      let destination = ''
+      const sortedData = getters.categoriesDataSortedByBalance
+      if (sortedData.length > 0)
+      {
+        let index = 0
+        if (is_moving_to) {
+          index = 0
+          if (sortedData[0]._id === category._id && sortedData.length > 1) {
+            index = 1
+          }
+        } else {
+          index = sortedData.length - 1
+          if (sortedData[index]._id === category._id && sortedData.length > 1) {
+            index = sortedData.length - 2
+          }
+        }
+        destination = sortedData[index]._id
+      }
+      commit('SET_SELECTED_CATEGORY', {
+        ...category,
+        moveAmount: move_amount,
+        isMovingTo: is_moving_to,
+        moveDestination: destination
+      })
+    },
+    syncSelectedCategory({ getters }) {
+      if (getters.selectedCategory === null) {
+        return
+      }
+      const category_id = getters.selectedCategory._id
+      dispatch('selectCategory', getters.categoriesDataById[category_id])
+    },
+    onCategoryNameChange({ getters, commit, dispatch, rootGetters }, event) {
+      let name = ''
+      if (typeof event === 'string' || event instanceof String) {
+        name = event
+      } else if (event.target) {
+        name = event.target.value
+      } else {
+        return
+      }
+      commit('SET_EDITED_CATEGORY_NAME_LOADING', true)
+      const doc = rootGetters.categoriesById[getters.editedCategoryNameId]
+      commit('CLEAR_EDITED_CATEGORY_NAME_ID')
+      if (doc !== undefined) {
+        dispatch(
+          'commitDocToPouchAndVuex',
+          {
+            current: { ...doc, name: name },
+            previous: doc
+          },
+          { root: true }
+        )
+          .then(() => {
+            dispatch('syncSelectedCategory')
+          })
+          .finally(() => {
+            commit('SET_EDITED_CATEGORY_NAME_LOADING', false)
+          })
+      }
+    },
+    onMovingToClicked({ commit }) {
+      commit('SET_SELECTED_CATEGORY_ATTRIBUTE', {attribute: 'isMovingTo', value: true})
+    },
+    onMovingFromClicked({ commit }) {
+      commit('SET_SELECTED_CATEGORY_ATTRIBUTE', { attribute: 'isMovingTo', value: false })
+    },
+    onMoveDestinationChanged({ commit }, new_destination) {
+      commit('SET_SELECTED_CATEGORY_ATTRIBUTE', { attribute: 'moveDestination', value: new_destination })
     },
     onMasterCategoryNameChange({ getters, commit, dispatch, rootGetters }, event) {
       let name = ''
@@ -219,6 +327,7 @@ export default {
       } else {
         return
       }
+      commit('SET_EDITED_CATEGORY_NAME_LOADING', true)
       const doc = rootGetters.masterCategoriesById[getters.editedMasterCategoryId]
       commit('CLEAR_EDITED_MASTER_CATEGORY_ID')
       if (doc !== undefined) {
@@ -230,38 +339,44 @@ export default {
           },
           { root: true }
         )
+          .then(() => {
+            dispatch('syncSelectedCategory')
+          })
+          .finally(() => {
+            commit('SET_EDITED_CATEGORY_NAME_LOADING', false)
+          })
       }
     },
-    onMasterCategoryNameChange({ dispatch, commit, getters, rootGetters }, event) {
-      let name = ''
-      if (typeof event === 'string' || event instanceof String) {
-        name = event
-      } else if (event.target) {
-        name = event.target.value
-      } else {
-        return
-      }
-      const doc = rootGetters.masterCategoriesById[getters.editedMasterCategoryId]
-      commit('CLEAR_EDITED_MASTER_CATEGORY_ID')
-      if (doc !== undefined) {
-        dispatch(
-          'commitDocToPouchAndVuex',
-          {
-            current: { ...doc, name: name },
-            previous: doc
-          },
-          { root: true }
-        )
-      }
-    },
+    // onMasterCategoryNameChange({ dispatch, commit, getters, rootGetters }, event) {
+    //   let name = ''
+    //   if (typeof event === 'string' || event instanceof String) {
+    //     name = event
+    //   } else if (event.target) {
+    //     name = event.target.value
+    //   } else {
+    //     return
+    //   }
+    //   const doc = rootGetters.masterCategoriesById[getters.editedMasterCategoryId]
+    //   commit('CLEAR_EDITED_MASTER_CATEGORY_ID')
+    //   if (doc !== undefined) {
+    //     dispatch(
+    //       'commitDocToPouchAndVuex',
+    //       {
+    //         current: { ...doc, name: name },
+    //         previous: doc
+    //       },
+    //       { root: true }
+    //     )
+    //   }
+    // },
     getMonthTransactions({ commit, dispatch, getters, rootGetters }) {
-      console.log("Get momth transactions")
+      console.log('Get momth transactions')
       if (rootGetters.accounts.length < 1 || !rootGetters.selectedBudgetId) {
         return
       }
       dispatch('fetchTransactionsForMonth', getters.selectedMonth, { root: true }).then((transactions) => {
-        let group = 0;
-        let currentDate = null;
+        let group = 0
+        let currentDate = null
         const monthTransactions = transactions.reduce((partial, transaction) => {
           const account = rootGetters.accountsById[transaction.account]
           if (account === undefined) {
@@ -275,10 +390,9 @@ export default {
             date: transaction.date,
             memo: transaction.memo,
             account: account.name,
-            group: group,
+            group: group
           }
-          if (transaction.splits && transaction.splits.length > 1)
-          {
+          if (transaction.splits && transaction.splits.length > 1) {
             transaction.splits.forEach((split) => {
               const data = {
                 ...base_data,
@@ -292,13 +406,14 @@ export default {
             const data = {
               ...base_data,
               amount: transaction.value * account.sign,
-              category: transaction.category,
+              category: transaction.category
             }
             partial.push(data)
           }
           return partial
         }, [])
         commit('SET_MONTH_TRANSACTIONS', monthTransactions)
+        dispatch('syncSelectedCategory')
       })
     },
     newMasterCategory({ commit, dispatch, rootGetters }) {
@@ -322,28 +437,6 @@ export default {
       dispatch('deleteMasterCategory', master_category._id, { root: true })
     },
 
-    onCategoryNameChange({ getters, commit, dispatch, rootGetters }, event) {
-      let name = ''
-      if (typeof event === 'string' || event instanceof String) {
-        name = event
-      } else if (event.target) {
-        name = event.target.value
-      } else {
-        return
-      }
-      const doc = rootGetters.categoriesById[getters.editedCategoryNameId]
-      commit('CLEAR_EDITED_CATEGORY_NAME_ID')
-      if (doc !== undefined) {
-        dispatch(
-          'commitDocToPouchAndVuex',
-          {
-            current: { ...doc, name: name },
-            previous: doc
-          },
-          { root: true }
-        )
-      }
-    },
     onHideCategory({ dispatch, rootGetters }, category_id) {
       console.log('onHideCategory', category_id)
       const doc = rootGetters.categoriesById[category_id]
@@ -414,28 +507,27 @@ export default {
   }
 }
 
-
 const transactionHeaders = [
   {
     text: 'Group',
-    value: 'group',
+    value: 'group'
   },
   {
     text: 'Memo',
-    value: 'memo',
+    value: 'memo'
   },
   {
     text: 'Account',
-    value: 'account',
+    value: 'account'
   },
   {
     text: 'Amount',
-    value: 'amount',
+    value: 'amount'
   },
   {
     text: 'Balance',
     value: 'balance'
-  },
+  }
   // {
   //   text: "ID",
   //   value: "_id",

@@ -1,6 +1,12 @@
 <template>
   <div v-if="!isSplit">
-    <category-menu button-testid="details-category" :item="editedTransaction" @selected="onCategorySelected" />
+    <category-menu
+      button-testid="details-category"
+      :category-id="editedTransaction.category ? editedTransaction.category : ''"
+      :splits="editedTransaction.splits"
+      :item="editedTransaction"
+      @selected="onCategorySelected"
+    />
     <v-card
       color="transparent"
       flat
@@ -18,7 +24,7 @@
       <template v-for="(split, index) in splits">
         <category-menu
           :key="`category-${index}`"
-          :item="split"
+          :category-id="split.category ? split.category : ''"
           @selected="
             (payload) => {
               onSplitCategorySelected(index, payload);
@@ -26,7 +32,12 @@
           "
           :button-testid="`details-category-split-${index}`"
         />
-        <splits-value :inputTestid="`split-${index}-value`" :index="index" :key="`amount-${index}`" />
+        <!-- :item="split" -->
+        <splits-value
+          :inputTestid="`split-${index}-value`"
+          :index="index"
+          :key="`amount-${index}`"
+        />
         <v-icon small :key="index" @click="onRemoveSplit(index)" class="mt-1">
           mdi-close
         </v-icon>
@@ -57,7 +68,7 @@ import { mapGetters, mapMutations } from "vuex";
 import { NONE } from "../../constants";
 import CurrencyInput from "./CurrencyInput.vue";
 import SplitsValue from "./SplitsValue.vue";
-import CategoryMenu from "./CategoryMenu.vue";
+import CategoryMenu from "../Shared/CategoryMenu.vue";
 
 export default {
   components: { CurrencyInput, SplitsValue, CategoryMenu },
@@ -106,7 +117,7 @@ export default {
     },
     onRemoveSplit(index) {
       this.REMOVE_EDITED_TRANSACTION_SPLIT(index);
-      if(this.splits.length === 1) {
+      if (this.splits.length === 1) {
         this.onCategorySelected(this.splits[0].category);
         this.CLEAR_EDITED_TRANSACTION_SPLIT();
       }

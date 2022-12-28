@@ -174,20 +174,15 @@ export default {
   },
 
   methods: {
-    ...mapMutations("categoryMonth", ["SET_EDITED_CATEGORY_BUDGET_ID", "SET_SELECTED_CATEGORY"]),
+    ...mapMutations("categoryMonth", ["SET_EDITED_CATEGORY_BUDGET_ID"]),
     ...mapActions("categoryMonth", [
       "onCategoryNameChange",
       "onCategoryBudgetChanged",
       "onEditCategoryName",
       "onEditCategoryBudget",
+      "selectCategory"
     ]),
-    isEditingName(category_id) {
-      if (category_id === NONE._id) {
-        return false;
-      } else {
-        return category_id === this.editedCategoryNameId;
-      }
-    },
+
     onCategoryBudgetEnter(category, event) {
       document.activeElement.blur();
       let next_category = null;
@@ -236,7 +231,7 @@ export default {
       }
     },
     onCategoryDetailsClick() {
-      this.SET_SELECTED_CATEGORY(this.category);
+      this.selectCategory(this.category);
     },
   },
 };

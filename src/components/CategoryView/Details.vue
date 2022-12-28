@@ -1,21 +1,34 @@
 <template>
   <v-card width="100%" flat color="background lighten-1" class="category-details-title ma-0 ml-2">
     <!-- <v-card-title class="primary darken-3 pa-3">{{ title }}</v-card-title> -->
-    <v-card-title v-if="selectedCategory" class="primary darken-3 pa-3">
+    <v-card-title v-if="selectedCategory" class="background lighten-2 pa-3">
       Update Selected
       <v-icon @click="onUnselectCategory" class="ml-auto">mdi-close</v-icon>
     </v-card-title>
-    <v-card-title v-else class="background lighten-2 pa-3">
-      {{ title }}
+    <v-divider
+      v-if="selectedCategory"
+      :style="`border-bottom: 2px solid ${categoryColors[selectedCategory._id]};`"
+    />
+    <v-card-title v-else class="background lighten-1 pa-3">
+      All Categories
     </v-card-title>
     <div v-if="selectedCategory" class="transaction-details-grid pa-2 pb-0">
+      <div class="text-h5">Name</div>
+      <div>
+        <category-grid-input
+          class="category-name-input"
+          :id="`category-name-input-${selectedCategory._id}`"
+          :data-testid="`category-name-input-${selectedCategory._id}`"
+          :is-editing="isEditingName(selectedCategory._id)"
+          :value="selectedCategory.name"
+          @edit="onEditCategoryName(selectedCategory._id)"
+          @apply="onCategoryNameChange"
+          :loading="editedCategoryNameLoading"
+        />
+      </div>
+
       <div class="text-h5">Budgeted</div>
       <div>
-        <!-- {{ selectedCategory ? selectedCategory.budget : '' }} -->
-        <!-- <currency-input
-          v-model="budgetedData"
-          input-testid="`category-budget-input-${category._id}`"
-        /> -->
         <category-grid-input
           class="category-budget-input"
           :id="`category-budget-input-${selectedCategory._id}`"
@@ -24,13 +37,19 @@
           currency
           :is-editing="editedCategoryBudgetId == selectedCategory._id"
           @edit="onEditCategoryBudget(selectedCategory._id)"
-          @apply="(event) => {
-            onCategoryBudgetChanged({ category_id: selectedCategory._id, event: event });
-          }"
+          @apply="
+            (event) => {
+              onCategoryBudgetChanged({ category_id: selectedCategory._id, event: event });
+            }
+          "
+          :loading="editedCategoryBudgetLoading"
+          currency-left
         />
       </div>
       <div>Move</div>
-      <div></div>
+      <div>
+        <details-move />
+      </div>
       <div class="text-h5">Working</div>
       <div>
         <categories-working
@@ -64,8 +83,9 @@ import CategoriesWorking from "./CategoriesWorking.vue";
 import { mapGetters, mapActions, mapMutations } from "vuex";
 import CurrencyInput from "../TransactionView/CurrencyInput.vue";
 import DetailsTable from "./DetailsTable.vue";
-import { ID_LENGTH } from "../../constants";
+import { ID_LENGTH, NONE } from "../../constants";
 import CategoryGridInput from "./CategoryGridInput.vue";
+import DetailsMove from "./DetailsMove.vue"
 
 export default {
   name: "CategoryDetails",
@@ -74,6 +94,7 @@ export default {
     CurrencyInput,
     DetailsTable,
     CategoryGridInput,
+    DetailsMove,
   },
   watch: {
     masterCategoriesById: {
@@ -83,16 +104,19 @@ export default {
     },
   },
   computed: {
-    ...mapGetters(["masterCategoriesById", "categoriesById"]),
+    ...mapGetters(["masterCategoriesById", "categoriesById", "categoryColors", "categories"]),
     ...mapGetters("categoryMonth", [
       "selectedCategory",
       "monthStats",
       "editedCategoryBudgetId",
       "editedCategoryNameId",
+      "editedCategoryBudgetLoading",
+      "editedCategoryNameLoading",
+      "categoriesDataSortedByBalance",
     ]),
-    title() {
-      return this.selectedCategory ? this.selectedCategory.name : "All Categories";
-    },
+    // title() {
+    //   return this.selectedCategory ? this.selectedCategory.name : "All Categories";
+    // },
     // budgetedData: {
     //   get() {
     //     return this.selectedCategory ? this.selectedCategory.budget : 0;
@@ -116,10 +140,19 @@ export default {
       "onCategoryBudgetChanged",
       "onEditCategoryName",
       "onEditCategoryBudget",
+      "onMovingToClicked",
+      "onMovingFromClicked",
     ]),
-    ...mapMutations("categoryMonth", ["RESET_SELECTED_CATEGORY", "SET_SELECTED_CATEGORY"]),
+    ...mapMutations("categoryMonth", ["RESET_SELECTED_CATEGORY"]),
     onUnselectCategory() {
       this.RESET_SELECTED_CATEGORY();
+    },
+    isEditingName() {
+      if (this.selectedCategory._id.slice(ID_LENGTH.category) === NONE._id) {
+        return false;
+      } else {
+        return this.selectedCategory._id === this.editedCategoryNameId;
+      }
     },
   },
 };
@@ -129,5 +162,9 @@ export default {
 .category-details-title {
   width: 100%;
   overflow-y: auto;
+}
+
+.category-budget-input {
+  max-width: 110px;
 }
 </style>

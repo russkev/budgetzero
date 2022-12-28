@@ -20,7 +20,8 @@ const DEFAULT_ACCOUNT_TRANSACTIONS_STATE = {
   numServerTransactions: 0,
   itemsPerPage: DEFAULT_TRANSACTIONS_PER_PAGE,
   selectedTransactionIds: [],
-  isCreatingNewTransaction: false
+  isCreatingNewTransaction: false,
+  isLoading: false
 }
 
 export default {
@@ -48,7 +49,8 @@ export default {
     selectedTransactions: (state, getters) =>
       state.selectedTransactionIds.map((transactionId) => getters.transactionsById[transactionId]),
     isCreatingNewTransaction: (state) => state.isCreatingNewTransaction,
-    dataTableHeaders: () => dataTableHeaders
+    dataTableHeaders: () => dataTableHeaders,
+    isLoading: (state) => state.isLoading
   },
   mutations: {
     SET_ACCOUNT_ID(state, account_id) {
@@ -158,10 +160,14 @@ export default {
     },
     SET_IS_CREATING_NEW_TRANSACTION(state, is_creating) {
       Vue.set(state, 'isCreatingNewTransaction', is_creating)
+    },
+    SET_IS_LOADING(state, is_loading) {
+      Vue.set(state, 'isLoading', is_loading)
     }
   },
   actions: {
     getTransactions({ dispatch, commit, getters, rootGetters }, account_id) {
+      commit('SET_IS_LOADING', true)
       if (account_id !== undefined) {
         commit('SET_ACCOUNT_ID', account_id)
       }
@@ -170,23 +176,27 @@ export default {
         return
       }
 
-      dispatch('fetchTransactionsForAccount', getters.accountOptions, { root: true }).then((result) => {
-        commit('SET_NUM_SERVER_TRANSACTIONS', result.total_rows)
-        const transactions = result.rows.map((row) => {
-          const doc = row.doc
-          const category_name = _.get(rootGetters.categoriesById, [doc.category, 'name'], '')
-          const sign = getters.accountDoc.sign
-          const updatedDoc = {
-            ...doc,
-            value: doc.value * sign,
-            ['category_name']: category_name,
-            balance: doc.balance * sign
-          }
+      dispatch('fetchTransactionsForAccount', getters.accountOptions, { root: true })
+        .then((result) => {
+          commit('SET_NUM_SERVER_TRANSACTIONS', result.total_rows)
+          const transactions = result.rows.map((row) => {
+            const doc = row.doc
+            const category_name = _.get(rootGetters.categoriesById, [doc.category, 'name'], '')
+            const sign = getters.accountDoc.sign
+            const updatedDoc = {
+              ...doc,
+              value: doc.value * sign,
+              ['category_name']: category_name,
+              balance: doc.balance * sign
+            }
 
-          return updatedDoc
+            return updatedDoc
+          })
+          commit('SET_TRANSACTIONS', transactions)
         })
-        commit('SET_TRANSACTIONS', transactions)
-      })
+        .finally(() => {
+          commit('SET_IS_LOADING', false)
+        })
     },
     async save({ getters, dispatch, commit }, item) {
       let previous = getters.isCreatingNewTransaction ? null : item
@@ -347,17 +357,16 @@ export default {
       }
       commit('SET_EDITED_TRANSACTION_SPLIT_VALUE', { index: splits.length - 1, value: remainder })
     },
-    onTransactionDetailsClick({getters, commit, dispatch}, item) {
-      if(getters.selectedTransactions.length > 0) {
+    onTransactionDetailsClick({ getters, commit, dispatch }, item) {
+      if (getters.selectedTransactions.length > 0) {
         commit('CLEAR_SELECTED_TRANSACTIONS')
         nextTick(() => {
           dispatch('editTransaction', item)
-        });
+        })
       } else {
         dispatch('editTransaction', item)
       }
     }
-
   }
 }
 
