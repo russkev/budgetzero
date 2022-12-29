@@ -20,7 +20,7 @@
 import { mapActions, mapGetters, mapMutations } from "vuex";
 import TransactionsHeader from "./TransactionsHeader.vue";
 import TransactionsTable from "./TransactionsTable.vue";
-import TransactionDetails from "./Details.vue";
+import TransactionDetails from "./DetailsT.vue";
 
 export default {
   components: {

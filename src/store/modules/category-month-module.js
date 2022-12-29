@@ -70,7 +70,7 @@ export default {
     },
     RESET_SELECTED_CATEGORY(state) {
       Vue.set(state, 'selectedCategory', null)
-    },
+    }
     // SET_SELECTED_MOVING_TO_CLICKED(state, value) {
     //   Vue.set(state.selectedCategory, 'isMovingTo', value)
     // }
@@ -144,8 +144,7 @@ export default {
     categoriesDataSortedByBalance: (state, getters) => {
       return Object.values(getters.categoriesDataById)
         .filter((category) => {
-          if ([NONE._id, HIDDEN._id, INCOME._id].includes(category._id) || category.isIncome)
-            return false
+          if ([NONE._id, HIDDEN._id, INCOME._id].includes(category._id) || category.isIncome) return false
           return true
         })
         .sort((a, b) => {
@@ -206,31 +205,33 @@ export default {
     selectedCategory: (state) => state.selectedCategory
   },
   actions: {
-    onCategoryBudgetChanged({ commit, getters, dispatch, rootGetters }, { category_id, event }) {
+    onCategoryBudgetChanged({ dispatch }, { category_id, event }) {
       if (!event.target) {
         return
       }
+      let amount = parseInt(Math.round(parseFloat(event.target.value) * 100))
+      return dispatch('updateBudget', { category_id, amount: amount })
+    },
+    updateBudget({ commit, getters, dispatch, rootGetters }, { category_id, amount }) {
       commit('SET_EDITED_CATEGORY_BUDGET_LOADING', true)
-      const target_value = event.target.value
-      const month = getters.selectedMonth
-      let budget_value = parseInt(Math.round(parseFloat(target_value) * 100))
-      let current = null
-      if (isNaN(budget_value)) {
-        console.warn(`Budget value: ${target_value} is NaN`)
+      if (isNaN(amount)) {
+        console.warn(`Budget value: ${amount} is NaN`)
         return
       }
+      const month = getters.selectedMonth
+      let current = null
       const previous = _.get(rootGetters.allCategoryBalances, [month, category_id, 'doc'], null)
 
       if (previous === null) {
         current = {
           ...DEFAULT_MONTH_CATEGORY,
           _id: `b_${rootGetters.selectedBudgetId}${ID_NAME.monthCategory}${month}_${category_id}`,
-          budget: budget_value
+          budget: amount
         }
       } else {
         current = {
           ...previous,
-          budget: budget_value
+          budget: amount
         }
       }
 
@@ -245,23 +246,38 @@ export default {
         })
       commit('CLEAR_EDITED_CATEGORY_BUDGET_ID')
     },
-    selectCategory({ commit, getters, dispatch, rootGetters }, category) {
+    async doBudgetMove({ getters, dispatch }) {
+      const negative = getters.selectedCategory.isMovingTo ? -1 : 1
+      const selectedBudget = getters.selectedCategory.budget
+      const destinationBudget = getters.categoriesDataById[getters.selectedCategory.moveDestination].budget
+      await Promise.all([
+        dispatch('updateBudget', {
+          category_id: getters.selectedCategory._id,
+          amount: selectedBudget + negative * getters.selectedCategory.moveAmount
+        }),
+        dispatch('updateBudget', {
+          category_id: getters.selectedCategory.moveDestination,
+          amount: destinationBudget - negative * getters.selectedCategory.moveAmount
+        })
+      ])
+      return dispatch('syncSelectedCategory')
+    },
+    selectCategory({ commit, getters }, category) {
       const move_amount = Math.abs(category.balance)
-      const is_moving_to = move_amount > 0
+      const is_moving_to = category.balance > 0
       let destination = ''
       const sortedData = getters.categoriesDataSortedByBalance
-      if (sortedData.length > 0)
-      {
+      if (sortedData.length > 0) {
         let index = 0
         if (is_moving_to) {
-          index = 0
-          if (sortedData[0]._id === category._id && sortedData.length > 1) {
-            index = 1
-          }
-        } else {
           index = sortedData.length - 1
           if (sortedData[index]._id === category._id && sortedData.length > 1) {
             index = sortedData.length - 2
+          }
+        } else {
+          index = 0
+          if (sortedData[0]._id === category._id && sortedData.length > 1) {
+            index = 1
           }
         }
         destination = sortedData[index]._id
@@ -273,7 +289,7 @@ export default {
         moveDestination: destination
       })
     },
-    syncSelectedCategory({ getters }) {
+    syncSelectedCategory({ getters, dispatch }) {
       if (getters.selectedCategory === null) {
         return
       }
@@ -310,13 +326,16 @@ export default {
       }
     },
     onMovingToClicked({ commit }) {
-      commit('SET_SELECTED_CATEGORY_ATTRIBUTE', {attribute: 'isMovingTo', value: true})
+      commit('SET_SELECTED_CATEGORY_ATTRIBUTE', { attribute: 'isMovingTo', value: true })
     },
     onMovingFromClicked({ commit }) {
       commit('SET_SELECTED_CATEGORY_ATTRIBUTE', { attribute: 'isMovingTo', value: false })
     },
     onMoveDestinationChanged({ commit }, new_destination) {
       commit('SET_SELECTED_CATEGORY_ATTRIBUTE', { attribute: 'moveDestination', value: new_destination })
+    },
+    onSelectedMoveAmountChanged({ commit }, new_amount) {
+      commit('SET_SELECTED_CATEGORY_ATTRIBUTE', { attribute: 'moveAmount', value: new_amount })
     },
     onMasterCategoryNameChange({ getters, commit, dispatch, rootGetters }, event) {
       let name = ''

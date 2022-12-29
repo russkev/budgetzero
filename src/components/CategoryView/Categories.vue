@@ -18,7 +18,7 @@
 
 <script>
 import CategoriesHeader from "./CategoriesHeader.vue";
-import CategoryDetails from "./Details.vue";
+import CategoryDetails from "./DetailsC.vue";
 import CategoriesList from "./CategoriesList.vue";
 import { mapMutations, mapActions } from "vuex";
 

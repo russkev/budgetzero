@@ -1,11 +1,10 @@
 <template>
-  <div class="pb-2">
+  <div>
       <v-icon :data-testid="testid" left small :color="selected ? 'primary' : ''" @click="$emit('click')">
         {{ selected ? "mdi-radiobox-marked" : "mdi-radiobox-blank" }}
       </v-icon>
       <slot>
         Selected
-
       </slot>
     </div>
 </template>

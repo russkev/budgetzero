@@ -29,7 +29,7 @@
           @click="onCategorySelected(category._id)"
         >
           <v-list-item-content :key="`category-${category._id}`">
-            <span class="category-element-container">
+            <!-- <span class="category-element-container">
               <span>
                 <v-sheet
                   width="3px"
@@ -42,7 +42,12 @@
               <span v-if="showBalance" :class="`ml-2 ${categoryBalanceColor(category)}`">
                 {{ intlCurrency.format(categoryBalance(category) / 100) }}
               </span>
-            </span>
+            </span> -->
+            <category-item-text 
+              :category="category"
+              :show-balance="showBalance"
+              show-swatch
+            />
           </v-list-item-content>
         </v-list-item>
         <v-list-item
@@ -77,9 +82,13 @@
 import { mapActions, mapGetters } from "vuex";
 import { ID_LENGTH, NONE, HIDDEN, AMOUNT_RED, AMOUNT_GREEN } from "../../constants";
 import _ from "lodash";
+import CategoryItemText from "./CategoryItemText.vue";
 
 export default {
   emits: ["selected"],
+  components: {
+    CategoryItemText,
+  },
   props: {
     showBalance: {
       type: Boolean,
@@ -133,31 +142,31 @@ export default {
       return ![NONE._id].includes(masterId);
     },
 
-    categoryColor(category) {
-      return this.categoryColors[category._id.slice(-ID_LENGTH.category)];
-    },
+    // categoryColor(category) {
+    //   return this.categoryColors[category._id.slice(-ID_LENGTH.category)];
+    // },
     masterCategoryColor(master_id) {
       return _.get(this, ["masterCategoriesById", master_id, "color", "hex"], "transparent");
     },
-    currencyColor(value) {
-      if (value < 0) {
-        return AMOUNT_RED;
-      } else if (value > 0) {
-        return AMOUNT_GREEN;
-      } else {
-        return "unset";
-      }
-    },
-    categoryBalance(category) {
-      return _.get(
-        this.categoriesDataById,
-        [category._id.slice(-ID_LENGTH.category), "balance"],
-        ""
-      );
-    },
-    categoryBalanceColor(category) {
-      return this.currencyColor(this.categoryBalance(category));
-    },
+    // currencyColor(value) {
+    //   if (value < 0) {
+    //     return AMOUNT_RED;
+    //   } else if (value > 0) {
+    //     return AMOUNT_GREEN;
+    //   } else {
+    //     return "unset";
+    //   }
+    // },
+    // categoryBalance(category) {
+    //   return _.get(
+    //     this.categoriesDataById,
+    //     [category._id.slice(-ID_LENGTH.category), "balance"],
+    //     ""
+    //   );
+    // },
+    // categoryBalanceColor(category) {
+    //   return this.currencyColor(this.categoryBalance(category));
+    // },
   },
 };
 </script>

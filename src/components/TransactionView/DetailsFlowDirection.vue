@@ -16,6 +16,7 @@
       :selected="isInflow"
       testid="details-inflow-button"
       @click="isInflow = true"
+      class="pb-2"
     >
       Inflow
     </details-radio>
@@ -23,6 +24,7 @@
       :selected="!isInflow"
       testid="details-outflow-button"
       @click="isInflow = false"
+      class="pb-2"
     >
       Outflow
     </details-radio>

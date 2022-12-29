@@ -117,14 +117,16 @@ export default {
       type: Boolean,
       default: false,
     },
-
+    activeBackgroundColor: {
+      type: String,
+      default: "background lighten-2",
+    },
   },
   data() {
     return {
       isSelected: false,
       height: "26px",
       isHovering: false,
-      activeBackgroundColor: "background lighten-2",
     };
   },
   computed: {

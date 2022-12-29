@@ -19,15 +19,17 @@
               height="100%"
               class="mr-2"
             />
-            <div
-              v-if="itemIsUncategorized"
-              class="simple-ellipsis info--text text--lighten-1 font-weight-bold"
-            >
-              {{ selectedCategoryName }}
-            </div>
-            <div v-else class="simple-ellipsis">
-              {{ selectedCategoryName }}
-            </div>
+            <category-item-text :category="selectedCategory" :show-balance="showBalance">
+              <div
+                v-if="itemIsUncategorized"
+                class="simple-ellipsis info--text text--lighten-1 font-weight-bold"
+              >
+                {{ selectedCategoryName }}
+              </div>
+              <div v-else class="simple-ellipsis">
+                {{ selectedCategoryName }}
+              </div>
+            </category-item-text>
           </v-chip>
         </template>
         <v-card v-if="!menu" flat outlined color="outline background" class="ma-0 px-4 py-1">
@@ -44,7 +46,7 @@
         <div v-else></div>
       </v-tooltip>
     </template>
-    <category-select @selected="onSelected" :show-balance="showBalance"/>
+    <category-select @selected="onSelected" :show-balance="showBalance" />
   </v-menu>
 </template>
 
@@ -52,11 +54,12 @@
 import { mapGetters } from "vuex";
 import { ID_LENGTH, NONE } from "../../constants";
 import CategorySelect from "./CategorySelect.vue";
+import CategoryItemText from "./CategoryItemText.vue";
 import { isUncategorized } from "../../store/modules/transaction-module";
 
 export default {
   emits: ["selected"],
-  components: { CategorySelect },
+  components: { CategorySelect, CategoryItemText },
   props: {
     // item: {
     //   required: true,
@@ -96,7 +99,9 @@ export default {
   computed: {
     ...mapGetters(["categoryColors", "categoriesById", "masterCategoriesById"]),
     ...mapGetters("accountTransactions", ["selectedTransactions"]),
-
+    selectedCategory() {
+      return this.categoriesById[this.categoryId];
+    },
     selectedCategoryColor() {
       const id = this.categoryId;
       const color = this.categoryColors[id];
@@ -106,20 +111,20 @@ export default {
       return color;
     },
     selectedCategoryName() {
-      const id = this.categoryId;
-      const category = this.categoriesById[id];
-      if (category === undefined) {
+      if (this.selectedCategory === undefined) {
         return NONE.name;
       }
-      return category.name;
+      return this.selectedCategory.name;
     },
     masterCategoryName() {
-      const id = this.categoryId;
-      const category = this.categoriesById[id];
-      if (category === undefined || category === null || category.masterCategory === undefined) {
+      if (
+        this.selectedCategory === undefined ||
+        this.selectedCategory === null ||
+        this.selectedCategory.masterCategory === undefined
+      ) {
         return NONE.name;
       }
-      const masterCategory = this.masterCategoriesById[category.masterCategory];
+      const masterCategory = this.masterCategoriesById[this.selectedCategory.masterCategory];
       if (masterCategory === undefined) {
         return NONE.name;
       }
@@ -129,7 +134,7 @@ export default {
       return `${this.selectedCategoryColor}55`;
     },
     itemIsUncategorized() {
-      return isUncategorized({ categoryId: this.categoryId, splits: this.splits } );
+      return isUncategorized({ categoryId: this.categoryId, splits: this.splits });
     },
   },
   methods: {
@@ -153,5 +158,9 @@ export default {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.category-chip, .v-chip__content {
+  width: 100%;
 }
 </style>

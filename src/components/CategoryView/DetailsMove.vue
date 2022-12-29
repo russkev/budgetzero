@@ -1,41 +1,53 @@
 <template>
-  <div>
-    <category-grid-input
-      class="category-budget-input"
-      :id="`category-move-input-${selectedCategory._id}`"
-      :data-testid="`category-move-input-${selectedCategory._id}`"
-      :value="(selectedCategory.moveAmount / 100).toString()"
-      :is-editing="isEditingValue"
-      @edit="isEditingValue = true"
-      currency
-      currency-left
-    />
-    <span class="category-radio-group">
-      <details-radio
-        :selected="selectedCategory.isMovingTo"
-        testid="details-moving-to-button"
-        @click="onMovingToClicked"
-      >
-        to
-      </details-radio>
-      <details-radio
-        class="pl-4"
-        :selected="!selectedCategory.isMovingTo"
-        testid="details-moving-from-button"
-        @click="onMovingFromClicked"
-      >
-        from
-      </details-radio>
+  <v-card flat color="background lighten-2" class="pa-2">
+    <span class="category-radio-group mb-2">
+      <category-grid-input
+        class="category-budget-input"
+        :id="`category-move-input-${selectedCategory._id}`"
+        :data-testid="`category-move-input-${selectedCategory._id}`"
+        :value="(selectedCategory.moveAmount / 100).toString()"
+        :is-editing="isEditingValue"
+        @edit="isEditingValue = true"
+        @apply="onMoveAmountApply"
+        active-background-color="background lighten-3"
+        currency
+        currency-left
+      />
+      <span>
+        <details-radio
+          :selected="selectedCategory.isMovingTo"
+          testid="details-moving-to-button"
+          @click="onMovingToClicked"
+        >
+          to
+        </details-radio>
+        <details-radio
+          class="pl-4"
+          :selected="!selectedCategory.isMovingTo"
+          testid="details-moving-from-button"
+          @click="onMovingFromClicked"
+        >
+          from
+        </details-radio>
+      </span>
     </span>
-    <category-menu 
-      :category-id="selectedCategory.moveDestination" 
-      show-balance 
+    <category-menu
+      :category-id="selectedCategory.moveDestination"
+      show-balance
       @selected="onMoveDestinationChanged"
     />
-      <div class="my-2">
-        <v-btn data-testid="details-move-save-button" elevation="0" text small block>Send</v-btn>
-      </div>
-  </div>
+    <div class="mt-2">
+      <v-btn
+        data-testid="details-move-save-button"
+        elevation="0"
+        text
+        small
+        block
+        @click="doBudgetMove"
+        >Send</v-btn
+      >
+    </div>
+  </v-card>
 </template>
 
 <script>
@@ -60,7 +72,20 @@ export default {
     ...mapGetters("categoryMonth", ["selectedCategory", "categoriesDataSortedByBalance"]),
   },
   methods: {
-    ...mapActions("categoryMonth", ["onMovingToClicked", "onMovingFromClicked", "onMoveDestinationChanged"]),
+    ...mapActions("categoryMonth", [
+      "onMovingToClicked",
+      "onMovingFromClicked",
+      "onMoveDestinationChanged",
+      "onSelectedMoveAmountChanged",
+      "doBudgetMove",
+      "syncSelectedCategory",
+    ]),
+    onMoveAmountApply(event) {
+      if (!event.target) return;
+
+      this.isEditingValue = false;
+      this.onSelectedMoveAmountChanged(parseInt(event.target.value * 100));
+    },
   },
 };
 </script>
@@ -69,8 +94,16 @@ export default {
 .category-radio-group {
   display: flex;
   flex-direction: row;
+  align-items: center;
+  width: 100%;
+}
+
+.category-radio-group > span {
+  display: flex;
+  flex-direction: row;
   /* justify-content: space-between; */
   align-items: center;
+  justify-content: end;
   width: 100%;
 }
 </style>
