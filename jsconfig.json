@@ -1,0 +1,9 @@
+{
+    "extensions": [
+        ".js",
+        ".vue"
+    ],
+    "vueCompilerOptions": {
+        "target": 2.7
+    }
+}

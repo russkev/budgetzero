@@ -1,5 +1,5 @@
 <template>
-  <v-menu offset-y>
+  <v-menu offset-y bottom>
     <template #activator="{ on: menuOn }">
       <v-tooltip bottom class="pa-0" color="transparent" :open-delay="500">
         <template #activator="{ on: tooltipOn }">

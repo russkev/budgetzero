@@ -283,6 +283,9 @@ export default {
     },
     initCategories: async ({ dispatch, rootState, getters }) => {
       const categories = await dispatch('fetchCategories')
+      if (categories.length === 0) {
+        return
+      }
       const baseIncomeIndex = categories.findIndex((category) => category._id.slice(-ID_LENGTH.category) === INCOME._id)
       if (baseIncomeIndex === -1) {
         const color = getRandomColor(getters.colorSwatches)
