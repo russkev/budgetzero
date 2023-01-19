@@ -197,13 +197,21 @@ describe('Test transactions', () => {
       cy.get('.transaction-row').should('have.length', 7)
     })
 
+    // August should have income of $2881.64 - $2300 = $581.64
+    // July should have income of $1586.79 + $2300 = $3886.79
+
     it('Checks that budget was updated correctly', () => {
       cy.get('[data-testid="sidebar-button-budgets"]').click()
 
-      cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $2,797.53 ')
-      cy.get('[data-testid="master-category-balance-fVM"]').should('contain.text', ' $2,797.53 ')
+      cy.visit('http://localhost:8082/budget/2022-08')
+      cy.get('[data-testid="working-income"]').should('have.text', '$581.64')
+      cy.get('[data-testid="previous-month-button"]').click()
+      cy.get('[data-testid="working-income"]').should('have.text', '$3,886.79')
 
-      // cy.visit('http://localhost:8082/budget/2022-07')
+
+      // cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $2,797.53 ')
+      // cy.get('[data-testid="master-category-balance-fVM"]').should('contain.text', ' $2,797.53 ')
+
       // cy.get('[data-testid="category-spent-gpe"]').should('have.text', ' $3,886.79 ')
       // cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $2,386.79 ')
 

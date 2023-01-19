@@ -1,16 +1,16 @@
 <template>
   <div class="header-balance-grid ml-5">
     <div></div>
-    <div :class="carryoverColor">{{ intlCurrency.format(lastMonth / 100) }}</div>
+    <div :class="carryoverColor" data-testid="working-carryover">{{ intlCurrency.format(lastMonth / 100) }}</div>
     <div>Carryover</div>
     <div>+</div>
-    <div :class="incomeColor">{{ intlCurrency.format(income / 100) }}</div>
+    <div :class="incomeColor" data-testid="working-income">{{ intlCurrency.format(income / 100) }}</div>
     <div>Income</div>
     <div>-</div>
-    <div :class="spentColor">{{ intlCurrency.format(spent / 100) }}</div>
+    <div :class="spentColor" data-testid="working-spent">{{ intlCurrency.format(spent / 100) }}</div>
     <div>Spent</div>
     <div>{{ addBudgeted ? "+" : "-" }}</div>
-    <div :class="budgetedColor">{{ intlCurrency.format(budgeted / 100) }}</div>
+    <div :class="budgetedColor" data-testid="working-budgeted">{{ intlCurrency.format(budgeted / 100) }}</div>
     <div>Budgeted</div>
     <div class="font-weight-bold">=</div>
     <div :class="`font-weight-medium text-h6 ${balanceColor}`">{{ intlCurrency.format(available / 100) }}</div>
