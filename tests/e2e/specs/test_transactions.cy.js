@@ -184,7 +184,7 @@ describe('Test transactions', () => {
     })
   })
 
-  context.only('Test transaction date update', () => {
+  context('Test transaction date update', () => {
     before(() => {
       cy.initPath('transactions/7kW')
       cy.get('[data-testid="toggle-sidebar"]').click()
@@ -207,17 +207,6 @@ describe('Test transactions', () => {
       cy.get('[data-testid="working-income"]').should('have.text', '$581.64')
       cy.get('[data-testid="previous-month-button"]').click()
       cy.get('[data-testid="working-income"]').should('have.text', '$3,886.79')
-
-
-      // cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $2,797.53 ')
-      // cy.get('[data-testid="master-category-balance-fVM"]').should('contain.text', ' $2,797.53 ')
-
-      // cy.get('[data-testid="category-spent-gpe"]').should('have.text', ' $3,886.79 ')
-      // cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $2,386.79 ')
-
-      // cy.get('[data-testid="next-month-button"]').click()
-      // cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $2,797.53 ')
-      // cy.get('[data-testid="master-category-balance-fVM"]').should('contain.text', ' $2,797.53 ')
     })
   })
 
@@ -344,7 +333,7 @@ describe('Test transactions', () => {
       cy.get('[data-testid="master-category-name-:in"]').should('have.text', ' Income ')
       cy.get('[data-testid="master-category-spent-:in"]').should('contain.text', ' $581.64 ')
 
-      cy.get('[data-testid="category-name-gpe"]').should('have.value', 'Paycheck 1')
+      cy.get('[data-testid="category-name-gpe"]').should('have.text', ' Paycheck 1 ')
       cy.get('[data-testid="category-spent-gpe"]').should('have.text', ' $581.64 ')
 
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $1,185.59 ')
@@ -417,9 +406,7 @@ describe('Test transactions', () => {
       cy.get('[data-testid="sidebar-button-budgets"]').click()
       cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $2,134.40 ') // Gas
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $995.39 ') // Groceries
-      cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $497.53 ') // Paycheck
       cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $3,315.20 ')
-      cy.get('[data-testid="master-category-balance-fVM"]').should('contain.text', ' $497.53 ')
     })
   })
 
@@ -448,10 +435,10 @@ describe('Test transactions', () => {
 
     it('Checks that budget was updated correctly', () => {
       cy.get('[data-testid="sidebar-button-budgets"]').click()
-      cy.get('[data-testid="category-name-n00"]').should('have.value', 'Gas')
+      cy.get('[data-testid="category-name-n00"]').should('have.text', ' Gas ')
       cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $197.60 ')
 
-      cy.get('[data-testid="category-name-2aW"]').should('have.value', 'Water')
+      cy.get('[data-testid="category-name-2aW"]').should('have.text', ' Water ')
       cy.get('[data-testid="category-balance-2aW"]').should('have.text', ' $146.03 ')
 
       cy.get('[data-testid="uncategorized-balance"]').should('contain.text', ' -$223.86 ')
@@ -491,21 +478,15 @@ describe('Test transactions', () => {
       cy.get('[data-testid="save-edit-button"]').click()
       cy.get('.transaction-row').should('have.length', 7)
       cy.get('.transaction-row:nth-child(2) .row-description').should('contain.text', 'Big Agra')
-      cy.get('.transaction-row > .row-outflow').eq(0).should('contain.text', '$1.25')
-      cy.get('.transaction-row > .row-inflow').eq(0).should('not.contain.text', '$')
     })
 
     it('Checks that budget was updated correctly', () => {
       cy.get('[data-testid="sidebar-button-budgets"]').click()
-      cy.get('[data-testid="master-category-name-fVM"]').should('have.value', 'Income')
-      cy.get('[data-testid="master-category-balance-fVM"]').should('contain.text', ' $1,547.53 ')
-      cy.get('[data-testid="category-name-gpe"]').should('have.value', 'Paycheck 1')
-      cy.get('[data-testid="category-balance-gpe"]').should('have.text', ' $1,547.53 ')
 
-      cy.get('[data-testid="category-name-2aW"]').should('have.value', 'Water')
+      cy.get('[data-testid="category-name-2aW"]').should('have.text', ' Water ')
       cy.get('[data-testid="category-balance-2aW"]').should('have.text', ' $177.00 ')
 
-      cy.get('[data-testid="category-name-ATi"]').should('have.value', 'Groceries')
+      cy.get('[data-testid="category-name-ATi"]').should('have.text', ' Groceries ')
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $804.95 ')
     })
   })

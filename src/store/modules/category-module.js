@@ -611,9 +611,9 @@ export default {
       let category_balances = []
       if (current) {
         if (current.splits && isArray(current.splits) && current.splits.length > 0) {
-          const master = getters.masterCategoriesByCategoryId[split.category]
-          const master_id = master._id.slice(-ID_LENGTH.category)
           const this_result = current.splits.map((split) => {
+            const master = getters.masterCategoriesByCategoryId[split.category]
+            const master_id = master._id.slice(-ID_LENGTH.category)
             return {
               account: account,
               month: current_month,
