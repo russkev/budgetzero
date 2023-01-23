@@ -43,9 +43,7 @@
           @click="onNewCategory(masterCategory)"
         >
           <v-icon small class="ma-1" color="secondary lighten-3">mdi-plus</v-icon>
-          <span class="secondary--text text--lighten-3">
-            New Category
-          </span>
+          <span class="secondary--text text--lighten-3"> New Category </span>
         </v-btn>
       </v-col>
     </v-row>
@@ -53,130 +51,127 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import draggable from "vuedraggable";
-import { nextTick } from "vue";
-import CategoryHide from "./CategoryHide.vue";
+import { mapGetters, mapActions } from 'vuex'
+import draggable from 'vuedraggable'
+import { nextTick } from 'vue'
+import CategoryHide from './CategoryHide.vue'
 
 export default {
   props: {
     masterCategory: {
       type: Object,
-      default: {},
+      default: {}
     },
     nameCols: {
       type: Number,
-      default: 5,
+      default: 5
     },
     hideBudgeted: {
       type: Boolean,
-      default: false,
+      default: false
     },
     hideSpent: {
       type: Boolean,
-      default: false,
+      default: false
     },
     hideBalance: {
       type: Boolean,
-      default: false,
+      default: false
     },
     isIncome: {
       type: Boolean,
-      default: false,
+      default: false
     },
     freezeFirstRow: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   components: {
     draggable,
-    CategoryHide,
+    CategoryHide
   },
   data() {
     return {
       draggableCategoriesData: [],
       offset: this.freezeFirstRow ? 1 : 0,
-      counter: 0,
-    };
+      counter: 0
+    }
   },
   watch: {
     categoriesData: {
       handler: function (val) {
         this.updateDraggableCategories(val)
       },
-      deep: true,
-    },
+      deep: true
+    }
   },
   created() {
     this.updateDraggableCategories(this.categoriesData)
   },
   computed: {
-    ...mapGetters(["categories", "categoriesById"]),
-    ...mapGetters("categoryMonth", [
-      "editedCategoryBudgetId",
-      "editedCategoryNameId",
-      "categoriesData",
-    ]),
+    ...mapGetters(['categories', 'categoriesById']),
+    ...mapGetters('categoryMonth', ['editedCategoryBudgetId', 'editedCategoryNameId', 'categoriesData']),
     draggableCategories: {
       get() {
-        return this.draggableCategoriesData;
+        return this.draggableCategoriesData
       },
       set(value) {
-        this.draggableCategoriesData = value;
-        this.counter += 1;
+        this.draggableCategoriesData = value
+        this.counter += 1
         const updated_categories = value.reduce((partial, category_data, index) => {
-          const previous = this.categoriesById[category_data._id];
+          const previous = this.categoriesById[category_data._id]
           if (!previous) {
-            console.warn("Category not found in categoriesById", category_data._id);
-            return partial;
+            console.warn('Category not found in categoriesById', category_data._id)
+            return partial
           }
           const current = {
             ...previous,
             sort: index + this.offset,
-            masterCategory: this.masterCategory._id,
-          };
-          partial.push({ current, previous });
-          return partial;
-        }, []);
-        this.commitBulkDocsToPouchAndVuex(updated_categories);
-      },
+            masterCategory: this.masterCategory._id
+          }
+          partial.push({ current, previous })
+          return partial
+        }, [])
+        this.commitBulkDocsToPouchAndVuex(updated_categories)
+      }
     },
     frozenCategory() {
       if (this.freezeFirstRow && this.categoriesData[this.masterCategory._id].length > 0) {
-        return this.categoriesData[this.masterCategory._id][0];
+        return this.categoriesData[this.masterCategory._id][0]
       } else {
-        return null;
+        return null
       }
-    },
+    }
   },
   methods: {
-    ...mapActions("categoryMonth", ["onCategoryOrderChanged", "newCategory"]),
-    ...mapActions(["commitBulkDocsToPouchAndVuex"]),
+    ...mapActions('categoryMonth', ['onCategoryOrderChanged', 'newCategory']),
+    ...mapActions(['commitBulkDocsToPouchAndVuex']),
     onNewCategory(master_category) {
       this.newCategory(master_category).then((id) => {
-        const element_id = `category-name-input-${id}`;
+        const element_id = `category-name-input-${id}`
+        console.log('element_id', element_id)
 
         nextTick(() => {
-          const new_element = document.getElementById(element_id);
+          const new_element = document.getElementById(element_id)
           if (!new_element) {
-            return;
+            return
           }
-          new_element.focus();
-          new_element.select();
-        });
-      });
+          new_element.focus()
+          new_element.select()
+        })
+      })
     },
     updateDraggableCategories(categoriesData) {
-      const data = categoriesData[this.masterCategory._id];
+      const data = categoriesData[this.masterCategory._id]
       if (data) {
-        this.draggableCategoriesData = data.slice(this.offset);
+        this.draggableCategoriesData = data.slice(this.offset)
       } else {
-        return [];
+        return []
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style>

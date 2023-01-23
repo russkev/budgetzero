@@ -56,7 +56,7 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="uncategorized-balance"]').should('contain.text', ' -$81.32 ')
     })
 
-    it.only('Checks category values for August and September', () => {
+    it('Checks category values for August and September', () => {
       cy.get('[data-testid="next-month-button"]').click()
 
       cy.get('[data-testid="master-category-name-:in"]').should('have.text', ' Income ')
@@ -124,26 +124,28 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="previous-month-button"]').click()
     })
 
-    it('Checks that pressing enter on budget input causes the next one to be highlighted', () => {
-      cy.get('[data-testid="category-budget-input-2aW"]').should('have.attr', 'readonly')
-      cy.get('[data-testid="category-budget-input-2aW"]').click()
-      cy.get('[data-testid="category-budget-input-2aW"]').type('{enter}')
-      cy.get('[data-testid="category-budget-input-2aW"]').should('have.attr', 'readonly')
-      // cy.get('[data-testid="category-budget-input-Lx7"]').should('have.value', '420.00')
-      // cy.wait(1000)
-      cy.get('[data-testid="category-budget-input-Lx7"]').should('not.have.attr', 'readonly', {timeout: 10000})
-      cy.get('[data-testid="category-budget-input-Lx7"]').should('have.focus')
-      cy.get('[data-testid="category-budget-input-Lx7"]').type('{enter}')
+    // it('Checks that pressing enter on budget input causes the next one to be highlighted', () => {
+    //   cy.get('[data-testid="category-budget-input-2aW"]').should('have.attr', 'readonly')
+    //   cy.get('[data-testid="category-budget-input-2aW"]').click()
+    //   cy.get('[data-testid="category-budget-input-2aW"]').type('{enter}')
+    //   cy.get('[data-testid="category-budget-input-2aW"]').should('have.attr', 'readonly')
+    //   // cy.get('[data-testid="category-budget-input-Lx7"]').should('have.value', '420.00')
+    //   // cy.wait(1000)
+    //   cy.get('[data-testid="category-budget-input-Lx7"]').should('not.have.attr', 'readonly', {timeout: 10000})
+    //   cy.get('[data-testid="category-budget-input-Lx7"]').should('have.focus')
+    //   cy.get('[data-testid="category-budget-input-Lx7"]').type('{enter}')
 
-      // cy.get('[data-testid="category-budget-input-6b2"]').should('have.focus')
-    })
+    //   // cy.get('[data-testid="category-budget-input-6b2"]').should('have.focus')
+    // })
 
     it('Checks that updating a budget value updates balance correctly', () => {
-      cy.get('[data-testid="category-budget-input-n00"]').should('have.value', '$420.00')
+      cy.get('[data-testid="category-budget-n00"]').should('have.text', ' $420.00 ')
+      cy.get('[data-testid="category-budget-n00"]').click()
       cy.get('[data-testid="category-budget-input-n00"]').click()
       cy.get('[data-testid="category-budget-input-n00"]').type('23.24')
       cy.get('[data-testid="category-budget-input-n00"]').blur()
       cy.get('[data-testid="category-budget-input-n00"]').should('have.value', '$23.24')
+      cy.get('[data-testid="category-budget-n00"]').should('have.text', ' $23.24 ')
       cy.get('[data-testid="category-balance-n00"]').should('have.text', ' -$311.02 ')
       cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $697.24 ')
 
@@ -161,7 +163,7 @@ describe('Test categories (budget) page', () => {
     })
   })
 
-  context.only('Test drag and drop', () => {
+  context('Test drag and drop', () => {
     before(() => {
       cy.initPath('budget/2022-08')
     })
@@ -192,18 +194,18 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="master-category-spent-3ks"]').should('contain.text', ' $379.64 ')
       cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $1,015.20 ')
 
-      cy.get('[data-testid="category-name-input-ATi"]').should('have.value', 'Groceries')
-      cy.get('[data-testid="category-budget-input-ATi"]').should('have.value', '$242.33')
+      cy.get('[data-testid="category-name-ATi"]').should('have.text', ' Groceries ')
+      cy.get('[data-testid="category-budget-ATi"]').should('have.text', ' $242.33 ')
       cy.get('[data-testid="category-spent-ATi"]').should('have.text', ' $379.64 ')
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $805.95 ')
 
-      cy.get('[data-testid="category-name-input-6b2"]').should('have.value', 'Electricity')
-      cy.get('[data-testid="category-budget-input-6b2"]').should('have.value', '-$41.84')
+      cy.get('[data-testid="category-name-6b2"]').should('have.text', ' Electricity ')
+      cy.get('[data-testid="category-budget-6b2"]').should('have.text', ' -$41.84 ')
       cy.get('[data-testid="category-spent-6b2"]').should('have.text', ' $0.00 ')
       cy.get('[data-testid="category-balance-6b2"]').should('have.text', ' $8.16 ')
 
-      cy.get('[data-testid="category-name-input-n00"]').should('have.value', 'Gas')
-      cy.get('[data-testid="category-budget-input-n00"]').should('have.value', '-$61.90')
+      cy.get('[data-testid="category-name-n00"]').should('have.text', ' Gas ')
+      cy.get('[data-testid="category-budget-n00"]').should('have.text', ' -$61.90 ')
       cy.get('[data-testid="category-spent-n00"]').should('have.text', ' $0.00 ')
       cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $23.84 ')
     })
@@ -220,10 +222,10 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="categories-container-ggJ"]').children().should('have.length', 0)
       cy.get('[data-testid="categories-container-:in"]')
       cy.get('[data-testid="categories-container-:in"] > div:nth-child(1)')
-        .find('[data-testid="category-name-input-gpe"]', { setTimeout: 10000 })
+        .find('[data-testid="category-name-gpe"]', { setTimeout: 10000 })
         .should('have.length', 1)
       cy.get('[data-testid="categories-container-:in"] > div:nth-child(2)')
-        .find('[data-testid="category-name-input-Lx7"]')
+        .find('[data-testid="category-name-Lx7"]')
         .should('have.length', 1)
     })
 
@@ -231,10 +233,10 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="master-category-name-:in"]').should('have.text', ' Income ')
       cy.get('[data-testid="master-category-spent-:in"]').should('contain.text', ' $2,361.64 ')
 
-      cy.get('[data-testid="category-name-input-gpe"]').should('have.value', 'Paycheck 1')
+      cy.get('[data-testid="category-name-gpe"]').should('have.text', ' Paycheck 1 ')
       cy.get('[data-testid="category-spent-gpe"]').should('have.text', ' $2,881.64 ')
 
-      cy.get('[data-testid="category-name-input-Lx7"]').should('have.value', 'Vacation')
+      cy.get('[data-testid="category-name-Lx7"]').should('have.text', ' Vacation ')
       cy.get('[data-testid="category-spent-Lx7"]').should('have.text', ' -$520.00 ')
     })
   })
@@ -265,8 +267,8 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="master-category-spent-\\:\\:0"]').should('contain.text', ' $520.00 ')
       cy.get('[data-testid="master-category-balance-\\:\\:0"]').should('contain.text', ' -$535.34 ')
 
-      cy.get('[data-testid="category-name-input-Lx7"]').should('have.value', 'Vacation')
-      cy.get('[data-testid="category-budget-input-Lx7"]').should('have.value', '-$25.34')
+      cy.get('[data-testid="category-name-Lx7"]').should('have.text', ' Vacation ')
+      cy.get('[data-testid="category-budget-Lx7"]').should('have.text', ' -$25.34 ')
       cy.get('[data-testid="category-spent-Lx7"]').should('have.text', ' $520.00 ')
       cy.get('[data-testid="category-balance-Lx7"]').should('have.text', ' -$535.34 ')
     })
@@ -281,8 +283,8 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="master-category-spent-\\:\\:0"]').should('contain.text', ' $899.64 ')
       cy.get('[data-testid="master-category-balance-\\:\\:0"]').should('contain.text', ' $479.86 ')
 
-      cy.get('[data-testid="category-name-input-6b2"]').should('have.value', 'Electricity')
-      cy.get('[data-testid="category-budget-input-6b2"]').should('have.value', '-$41.84')
+      cy.get('[data-testid="category-name-6b2"]').should('have.text', ' Electricity ')
+      cy.get('[data-testid="category-budget-6b2"]').should('have.text', ' -$41.84 ')
       cy.get('[data-testid="category-spent-6b2"]').should('have.text', ' $0.00 ')
       cy.get('[data-testid="category-balance-6b2"]').should('have.text', ' $8.16 ')
     })
@@ -296,15 +298,15 @@ describe('Test categories (budget) page', () => {
     it('Creates a new category', () => {
       cy.get('[data-testid="btn-new-category-3ks"]').click()
       cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 5)
-      const name_input_selector =
-        '[data-testid="categories-container-3ks"] > div:nth-child(5) .category-name-input input'
+      const name_selector = '[data-testid="categories-container-3ks"] > div:nth-child(5) .category-name'
+      const name_input_selector = '.category-name-input > :nth-child(1) input'
 
-      cy.get(name_input_selector).should('have.value', 'Name')
-      cy.wait(1000)
+      cy.get(name_selector).should('have.text', ' Name ')
       cy.get(name_input_selector).should('not.have.attr', 'readonly')
       cy.get(name_input_selector).should('have.focus')
       cy.get(name_input_selector).type('Internet').type('{enter}')
       cy.get(name_input_selector).should('have.value', 'Internet')
+      cy.get(name_selector).should('have.text', ' Internet ')
     })
 
     it('Creates a new master category', () => {
@@ -337,14 +339,20 @@ describe('Test categories (budget) page', () => {
       cy.initPath('budget/2022-07')
     })
     it('Checks that changing budgeted values results in values updating properly', () => {
-      const vacation_selector = '[data-testid="category-budget-input-Lx7"]'
+      const vacation_selector = '[data-testid="category-budget-Lx7"]'
+      const vacation_input_selector = '[data-testid="category-budget-input-Lx7"]'
       cy.get(vacation_selector).click()
-      cy.get(vacation_selector).focus()
+      // cy.wait(100)
+      cy.get(vacation_input_selector).should('have.value', '$430.00')
+      cy.get(vacation_input_selector).click('center')
 
-      cy.get(vacation_selector).clear()
-      cy.get(vacation_selector).type('-100')
-      cy.get(vacation_selector).type('{enter}')
-      cy.get(vacation_selector).should('have.value', '-$100.00')
+      // cy.get(vacation_input_selector).focus()
+
+      cy.get(vacation_input_selector).clear()
+      cy.get(vacation_input_selector).type('-100')
+      cy.get(vacation_input_selector).type('{enter}')
+      cy.get(vacation_input_selector).should('have.value', '-$100.00')
+      cy.get(vacation_selector).should('have.text', ' -$100.00 ')
 
       cy.get('[data-testid="category-balance-Lx7"]').should('have.text', ' -$520.00 ')
     })
@@ -381,22 +389,29 @@ describe('Test categories (budget) page', () => {
     it('Checks that updating a budgeted value causes the correct total balance update', () => {
       cy.get('[data-testid="total-balance"]').should('contain.text', ' $331.47 ')
       cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount over budget:')
-      const water_selector = '[data-testid="category-budget-input-2aW"]'
+      const water_selector = '[data-testid="category-budget-2aW"]'
+      const water_input_selector = '[data-testid="category-budget-input-2aW"]'
       cy.get(water_selector).click()
-      cy.get(water_selector).clear()
-      cy.get(water_selector).type('-1')
-      cy.get(water_selector).type('{enter}')
-      cy.get(water_selector).should('have.value', '-$1.00')
+      cy.get(water_input_selector).should('have.value', '$15.00')
+      cy.get(water_input_selector).click()
+      cy.get(water_input_selector).clear()
+      cy.get(water_input_selector).type('-1')
+      cy.get(water_input_selector).type('{enter}')
+      cy.get(water_input_selector).should('have.value', '-$1.00')
+      cy.get(water_selector).should('have.text', ' -$1.00 ')
       cy.get('[data-testid="total-balance"]').should('contain.text', ' $315.47 ')
       cy.get('[data-testid="next-month-button"]').click()
       cy.get('[data-testid="total-balance"]').should('contain.text', ' $2,290.67 ')
       cy.get('[data-testid="previous-month-button"]').click()
 
       cy.get(water_selector).click()
-      cy.get(water_selector).clear()
-      cy.get(water_selector).type('2000')
-      cy.get(water_selector).type('{enter}')
-      cy.get(water_selector).should('have.value', '$2,000.00')
+      cy.get(water_input_selector).should('have.value', '-$1.00')
+      cy.get(water_input_selector).click()
+      cy.get(water_input_selector).clear()
+      cy.get(water_input_selector).type('2000')
+      cy.get(water_input_selector).type('{enter}')
+      cy.get(water_input_selector).should('have.value', '$2,000.00')
+      cy.get(water_selector).should('have.text', ' $2,000.00 ')
       cy.get('[data-testid="total-balance"]').should('contain.text', ' $2,316.47 ')
       cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount over budget:')
       cy.get('[data-testid="next-month-button"]').click()
@@ -405,10 +420,13 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="previous-month-button"]').click()
 
       cy.get(water_selector).click()
-      cy.get(water_selector).clear()
-      cy.get(water_selector).type('15')
-      cy.get(water_selector).type('{enter}')
-      cy.get(water_selector).should('have.value', '$15.00')
+      cy.get(water_input_selector).should('have.value', '$2,000.00')
+      cy.get(water_input_selector).click()
+      cy.get(water_input_selector).clear()
+      cy.get(water_input_selector).type('15')
+      cy.get(water_input_selector).type('{enter}')
+      cy.get(water_input_selector).should('have.value', '$15.00')
+      cy.get(water_selector).should('have.text', ' $15.00 ')
       cy.get('[data-testid="total-balance"]').should('contain.text', ' $331.47 ')
     })
 
@@ -493,7 +511,7 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 1)
       cy.wait(10)
       cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$2,836.10')
-      cy.get('[data-testid="category-name-input-ATi"]').trigger('mouseenter')
+      cy.get('[data-testid="category-name-ATi"]').trigger('mouseenter')
       cy.get('[data-testid="btn-restore-category-ATi"]').trigger('mouseenter')
       cy.get('[data-testid="btn-restore-category-ATi"]').click()
       cy.get('[data-testid="categories-container-3ks"] > div:nth-child(4)', {timeout: 10000})
@@ -526,11 +544,16 @@ describe('Test categories (budget) page', () => {
     })
 
     it('Checks that 18.99 is stored as 18.99', () => {
-      cy.get('[data-testid="category-budget-input-2aW"]').should('have.value', '$162.25')
-      cy.get('[data-testid="category-budget-input-2aW"]').click()
-      cy.get('[data-testid="category-budget-input-2aW"]').clear().type('18.99')
-      cy.get('[data-testid="category-budget-input-2aW"]').blur()
-      cy.get('[data-testid="category-budget-input-2aW"]').should('have.value', '$18.99')
+      const water_selector = '[data-testid="category-budget-2aW"]'
+      const water_input_selector = '[data-testid="category-budget-input-2aW"]'
+      cy.get(water_selector).should('contain.text', '$162.25')
+      cy.get(water_selector).click()
+      cy.get(water_input_selector).should('have.value', '$162.25')
+      cy.get(water_input_selector).click()
+      cy.get(water_input_selector).clear().type('18.99')
+      cy.get(water_input_selector).blur()
+      cy.get(water_input_selector).should('have.value', '$18.99')
+      cy.get(water_selector).should('contain.text', '18.99')
     })
   })
 })

@@ -343,7 +343,8 @@ export default {
         sort: sort_length
       })
       await context.dispatch('commitDocToPouchAndVuex', { current: category, previous: null })
-      return category._id.slice(-ID_LENGTH.category)
+      // return category._id.slice(-ID_LENGTH.category)
+      return category
     },
 
     masterCategoryDocument: async ({ rootState, getters, dispatch }, { name, sort }) => {

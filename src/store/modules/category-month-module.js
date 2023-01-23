@@ -446,9 +446,13 @@ export default {
         return id
       })
     },
-    newCategory({ commit, dispatch }, master_category) {
-      return dispatch('createCategory', { name: 'Name', master_id: master_category._id }, { root: true }).then((id) => {
+    newCategory({ commit, dispatch, getters }, master_category) {
+      return dispatch('createCategory', { name: 'Name', master_id: master_category._id }, { root: true })
+      .then((new_category) => {
+        const id = new_category._id.slice(-ID_LENGTH.category)
+        console.log('newCategory', getters.categoriesDataById[id])
         commit('SET_EDITED_CATEGORY_NAME_ID', id)
+        dispatch('selectCategory',  getters.categoriesDataById[id])
         return id
       })
     },

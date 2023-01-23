@@ -19,7 +19,7 @@
         </v-sheet>
         <v-col class="pa-0 ma-0">
           <v-row class="ma-0 pa-0">
-            <v-col :cols="nameCols" class="pa-0 ma-0 my-1" :data-testid="`category-name-${category._id}`">
+            <v-col :cols="nameCols" class="category-name pa-0 ma-0 my-1" :data-testid="`category-name-${category._id}`">
               <row-element-wrapper @click="onCategoryDetailsClick" class="mr-1">
                 {{ category.name }}
               </row-element-wrapper>
