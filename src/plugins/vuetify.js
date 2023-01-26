@@ -2,6 +2,8 @@
 import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 import { hslStringToHex } from '../helper'
+import ZeroIcon from '../components/Icons/zero.vue'
+import ZeroIconSmall from "../components/Icons/zerosmall.vue"
 
 Vue.use(Vuetify)
 
@@ -48,6 +50,13 @@ export default new Vuetify({
     dark: true,
     options: {
       customProperties: true
+    }
+  },
+  icons: {
+    values: {
+      custom: {
+        component: ZeroIcon,
+      },
     }
   }
 })
