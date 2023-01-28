@@ -17,80 +17,119 @@
         <zero-text-only />
       </v-list-item-title>
     </v-list-item>
-    <v-list flat :class="mini ? 'ml-0 pl-0' : 'ml-3'">
-      <v-list-item class="ml-0" :to="{ path: `/budget/${selectedMonth}` }" data-testid="sidebar-button-budgets">
-        <v-list-item-icon>
-          <v-icon> mdi-shape </v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title class="text-h6"> Categories </v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-
-      <v-list-group prepend-icon="mdi-wallet" :value="true">
-        <template v-slot:activator>
-          <v-list-item-content>
-            <v-list-item-title class="text-h6"> Accounts </v-list-item-title>
-            <v-list-item-subtitle>{{ onBudgetTotal }}</v-list-item-subtitle>
-          </v-list-item-content>
+    <!-- <v-list flat :class="mini ? 'ml-0 pl-0' : 'ml-3'"> -->
+    <sidebar-list :mini="mini">
+      <sidebar-nav-item
+        :destination="{ path: `/budget/${selectedMonth}` }"
+        dataTestid="sidebar-button-budgets"
+        id="nav-categories"
+        :focused-id="focusedId"
+        icon="mdi-shape-outline"
+        icon-active="mdi-shape"
+      >
+        Categories
+      </sidebar-nav-item>
+    </sidebar-list>
+    <sidebar-account-group
+      title="Accounts"
+      :account-total="onBudgetTotal"
+      icon="mdi-wallet-outline"
+      icon-active="mdi-wallet"
+      :focused-id="focusedId"
+      id="sidebar-group-accounts"
+      data-test-id="sidebar-group-accounts"
+      :child-is-selected="isOnTransactionsOnBudgetPage"
+      :mini="mini"
+    >
+      <draggable handle=".handle" group="accounts" v-model="draggableOnBudget">
+        <template v-for="account in accountsOnBudget">
+          <sidebar-account
+            :key="account._id"
+            :account="account"
+            :focused-id="focusedId"
+            :destination="{ path: `/transactions/${account._id.slice(-ID_LENGTH.account)}` }"
+            :data-testid="`transactions-page-${account._id.slice(-ID_LENGTH.account)}`"
+            :id="`nav-account-${account._id.slice(-ID_LENGTH.account)}`"
+          />
         </template>
-        <v-list-item
-          v-for="account in accountsOnBudget"
-          :key="account._id"
-          active-class="active-sidebar-item"
-          :to="{ path: `/transactions/${account._id.slice(-ID_LENGTH.account)}` }"
-          :data-testid="`transactions-page-${account._id.slice(-ID_LENGTH.account)}`"
-          dense
-          :ripple="false"
-        >
-          <v-list-item-avatar color="secondary darken-1" size="24">
-            {{ account.name.slice(0, 2) }}
-          </v-list-item-avatar>
-          <v-list-item-content class="ml-5">
-            <v-list-item-title class="text-h5">
-              {{ account.name }}
-            </v-list-item-title>
-            <v-list-item-subtitle> {{ getAccountTotal(account) }}</v-list-item-subtitle>
-          </v-list-item-content>
-          <!-- <v-list-item-subtitle> -->
-          <!-- {{ intlCurrency.format(accountTotals[account._id.slice(-ID_LENGTH.account)] / 100) }} -->
-          <!-- $34.50 -->
-          <!-- </v-list-item-subtitle> -->
-          <!-- <v-list-item-subtitle>$1.50</v-list-item-subtitle> -->
-        </v-list-item>
-      </v-list-group>
-
-      <v-list-item>
-        <v-list-item-icon>
-          <v-icon> mdi-piggy-bank </v-icon>
-        </v-list-item-icon>
-        <v-list-item-content>
-          <v-list-item-title>Untracked</v-list-item-title>
-        </v-list-item-content>
-      </v-list-item>
-    </v-list>
+      </draggable>
+    </sidebar-account-group>
+    <sidebar-account-group
+      title="Untracked"
+      :account-total="offBudgetTotal"
+      icon="mdi-piggy-bank-outline"
+      icon-active="mdi-piggy-bank"
+      :focused-id="focusedId"
+      id="sidebar-group-untracked"
+      data-test-id="sidebar-group-untracked"
+      :child-is-selected="isOnTransactionsOffBudgetPage"
+      :mini="mini"
+    >
+      <draggable handle=".handle" group="accounts">
+        <template v-for="account in accountsOffBudget">
+          <sidebar-account
+            :key="account._id"
+            :account="account"
+            :focused-id="focusedId"
+            :destination="{ path: `/transactions/${account._id.slice(-ID_LENGTH.account)}` }"
+            :data-testid="`transactions-page-${account._id.slice(-ID_LENGTH.account)}`"
+            :id="`nav-account-${account._id.slice(-ID_LENGTH.account)}`"
+          />
+        </template>
+      </draggable>
+    </sidebar-account-group>
   </v-navigation-drawer>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { ID_LENGTH } from '../../constants'
+import draggable from 'vuedraggable'
 import ZeroIconWithText from '../Icons/zerowithtext.vue'
 import ZeroTextOnly from '../Icons/zerotextonly.vue'
+import SidebarNavItem from './SidebarNavItem.vue'
+import SidebarAccount from './SidebarAccount.vue'
+import SidebarAccountGroup from './SidebarAccountGroup.vue'
+import SidebarList from './SidebarList.vue'
 
 export default {
   name: 'Sidebar',
   components: {
     ZeroIconWithText,
-    ZeroTextOnly
+    ZeroTextOnly,
+    SidebarNavItem,
+    SidebarAccount,
+    SidebarAccountGroup,
+    SidebarList,
+    draggable
   },
   data() {
     return {
-      ID_LENGTH
+      ID_LENGTH,
+      focusedId: '',
+      draggableOnBudgetData: []
     }
   },
+  watch: {
+    accountsOnBudget: {
+      handler: function (val) {
+        this.draggableOnBudgetData = val
+      },
+      deep: true
+    }
+  },
+  created() {
+    this.draggableOnBudgetData = this.accountsOnBudget
+  },
   computed: {
-    ...mapGetters(['accountsOnBudget', 'accounts', 'intlCurrency', 'allAccountBalances']),
+    ...mapGetters([
+      'accountsOnBudget',
+      'accountsOffBudget',
+      'accountsById',
+      'accounts',
+      'intlCurrency',
+      'allAccountBalances'
+    ]),
     ...mapGetters('categoryMonth', ['selectedMonth']),
     mini() {
       return this.$vuetify.breakpoint.mdAndDown
@@ -116,11 +155,58 @@ export default {
     },
     onBudgetTotal() {
       return this.intlCurrency.format(this.accountTotals.on_budget / 100)
+    },
+    offBudgetTotal() {
+      return this.intlCurrency.format(this.accountTotals.off_budget / 100)
+    },
+    isOnTransactionsOnBudgetPage() {
+      const id = this.$route.params.account_id
+      const account = this.accountsById[id]
+      return account && account.onBudget
+    },
+    isOnTransactionsOffBudgetPage() {
+      const id = this.$route.params.account_id
+      const account = this.accountsById[id]
+      return account && !account.onBudget
+    },
+    draggableOnBudget: {
+      get() {
+        return this.draggableOnBudgetData
+      },
+      set(dragged_accounts) {
+        this.draggableOnBudgetData = dragged_accounts
+        const updated_accounts = dragged_accounts.map((previous, index) => {
+          const current = {
+            ...previous,
+            sort: index
+          }
+          return { current, previous }
+        })
+        this.commitBulkDocsToPouchAndVuex(updated_accounts)
+      }
     }
   },
+  created() {
+    console.log('created')
+    document.addEventListener('focusin', this.onFocusIn)
+    document.addEventListener('focusout', this.onFocusOut)
+    // document.addEventListener('mouseover', this.onFocusIn)
+    // document.addEventListener('mouseout', this.onFocusOut)
+  },
+  beforeDestroy() {
+    console.log('beforeDestroy')
+    document.removeEventListener('focusin', this.onFocusIn)
+  },
   methods: {
+    ...mapActions(['commitBulkDocsToPouchAndVuex']),
     getAccountTotal(account) {
       return this.intlCurrency.format(this.accountTotals[account._id.slice(-ID_LENGTH.account)] / 100)
+    },
+    onFocusIn(event) {
+      this.focusedId = event.target.id
+    },
+    onFocusOut() {
+      this.focusedId = ''
     }
   }
 }
@@ -139,10 +225,33 @@ export default {
   margin-right: 24px !important;
 }
 
-.active-sidebar-item {
-  /* background-color: var(--v-background-darken2) !important; */
-  /* background-color: black; */
-  /* background-color: transparent; */
-  color: red !important;
+.sidebar-item,
+.sidebar-group .v-list-group__header {
+  margin-left: 3px;
+}
+
+.sidebar-item:hover,
+.sidebar-item:focus,
+.sidebar-group .v-list-group__header:hover,
+.sidebar-group .v-list-group__header:focus {
+  color: var(--v-secondary-lighten2) !important;
+  background-color: var(--v-background-lighten2) !important;
+}
+
+.active-sidebar-item,
+.sidebar-group-active .v-list-group__header {
+  color: var(--v-secondary-lighten2) !important;
+  border-left: 3px solid var(--v-secondary-lighten2);
+  margin-left: 0px;
+}
+
+.v-list-item__icon {
+  margin-top: auto !important;
+  margin-bottom: auto !important;
+}
+
+.header-sidebar-item.v-list-item,
+.v-list-group__header {
+  min-height: 48px !important;
 }
 </style>

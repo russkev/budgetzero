@@ -24,7 +24,13 @@ export default {
       }, {})
     },
     accountsOnBudget: (state) => {
-      return state.accounts.filter((account) => account.onBudget)
+      return state.accounts
+      .filter((account) => account.onBudget)
+      .sort((a, b) => {
+        if (a.sort !== undefined && b.sort !== undefined) {
+          return a.sort - b.sort
+        } else return 0
+      })
     },
     accountsOffBudget: (state) => {
       return state.accounts.filter((account) => !account.onBudget)

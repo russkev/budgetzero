@@ -24,6 +24,9 @@ const schema_account = {
     },
     type: {
       type: 'string'
+    },
+    sort: {
+      type: 'integer'
     }
   },
   required: ['_id', 'onBudget', 'name', 'sort', 'closed', 'type']
