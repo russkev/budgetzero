@@ -19,17 +19,8 @@
         <details-delete />
       </div>
       <div class="save-cancel-container pa-2">
-        <v-btn data-testid="cancel-edit-butotn" text small @click="onCancel">
-          Cancel
-        </v-btn>
-        <v-btn
-          data-testid="save-edit-button"
-          small
-          elevation="0"
-          color="primary darken-3"
-          class="ml-2"
-          @click="onSave"
-        >
+        <v-btn data-testid="cancel-edit-butotn" text small @click="onCancel"> Cancel </v-btn>
+        <v-btn data-testid="save-edit-button" small elevation="0" color="primary darken-3" class="ml-2" @click="onSave">
           Save
         </v-btn>
       </div>
@@ -65,13 +56,13 @@
           <category-select @selected="onCategorySelected" />
         </v-menu>
         <delete-confirm @confirm="deleteSelectedTransactions">
-          <template #activator="{on}">
+          <template #activator="{ on }">
             <details-button
               data-testid="delete-selected-transactions-button"
               icon="mdi-delete"
               label="Delete"
               :on="on"
-              />
+            />
           </template>
         </delete-confirm>
       </template>
@@ -102,19 +93,19 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from "vuex";
-import { DEFAULT_TRANSACTION } from "../../constants";
-import DetailsDate from "./DetailsDate.vue";
-import DetailsValue from "./DetailsValue.vue";
-import DetailsCategory from "./DetailsCategory.vue";
-import DetailsMemo from "./DetailsMemo.vue";
-import DetailsNote from "./DetailsNote.vue";
-import DetailsFlowDirection from "./DetailsFlowDirection.vue";
-import DetailsStatus from "./DetailsStatus.vue";
-import DetailsButton from "./DetailsButton.vue";
-import DetailsButtons from "./DetailsButtons.vue";
-import DetailsDelete from "./DetailsDelete.vue";
-import DeleteConfirm from "../Shared/DeleteConfirm.vue";
+import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { DEFAULT_TRANSACTION } from '../../constants'
+import DetailsDate from './DetailsDate.vue'
+import DetailsValue from './DetailsValue.vue'
+import DetailsCategory from './DetailsCategory.vue'
+import DetailsMemo from './DetailsMemo.vue'
+import DetailsNote from './DetailsNote.vue'
+import DetailsFlowDirection from './DetailsFlowDirection.vue'
+import DetailsStatus from './DetailsStatus.vue'
+import DetailsButton from '../Shared/DetailsButton.vue'
+import DetailsButtons from './DetailsButtons.vue'
+import DetailsDelete from './DetailsDelete.vue'
+import DeleteConfirm from '../Shared/DeleteConfirm.vue'
 
 export default {
   components: {
@@ -128,129 +119,129 @@ export default {
     DetailsButton,
     DetailsButtons,
     DetailsDelete,
-    DeleteConfirm,
+    DeleteConfirm
   },
   data() {
     return {
       DEFAULT_TRANSACTION,
       categoryMenu: false,
-      importModalIsVisible: false,
-    };
+      importModalIsVisible: false
+    }
   },
   computed: {
-    ...mapGetters("accountTransactions", [
-      "editedTransaction",
-      "selectedTransactions",
-      "accountId",
-      "transactions",
-      "editedTransactionIndex",
-      "isCreatingNewTransaction",
+    ...mapGetters('accountTransactions', [
+      'editedTransaction',
+      'selectedTransactions',
+      'accountId',
+      'transactions',
+      'editedTransactionIndex',
+      'isCreatingNewTransaction'
     ]),
     transactionDate: {
       get() {
-        return this.editedTransaction.date;
+        return this.editedTransaction.date
       },
       set(value) {
-        this.SET_EDITED_TRANSACTION_DATE(value);
-      },
+        this.SET_EDITED_TRANSACTION_DATE(value)
+      }
     },
     borderRight() {
-      const item = this.transactions[this.editedTransactionIndex];
+      const item = this.transactions[this.editedTransactionIndex]
       if (!item || !this.editedTransaction) {
-        return {};
+        return {}
       }
-      const borderStyle = "border-right-color: var(--v-warning-base)";
+      const borderStyle = 'border-right-color: var(--v-warning-base)'
       const result = Object.keys(item).reduce((partial, key) => {
-        const itemValue = item[key];
-        const editedValue = this.editedTransaction[key];
+        const itemValue = item[key]
+        const editedValue = this.editedTransaction[key]
         if (itemValue !== editedValue) {
-          partial[key] = borderStyle;
+          partial[key] = borderStyle
         } else {
-          partial[key] = "";
+          partial[key] = ''
         }
-        return partial;
-      }, {});
-      if (result.category !== "") {
-        return result;
+        return partial
+      }, {})
+      if (result.category !== '') {
+        return result
       }
       if (typeof item.category !== typeof this.editedTransaction.category) {
-        result.category = borderStyle;
+        result.category = borderStyle
       } else if (Array.isArray(item.splits) && Array.isArray(this.editedTransaction.splits)) {
         if (item.splits.length !== this.editedTransaction.splits.length) {
-          result.category = borderStyle;
+          result.category = borderStyle
         } else {
           for (let i = 0; i < item.splits.length; i++) {
             for (let [key, value] of Object.entries(item.splits[i])) {
               if (value !== this.editedTransaction.splits[i][key]) {
-                result.category = borderStyle;
-                break;
+                result.category = borderStyle
+                break
               }
             }
           }
         }
       } else if (item.category !== this.editedTransaction.category) {
-        result.category = borderStyle;
+        result.category = borderStyle
       }
-      return result;
+      return result
     },
     title() {
       if (this.isCreatingNewTransaction) {
-        return "New Transaction";
+        return 'New Transaction'
       } else {
-        return "Edit Transaction";
+        return 'Edit Transaction'
       }
     },
     titleColor() {
       if (this.isCreatingNewTransaction) {
-        return "success";
+        return 'success'
       } else {
-        return "primary";
+        return 'primary'
       }
-    },
+    }
   },
   methods: {
-    ...mapMutations("accountTransactions", [
-      "SET_EDITED_TRANSACTION_MEMO",
-      "SET_EDITED_TRANSACTION_NOTE",
-      "SET_EDITED_TRANSACTION_DATE",
-      "SET_EDITED_TRANSACTION_CATEGORY",
-      "CLEAR_EDITED_TRANSACTION",
+    ...mapMutations('accountTransactions', [
+      'SET_EDITED_TRANSACTION_MEMO',
+      'SET_EDITED_TRANSACTION_NOTE',
+      'SET_EDITED_TRANSACTION_DATE',
+      'SET_EDITED_TRANSACTION_CATEGORY',
+      'CLEAR_EDITED_TRANSACTION'
     ]),
-    ...mapActions("accountTransactions", [
-      "addTransaction",
-      "deleteSelectedTransactions",
-      "getTransactions",
-      "setClearedSelectedTransactions",
-      "categorizeSelectedTransactions",
-      "save",
-      "cancel",
+    ...mapActions('accountTransactions', [
+      'addTransaction',
+      'deleteSelectedTransactions',
+      'getTransactions',
+      'setClearedSelectedTransactions',
+      'categorizeSelectedTransactions',
+      'save',
+      'cancel'
     ]),
     onSave() {
-      const item = this.transactions[this.editedTransactionIndex];
-      this.save(item);
+      const item = this.transactions[this.editedTransactionIndex]
+      this.save(item)
     },
     onCancel() {
-      this.cancel();
+      this.cancel()
     },
     onClearSelected() {
-      this.setClearedSelectedTransactions({ cleared_value: true });
+      this.setClearedSelectedTransactions({ cleared_value: true })
     },
     onUnclearSelected() {
-      this.setClearedSelectedTransactions({ cleared_value: false });
+      this.setClearedSelectedTransactions({ cleared_value: false })
     },
     onCategorySelected(categoryId) {
-      this.categorizeSelectedTransactions({ categoryId });
-      this.categoryMenu = false;
+      this.categorizeSelectedTransactions({ categoryId })
+      this.categoryMenu = false
     },
     onImportModalClose() {
-      this.importModalIsVisible = false;
+      this.importModalIsVisible = false
     },
     onImportModalApply() {
-      this.importModalIsVisible = false;
-      this.getTransactions();
-    },
-  },
-};
+      this.importModalIsVisible = false
+      this.getTransactions()
+    }
+  }
+}
 </script>
 
 <style>

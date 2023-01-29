@@ -27,20 +27,14 @@
           :category-id="split.category ? split.category : ''"
           @selected="
             (payload) => {
-              onSplitCategorySelected(index, payload);
+              onSplitCategorySelected(index, payload)
             }
           "
           :button-testid="`details-category-split-${index}`"
         />
         <!-- :item="split" -->
-        <splits-value
-          :inputTestid="`split-${index}-value`"
-          :index="index"
-          :key="`amount-${index}`"
-        />
-        <v-icon small :key="index" @click="onRemoveSplit(index)" class="mt-1">
-          mdi-close
-        </v-icon>
+        <splits-value :inputTestid="`split-${index}-value`" :index="index" :key="`amount-${index}`" />
+        <v-icon small :key="index" @click="onRemoveSplit(index)" class="mt-1"> mdi-close </v-icon>
       </template>
       <v-card
         color="transparent"
@@ -55,7 +49,7 @@
       </v-card>
       <currency-input class="splits-full-width" :value="splitsSum" right disabled />
       <div v-if="splitsSum !== Math.abs(editedTransaction.value)" class="splits-full-width">
-        <v-alert color="error" text prominent class="pa-1 pl-4" style="font-size: 1rem;">
+        <v-alert color="error" text prominent class="pa-1 pl-4" style="font-size: 1rem">
           Splits must add up to the transaction value
         </v-alert>
       </div>
@@ -64,66 +58,63 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
-import { NONE } from "../../constants";
-import CurrencyInput from "./CurrencyInput.vue";
-import SplitsValue from "./SplitsValue.vue";
-import CategoryMenu from "../Shared/CategoryMenu.vue";
+import { mapGetters, mapMutations } from 'vuex'
+import { NONE } from '../../constants'
+import CurrencyInput from '../Shared/CurrencyInput.vue'
+import SplitsValue from './SplitsValue.vue'
+import CategoryMenu from '../Shared/CategoryMenu.vue'
 
 export default {
   components: { CurrencyInput, SplitsValue, CategoryMenu },
   computed: {
-    ...mapGetters("accountTransactions", ["editedTransaction"]),
+    ...mapGetters('accountTransactions', ['editedTransaction']),
     isSplit() {
-      return this.editedTransaction.splits && this.editedTransaction.splits.length > 1;
+      return this.editedTransaction.splits && this.editedTransaction.splits.length > 1
     },
     splits: {
       get() {
-        return this.editedTransaction.splits;
+        return this.editedTransaction.splits
       },
       set(value) {
-        this.SET_EDITED_TRANSACTION_SPLITS(value);
-      },
+        this.SET_EDITED_TRANSACTION_SPLITS(value)
+      }
     },
     splitsSum() {
-      return this.editedTransaction.splits.reduce(
-        (partial, split) => partial + Math.abs(split.value),
-        0
-      );
-    },
+      return this.editedTransaction.splits.reduce((partial, split) => partial + Math.abs(split.value), 0)
+    }
   },
   methods: {
-    ...mapMutations("accountTransactions", [
-      "SET_EDITED_TRANSACTION_CATEGORY",
-      "PUSH_EDITED_TRANSACTION_SPLIT",
-      "CLEAR_EDITED_TRANSACTION_SPLIT",
-      "REMOVE_EDITED_TRANSACTION_SPLIT",
-      "SET_EDITED_TRANSACTION_SPLIT_CATEGORY",
+    ...mapMutations('accountTransactions', [
+      'SET_EDITED_TRANSACTION_CATEGORY',
+      'PUSH_EDITED_TRANSACTION_SPLIT',
+      'CLEAR_EDITED_TRANSACTION_SPLIT',
+      'REMOVE_EDITED_TRANSACTION_SPLIT',
+      'SET_EDITED_TRANSACTION_SPLIT_CATEGORY'
     ]),
     onCategorySelected(categoryId) {
-      this.SET_EDITED_TRANSACTION_CATEGORY(categoryId);
+      this.SET_EDITED_TRANSACTION_CATEGORY(categoryId)
     },
     onSplitCategoryAdd() {
       if (!this.isSplit) {
         this.PUSH_EDITED_TRANSACTION_SPLIT({
           category: this.editedTransaction.category,
-          value: this.editedTransaction.value,
-        });
+          value: this.editedTransaction.value
+        })
       }
-      this.PUSH_EDITED_TRANSACTION_SPLIT({ category: NONE._id, value: 0 });
+      this.PUSH_EDITED_TRANSACTION_SPLIT({ category: NONE._id, value: 0 })
     },
     onSplitCategorySelected(index, categoryId) {
-      this.SET_EDITED_TRANSACTION_SPLIT_CATEGORY({ index, categoryId });
+      this.SET_EDITED_TRANSACTION_SPLIT_CATEGORY({ index, categoryId })
     },
     onRemoveSplit(index) {
-      this.REMOVE_EDITED_TRANSACTION_SPLIT(index);
+      this.REMOVE_EDITED_TRANSACTION_SPLIT(index)
       if (this.splits.length === 1) {
-        this.onCategorySelected(this.splits[0].category);
-        this.CLEAR_EDITED_TRANSACTION_SPLIT();
+        this.onCategorySelected(this.splits[0].category)
+        this.CLEAR_EDITED_TRANSACTION_SPLIT()
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style>

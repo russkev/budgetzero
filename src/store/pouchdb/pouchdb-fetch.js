@@ -120,6 +120,26 @@ export default {
           return result
         })
     },
+    fetchAccountIsEmpty: async (context, account_id) => {
+      const t1 = performance.now()
+      const db = Vue.prototype.$pouch
+      const budget_id = context.getters.selectedBudgetId
+      if (!budget_id) {
+        return true
+      }
+      return db
+        .query(`stats/transactions_by_account`, {
+          include_docs: false,
+          startkey: [budget_id, account_id, ''],
+          endkey: [budget_id, account_id, '\ufff0'],
+          limit: 1
+        })
+        .then((result) => {
+          console.log('fetchAccountIsEmpty', result.rows)
+          logPerformanceTime('fetchAccountIsEmpty', t1)
+          return result.rows.length === 0
+        })
+    },
     fetchTransactionsForMonth: async (context, month) => {
       console.log('fetchTransactionsForMonth')
       const t1 = performance.now()

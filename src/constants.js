@@ -99,6 +99,20 @@ export const DEFAULT_TRANSACTION = {
   _id: '',
   _rev: ''
 }
+export const ACCOUNT_TYPES = ['CHECKING', 'CREDIT', 'SAVING', 'MORTGAGE', 'CASH', 'INVESTMENT', 'OTHER']
+
+export const DEFAULT_ACCOUNT = {
+  type: ACCOUNT_TYPES[2],
+  checkNumber: true,
+  closed: false,
+  name: '',
+  note: null,
+  sort: 0,
+  onBudget: true,
+  sign: 1,
+  initialBalance: 0,
+}
+
 
 export const AMOUNT_RED = `error--text text--lighten-3`
 export const AMOUNT_GREEN = `success--text text--lighten-3`

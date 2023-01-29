@@ -1,43 +1,61 @@
 <template>
-  <v-hover #default="{ hover }">
-    <v-list-item
-      active-class="active-sidebar-item"
-      class="sidebar-item account-sidebar-item"
-      :to="destination"
-      :data-testid="dataTestid"
-      :id="id"
-      dense
-      #default="{ active }"
-    >
+  <div>
+    <account-edit-modal v-model="dialogIsOpen" :edited-item="editedItem" @save="onSave" />
+    <v-hover #default="{ hover }">
       <div class="drag-container">
-        <v-sheet width="20px" color="transparent" class="row-side-widget" :data-testid="`drag-account-${id}`">
-          <v-icon v-if="hover" small class="handle ma-auto">mdi-drag-vertical</v-icon>
-        </v-sheet>
-        <v-list-item-avatar
-          size="26"
-          :class="`ml-0 my-1 font-weight-black ${
-            isHighlighted(active, hover) ? 'account-avatar-active' : 'account-avatar'
-          }`"
+        <v-list-item
+          active-class="active-sidebar-item"
+          class="sidebar-item account-sidebar-item pr-0"
+          :to="destination"
+          :data-testid="dataTestid"
+          :id="id"
+          dense
+          #default="{ active }"
         >
-          {{ account.name.slice(0, 2) }}
-        </v-list-item-avatar>
+          <v-sheet width="20px" color="transparent" class="row-side-widget" :data-testid="`drag-account-${id}`">
+            <v-icon v-if="hover" small class="handle ma-auto">mdi-drag-vertical</v-icon>
+          </v-sheet>
+          <v-list-item-avatar
+            size="26"
+            :class="`ml-0 my-1 font-weight-black ${
+              isHighlighted(active, hover) ? 'account-avatar-active' : 'account-avatar'
+            }`"
+          >
+            {{ account.name.slice(0, 2) }}
+          </v-list-item-avatar>
+          <v-list-item-content class="ml-5 py-0">
+            <v-list-item-title class="text-h5 ma-0">
+              {{ account.name }}
+            </v-list-item-title>
+            <v-list-item-subtitle> {{ accountTotal }}</v-list-item-subtitle>
+          </v-list-item-content>
+          <!-- <v-spacer /> -->
+        </v-list-item>
+        <hover-button
+          :hover="hover"
+          icon="mdi-pencil"
+          active-color="unhide-text"
+          active-background-color="unhide"
+          :data-testid="`btn-edit-account-${id}`"
+          @click="onEditAccount"
+        />
       </div>
-      <v-list-item-content class="ml-5 py-0">
-        <v-list-item-title class="text-h5 ma-0">
-          {{ account.name }}
-        </v-list-item-title>
-        <v-list-item-subtitle> {{ accountTotal }}</v-list-item-subtitle>
-      </v-list-item-content>
-    </v-list-item>
-  </v-hover>
+    </v-hover>
+  </div>
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { ID_LENGTH } from '../../constants'
+import AccountEditModal from '../AccountView/AccountEditModal.vue'
+import HoverButton from '../Shared/HoverButton.vue'
 
 export default {
   nme: 'SidebarAccount',
+  components: {
+    HoverButton,
+    AccountEditModal
+  },
   props: {
     account: {
       type: Object,
@@ -56,6 +74,12 @@ export default {
       default: {}
     }
   },
+  data() {
+    return {
+      dialogIsOpen: false,
+      editedItem: {}
+    }
+  },
   computed: {
     ...mapGetters(['intlCurrency', 'allAccountBalances']),
     accountTotal() {
@@ -65,8 +89,21 @@ export default {
     }
   },
   methods: {
+    ...mapActions(['commitDocToPouchAndVuex', 'calculateAllValues']),
     isHighlighted(active, hover) {
       return active || hover || this.focusedId === this.id
+    },
+    onEditAccount() {
+      this.editedItem = { ...this.account }
+      this.dialogIsOpen = true
+    },
+    onSave(current) {
+      this.commitDocToPouchAndVuex({
+        current,
+        previous: this.account
+      }).then(() => {
+        this.calculateAllValues()
+      })
     }
   }
 }
@@ -91,5 +128,6 @@ export default {
 
 .drag-container {
   display: flex;
+  width: 100%;
 }
 </style>

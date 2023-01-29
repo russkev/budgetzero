@@ -1,8 +1,5 @@
 <template>
-  <div 
-    v-if="!readonly"
-    @blur="onBlur"
-    >
+  <div v-if="!readonly" @blur="onBlur">
     <div v-if="!isEditing">
       <v-hover v-slot="{ hover }">
         <!-- Not read only and not editing -->
@@ -11,7 +8,7 @@
           dense
           flat
           solo
-          hide-details
+          :hide-details="!showDetails"
           readonly
           :id="id"
           :data-testid="dataTestid"
@@ -22,13 +19,15 @@
           :height="height"
           :loading="loading"
           :disabled="loading"
-          />
+          :placeholder="placeholder"
+          :rules="rules"
+        />
       </v-hover>
     </div>
     <!-- Not read only and editing -->
     <div v-else>
       <v-text-field
-        hide-details
+        :hide-details="!showDetails"
         dark
         dense
         flat
@@ -48,7 +47,9 @@
         :background-color="activeBackgroundColor"
         :loading="loading"
         :disabled="loading"
-        />
+        :placeholder="placeholder"
+        :rules="rules"
+      />
     </div>
   </div>
   <!-- Read only and editing -->
@@ -59,7 +60,7 @@
         dense
         flat
         solo
-        hide-details
+        :hide-details="!showDetails"
         readonly
         :id="id"
         :data-testid="dataTestid"
@@ -69,107 +70,121 @@
         :height="height"
         :loading="loading"
         :disabled="loading"
+        :placeholder="placeholder"
+        :rules="rules"
       />
     </div>
   </div>
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { nextTick } from "vue";
+import { mapGetters } from 'vuex'
+import { nextTick } from 'vue'
 
 export default {
-  emits: ["apply", "edit", "enter"],
+  emits: ['apply', 'edit', 'enter'],
   props: {
     isEditing: {
       type: Boolean,
-      default: false,
+      default: false
     },
     value: {
       type: String,
-      default: "",
+      default: ''
     },
     dataTestid: {
       type: String,
-      default: "",
+      default: ''
     },
     currency: {
       type: Boolean,
-      default: false,
+      default: false
     },
     currencyLeft: {
       type: Boolean,
-      default: false,
+      default: false
     },
     id: {
       type: String,
-      default: "",
+      default: ''
     },
     text: {
       type: String,
-      default: "body-1",
+      default: 'body-1'
     },
     readonly: {
       type: Boolean,
-      default: false,
+      default: false
     },
     loading: {
       type: Boolean,
-      default: false,
+      default: false
     },
     activeBackgroundColor: {
       type: String,
-      default: "background lighten-2",
+      default: 'background lighten-2'
     },
+    placeholder: {
+      type: String,
+      default: ''
+    },
+    rules: {
+      type: Array,
+      default: () => []
+    },
+    showDetails: {
+      type: Boolean,
+      default: false
+    }
   },
   data() {
     return {
       isSelected: false,
-      height: "26px",
-      isHovering: false,
-    };
+      height: '26px',
+      isHovering: false
+    }
   },
   computed: {
-    ...mapGetters(["intlCurrency"]),
+    ...mapGetters(['intlCurrency']),
     nonEditingBackgroundColor() {
       if (this.isHovering) {
-        return this.activeBackgroundColor;
+        return this.activeBackgroundColor
       } else {
-        return this.backgroundColor;
+        return this.backgroundColor
       }
-    },
+    }
   },
   methods: {
     onBlur(event) {
-      this.onApply(event);
+      this.onApply(event)
     },
     onApply(event) {
-      this.$emit("apply", event);
-      this.isSelected = false;
+      this.$emit('apply', event)
+      this.isSelected = false
     },
     onClick() {
-      this.$emit("edit");
+      this.$emit('edit')
       nextTick(() => {
-        document.getElementById(this.id).select();
-        this.isSelected = true;
-      });
+        document.getElementById(this.id).select()
+        this.isSelected = true
+      })
     },
     onEnterPressed(event) {
-      this.$emit("enter", event);
+      this.$emit('enter', event)
       this.onApply(event)
-      this.isSelected = true;
+      this.isSelected = true
     },
     onEditedClicked(event) {
       if (!this.isSelected) {
-        event.target.select();
-        this.isSelected = true;
+        event.target.select()
+        this.isSelected = true
       }
     },
     testChange(event) {
-      console.log("TEST CHANGE")
+      console.log('TEST CHANGE')
     }
-  },
-};
+  }
+}
 </script>
 
 <style>

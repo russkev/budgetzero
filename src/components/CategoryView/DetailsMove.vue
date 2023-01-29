@@ -16,7 +16,7 @@
       <span>
         <details-radio
           :selected="selectedCategory.isMovingTo"
-          testid="details-moving-to-button"
+          data-testid="details-moving-to-button"
           @click="onMovingToClicked"
         >
           to
@@ -24,70 +24,58 @@
         <details-radio
           class="pl-4"
           :selected="!selectedCategory.isMovingTo"
-          testid="details-moving-from-button"
+          data-testid="details-moving-from-button"
           @click="onMovingFromClicked"
         >
           from
         </details-radio>
       </span>
     </span>
-    <category-menu
-      :category-id="selectedCategory.moveDestination"
-      show-balance
-      @selected="onMoveDestinationChanged"
-    />
+    <category-menu :category-id="selectedCategory.moveDestination" show-balance @selected="onMoveDestinationChanged" />
     <div class="mt-2">
-      <v-btn
-        data-testid="details-move-save-button"
-        elevation="0"
-        text
-        small
-        block
-        @click="doBudgetMove"
-        >Send</v-btn
-      >
+      <v-btn data-testid="details-move-save-button" elevation="0" text small block @click="doBudgetMove">Send</v-btn>
     </div>
   </v-card>
 </template>
 
 <script>
-import DetailsRadio from "../Shared/DetailsRadio.vue";
-import CategoryMenu from "../Shared/CategoryMenu.vue";
-import CategoryGridInput from "./CategoryGridInput.vue";
-import { mapGetters, mapActions } from "vuex";
+import DetailsRadio from '../Shared/DetailsRadio.vue'
+import CategoryMenu from '../Shared/CategoryMenu.vue'
+import CategoryGridInput from './CategoryGridInput.vue'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
-  name: "DetailsMove",
+  name: 'DetailsMove',
   components: {
     CategoryGridInput,
     DetailsRadio,
-    CategoryMenu,
+    CategoryMenu
   },
   data() {
     return {
-      isEditingValue: false,
-    };
+      isEditingValue: false
+    }
   },
   computed: {
-    ...mapGetters("categoryMonth", ["selectedCategory", "categoriesDataSortedByBalance"]),
+    ...mapGetters('categoryMonth', ['selectedCategory', 'categoriesDataSortedByBalance'])
   },
   methods: {
-    ...mapActions("categoryMonth", [
-      "onMovingToClicked",
-      "onMovingFromClicked",
-      "onMoveDestinationChanged",
-      "onSelectedMoveAmountChanged",
-      "doBudgetMove",
-      "syncSelectedCategory",
+    ...mapActions('categoryMonth', [
+      'onMovingToClicked',
+      'onMovingFromClicked',
+      'onMoveDestinationChanged',
+      'onSelectedMoveAmountChanged',
+      'doBudgetMove',
+      'syncSelectedCategory'
     ]),
     onMoveAmountApply(event) {
-      if (!event.target) return;
+      if (!event.target) return
 
-      this.isEditingValue = false;
-      this.onSelectedMoveAmountChanged(parseInt(event.target.value * 100));
-    },
-  },
-};
+      this.isEditingValue = false
+      this.onSelectedMoveAmountChanged(parseInt(event.target.value * 100))
+    }
+  }
+}
 </script>
 
 <style scoped>

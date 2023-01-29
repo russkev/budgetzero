@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-icon :data-testid="dataTestid" left small :color="selected ? 'primary' : ''" @click="$emit('click')">
-      {{ selected ? 'mdi-radiobox-marked' : 'mdi-radiobox-blank' }}
+      {{ selected ? 'mdi-checkbox-marked' : 'mdi-checkbox-blank' }}
     </v-icon>
     <slot> Selected </slot>
   </div>
@@ -9,7 +9,7 @@
 
 <script>
 export default {
-  name: 'DetailsRadio',
+  name: 'DetailsCheckbox',
   emits: ['click'],
   props: {
     selected: {

@@ -12,64 +12,51 @@
       </v-icon>
       Outflow
     </div> -->
-    <details-radio
-      :selected="isInflow"
-      testid="details-inflow-button"
-      @click="isInflow = true"
-      class="pb-2"
-    >
+    <details-radio :selected="isInflow" data-testid="details-inflow-button" @click="isInflow = true" class="pb-2">
       Inflow
     </details-radio>
-    <details-radio
-      :selected="!isInflow"
-      testid="details-outflow-button"
-      @click="isInflow = false"
-      class="pb-2"
-    >
+    <details-radio :selected="!isInflow" data-testid="details-outflow-button" @click="isInflow = false" class="pb-2">
       Outflow
     </details-radio>
   </div>
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
-import DetailsRadio from "../Shared/DetailsRadio.vue";
+import { mapGetters, mapMutations } from 'vuex'
+import DetailsRadio from '../Shared/DetailsRadio.vue'
 
 export default {
   props: {
     value: {
       type: Boolean,
-      default: true,
-    },
+      default: true
+    }
   },
   components: {
-    DetailsRadio,
+    DetailsRadio
   },
   computed: {
-    ...mapGetters("accountTransactions", ["editedTransaction"]),
+    ...mapGetters('accountTransactions', ['editedTransaction']),
     isInflow: {
       get() {
-        return this.editedTransaction.value >= 0;
+        return this.editedTransaction.value >= 0
       },
       set(value) {
         if (value && this.editedTransaction.value < 0) {
-          this.SET_EDITED_TRANSACTION_VALUE(Math.abs(this.editedTransaction.value));
-          this.REVERSE_EDITED_TRANSACTION_SPLIT_VALUES();
+          this.SET_EDITED_TRANSACTION_VALUE(Math.abs(this.editedTransaction.value))
+          this.REVERSE_EDITED_TRANSACTION_SPLIT_VALUES()
         } else if (!value && this.editedTransaction.value > 0) {
-          this.SET_EDITED_TRANSACTION_VALUE(-Math.abs(this.editedTransaction.value));
-          this.REVERSE_EDITED_TRANSACTION_SPLIT_VALUES();
+          this.SET_EDITED_TRANSACTION_VALUE(-Math.abs(this.editedTransaction.value))
+          this.REVERSE_EDITED_TRANSACTION_SPLIT_VALUES()
         }
-        this.$emit("input", value);
-      },
-    },
+        this.$emit('input', value)
+      }
+    }
   },
   methods: {
-    ...mapMutations("accountTransactions", [
-      "SET_EDITED_TRANSACTION_VALUE",
-      "REVERSE_EDITED_TRANSACTION_SPLIT_VALUES",
-    ]),
-  },
-};
+    ...mapMutations('accountTransactions', ['SET_EDITED_TRANSACTION_VALUE', 'REVERSE_EDITED_TRANSACTION_SPLIT_VALUES'])
+  }
+}
 </script>
 
 <style>

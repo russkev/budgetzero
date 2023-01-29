@@ -4,39 +4,35 @@
     titleText="Delete Group"
     bodyText="Are you sure you want to delete this group?"
   >
-    <template #activator="{on}">
-      <delete-button
-        :hover="hover"
-        :data-testid="`btn-delete-master-category-${masterCategory._id}`"
-        :on="on"
-      />
+    <template #activator="{ on }">
+      <hover-button :hover="hover" :data-testid="`btn-delete-master-category-${masterCategory._id}`" :on="on" />
     </template>
   </delete-confirm>
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import DeleteConfirm from "../Shared/DeleteConfirm.vue";
-import DeleteButton from "../Shared/DeleteButton.vue";
+import { mapActions } from 'vuex'
+import DeleteConfirm from '../Shared/DeleteConfirm.vue'
+import HoverButton from '../Shared/HoverButton.vue'
 
 export default {
-  name: "MasterCategoryDelete",
+  name: 'MasterCategoryDelete',
   components: {
     DeleteConfirm,
-    DeleteButton,
+    HoverButton
   },
   props: {
     masterCategory: {
       type: Object,
-      default: {},
+      default: {}
     },
     hover: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   methods: {
-    ...mapActions("categoryMonth", ["onDeleteMasterCategory"]),
-  },
-};
+    ...mapActions('categoryMonth', ['onDeleteMasterCategory'])
+  }
+}
 </script>

@@ -1,7 +1,7 @@
 <template>
   <delete-confirm @confirm="onDeleteTransaction(item)">
-    <template #activator="{on, open}">
-      <delete-button
+    <template #activator="{ on, open }">
+      <hover-button
         :hover="hover"
         :dialog-open="open"
         :data-testid="`btn-delete-transaction-${item._id}`"
@@ -15,38 +15,38 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import DeleteConfirm from "../Shared/DeleteConfirm.vue";
-import DeleteButton from "../Shared/DeleteButton.vue";
-import { ID_LENGTH } from "../../constants";
+import { mapActions, mapGetters } from 'vuex'
+import DeleteConfirm from '../Shared/DeleteConfirm.vue'
+import HoverButton from '../Shared/HoverButton.vue'
+import { ID_LENGTH } from '../../constants'
 
 export default {
-  name: "TransactionDelete",
+  name: 'TransactionDelete',
   components: {
     DeleteConfirm,
-    DeleteButton,
+    HoverButton
   },
   props: {
     item: {
       type: Object,
-      required: true,
+      required: true
     },
     hover: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   computed: {
-    ...mapGetters("accountTransactions", ["editedTransaction"]),
+    ...mapGetters('accountTransactions', ['editedTransaction']),
     itemId() {
-      return this.item._id.slice(-ID_LENGTH.transaction);
-    },
+      return this.item._id.slice(-ID_LENGTH.transaction)
+    }
   },
   methods: {
-    ...mapActions("accountTransactions", ["deleteTransaction"]),
+    ...mapActions('accountTransactions', ['deleteTransaction']),
     onDeleteTransaction(item) {
       this.deleteTransaction(item)
-    },
-  },
+    }
+  }
 }
 </script>

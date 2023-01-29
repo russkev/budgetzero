@@ -5,13 +5,8 @@
       Update Selected
       <v-icon @click="onUnselectCategory" class="ml-auto">mdi-close</v-icon>
     </v-card-title>
-    <v-divider
-      v-if="selectedCategory"
-      :style="`border-bottom: 2px solid ${categoryColors[selectedCategory._id]};`"
-    />
-    <v-card-title v-else class="background lighten-1 pa-3">
-      All Categories
-    </v-card-title>
+    <v-divider v-if="selectedCategory" :style="`border-bottom: 2px solid ${categoryColors[selectedCategory._id]};`" />
+    <v-card-title v-else class="background lighten-1 pa-3"> All Categories </v-card-title>
     <div v-if="selectedCategory" class="transaction-details-grid pa-2 pb-0">
       <div class="text-h5">Name</div>
       <div>
@@ -39,7 +34,7 @@
           @edit="onEditCategoryBudget(selectedCategory._id)"
           @apply="
             (event) => {
-              onCategoryBudgetChanged({ category_id: selectedCategory._id, event: event });
+              onCategoryBudgetChanged({ category_id: selectedCategory._id, event: event })
             }
           "
           :loading="editedCategoryBudgetLoading"
@@ -73,47 +68,47 @@
         />
       </div>
     </div>
-    <div style="width: 100%;" class="mb-4"></div>
+    <div style="width: 100%" class="mb-4"></div>
     <details-table />
   </v-card>
 </template>
 
 <script>
-import CategoriesWorking from "./CategoriesWorking.vue";
-import { mapGetters, mapActions, mapMutations } from "vuex";
-import CurrencyInput from "../TransactionView/CurrencyInput.vue";
-import DetailsTable from "./DetailsTable.vue";
-import { ID_LENGTH, NONE } from "../../constants";
-import CategoryGridInput from "./CategoryGridInput.vue";
-import DetailsMove from "./DetailsMove.vue"
+import CategoriesWorking from './CategoriesWorking.vue'
+import { mapGetters, mapActions, mapMutations } from 'vuex'
+import CurrencyInput from '../Shared/CurrencyInput.vue'
+import DetailsTable from './DetailsTable.vue'
+import { ID_LENGTH, NONE } from '../../constants'
+import CategoryGridInput from './CategoryGridInput.vue'
+import DetailsMove from './DetailsMove.vue'
 
 export default {
-  name: "CategoryDetails",
+  name: 'CategoryDetails',
   components: {
     CategoriesWorking,
     CurrencyInput,
     DetailsTable,
     CategoryGridInput,
-    DetailsMove,
+    DetailsMove
   },
   watch: {
     masterCategoriesById: {
       handler: function () {
-        this.getMonthTransactions();
-      },
-    },
+        this.getMonthTransactions()
+      }
+    }
   },
   computed: {
-    ...mapGetters(["masterCategoriesById", "categoriesById", "categoryColors", "categories"]),
-    ...mapGetters("categoryMonth", [
-      "selectedCategory",
-      "monthStats",
-      "editedCategoryBudgetId",
-      "editedCategoryNameId",
-      "editedCategoryBudgetLoading",
-      "editedCategoryNameLoading",
-      "categoriesDataSortedByBalance",
-    ]),
+    ...mapGetters(['masterCategoriesById', 'categoriesById', 'categoryColors', 'categories']),
+    ...mapGetters('categoryMonth', [
+      'selectedCategory',
+      'monthStats',
+      'editedCategoryBudgetId',
+      'editedCategoryNameId',
+      'editedCategoryBudgetLoading',
+      'editedCategoryNameLoading',
+      'categoriesDataSortedByBalance'
+    ])
     // title() {
     //   return this.selectedCategory ? this.selectedCategory.name : "All Categories";
     // },
@@ -133,29 +128,29 @@ export default {
     // },
   },
   methods: {
-    ...mapActions(["fetchTransactionsForMonth"]),
-    ...mapActions("categoryMonth", [
-      "getMonthTransactions",
-      "onCategoryNameChange",
-      "onCategoryBudgetChanged",
-      "onEditCategoryName",
-      "onEditCategoryBudget",
-      "onMovingToClicked",
-      "onMovingFromClicked",
+    ...mapActions(['fetchTransactionsForMonth']),
+    ...mapActions('categoryMonth', [
+      'getMonthTransactions',
+      'onCategoryNameChange',
+      'onCategoryBudgetChanged',
+      'onEditCategoryName',
+      'onEditCategoryBudget',
+      'onMovingToClicked',
+      'onMovingFromClicked'
     ]),
-    ...mapMutations("categoryMonth", ["RESET_SELECTED_CATEGORY"]),
+    ...mapMutations('categoryMonth', ['RESET_SELECTED_CATEGORY']),
     onUnselectCategory() {
-      this.RESET_SELECTED_CATEGORY();
+      this.RESET_SELECTED_CATEGORY()
     },
     isEditingName() {
       if (this.selectedCategory._id.slice(ID_LENGTH.category) === NONE._id) {
-        return false;
+        return false
       } else {
-        return this.selectedCategory._id === this.editedCategoryNameId;
+        return this.selectedCategory._id === this.editedCategoryNameId
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
 
 <style>

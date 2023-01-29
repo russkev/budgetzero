@@ -13,9 +13,16 @@
           <span class="text-h3">Accounts</span>
           <v-spacer />
 
-          <AccountAddModal v-model="showModal" :edited-item="editedItem" @save="save()" />
+          <AccountEditModal v-model="showModal" :edited-item="editedItem" @save="save()" />
 
-          <v-btn id="add-account-button" color="accent" :dark="budgetExists" :disabled="!budgetExists" class="mb-2" @click="create()" >
+          <v-btn
+            id="add-account-button"
+            color="accent"
+            :dark="budgetExists"
+            :disabled="!budgetExists"
+            class="mb-2"
+            @click="create()"
+          >
             Add Account
           </v-btn>
         </v-toolbar>
@@ -25,7 +32,9 @@
       <template #item.action="item">
         <div class="crud-actions">
           <v-icon :id="`edit-${item._id}`" icon dark class="" color="primary" @click="editItem(item)"> edit </v-icon>
-          <v-icon :id="`delete-${item._id}`" icon dark class="ml-1" color="accent" @click="deleteItem(item)"> delete </v-icon>
+          <v-icon :id="`delete-${item._id}`" icon dark class="ml-1" color="accent" @click="deleteItem(item)">
+            delete
+          </v-icon>
         </div>
       </template>
       <template #no-data>
@@ -35,11 +44,9 @@
   </v-card>
 </template>
 
-
-
 <script>
 import { mapGetters } from 'vuex'
-import AccountAddModal from './AccountAddModal.vue'
+import AccountEditModal from './AccountEditModal.vue'
 import { ID_NAME } from '../../constants'
 // import { generateShortId } from "@/store/modules/id-module"
 
@@ -53,7 +60,7 @@ const DEFAULT_ACCOUNT_ITEM = {
   onBudget: true,
   // balanceIsNegative: false,
   sign: 1,
-  initialBalance: 0,
+  initialBalance: 0
 }
 /*
 Account view
@@ -80,12 +87,10 @@ View: Name -- Type -- Balance
 
 */
 
-
-
 export default {
   name: 'AccountGrid',
   components: {
-    AccountAddModal
+    AccountEditModal
   },
   data() {
     return {
@@ -116,37 +121,35 @@ export default {
   computed: {
     ...mapGetters(['accounts', 'selectedBudgetId']),
     budgetExists() {
-    // const month_from_params =  this.$route.params.month
-    // console.log("ON MOUNTED")
-    // const db = this.$pouch
-    // console.log("DB", db)
-    // console.log(this.$pouch.allDocs())
-    // this.$pouch.allDocs().then((result) => {
-    //   console.log("ALL DOCS RESULT", result)
-    // })
-    // console.log(this.selectedBudgetId)
-    // console.log("MONTH FROM PARAMS", month_from_params)
-    // const docs = this.$pouch.get("b_N8Q_account_ELC")
-    //   .then((result) => {
-    //     console.log("ALL DOCS RESULT", result)
-    //     return 3
-    //   }).catch((err) => {
-    //     console.log("ALL DOCS ERROR", err)
-    //     return 2
-    //   })
+      // const month_from_params =  this.$route.params.month
+      // console.log("ON MOUNTED")
+      // const db = this.$pouch
+      // console.log("DB", db)
+      // console.log(this.$pouch.allDocs())
+      // this.$pouch.allDocs().then((result) => {
+      //   console.log("ALL DOCS RESULT", result)
+      // })
+      // console.log(this.selectedBudgetId)
+      // console.log("MONTH FROM PARAMS", month_from_params)
+      // const docs = this.$pouch.get("b_N8Q_account_ELC")
+      //   .then((result) => {
+      //     console.log("ALL DOCS RESULT", result)
+      //     return 3
+      //   }).catch((err) => {
+      //     console.log("ALL DOCS ERROR", err)
+      //     return 2
+      //   })
 
-    // console.log("DOCS", docs)
-      return this.selectedBudgetId != "null"
+      // console.log("DOCS", docs)
+      return this.selectedBudgetId != 'null'
     }
   },
   mounted() {},
-  created() {
-
-  },
+  created() {},
   methods: {
     create() {
       this.editedIndex = -1
-      this.editedItem = {...DEFAULT_ACCOUNT_ITEM}
+      this.editedItem = { ...DEFAULT_ACCOUNT_ITEM }
       this.previousItem = null
       this.showModal = true
     },
@@ -210,28 +213,22 @@ export default {
         const payload = {
           ...this.editedItem
         }
-        this.$store
-          .dispatch('commitDocToPouchAndVuex', { current: payload, previous: this.previousItem})
-          .then(() => {
-            this.$store.dispatch('calculateAllValues')
-          })
+        this.$store.dispatch('commitDocToPouchAndVuex', { current: payload, previous: this.previousItem }).then(() => {
+          this.$store.dispatch('calculateAllValues')
+        })
       } else {
         const payload = {
           ...this.editedItem,
           _id: `b_${this.selectedBudgetId}${ID_NAME.account}${this.generateShortId()}`
         }
-        this.$store
-          .dispatch('commitDocToPouchAndVuex', {current: payload, previous: null})
+        this.$store.dispatch('commitDocToPouchAndVuex', { current: payload, previous: null })
       }
-      
     },
     resetItems() {
       this.editedIndex = -1
-      this.editedItem = {...DEFAULT_ACCOUNT_ITEM}
+      this.editedItem = { ...DEFAULT_ACCOUNT_ITEM }
       this.previousItem = null
-    },
-
-    
+    }
   }
 }
 </script>

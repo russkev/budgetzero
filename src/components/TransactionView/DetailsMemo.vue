@@ -18,27 +18,27 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters, mapMutations } from 'vuex'
 
 export default {
   data() {
     return {
-      isFocused: false,
-    };
+      isFocused: false
+    }
   },
   computed: {
-    ...mapGetters("accountTransactions", ["editedTransaction"]),
+    ...mapGetters('accountTransactions', ['editedTransaction']),
     memo: {
       get() {
-        return this.editedTransaction.memo;
+        return this.editedTransaction.memo
       },
       set(memo) {
-        this.SET_EDITED_TRANSACTION_MEMO(memo);
-      },
-    },
+        this.SET_EDITED_TRANSACTION_MEMO(memo)
+      }
+    }
   },
   methods: {
-    ...mapMutations("accountTransactions", ["SET_EDITED_TRANSACTION_MEMO"]),
-  },
-};
+    ...mapMutations('accountTransactions', ['SET_EDITED_TRANSACTION_MEMO'])
+  }
+}
 </script>

@@ -53,6 +53,7 @@
           />
         </template>
       </draggable>
+      <new-account-button is-on-budget data-testid="btn-new-account-on-budget" />
     </sidebar-account-group>
     <sidebar-account-group
       title="Untracked"
@@ -77,6 +78,7 @@
           />
         </template>
       </draggable>
+      <new-account-button data-testid="btn-new-account-off-budget" />
     </sidebar-account-group>
   </v-navigation-drawer>
 </template>
@@ -91,6 +93,7 @@ import SidebarNavItem from './SidebarNavItem.vue'
 import SidebarAccount from './SidebarAccount.vue'
 import SidebarAccountGroup from './SidebarAccountGroup.vue'
 import SidebarList from './SidebarList.vue'
+import NewAccountButton from './NewAccountButton.vue'
 
 export default {
   name: 'Sidebar',
@@ -101,6 +104,7 @@ export default {
     SidebarAccount,
     SidebarAccountGroup,
     SidebarList,
+    NewAccountButton,
     draggable
   },
   data() {

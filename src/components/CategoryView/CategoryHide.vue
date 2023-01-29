@@ -5,8 +5,8 @@
     titleText="Hide Category"
     bodyText="Are you sure you want to hide this category?"
   >
-    <template #activator="{on}">
-      <delete-button
+    <template #activator="{ on }">
+      <hover-button
         :data-testid="`btn-hide-category-${category._id}`"
         :hover="hover"
         icon="mdi-eye-off-outline"
@@ -14,7 +14,7 @@
       />
     </template>
   </delete-confirm>
-  <delete-button
+  <hover-button
     v-else
     :data-testid="`btn-restore-category-${category._id}`"
     :hover="hover"
@@ -26,41 +26,41 @@
 </template>
 
 <script>
-import { mapActions } from "vuex";
-import DeleteConfirm from "../Shared/DeleteConfirm.vue";
-import DeleteButton from "../Shared/DeleteButton.vue";
-import { HIDDEN, NONE } from "../../constants";
+import { mapActions } from 'vuex'
+import DeleteConfirm from '../Shared/DeleteConfirm.vue'
+import HoverButton from '../Shared/HoverButton.vue'
+import { HIDDEN, NONE } from '../../constants'
 
 export default {
-  name: "CategoryHide",
+  name: 'CategoryHide',
   components: {
     DeleteConfirm,
-    DeleteButton,
+    HoverButton
   },
   props: {
     masterCategory: {
       type: Object,
-      default: {},
+      default: {}
     },
     category: {
       type: Object,
-      default: {},
+      default: {}
     },
     hover: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   computed: {
     isStandard() {
-      return ![HIDDEN._id, NONE._id].includes(this.masterCategory._id);
-    },
+      return ![HIDDEN._id, NONE._id].includes(this.masterCategory._id)
+    }
   },
   methods: {
-    ...mapActions("categoryMonth", ["onHideCategory", "onUnhideCategory"]),
+    ...mapActions('categoryMonth', ['onHideCategory', 'onUnhideCategory']),
     testConfirm() {
-      console.log("testConform");
-    },
-  },
-};
+      console.log('testConform')
+    }
+  }
+}
 </script>
