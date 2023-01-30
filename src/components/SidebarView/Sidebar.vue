@@ -1,14 +1,17 @@
 <template>
   <v-navigation-drawer
+    v-model="isExpanded"
     app
     class="background"
-    :mini-variant="mini"
+    :mini-variant.sync="mini"
     permanent
     floating
-    :expand-on-hover="mini"
+    :expand-on-hover="$vuetify.breakpoint.mdAndDown"
     hide-overlay
     width="250"
+    @update:mini-variant="onTransitionEnd"
   >
+    <!-- @transitionend="onTransitionEnd" -->
     <v-list-item class="mt-2" r>
       <v-list-item-icon class="mr-4">
         <v-icon large> $custom </v-icon>
@@ -111,7 +114,9 @@ export default {
     return {
       ID_LENGTH,
       focusedId: '',
-      draggableOnBudgetData: []
+      draggableOnBudgetData: [],
+      isExpanded: false,
+      mini: undefined
     }
   },
   watch: {
@@ -135,9 +140,15 @@ export default {
       'allAccountBalances'
     ]),
     ...mapGetters('categoryMonth', ['selectedMonth']),
-    mini() {
-      return this.$vuetify.breakpoint.mdAndDown
-    },
+    // mini: {
+    //   get() {
+    //     return this.$vuetify.breakpoint.mdAndDown
+    //   },
+    //   set(value) {
+    //     console.log('SET', value)
+    //   }
+    //   // return this.$vuetify.breakpoint.mdAndDown
+    // },
     accountTotals() {
       return this.accounts.reduce(
         (partial, account) => {
@@ -211,6 +222,9 @@ export default {
     },
     onFocusOut() {
       this.focusedId = ''
+    },
+    onTransitionEnd(event) {
+      console.log('onTransitionEnd', event)
     }
   }
 }

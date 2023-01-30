@@ -3,18 +3,18 @@
     <account-edit-modal v-model="dialogIsOpen" :edited-item="editedItem" @save="onSave" />
     <v-hover #default="{ hover }">
       <div class="drag-container">
+        <v-sheet width="20px" color="transparent" class="row-side-widget" :data-testid="`drag-account-${id}`">
+          <v-icon v-if="hover" small class="handle ma-auto">mdi-drag-vertical</v-icon>
+        </v-sheet>
         <v-list-item
           active-class="active-sidebar-item"
-          class="sidebar-item account-sidebar-item pr-0"
+          class="sidebar-item account-sidebar-item pr-0 pl-0"
           :to="destination"
           :data-testid="dataTestid"
           :id="id"
           dense
           #default="{ active }"
         >
-          <v-sheet width="20px" color="transparent" class="row-side-widget" :data-testid="`drag-account-${id}`">
-            <v-icon v-if="hover" small class="handle ma-auto">mdi-drag-vertical</v-icon>
-          </v-sheet>
           <v-list-item-avatar
             size="26"
             :class="`ml-0 my-1 font-weight-black ${
