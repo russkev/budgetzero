@@ -31,14 +31,17 @@
           </v-list-item-content>
           <!-- <v-spacer /> -->
         </v-list-item>
-        <hover-button
-          :hover="hover"
-          icon="mdi-pencil"
-          active-color="unhide-text"
-          active-background-color="unhide"
-          :data-testid="`btn-edit-account-${id}`"
-          @click="onEditAccount"
-        />
+        <div class="account-edit-button" :style="`width: ${mini ? '0' : '20px'}`">
+          <hover-button
+            v-if="!mini"
+            :hover="hover"
+            icon="mdi-pencil"
+            active-color="unhide-text"
+            active-background-color="unhide"
+            :data-testid="`btn-edit-account-${id}`"
+            @click="onEditAccount"
+          />
+        </div>
       </div>
     </v-hover>
   </div>
@@ -72,6 +75,10 @@ export default {
     destination: {
       type: Object,
       default: {}
+    },
+    mini: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -129,5 +136,13 @@ export default {
 .drag-container {
   display: flex;
   width: 100%;
+}
+
+.account-edit-button {
+  min-width: 0;
+  height: 100%;
+  overflow-y: hidden;
+  transition-property: width;
+  transition-duration: 0.15s;
 }
 </style>

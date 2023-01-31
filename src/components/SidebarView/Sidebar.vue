@@ -1,17 +1,14 @@
 <template>
   <v-navigation-drawer
-    v-model="isExpanded"
     app
     class="background"
     :mini-variant.sync="mini"
     permanent
     floating
-    :expand-on-hover="$vuetify.breakpoint.mdAndDown"
     hide-overlay
     width="250"
-    @update:mini-variant="onTransitionEnd"
+    :expand-on-hover="isLessThanBreakpoint"
   >
-    <!-- @transitionend="onTransitionEnd" -->
     <v-list-item class="mt-2" r>
       <v-list-item-icon class="mr-4">
         <v-icon large> $custom </v-icon>
@@ -53,6 +50,7 @@
             :destination="{ path: `/transactions/${account._id.slice(-ID_LENGTH.account)}` }"
             :data-testid="`transactions-page-${account._id.slice(-ID_LENGTH.account)}`"
             :id="`nav-account-${account._id.slice(-ID_LENGTH.account)}`"
+            :mini="mini"
           />
         </template>
       </draggable>
@@ -78,6 +76,7 @@
             :destination="{ path: `/transactions/${account._id.slice(-ID_LENGTH.account)}` }"
             :data-testid="`transactions-page-${account._id.slice(-ID_LENGTH.account)}`"
             :id="`nav-account-${account._id.slice(-ID_LENGTH.account)}`"
+            :mini="mini"
           />
         </template>
       </draggable>
@@ -149,6 +148,11 @@ export default {
     //   }
     //   // return this.$vuetify.breakpoint.mdAndDown
     // },
+    isLessThanBreakpoint() {
+      const is_less_than_breakpoint = this.$vuetify.breakpoint.mdAndDown
+      this.mini = is_less_than_breakpoint
+      return is_less_than_breakpoint
+    },
     accountTotals() {
       return this.accounts.reduce(
         (partial, account) => {
@@ -222,9 +226,6 @@ export default {
     },
     onFocusOut() {
       this.focusedId = ''
-    },
-    onTransitionEnd(event) {
-      console.log('onTransitionEnd', event)
     }
   }
 }
