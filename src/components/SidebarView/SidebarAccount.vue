@@ -2,27 +2,29 @@
   <div>
     <account-edit-modal v-model="dialogIsOpen" :edited-item="editedItem" @save="onSave" />
     <v-hover #default="{ hover }">
-      <div class="drag-container">
-        <v-sheet width="20px" color="transparent" class="row-side-widget" :data-testid="`drag-account-${id}`">
-          <v-icon v-if="hover" small class="handle ma-auto">mdi-drag-vertical</v-icon>
-        </v-sheet>
+      <div class="pr-3 sidebar-item drag-container">
         <v-list-item
           active-class="active-sidebar-item"
-          class="sidebar-item account-sidebar-item pr-0 pl-0"
+          class="account-sidebar-item pr-0 pl-0"
           :to="destination"
           :data-testid="dataTestid"
           :id="id"
           dense
           #default="{ active }"
         >
-          <v-list-item-avatar
-            size="26"
-            :class="`ml-0 my-1 font-weight-black ${
-              isHighlighted(active, hover) ? 'account-avatar-active' : 'account-avatar'
-            }`"
-          >
-            {{ account.name.slice(0, 2) }}
-          </v-list-item-avatar>
+          <div style="display: flex">
+            <v-sheet width="20px" color="transparent" class="row-side-widget" :data-testid="`drag-account-${id}`">
+              <v-icon v-if="hover" small class="handle ma-auto">mdi-drag-vertical</v-icon>
+            </v-sheet>
+            <v-list-item-avatar
+              size="26"
+              :class="`ml-0 my-1 font-weight-black ${
+                isHighlighted(active, hover) ? 'account-avatar-active' : 'account-avatar'
+              }`"
+            >
+              {{ account.name.slice(0, 2) }}
+            </v-list-item-avatar>
+          </div>
           <v-list-item-content class="ml-5 py-0">
             <v-list-item-title class="text-h5 ma-0">
               {{ account.name }}
@@ -31,12 +33,15 @@
           </v-list-item-content>
           <!-- <v-spacer /> -->
         </v-list-item>
-        <div class="account-edit-button" :style="`width: ${mini ? '0' : '20px'}`">
+        <div
+          class="sidebar-button account-edit-button"
+          :style="`width: ${mini ? '0' : BUTTON_WIDTH + 'px'}; min-width: ${mini ? '0' : BUTTON_WIDTH + 'px'}`"
+        >
           <hover-button
             v-if="!mini"
             :hover="hover"
             icon="mdi-pencil"
-            active-color="unhide-text"
+            active-color="unhide_text"
             active-background-color="unhide"
             :data-testid="`btn-edit-account-${id}`"
             @click="onEditAccount"
@@ -52,6 +57,8 @@ import { mapGetters, mapActions } from 'vuex'
 import { ID_LENGTH } from '../../constants'
 import AccountEditModal from '../AccountView/AccountEditModal.vue'
 import HoverButton from '../Shared/HoverButton.vue'
+
+const BUTTON_WIDTH = 20
 
 export default {
   nme: 'SidebarAccount',
@@ -139,8 +146,8 @@ export default {
 }
 
 .account-edit-button {
+  display: flex;
   min-width: 0;
-  height: 100%;
   overflow-y: hidden;
   transition-property: width;
   transition-duration: 0.15s;

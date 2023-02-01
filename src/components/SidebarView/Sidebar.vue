@@ -17,7 +17,6 @@
         <zero-text-only />
       </v-list-item-title>
     </v-list-item>
-    <!-- <v-list flat :class="mini ? 'ml-0 pl-0' : 'ml-3'"> -->
     <sidebar-list :mini="mini">
       <sidebar-nav-item
         :destination="{ path: `/budget/${selectedMonth}` }"
