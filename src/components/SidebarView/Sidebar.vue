@@ -255,12 +255,17 @@ export default {
   color: var(--v-secondary-lighten2) !important;
   background-color: var(--v-background-lighten2) !important;
 }
+.sidebar-group .v-list-group__header {
+  padding-left: 0;
+}
+.sidebar-group .v-list-group__header .v-list-group__header__prepend-icon {
+  margin-left: 0 !important;
+  height: 48px;
+}
 
 .active-sidebar-item,
 .sidebar-group-active .v-list-group__header {
   color: var(--v-secondary-lighten2) !important;
-  border-left: 3px solid var(--v-secondary-lighten2);
-  margin-left: 0px;
 }
 
 .v-list-item__icon {

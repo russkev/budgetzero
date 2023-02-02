@@ -2,7 +2,7 @@
   <div>
     <account-edit-modal v-model="dialogIsOpen" :edited-item="editedItem" @save="onSave" />
     <v-hover #default="{ hover }">
-      <div class="pr-3 sidebar-item drag-container">
+      <div class="sidebar-item drag-container">
         <v-list-item
           active-class="active-sidebar-item"
           class="account-sidebar-item pr-0 pl-0"
@@ -12,9 +12,10 @@
           dense
           #default="{ active }"
         >
-          <div style="display: flex">
+          <div class="account-avatar-wrapper">
+            <sidebar-select-indicator :active="active" />
             <v-sheet width="20px" color="transparent" class="row-side-widget" :data-testid="`drag-account-${id}`">
-              <v-icon v-if="hover" small class="handle ma-auto">mdi-drag-vertical</v-icon>
+              <v-icon v-if="hover" color="secondary lighten-3" small class="handle ma-auto">mdi-drag-vertical</v-icon>
             </v-sheet>
             <v-list-item-avatar
               size="26"
@@ -35,16 +36,18 @@
         </v-list-item>
         <div
           class="sidebar-button account-edit-button"
-          :style="`width: ${mini ? '0' : BUTTON_WIDTH + 'px'}; min-width: ${mini ? '0' : BUTTON_WIDTH + 'px'}`"
+          :style="`width: ${mini ? '0' : buttonWidth + 'px'}; min-width: ${mini ? '0' : buttonWidth + 'px'}`"
         >
           <hover-button
             v-if="!mini"
             :hover="hover"
             icon="mdi-pencil"
-            active-color="unhide_text"
-            active-background-color="unhide"
+            active-color="secondary lighten-4"
+            inactive-color="secondary lighten-2"
+            active-background-color="background lighten-4"
             :data-testid="`btn-edit-account-${id}`"
             @click="onEditAccount"
+            :width="buttonWidth"
           />
         </div>
       </div>
@@ -57,14 +60,14 @@ import { mapGetters, mapActions } from 'vuex'
 import { ID_LENGTH } from '../../constants'
 import AccountEditModal from '../AccountView/AccountEditModal.vue'
 import HoverButton from '../Shared/HoverButton.vue'
-
-const BUTTON_WIDTH = 20
+import SidebarSelectIndicator from './SidebarSelectIndicator.vue'
 
 export default {
   nme: 'SidebarAccount',
   components: {
     HoverButton,
-    AccountEditModal
+    AccountEditModal,
+    SidebarSelectIndicator
   },
   props: {
     account: {
@@ -91,7 +94,8 @@ export default {
   data() {
     return {
       dialogIsOpen: false,
-      editedItem: {}
+      editedItem: {},
+      buttonWidth: 26
     }
   },
   computed: {
@@ -151,5 +155,10 @@ export default {
   overflow-y: hidden;
   transition-property: width;
   transition-duration: 0.15s;
+}
+
+.account-avatar-wrapper {
+  height: 100%;
+  display: flex;
 }
 </style>

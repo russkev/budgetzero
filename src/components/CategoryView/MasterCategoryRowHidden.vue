@@ -13,9 +13,7 @@
     </template>
     <template #budgeted>
       <div class="secondary--text text--lighten-2">
-        <span class="text-h5">
-          Budgeted
-        </span>
+        <span class="text-h5"> Budgeted </span>
         <br />
         <span class="text-body-1">
           {{ intlCurrency.format(masterCategoriesStats[masterHiddenCategory._id].budget / 100) }}
@@ -24,9 +22,7 @@
     </template>
     <template #spent>
       <div class="secondary--text text--lighten-2">
-        <span class="text-h5">
-          Spent
-        </span>
+        <span class="text-h5"> Spent </span>
         <br />
         <span class="text-body-1">
           {{ spentValue }}
@@ -35,9 +31,7 @@
     </template>
     <template #balance>
       <div class="secondary--text text--lighten-2">
-        <span class="text-h5">
-          Balance
-        </span>
+        <span class="text-h5"> Balance </span>
         <br />
         <span class="text-body-1">
           {{ intlCurrency.format(masterCategoriesStats[masterHiddenCategory._id].balance / 100) }}
@@ -57,7 +51,7 @@
         @click="toggleMasterCategoryCollapsed(masterHiddenCategory._id)"
       >
         <v-icon small>
-          {{ masterHiddenCategory.collapsed ? "mdi-chevron-down" : "mdi-chevron-up" }}
+          {{ masterHiddenCategory.collapsed ? 'mdi-chevron-down' : 'mdi-chevron-up' }}
         </v-icon>
       </v-btn>
     </template>
@@ -65,41 +59,41 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import HeaderRow from "./HeaderRow.vue";
+import { mapGetters, mapActions } from 'vuex'
+import HeaderRow from './HeaderRow.vue'
 
 export default {
   components: {
-    HeaderRow,
+    HeaderRow
   },
   computed: {
-    ...mapGetters(["intlCurrency", "masterHiddenCategory"]),
-    ...mapGetters("categoryMonth", ["editedMasterCategoryId", "masterCategoriesStats"]),
+    ...mapGetters(['intlCurrency', 'masterHiddenCategory']),
+    ...mapGetters('categoryMonth', ['editedMasterCategoryId', 'masterCategoriesStats']),
     data() {
-      return "data";
+      return 'data'
     },
     spentValue() {
       const value =
         this.masterCategoriesStats[this.masterHiddenCategory._id].expense -
-        this.masterCategoriesStats[this.masterHiddenCategory._id].income;
+        this.masterCategoriesStats[this.masterHiddenCategory._id].income
       if (value === 0) {
-        return this.intlCurrency.format(0);
+        return this.intlCurrency.format(0)
       } else {
-        return this.intlCurrency.format(value / 100);
+        return this.intlCurrency.format(value / 100)
       }
-    },
+    }
   },
   methods: {
-    ...mapActions(["toggleMasterCategoryCollapsed"]),
-    ...mapActions("categoryMonth", [
-      "onDeleteMasterCategory",
-      "onMasterCategoryNameChange",
-      "onEditMasterCategoryName",
-      "newMasterCategory",
-      "newCategory",
-    ]),
-  },
-};
+    ...mapActions(['toggleMasterCategoryCollapsed']),
+    ...mapActions('categoryMonth', [
+      'onDeleteMasterCategory',
+      'onMasterCategoryNameChange',
+      'onEditMasterCategoryName',
+      'newMasterCategory',
+      'newCategory'
+    ])
+  }
+}
 </script>
 
 <style>
@@ -109,9 +103,5 @@ export default {
 }
 .row-side-widget {
   display: flex;
-}
-
-.delete-button {
-  transition: background-color 0.3s;
 }
 </style>

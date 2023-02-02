@@ -6,7 +6,7 @@
       elevation="0"
       small
       class="pa-0 ma-0 delete-button"
-      :min-width="width"
+      :min-width="width + 'px'"
       :height="height"
       :data-testid="dataTestid"
       :color="deleteButtonHover ? activeBackgroundColor : 'transparent'"
@@ -24,66 +24,79 @@
 </template>
 
 <script>
-
 export default {
-  emits: ["click"],
+  emits: ['click'],
   props: {
     hover: {
       type: Boolean,
-      default: false,
+      default: false
     },
     dataTestid: {
       type: String,
-      default: "",
+      default: ''
     },
     icon: {
       type: String,
-      default: "mdi-delete-outline",
+      default: 'mdi-delete-outline'
     },
     activeColor: {
       type: String,
-      default: "error lighten-2",
+      default: 'error lighten-2'
+    },
+    inactiveColor: {
+      type: String,
+      default: 'white'
     },
     activeBackgroundColor: {
       type: String,
-      default: "delete",
+      default: 'delete'
     },
     height: {
       type: String,
-      default: "auto",
+      default: 'auto'
     },
     on: {
-      type: Object,
+      type: Object
     },
     dialogOpen: {
       type: Boolean,
-      default: false,
+      default: false
     },
     disabled: {
       type: Boolean,
-      default: false,
+      default: false
     },
-  },
-  data() {
-    return {
-      width: "20px"
+    width: {
+      type: Number,
+      default: 20
     }
   },
+  // data() {
+  //   return {
+  //     width: '20px'
+  //   }
+  // },
   methods: {
     onClick() {
-      this.$emit("click");
+      this.$emit('click')
     },
     deleteIconColor(deleteButtonHover) {
       if (this.hover || this.dialogOpen) {
         if (deleteButtonHover || this.dialogOpen) {
-          return this.activeColor;
+          return this.activeColor
         } else {
-          return "white";
+          return this.inactiveColor
         }
       } else {
-        return "transparent";
+        return 'transparent'
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
+
+<style>
+.delete-button {
+  transition: background-color 0.3s;
+}
+</style>

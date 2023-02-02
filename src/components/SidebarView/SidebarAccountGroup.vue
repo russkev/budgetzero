@@ -7,9 +7,12 @@
         v-model="isOpen"
       >
         <template #prependIcon>
-          <v-icon :color="isHighlighted(hover) ? 'secondary lighten-2' : ''" class="ma-0">
-            {{ isHighlighted(hover) ? iconActive : icon }}
-          </v-icon>
+          <div class="d-flex" style="height: 100%">
+            <sidebar-select-indicator :active="!isOpen && childIsSelected" />
+            <v-icon :color="isHighlighted(hover) ? 'secondary lighten-2' : ''" class="sidebar-group-icon">
+              {{ isHighlighted(hover) ? iconActive : icon }}
+            </v-icon>
+          </div>
         </template>
         <template v-slot:activator>
           <v-list-item-content class="pa-0">
@@ -26,8 +29,13 @@
 </template>
 
 <script>
+import SidebarSelectIndicator from './SidebarSelectIndicator.vue'
+
 export default {
   name: 'SidebarAccountGroup',
+  components: {
+    SidebarSelectIndicator
+  },
   data() {
     return {
       isOpen: true
@@ -59,16 +67,6 @@ export default {
       default: false
     }
   },
-  // computed: {
-  //   isOpen: {
-  //     get() {
-  //       return this.value
-  //     },
-  //     set(value) {
-  //       this.$emit('input', value)
-  //     }
-  //   }
-  // },
   methods: {
     isHighlighted(hover) {
       return hover || this.childIsSelected
@@ -76,3 +74,9 @@ export default {
   }
 }
 </script>
+
+<style>
+.sidebar-group-icon {
+  margin-left: 16px;
+}
+</style>
