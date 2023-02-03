@@ -245,7 +245,7 @@ export default {
 
 .sidebar-item,
 .sidebar-group .v-list-group__header {
-  margin-left: 3px;
+  margin-left: 4px;
 }
 
 .sidebar-item:hover,
@@ -274,7 +274,8 @@ export default {
 }
 
 .header-sidebar-item.v-list-item,
-.v-list-group__header {
+.v-list-group__header,
+.height-48 {
   min-height: 48px !important;
 }
 </style>
