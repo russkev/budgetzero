@@ -2,7 +2,7 @@
   <div>
     <account-edit-modal v-model="dialogIsOpen" :edited-item="editedItem" @save="onSave" />
     <v-hover #default="{ hover }">
-      <div class="sidebar-item drag-container">
+      <div class="ml-1 sidebar-item drag-container">
         <v-list-item
           active-class="active-sidebar-item"
           class="account-sidebar-item pr-0 pl-0"
@@ -23,12 +23,13 @@
                 isHighlighted(active, hover) ? 'account-avatar-active' : 'account-avatar'
               }`"
             >
-              {{ account.name.slice(0, 2) }}
+              {{ account ? account.name.slice(0, 2) : '' }}
             </v-list-item-avatar>
           </div>
           <v-list-item-content class="ml-5 py-0">
-            <v-list-item-title class="text-h5 ma-0">
-              {{ account.name }}
+            <!-- <v-list-item-title :class="`text-h5 ma-0 ${isHighlighted(active, hover) ? 'red--text' : ''}`"> -->
+            <v-list-item-title class="ma-0">
+              {{ account ? account.name : '' }}
             </v-list-item-title>
             <v-list-item-subtitle> {{ accountTotal }}</v-list-item-subtitle>
           </v-list-item-content>
@@ -40,7 +41,8 @@
         >
           <hover-button
             v-if="!mini"
-            :hover="hover"
+            :id="`btn-edit-account-${id}`"
+            :hover="isHighlighted(false, hover)"
             icon="mdi-pencil"
             active-color="secondary lighten-4"
             inactive-color="secondary lighten-2"
@@ -72,7 +74,7 @@ export default {
   props: {
     account: {
       type: Object,
-      default: {}
+      default: () => {}
     },
     id: {
       type: String,
@@ -84,11 +86,15 @@ export default {
     },
     destination: {
       type: Object,
-      default: {}
+      default: () => {}
     },
     mini: {
       type: Boolean,
       default: false
+    },
+    focusedId: {
+      type: String,
+      default: ''
     }
   },
   data() {
@@ -101,6 +107,7 @@ export default {
   computed: {
     ...mapGetters(['intlCurrency', 'allAccountBalances']),
     accountTotal() {
+      if (!this.account) return this.intlCurrency.format(0)
       const account_id = this.account._id.slice(-ID_LENGTH.account)
       const account_total = this.allAccountBalances[account_id]
       return this.intlCurrency.format(account_total.working / 100)
@@ -109,13 +116,15 @@ export default {
   methods: {
     ...mapActions(['commitDocToPouchAndVuex', 'calculateAllValues']),
     isHighlighted(active, hover) {
-      return active || hover || this.focusedId === this.id
+      return active || hover || this.focusedId.endsWith(this.id)
     },
     onEditAccount() {
+      if (!this.account) return
       this.editedItem = { ...this.account }
       this.dialogIsOpen = true
     },
     onSave(current) {
+      if (!this.account) return
       this.commitDocToPouchAndVuex({
         current,
         previous: this.account

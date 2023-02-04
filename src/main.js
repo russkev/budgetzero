@@ -17,7 +17,7 @@ import Vuelidate from 'vuelidate'
 import VueRouter from 'vue-router' // prints 'idb'
 
 import store from './store'
-import Settings from './components/Settings.vue'
+import Budgets from './components/BudgetsView/Budgets.vue'
 import Transactions from './components/TransactionView/Transactions.vue'
 
 import Accounts from './components/AccountView/Accounts.vue'
@@ -33,8 +33,6 @@ import pouchdb_live_find from 'pouchdb-live-find'
 import pouchdb_authentication from 'pouchdb-authentication'
 import pouchdb_erase from 'pouchdb-erase'
 import Fragment from 'vue-fragment'
-
-
 
 /**
  * Sweet Alert
@@ -80,8 +78,8 @@ export var router = new VueRouter({
       redirect: `/budget/${moment(new Date()).format('YYYY-MM')}`
     },
     {
-      path: '/settings',
-      component: Settings
+      path: '/budgets',
+      component: Budgets
     },
     {
       path: '/manage',
@@ -126,7 +124,7 @@ const vm = new Vue({
   methods: {},
   vuetify,
   router,
-  render: h => h(App)
+  render: (h) => h(App)
 }).$mount('#app')
 
 //TODO: Allows access to vm within Vuex store. May want to research alternative ways... this._vm may work within store?

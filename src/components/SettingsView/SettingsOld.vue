@@ -166,7 +166,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
-import BaseDialogModalComponent from './Modals/BaseDialogModalComponent.vue'
+import BaseDialogModalComponent from '../Modals/BaseDialogModalComponent.vue'
 
 export default {
   name: 'Settings',
@@ -254,8 +254,7 @@ export default {
           console.log('mock transaction create result')
           console.log(result)
           this.$store.commit('SET_SNACKBAR_MESSAGE', {
-            snackbarMessage: 
-              `Created ${result[0].length} mock transactions and ${result[1].length} mock category budget values.`,
+            snackbarMessage: `Created ${result[0].length} mock transactions and ${result[1].length} mock category budget values.`,
             color: 'success'
           })
           this.mockTransactionsModalIsVisible = false

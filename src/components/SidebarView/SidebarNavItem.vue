@@ -12,7 +12,7 @@
         <sidebar-select-indicator :active="isHighlighted(active, hover)" />
         <v-list-item-icon>
           <v-icon :color="isHighlighted(active, hover) ? 'secondary lighten-2' : ''">
-            {{ isHighlighted(active, hover) ? 'mdi-shape' : 'mdi-shape-outline' }}
+            {{ isHighlighted(active, hover) ? iconActive : icon }}
           </v-icon>
         </v-list-item-icon>
       </div>

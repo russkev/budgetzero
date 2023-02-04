@@ -3,7 +3,7 @@
     <v-hover #default="{ hover }">
       <v-list-group
         :prepend="iconActive"
-        :class="`sidebar-group ${!isOpen && childIsSelected ? 'sidebar-group-active' : ''}`"
+        :class="`sidebar-group ${isHighlighted(hover) ? 'sidebar-group-active' : ''}`"
         v-model="isOpen"
       >
         <template #prependIcon>
@@ -78,5 +78,15 @@ export default {
 <style>
 .sidebar-group-icon {
   margin-left: 16px;
+}
+#sidebar.v-list-item__icon .v-icon,
+#sidebar.v-list-item__icon.v-list-group__header__append-icon,
+#sidebar.v-list-group__header {
+  color: unset;
+  caret-color: unset;
+}
+#sidebar .v-list-group {
+  color: unset !important;
+  caret-color: unset !important;
 }
 </style>

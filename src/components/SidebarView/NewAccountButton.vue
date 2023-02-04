@@ -1,12 +1,19 @@
 <template>
-  <div>
+  <v-list-item dense>
     <account-edit-modal is-new v-model="dialogIsOpen" :edited-item="editedItem" @save="onSave" />
     <!-- @close="onClose" -->
-    <v-btn small tile text class="ml-5 text-none" :data-testid="`btn-new-account-off-budget`" @click="onClick">
+    <v-btn
+      small
+      tile
+      text
+      class="ml-5 text-none sidebar-item"
+      :data-testid="`btn-new-account-off-budget`"
+      @click="onClick"
+    >
       <v-icon small class="ma-1">mdi-plus</v-icon>
       <span> New Account </span>
     </v-btn>
-  </div>
+  </v-list-item>
 </template>
 
 <script>

@@ -43,32 +43,33 @@ export default {
           console.log(err)
         })
     },
-    exportBudgetAsJSON: () => {
+    async exportBudgetAsJSON() {
+      console.log('exportBudgetAsJSON: Not implemented yet.  Use exportSelectedBudgetAsJSON instead.')
       const db = Vue.prototype.$pouch
-      return db
-        .allDocs({
+      try {
+        const all_docs = await db.allDocs({
           include_docs: true,
           attachments: true
         })
-        .then((result) => {
-          console.log('exportBudgetAsJSON', JSON.stringify(result))
-          const export_date = moment(new Date()).format('YYYY-MM-DD_hh-mm')
 
-          const reformattedExport = result.rows
-            .map((row) => row.doc)
-            .map((row) => {
-              delete row['_rev'] //Delete rev field to prevent conflicts on restore
-              return row
-            })
+        // console.log('exportBudgetAsJSON', JSON.stringify(all_docs))
+        const export_date = moment(new Date()).format('YYYY-MM-DD_hh-mm')
 
-          var blob = new Blob([JSON.stringify(reformattedExport)], {
-            type: 'text/plain;charset=utf-8'
+        const reformattedExport = all_docs.rows
+          .map((row) => row.doc)
+          .map((row) => {
+            delete row['_rev'] //Delete rev field to prevent conflicts on restore
+            return row
           })
-          FileSaver.saveAs(blob, `BudgetZero_Export_${export_date}.txt`)
+
+        var blob = new Blob([JSON.stringify(reformattedExport)], {
+          type: 'text/plain;charset=utf-8'
         })
-        .catch((err) => {
-          console.log(err)
-        })
+        FileSaver.saveAs(blob, `BudgetZero_Export_${export_date}.json`)
+        localStorage.setItem('lastBackup', export_date)
+      } catch (err) {
+        console.log(err)
+      }
     }
   }
 }

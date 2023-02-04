@@ -8,6 +8,7 @@
     hide-overlay
     width="250"
     :expand-on-hover="isLessThanBreakpoint"
+    id="sidebar"
   >
     <v-list-item class="mt-2" r>
       <v-list-item-icon class="mr-4">
@@ -66,7 +67,7 @@
       :child-is-selected="isOnTransactionsOffBudgetPage"
       :mini="mini"
     >
-      <draggable handle=".handle" group="accounts">
+      <draggable handle=".handle" group="accounts" v-model="draggableOffBudget">
         <template v-for="account in accountsOffBudget">
           <sidebar-account
             :key="account._id"
@@ -81,6 +82,20 @@
       </draggable>
       <new-account-button data-testid="btn-new-account-off-budget" />
     </sidebar-account-group>
+    <template #append>
+      <sidebar-list :mini="mini">
+        <sidebar-nav-item
+          :destination="{ path: '/budgets' }"
+          dataTestid="sidebar-button-settings"
+          id="nav-settings"
+          :focused-id="focusedId"
+          icon="mdi-cog-outline"
+          icon-active="mdi-cog"
+        >
+          Budgets
+        </sidebar-nav-item>
+      </sidebar-list>
+    </template>
   </v-navigation-drawer>
 </template>
 
@@ -113,6 +128,7 @@ export default {
       ID_LENGTH,
       focusedId: '',
       draggableOnBudgetData: [],
+      draggableOffBudgetData: [],
       isExpanded: false,
       mini: undefined
     }
@@ -121,6 +137,12 @@ export default {
     accountsOnBudget: {
       handler: function (val) {
         this.draggableOnBudgetData = val
+      },
+      deep: true
+    },
+    accountsOffBudget: {
+      handler: function (val) {
+        this.draggableOffBudgetData = val
       },
       deep: true
     }
@@ -196,7 +218,25 @@ export default {
         const updated_accounts = dragged_accounts.map((previous, index) => {
           const current = {
             ...previous,
-            sort: index
+            sort: index,
+            onBudget: true
+          }
+          return { current, previous }
+        })
+        this.commitBulkDocsToPouchAndVuex(updated_accounts)
+      }
+    },
+    draggableOffBudget: {
+      get() {
+        return this.draggableOffBudgetData
+      },
+      set(dragged_accounts) {
+        this.draggableOffBudgetData = dragged_accounts
+        const updated_accounts = dragged_accounts.map((previous, index) => {
+          const current = {
+            ...previous,
+            sort: index,
+            onBudget: false
           }
           return { current, previous }
         })
@@ -231,9 +271,9 @@ export default {
 </script>
 
 <style>
-.v-list .v-list-item--active {
+/* .v-list .v-list-item--active {
   color: #f5f5f5;
-}
+} */
 
 .v-list-item__title {
   overflow: unset;
@@ -243,15 +283,27 @@ export default {
   margin-right: 24px !important;
 }
 
-.sidebar-item,
 .sidebar-group .v-list-group__header {
   margin-left: 4px;
 }
 
+#sidebar .account-sidebar-item,
+.v-list-item__icon,
+.v-list-item__icon .v-icon {
+  color: unset;
+  caret-color: unset;
+}
+
+.sidebar-item,
+.sidebar-group {
+  color: white;
+  caret-color: white;
+}
+
 .sidebar-item:hover,
-.sidebar-item:focus,
+.sidebar-item:focus-within,
 .sidebar-group .v-list-group__header:hover,
-.sidebar-group .v-list-group__header:focus {
+.sidebar-group .v-list-group__header:focus-within {
   color: var(--v-secondary-lighten2) !important;
   background-color: var(--v-background-lighten2) !important;
 }
@@ -264,6 +316,7 @@ export default {
 }
 
 .active-sidebar-item,
+.sidebar-group-active .v-list-group__header,
 .sidebar-group-active .v-list-group__header {
   color: var(--v-secondary-lighten2) !important;
 }
@@ -271,11 +324,16 @@ export default {
 .v-list-item__icon {
   margin-top: auto !important;
   margin-bottom: auto !important;
+  color: unset;
 }
 
 .header-sidebar-item.v-list-item,
 .v-list-group__header,
 .height-48 {
   min-height: 48px !important;
+}
+
+#sidebar {
+  color: white;
 }
 </style>
