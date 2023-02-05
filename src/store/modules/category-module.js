@@ -231,7 +231,6 @@ export default {
       })
     },
     UPDATE_MONTH_BALANCES(state, monthBalancesItem) {
-
       let expense = _.get(monthBalancesItem, 'expense', 0)
       let income = _.get(monthBalancesItem, 'income', 0)
 
@@ -579,7 +578,6 @@ export default {
     },
 
     updateCategoryBalance({ commit, getters }, { current, previous }) {
-      console.log("updateCategoryBalance", current, previous)
       if (!current && !previous) {
         console.warn('calculateCategoryBalanceUpdate called with no current or previous data')
         return
@@ -620,7 +618,7 @@ export default {
               month: current_month,
               category_id: split.category,
               master_id: master_id,
-              amount: split.value,
+              amount: split.value
             }
           })
           category_balances = category_balances.concat(this_result)
@@ -632,7 +630,7 @@ export default {
             month: current_month,
             category_id: current.category,
             master_id: master_id,
-            amount: current_value,
+            amount: current_value
           })
         }
       }
@@ -646,7 +644,7 @@ export default {
               month: previous_month,
               category_id: split.category,
               master_id: master_id,
-              amount: -split.value,
+              amount: -split.value
             }
           })
           category_balances = category_balances.concat(this_result)
@@ -658,7 +656,7 @@ export default {
             month: previous_month,
             category_id: previous.category,
             master_id: master_id,
-            amount: -previous_value,
+            amount: -previous_value
           })
         }
       }

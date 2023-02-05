@@ -9,10 +9,11 @@ import {
   validateSchema
 } from '../validation'
 import _ from 'lodash'
-import { ID_NAME } from '../../constants'
+import { ID_NAME, LOCAL_DB_NAME } from '../../constants'
 import { databaseExists, docTypeFromId, logPerformanceTime } from '../../helper'
 import { parseAllMonthCategories } from '../modules/category-module'
 import { parseAllTransactions } from '../modules/transaction-module'
+import PouchDB from 'pouchdb'
 /**
  * This pouchdb vuex module contains code that interacts with the pouchdb database.
  */
@@ -52,10 +53,23 @@ export default {
       }
     },
 
+    databaseExists(context) {
+      const db = this._vm.$pouch
+      // const db = new PouchDB(LOCAL_DB_NAME, { skip_setup: true })
+      return db
+        .info()
+        .then(() => {
+          return true
+        })
+        .catch(() => {
+          return false
+        })
+    },
     async validBulkDocs(context, bulk_docs) {
-      const database_exists = await databaseExists(this._vm.$pouch)
+      const database_exists = await context.dispatch('databaseExists')
       if (!database_exists) {
-        await context.dispatch('createLocalPouchDB', context)
+        await context.dispatch('createLocalPouchDB')
+        await context.dispatch('loadLocalBudget')
       }
 
       return bulk_docs.reduce((partial, doc) => {
@@ -161,6 +175,10 @@ export default {
       }, [])
       return db.bulkDocs(db_documents)
     },
+    commitRestoreBulkDocsToPouch({}, docs) {
+      const db = this._vm.$pouch
+      return db.bulkDocs(docs)
+    },
 
     commitBulkNewDocsToPouch(context, docs) {
       const db = this._vm.$pouch
@@ -263,6 +281,7 @@ export default {
 
     getAllDocsFromPouchDB(context) {
       return Promise.all([context.dispatch('fetchAccounts'), context.dispatch('fetchPayees')]).then(() => {
+        console.log('Accounts', context.getters.accountsById)
         return context.dispatch('calculateAllValues')
       })
     },
@@ -284,7 +303,7 @@ export default {
         })
         .then((result) => {
           const t1 = performance.now()
-          const balances = parseAllTransactions(result.rows, month_category_balances, getters, dispatch)          
+          const balances = parseAllTransactions(result.rows, month_category_balances, getters, dispatch)
 
           logPerformanceTime('calculateAllValues', t1)
           // commit('SET_MONTH_BALANCES', balances.month)
@@ -292,6 +311,9 @@ export default {
           commit('SET_ALL_ACCOUNT_BALANCES', balances.account)
           commit('SET_ALL_CATEGORY_BALANCES', balances.category)
           return balances.category
+        })
+        .catch((error) => {
+          console.log(error)
         })
     }
   }

@@ -10,7 +10,7 @@
     <div v-if="selectedCategory" class="transaction-details-grid pa-2 pb-0">
       <div class="text-h5">Name</div>
       <div>
-        <category-grid-input
+        <string-input
           class="category-name-input"
           :id="`category-name-input-${selectedCategory._id}`"
           :data-testid="`category-name-input-${selectedCategory._id}`"
@@ -24,7 +24,7 @@
 
       <div class="text-h5">Budgeted</div>
       <div>
-        <category-grid-input
+        <string-input
           class="category-budget-input"
           :id="`category-budget-input-${selectedCategory._id}`"
           :data-testid="`category-budget-input-${selectedCategory._id}`"
@@ -79,7 +79,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import CurrencyInput from '../Shared/CurrencyInput.vue'
 import DetailsTable from './DetailsTable.vue'
 import { ID_LENGTH, NONE } from '../../constants'
-import CategoryGridInput from './CategoryGridInput.vue'
+import StringInput from '../Shared/StringInput.vue'
 import DetailsMove from './DetailsMove.vue'
 
 export default {
@@ -88,7 +88,7 @@ export default {
     CategoriesWorking,
     CurrencyInput,
     DetailsTable,
-    CategoryGridInput,
+    StringInput,
     DetailsMove
   },
   watch: {

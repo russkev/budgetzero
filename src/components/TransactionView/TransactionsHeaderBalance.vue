@@ -1,6 +1,6 @@
 <template>
   <v-sheet color="transparent" :class="`transactions-header-balance ${left ? '' : 'ml-3'}`">
-    <!-- <div :class="headingStyle !== 'h4' ? `text-${headingStyle}` : 'transactions-header-heading'"> -->
+    <div :class="headingStyle !== 'h4' ? `text-${headingStyle}` : 'transactions-header-heading'">
       {{ heading }}
     </div>
     <div v-if="subheading !== ''" class="transactions-header-subheading">
@@ -14,22 +14,22 @@ export default {
   props: {
     left: {
       type: Boolean,
-      default: false,
+      default: false
     },
-    // heading: {
-    //   type: String,
-    //   default: "",
-    // },
+    heading: {
+      type: String,
+      default: ''
+    },
     headingStyle: {
       type: String,
-      default: "h4",
+      default: 'h4'
     },
     subheading: {
       type: String,
-      default: "",
-    },
-  },
-};
+      default: ''
+    }
+  }
+}
 </script>
 
 <style>

@@ -1,7 +1,7 @@
 <template>
   <v-card flat color="background lighten-2" class="pa-2">
     <span class="category-radio-group mb-2">
-      <category-grid-input
+      <string-input
         class="category-budget-input"
         :id="`category-move-input-${selectedCategory._id}`"
         :data-testid="`category-move-input-${selectedCategory._id}`"
@@ -41,13 +41,13 @@
 <script>
 import DetailsRadio from '../Shared/DetailsRadio.vue'
 import CategoryMenu from '../Shared/CategoryMenu.vue'
-import CategoryGridInput from './CategoryGridInput.vue'
+import StringInput from '../Shared/StringInput.vue'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'DetailsMove',
   components: {
-    CategoryGridInput,
+    StringInput,
     DetailsRadio,
     CategoryMenu
   },

@@ -315,6 +315,10 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
   allTransactions.map((row) => {
     const account_id = row.doc.account
     const account_doc = getters.accountsById[account_id]
+    if (account_doc === undefined) {
+      console.error('Account not found for id:', account_id)
+      return
+    }
     const working = row.doc.value
     const month = row.doc.date.slice(0, 7)
     let category_id = row.doc.category
@@ -327,8 +331,8 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     const splits = row.doc.splits ? row.doc.splits : []
 
     // _.defaultsDeep(balances.account, defaultAccountBalance(account_id))
-    _.defaultsDeep(balances.account, {[account_id]: DEFAULT_ACCOUNT_BALANCE})
-    _.defaultsDeep(balances.month, {[month]: DEFAULT_MONTH_BALANCE})
+    _.defaultsDeep(balances.account, { [account_id]: DEFAULT_ACCOUNT_BALANCE })
+    _.defaultsDeep(balances.month, { [month]: DEFAULT_MONTH_BALANCE })
     updateAccountBalances(balances.account, account_doc, account_id, cleared, uncleared, working)
     updateMonthBalances(balances.month, master_id, account_doc, month, working)
 
@@ -340,7 +344,7 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     }
 
     initFromMonthCategory(month)
-    const category_items = splits.length > 0 ? splits : [{category: category_id, value: working}]
+    const category_items = splits.length > 0 ? splits : [{ category: category_id, value: working }]
 
     category_items.map((item) => {
       if (balances.category[month] === undefined) {
@@ -370,7 +374,6 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
       const current_month = month_category_months[month_category_index]
       balances.category[current_month] = initCategoryBalancesMonth(balances.category, current_month, getters.categories)
       Object.entries(month_category_balances[current_month]).forEach(([category_id, category]) => {
-
         balances.category[current_month][category_id].doc = _.get(
           month_category_balances,
           [current_month, category_id, 'doc'],

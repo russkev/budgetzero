@@ -46,14 +46,14 @@
 <script>
 import { mapGetters } from 'vuex'
 import { DEFAULT_ACCOUNT_BALANCE } from '../../constants'
-// import TransactionsHeaderBalance from './TransactionsHeaderBalance.vue'
+import TransactionsHeaderBalance from './TransactionsHeaderBalance.vue'
 import PageHeading from '../Shared/PageHeading.vue'
 
 import _ from 'lodash'
 
 export default {
   components: {
-    // TransactionsHeaderBalance
+    TransactionsHeaderBalance,
     PageHeading
   },
   props: ['selected_account_id'],

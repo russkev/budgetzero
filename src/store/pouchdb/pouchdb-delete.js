@@ -7,12 +7,10 @@ export default {
   actions: {
     deleteLocalDatabase: (context) => {
       const db = Vue.prototype.$pouch
-      
-      db
-        .destroy()
+
+      db.destroy()
         .then(() => {
           context.dispatch('resetAllCurrentBudgetData')
-          context.dispatch('resetBudgets')
         })
         .catch(function (err) {
           console.log(`Error deleting database: ${err}`)
@@ -65,11 +63,11 @@ export default {
         console.log(resp) //{ok: true}
       })
     },
-    
+
     /**
      * Delete local transactions only
      */
-    deleteTransactions: ({getters, dispatch}) => {
+    deleteTransactions: ({ getters, dispatch }) => {
       const db = Vue.prototype.$pouch
       return new Promise((resolve, reject) => {
         let accounts = getters.transactions_by_account
@@ -103,10 +101,9 @@ export default {
      */
     deleteDocFromPouch: (context, document) => {
       const db = Vue.prototype.$pouch
-      return db.remove(document)
-        .catch((err) => {
-          context.commit('API_FAILURE', err)
-        })
+      return db.remove(document).catch((err) => {
+        context.commit('API_FAILURE', err)
+      })
     },
 
     /**
@@ -138,13 +135,13 @@ export default {
      * Deletes bulk documents from pouchdb.
      * @param {array} documents The documents to delete.
      */
-    deleteBulkDocumentsFromPouchAndVuex: (context, {documents}) => {
+    deleteBulkDocumentsFromPouchAndVuex: (context, { documents }) => {
       const payload = documents.map((doc) => {
         return {
           current: {
             ...doc,
             _deleted: true,
-            value: 0,
+            value: 0
           },
           previous: doc
         }

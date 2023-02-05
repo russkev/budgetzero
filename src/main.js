@@ -130,4 +130,6 @@ const vm = new Vue({
 //TODO: Allows access to vm within Vuex store. May want to research alternative ways... this._vm may work within store?
 Vue.prototype.$vm = vm
 
-vm.$store.dispatch('createLocalPouchDB')
+vm.$store.dispatch('createLocalPouchDB').then(() => {
+  vm.$store.dispatch('loadLocalBudget')
+})

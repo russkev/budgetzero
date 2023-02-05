@@ -7,20 +7,17 @@
     </template>
     <v-card color="background">
       <v-alert text color="error" icon="mdi-alert-circle" type="error">
-        <h3 class="text-h4 error--text text--lighten-1">{{titleText}}</h3>
+        <h3 class="text-h4 error--text text--lighten-1">{{ titleText }}</h3>
       </v-alert>
       <v-card-text>
-        <span class="text-body-1">{{bodyText}}</span>
+        <span class="text-body-1">
+          <slot name="body">{{ bodyText }}</slot>
+        </span>
       </v-card-text>
       <v-card-actions>
         <v-spacer />
         <v-btn data-testid="delete-cancel-button" text @click="onCancel">Cancel</v-btn>
-        <v-btn
-          data-testid="delete-confirm-button"
-          color="primary darken-2"
-          elevation="0"
-          @click="onConfirm"
-        >
+        <v-btn data-testid="delete-confirm-button" color="primary darken-2" elevation="0" @click="onConfirm">
           <span>Confirm</span>
         </v-btn>
       </v-card-actions>
@@ -32,27 +29,27 @@
 export default {
   data() {
     return {
-      show: false,
-    };
+      show: false
+    }
   },
   props: {
     titleText: {
       type: String,
-      default: "Delete Transaction",
+      default: 'Delete Transaction'
     },
     bodyText: {
       type: String,
-      default: "Are you sure you want to delete this transaction?",
-    },
+      default: 'Are you sure you want to delete this transaction?'
+    }
   },
   methods: {
     onConfirm() {
-      this.$emit("confirm");
-      this.show = false;
+      this.$emit('confirm')
+      this.show = false
     },
     onCancel() {
-      this.show = false;
-    },
-  },
-};
+      this.show = false
+    }
+  }
+}
 </script>

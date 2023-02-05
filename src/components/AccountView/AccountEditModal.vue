@@ -7,7 +7,7 @@
           <div id="account-details-grid" class="transaction-details-grid pa-2 pb-0">
             <div class="text-h5">Name</div>
             <div>
-              <category-grid-input
+              <string-input
                 class="account-name-input"
                 :id="`account-name-input`"
                 :data-testid="`account-name-input`"
@@ -121,7 +121,7 @@
 import { mapActions } from 'vuex'
 import { ACCOUNT_TYPES, ID_LENGTH } from '../../constants'
 import BaseModalComponent from './../Modals/BaseModalComponent.vue'
-import CategoryGridInput from '../CategoryView/CategoryGridInput.vue'
+import StringInput from '../Shared/StringInput.vue'
 import DetailsCheckbox from '../Shared/DetailsCheckbox.vue'
 import CurrencyInput from '../Shared/CurrencyInput.vue'
 import DeleteConfirm from '../Shared/DeleteConfirm.vue'
@@ -131,7 +131,7 @@ export default {
   name: 'AccountEditModal',
   components: {
     BaseModalComponent,
-    CategoryGridInput,
+    StringInput,
     DetailsCheckbox,
     CurrencyInput,
     DeleteConfirm,

@@ -3,7 +3,7 @@ import Vue from 'vue'
 import Vuetify from 'vuetify/lib'
 import { hslStringToHex } from '../helper'
 import ZeroIcon from '../components/Icons/zero.vue'
-import ZeroIconSmall from "../components/Icons/zerosmall.vue"
+import ZeroIconSmall from '../components/Icons/zerosmall.vue'
 
 Vue.use(Vuetify)
 
@@ -25,8 +25,8 @@ export default new Vuetify({
       },
       dark: {
         // primary: '#354148',
-        primary: hslStringToHex('hsl(200, 100%, 51%)'),
-        info: hslStringToHex("hsl(200, 66%, 60%)"),
+        primary: hslStringToHex('hsl(200, 36%, 62%)'),
+        info: hslStringToHex('hsl(200, 34%, 53%)'),
         secondary: hslStringToHex('hsl(244, 18%, 57%)'),
         accent: hslStringToHex('hsl(253, 100%, 72%)'),
         background: {
@@ -55,9 +55,8 @@ export default new Vuetify({
   icons: {
     values: {
       custom: {
-        component: ZeroIcon,
-      },
+        component: ZeroIcon
+      }
     }
   }
 })
-
