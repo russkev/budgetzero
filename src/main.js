@@ -22,7 +22,8 @@ import Transactions from './components/TransactionView/Transactions.vue'
 
 import Accounts from './components/AccountView/Accounts.vue'
 import Categories from './components/CategoryView/Categories.vue'
-import CreateBudget from './components/CreateBudget.vue'
+// import CreateBudget from './components/CreateBudget.vue'
+import NewBudget from './components/NewBudgetView/NewBudget.vue'
 import Manage from './components/Manage.vue'
 import Reports from './components/Reports.vue'
 import moment from 'moment'
@@ -110,7 +111,7 @@ export var router = new VueRouter({
     },
     {
       path: '/create',
-      component: CreateBudget
+      component: NewBudget
     }
   ]
 })

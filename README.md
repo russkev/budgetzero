@@ -1,8 +1,8 @@
 # <a href="https://app.budgetzero.io"><p align="center"><img src="public/logo.png" width="300"></p>
 [![Netlify Status](https://api.netlify.com/api/v1/badges/46f53248-fffd-4af5-ac02-84c3b16049de/deploy-status)](https://app.netlify.com/sites/frabjous-pithivier-23dcc3/deploys)
-  
+
 This is fork of [Budget Zero](https://github.com/budgetzero/budgetzero)
-  
+
 budgetzero is a free, open-source, privacy-friendly, offline-first budgeting system.  
 
 Use at https://frabjous-pithivier-23dcc3.netlify.app/
@@ -15,3 +15,14 @@ Use at https://frabjous-pithivier-23dcc3.netlify.app/
 :heavy_check_mark: Import Transactions (OFX, QFX, CSV)  
 :heavy_check_mark: Carry negative balances into next month  
 :heavy_check_mark: Privacy-focused. Zero trackers & zero analytics.
+
+
+# To run local server:
+```
+npm run dev
+```
+
+# To run Cypress integration tests:
+```
+npx cypress open
+```
