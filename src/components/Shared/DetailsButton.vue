@@ -1,13 +1,6 @@
 <template>
-  <v-btn
-    text
-    class="no-uppercase justify-start test-h5"
-    width="140px"
-    v-on="on"
-    v-bind="attrs"
-    @click="onClick"
-    >
-    <v-icon left>
+  <v-btn text class="no-uppercase justify-start test-h5" :width="width" v-on="on" v-bind="attrs" @click="onClick">
+    <v-icon left :size="iconSize">
       {{ icon }}
     </v-icon>
     {{ label }}
@@ -19,27 +12,37 @@ export default {
   props: {
     icon: {
       type: String,
-      required: true,
+      required: true
     },
     label: {
       type: String,
-      required: true,
+      required: true
     },
     on: {
       type: Object,
-      required: false,
+      required: false
     },
     attrs: {
       type: Object,
-      required: false,
+      required: false
     },
+    width: {
+      type: String,
+      required: false,
+      default: '140px'
+    },
+    iconSize: {
+      type: String,
+      required: false,
+      default: 'default'
+    }
   },
   methods: {
     onClick(event) {
-      this.$emit('click', event);
-    },
+      this.$emit('click', event)
+    }
   }
-};
+}
 </script>
 
 <style>

@@ -25,7 +25,8 @@ import Categories from './components/CategoryView/Categories.vue'
 // import CreateBudget from './components/CreateBudget.vue'
 import NewBudget from './components/NewBudgetView/NewBudget.vue'
 import Manage from './components/Manage.vue'
-import Reports from './components/Reports.vue'
+// import Reports from './components/Reports.vue'
+import Landing from './components/NewBudgetView/Landing.vue'
 import moment from 'moment'
 
 import VueMoment from 'vue-moment'
@@ -75,6 +76,11 @@ export var router = new VueRouter({
   mode: import.meta.env.IS_ELECTRON ? 'hash' : 'history',
   routes: [
     {
+      path: '/landing',
+      name: 'landing',
+      component: Landing
+    },
+    {
       path: '*',
       redirect: `/categories/${moment(new Date()).format('YYYY-MM')}`
     },
@@ -90,10 +96,10 @@ export var router = new VueRouter({
       path: '/accounts',
       component: Accounts
     },
-    {
-      path: '/reports',
-      component: Reports
-    },
+    // {
+    //   path: '/reports',
+    //   component: Reports
+    // },
     {
       path: '/transactions',
       name: 'all_transactions',
