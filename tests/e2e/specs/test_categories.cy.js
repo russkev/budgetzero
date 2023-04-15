@@ -1,9 +1,7 @@
-import { wait } from "@testing-library/vue"
-
 describe('Test categories (budget) page', () => {
   context('Test values', () => {
     before(() => {
-      cy.initPath('budget/2022-07')
+      cy.initPath('categories/2022-07')
     })
 
     it('Checks category values for July', () => {
@@ -165,7 +163,7 @@ describe('Test categories (budget) page', () => {
 
   context('Test drag and drop', () => {
     before(() => {
-      cy.initPath('budget/2022-08')
+      cy.initPath('categories/2022-08')
     })
 
     it('Drag category to different place in same master category', () => {
@@ -243,7 +241,7 @@ describe('Test categories (budget) page', () => {
 
   context('Test delete / hide', () => {
     before(() => {
-      cy.initPath('budget/2022-08')
+      cy.initPath('categories/2022-08')
       cy.get('[data-testid="btn-expand-::0"]').trigger('mouseenter').click()
     })
 
@@ -292,7 +290,7 @@ describe('Test categories (budget) page', () => {
 
   context('Test create new categories', () => {
     before(() => {
-      cy.initPath('budget/2022-08')
+      cy.initPath('categories/2022-08')
     })
 
     it('Creates a new category', () => {
@@ -324,19 +322,19 @@ describe('Test categories (budget) page', () => {
 
   context('Test selected date is saved', () => {
     before(() => {
-      cy.initPath('budget/2022-01')
+      cy.initPath('categories/2022-01')
     })
 
     it('Accesses transaction page and then categories page again', () => {
       cy.get('[data-testid="transactions-page-7kW"]').click()
       cy.get('[data-testid="sidebar-button-budgets"]').click()
-      cy.url().should('include', 'budget/2022-01')
+      cy.url().should('include', 'categories/2022-01')
     })
   })
 
   context('Test updating budgeted values', () => {
     before(() => {
-      cy.initPath('budget/2022-07')
+      cy.initPath('categories/2022-07')
     })
     it('Checks that changing budgeted values results in values updating properly', () => {
       const vacation_selector = '[data-testid="category-budget-Lx7"]'
@@ -360,7 +358,7 @@ describe('Test categories (budget) page', () => {
 
   context('Test that total balance value updates correctly', () => {
     before(() => {
-      cy.initPath('budget/2022-07')
+      cy.initPath('categories/2022-07')
     })
 
     it('Checks the value for July and August', () => {
@@ -481,7 +479,7 @@ describe('Test categories (budget) page', () => {
 
   context('Test that hidden restore works correctly', () => {
     beforeEach(() => {
-      cy.initPath('budget/2022-08')
+      cy.initPath('categories/2022-08')
       cy.get('[data-testid="btn-expand-::0"]').trigger('mouseenter').click()
     })
 
@@ -514,7 +512,7 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="category-name-ATi"]').trigger('mouseenter')
       cy.get('[data-testid="btn-restore-category-ATi"]').trigger('mouseenter')
       cy.get('[data-testid="btn-restore-category-ATi"]').click()
-      cy.get('[data-testid="categories-container-3ks"] > div:nth-child(4)', {timeout: 10000})
+      cy.get('[data-testid="categories-container-3ks"] > div:nth-child(4)', { timeout: 10000 })
       cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 0)
       cy.get('[data-testid="categories-container-3ks"] [data-testid="category-name-ATi"]').should('have.length', 1)
     })
@@ -522,7 +520,7 @@ describe('Test categories (budget) page', () => {
     it('Checks that deleting a master category and then restoring works', () => {
       cy.get('[data-testid="btn-delete-master-category-ggJ"]').trigger('mouseenter').click()
       cy.wait(500)
-      cy.get('[data-testid="delete-confirm-button"]').click({waitForAnimations: false, force: true})
+      cy.get('[data-testid="delete-confirm-button"]').click({ waitForAnimations: false, force: true })
       cy.get('[data-testid="categories-container-ggJ"]').should('not.exist')
       cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 1)
       cy.get('[data-testid="categories-container-\\:\\:0"] > div:nth-child(1)')
@@ -540,7 +538,7 @@ describe('Test categories (budget) page', () => {
 
   context('Tests math rounding', () => {
     beforeEach(() => {
-      cy.initPath('budget/2022-08')
+      cy.initPath('categories/2022-08')
     })
 
     it('Checks that 18.99 is stored as 18.99', () => {

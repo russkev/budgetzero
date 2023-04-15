@@ -73,6 +73,7 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import HeaderRow from './HeaderRow.vue'
 import MasterCategoryColor from './MasterCategoryColor.vue'
 import MasterCategoryDelete from './MasterCategoryDelete.vue'
+import CategoryGridInput from './CategoryGridInput.vue'
 import { NONE, AMOUNT_RED, AMOUNT_GREEN } from '../../constants'
 import _ from 'lodash'
 
@@ -94,7 +95,8 @@ export default {
   components: {
     HeaderRow,
     MasterCategoryColor,
-    MasterCategoryDelete
+    MasterCategoryDelete,
+    CategoryGridInput
   },
   data() {
     return {

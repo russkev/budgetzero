@@ -76,7 +76,7 @@ export var router = new VueRouter({
   routes: [
     {
       path: '*',
-      redirect: `/budget/${moment(new Date()).format('YYYY-MM')}`
+      redirect: `/categories/${moment(new Date()).format('YYYY-MM')}`
     },
     {
       path: '/budgets',
@@ -105,7 +105,11 @@ export var router = new VueRouter({
       component: Transactions
     },
     {
-      path: '/budget/:month',
+      path: '/categories',
+      redirect: `/categories/${moment(new Date()).format('YYYY-MM')}`
+    },
+    {
+      path: '/categories/:month',
       name: 'budget',
       component: Categories
     },

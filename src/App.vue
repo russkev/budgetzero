@@ -2,11 +2,7 @@
   <v-app id="app">
     <!-- Global confirm dialog -->
     <confirm-dialog ref="confirm"></confirm-dialog>
-
-    <budget-add-modal v-model="isModalVisibleCreateBudget"/>
-
     <sidebar />
-
     <v-main>
       <router-view class="animated" />
     </v-main>
@@ -14,44 +10,32 @@
       {{ snackbarMessage }}
 
       <template #action="{ attrs }">
-        <v-btn color="white" text v-bind="attrs" @click="snackbar = false">
-          Close
-        </v-btn>
+        <v-btn color="white" text v-bind="attrs" @click="snackbar = false"> Close </v-btn>
       </template>
     </v-snackbar>
   </v-app>
 </template>
 
 <script>
-window.global ||= window;
-import Sidebar from './components/SidebarView/Sidebar.vue';
+window.global ||= window
+import Sidebar from './components/SidebarView/Sidebar.vue'
 import BaseDialogModalComponent from './components/Modals/BaseDialogModalComponent.vue'
 import ConfirmDialog from './components/Modals/ConfirmDialog.vue'
-import BudgetAddModal from './components/CategoryView/BudgetAddModal.vue'
 
 export default {
   name: 'App',
   components: {
     Sidebar,
     BaseDialogModalComponent,
-    ConfirmDialog,
-    BudgetAddModal,
+    ConfirmDialog
   },
   data() {
     return {
       drawer: null,
-      mini: false,
+      mini: false
     }
   },
   computed: {
-    isModalVisibleCreateBudget: {
-      get() {
-        return !this.$store.getters.budgetExists || this.createBudgetIsLoading
-      },
-      set() {
-        return
-      }
-    },
     snackbarMessage() {
       return this.$store.getters.snackbarMessage
     },

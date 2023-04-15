@@ -2,7 +2,6 @@ describe('Test transactions', () => {
   context('Test transaction create', () => {
     before(() => {
       cy.initPath('transactions/7kW')
-      cy.get('[data-testid="toggle-sidebar"]').click()
     })
 
     it('Check transaction values and balance displays correctly', () => {
@@ -29,7 +28,7 @@ describe('Test transactions', () => {
     })
 
     it('Checks transactions header', () => {
-      cy.get('[data-testid="transactions-account-name"]').should('contain.text', 'Savings')
+      cy.get('[data-testid="transactions-heading"]').should('contain.text', 'Savings')
       cy.get('[data-testid="account-balance-cleared"]').should('contain.text', '$725.54')
       cy.get('[data-testid="account-balance-uncleared"]').should('contain.text', '$2,110.56')
       cy.get('[data-testid="account-balance-working"]').should('contain.text', '$2,836.10')
@@ -95,7 +94,6 @@ describe('Test transactions', () => {
   context('Test transaction value update', () => {
     before(() => {
       cy.initPath('transactions/7kW')
-      cy.get('[data-testid="toggle-sidebar"]').click()
     })
 
     it('Updates existing transaction value', () => {
@@ -120,7 +118,7 @@ describe('Test transactions', () => {
     })
 
     it('Checks transactions header was updated correctly', () => {
-      cy.get('[data-testid="transactions-account-name"]').should('contain.text', 'Savings')
+      cy.get('[data-testid="transactions-heading"]').should('contain.text', 'Savings')
       cy.get('[data-testid="account-balance-cleared"]').should('contain.text', '$904.30')
       cy.get('[data-testid="account-balance-uncleared"]').should('contain.text', '$2,110.56')
       cy.get('[data-testid="account-balance-working"]').should('contain.text', '$3,014.86')
@@ -140,7 +138,6 @@ describe('Test transactions', () => {
   context('Test transaction category update', () => {
     before(() => {
       cy.initPath('transactions/7kW')
-      cy.get('[data-testid="toggle-sidebar"]').click()
     })
 
     it('Change category from Groceries to Vacation', () => {
@@ -170,7 +167,7 @@ describe('Test transactions', () => {
     })
 
     it('Checks that budget was updated correctly', () => {
-      cy.visit('http://localhost:8082/budget/2022-08')
+      cy.visit('http://localhost:8082/categories/2022-08')
 
       cy.get('[data-testid="master-category-name-:in"]').should('have.text', ' Income ')
       cy.get('[data-testid="master-category-spent-:in"]').should('contain.text', ' $581.64 ')
@@ -187,7 +184,6 @@ describe('Test transactions', () => {
   context('Test transaction date update', () => {
     before(() => {
       cy.initPath('transactions/7kW')
-      cy.get('[data-testid="toggle-sidebar"]').click()
     })
 
     it('Updates existing transaction category', () => {
@@ -203,7 +199,7 @@ describe('Test transactions', () => {
     it('Checks that budget was updated correctly', () => {
       cy.get('[data-testid="sidebar-button-budgets"]').click()
 
-      cy.visit('http://localhost:8082/budget/2022-08')
+      cy.visit('http://localhost:8082/categories/2022-08')
       cy.get('[data-testid="working-income"]').should('have.text', '$581.64')
       cy.get('[data-testid="previous-month-button"]').click()
       cy.get('[data-testid="working-income"]').should('have.text', '$3,886.79')
@@ -213,7 +209,6 @@ describe('Test transactions', () => {
   context('Test delete transactions', () => {
     before(() => {
       cy.initPath('transactions/7kW')
-      cy.get('[data-testid="toggle-sidebar"]').click()
     })
 
     it('Deletes last transaction', () => {
@@ -238,7 +233,7 @@ describe('Test transactions', () => {
     })
 
     it('Checks that sidebar balance was updated correctly', () => {
-      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', ' $2,996.60 ')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$2,996.60')
     })
 
     it('Deletes second to last transaction', () => {
@@ -262,7 +257,7 @@ describe('Test transactions', () => {
     })
 
     it('Checks that sidebar balance was updated correctly', () => {
-      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', ' $3,170.36 ')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$3,170.36')
     })
 
     it('Deletes first transaction', () => {
@@ -285,7 +280,7 @@ describe('Test transactions', () => {
     })
 
     it('Checks that sidebar balance was updated correctly', () => {
-      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', ' $3,185.80 ')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$3,185.80')
     })
 
     it('Deletes 3 transactions', () => {
@@ -308,7 +303,7 @@ describe('Test transactions', () => {
     })
 
     it('Checks that sidebar balance was updated correctly', () => {
-      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', ' -$174.76 ')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '-$174.76')
     })
 
     it('Deletes the final transaction', () => {
@@ -324,11 +319,11 @@ describe('Test transactions', () => {
     })
 
     it('Checks that sidebar balance was updated correctly', () => {
-      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', ' $0.00 ')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$0.00')
     })
 
     it('Checks that budget was updated correctly', () => {
-      cy.visit('http://localhost:8082/budget/2022-08')
+      cy.visit('http://localhost:8082/categories/2022-08')
 
       cy.get('[data-testid="master-category-name-:in"]').should('have.text', ' Income ')
       cy.get('[data-testid="master-category-spent-:in"]').should('contain.text', ' $581.64 ')
@@ -344,7 +339,6 @@ describe('Test transactions', () => {
   context('Test clear and unclear multiple transactions at once', () => {
     before(() => {
       cy.initPath('transactions/7kW')
-      cy.get('[data-testid="toggle-sidebar"]').click()
     })
 
     it('Un-clears 3 transactions', () => {
@@ -388,7 +382,6 @@ describe('Test transactions', () => {
   context('Test categorize 3 transactions at once', () => {
     before(() => {
       cy.initPath('transactions/7kW')
-      cy.get('[data-testid="toggle-sidebar"]').click()
     })
 
     it('Categorizes 3 transactions as Gas', () => {
@@ -413,7 +406,6 @@ describe('Test transactions', () => {
   context('Test that split category works', () => {
     before(() => {
       cy.initPath('transactions/7kW')
-      cy.get('[data-testid="toggle-sidebar"]').click()
     })
 
     it('Sets transaction as split category', () => {
@@ -448,7 +440,6 @@ describe('Test transactions', () => {
   context('Modify category, splits, date, amount, all at once', () => {
     before(() => {
       cy.initPath('transactions/7kW')
-      cy.get('[data-testid="toggle-sidebar"]').click()
     })
 
     it('Does the modifications', () => {
@@ -458,7 +449,7 @@ describe('Test transactions', () => {
 
       cy.get('[data-testid="details-value"]').click().clear().type('1.25').type('{enter}')
       cy.get('[data-testid="details-outflow-button"]').click()
-      
+
       cy.get('[data-testid="details-value"]').should('have.value', '$1.25')
 
       cy.get('[data-testid="add-split-button"]').click()

@@ -16,14 +16,11 @@
                   color="secondary lighten-2"
                   background-color="background lighten-3"
                   v-model="budgetName"
-                  @change="onBudgetNameChange"
                   class="mx-2 text-body-1"
                   :error="Boolean(budgetNameError)"
                   :error-messages="budgetNameError"
+                  data-testid="budget-name-field"
                 />
-                <!-- <button-transparent icon="mdi-file-document" :disabled="!createButtonIsEnabled" @click="onCreate">
-                  Create
-                </button-transparent> -->
               </div>
             </v-card>
           </div>
@@ -33,10 +30,11 @@
               <v-checkbox
                 v-model="selectedMasterCategories"
                 :value="masterCategory"
+                :indeterminate="masterIntermediateState(masterCategory)"
                 color="secondary lighten-2"
                 class="pa-0 ma-0 mb-2"
-                :indeterminate="masterIntermediateState(masterCategory)"
                 hide-details
+                :data-testid="`master-checkbox-${masterCategory}`"
               >
                 <template #label>
                   <div class="text-h6">{{ masterCategory }}</div>
@@ -52,6 +50,7 @@
                       dense
                       class="pa-0 ma-0"
                       hide-details
+                      :data-testid="`checkbox-${category}`"
                     >
                       <template #label>
                         <div class="text-body-1">{{ category }}</div>
@@ -62,6 +61,17 @@
               </v-card>
             </div>
           </div>
+          <div>Create</div>
+          <div>
+            <button-transparent
+              icon="mdi-file-document"
+              :disabled="!createButtonIsEnabled"
+              @click="onCreate"
+              data-testid="create-budget-button"
+            >
+              Create
+            </button-transparent>
+          </div>
         </div>
       </v-sheet>
     </v-container>
@@ -69,7 +79,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import PageHeading from '../Shared/PageHeading.vue'
 
 export default {
@@ -81,20 +91,6 @@ export default {
     return {
       budgetName: '',
       budgetNameError: '',
-      // defaultCategories: {
-      // 'Everyday Expenses'
-      // Food: false,
-      // Clothing: false,
-      // Housing: false,
-      // Transportation: false,
-      // Utilities: false,
-      // Medical: false,
-      // Insurance: false,
-      // Personal: false,
-      // Debt: false,
-      // Savings: false,
-      // Entertainment: false,
-      // Miscellaneous: false
       starterCategories: {
         Giving: ['Tithing', 'Charitable'],
         'Everyday Expenses': ['Restaurants', 'Groceries', 'Household Goods', 'Spending Money'],
@@ -139,8 +135,9 @@ export default {
     },
     selectedMasterCategories: {
       get() {
-        return Object.entries(this.starterCategories).reduce((partial, [masterCategory, categories]) => {
-          if (this.selectedCategories[masterCategory].length === categories.length) {
+        // Only return the master categories that have all of their children selected
+        return Object.keys(this.starterCategories).reduce((partial, masterCategory) => {
+          if (this.selectedCategories[masterCategory].length === this.starterCategories[masterCategory].length) {
             partial.push(masterCategory)
           }
           return partial
@@ -148,25 +145,48 @@ export default {
       },
       set(selected) {
         if (!Array.isArray(selected)) selected = Object.keys(selected)
-        Object.keys(this.starterCategories).forEach((masterCategory) => {
-          if (selected.includes(masterCategory)) {
-            this.selectedCategories[masterCategory] = this.starterCategories[masterCategory]
-          } else {
-            this.selectedCategories[masterCategory] = []
-          }
+        const items_disabled = this.selectedMasterCategories.filter((item) => !selected.includes(item))
+        const items_enabled = selected.filter((item) => !this.selectedMasterCategories.includes(item))
+
+        items_disabled.forEach((masterCategory) => {
+          this.selectedCategories[masterCategory] = []
+        })
+        items_enabled.forEach((masterCategory) => {
+          this.selectedCategories[masterCategory] = this.starterCategories[masterCategory]
         })
       }
     }
   },
   methods: {
-    onBudgetNameChange() {
-      console.log('onBudgetNameChange')
-    },
+    ...mapActions(['createBudget']),
     masterIntermediateState(masterCategory) {
       return (
         this.selectedCategories[masterCategory].length > 0 &&
         this.selectedCategories[masterCategory].length < this.starterCategories[masterCategory].length
       )
+    },
+    onCreate() {
+      // Only send the master categories that have at least one child selected
+      const masterCategories = Object.entries(this.selectedCategories).reduce(
+        (partial, [masterCategory, categories]) => {
+          if (categories.length > 0) {
+            partial.push(masterCategory)
+          }
+          return partial
+        },
+        []
+      )
+      this.createBudget({
+        name: this.budgetName,
+        masterCategories: masterCategories,
+        categories: this.selectedCategories
+      })
+        .then(() => {
+          this.$router.push({ path: '/categories' })
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     }
   }
 }

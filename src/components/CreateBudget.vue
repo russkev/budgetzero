@@ -16,12 +16,10 @@
 
       <v-divider />
 
-      <v-card-actions class=" white--text">
+      <v-card-actions class="white--text">
         <v-spacer />
         <slot name="actions">
-          <v-btn color="accent" id="btn-createBudget" @click="createBudget()">
-            Create
-          </v-btn>
+          <v-btn color="accent" id="btn-createBudget" @click="createBudget()"> Create </v-btn>
         </slot>
       </v-card-actions>
     </v-card>
@@ -35,12 +33,13 @@ export default {
   data() {
     return {
       budgetName: null,
-      use_default_budget: false,
+      use_default_budget: false
     }
   },
   methods: {
     async createBudget() {
-      this.$store.dispatch('createBudget', {name: this.budgetName, use_default: this.use_default_budget})
+      this.$store
+        .dispatch('createBudget', { name: this.budgetName, use_default: this.use_default_budget })
         .then(() => {
           this.$root.$confirm('Budget Created!', `A budget named ${this.budgetName} has been created!`, {
             onlyShowAgreeBtn: true,
@@ -50,7 +49,7 @@ export default {
         })
         .then(() => {
           const year_month = moment(new Date()).format('YYYY-MM')
-          this.$router.push({path: `/budget/${year_month}`})
+          this.$router.push({ path: `/categories/${year_month}` })
         })
         .catch((error) => {
           console.log(error.message)

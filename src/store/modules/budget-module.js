@@ -40,16 +40,15 @@ export default {
         Vue.set(state, 'budgetExists', true)
       }
       Vue.set(state, 'allBudgets', budgets)
-    },
+    }
   },
   actions: {
-
     /**
      * Creates new budget and commits to pouchdb
      * @param {*} context
      * @param {string} budgetName The name of the budget to be created
      */
-    createBudget: async (context, { name, use_default }) => {
+    createBudget: async (context, { name, masterCategories, categories }) => {
       if (!name) {
         context.commit('SET_SNACKBAR_MESSAGE', {
           snackbarMessage: 'Invalid budget name',
@@ -74,26 +73,28 @@ export default {
           return context.dispatch('loadLocalBudget')
         })
         .then(() => {
-          let initialize_budget_promises = [context.dispatch('initializeIncomeCategory')]
-          if (use_default) {
-            initialize_budget_promises.push(context.dispatch('initializeBudgetCategories'))
-          }
-          return Promise.all(initialize_budget_promises)
+          // let initialize_budget_promises = [context.dispatch('initializeIncomeCategory')]
+          // initialize_budget_promises.push(
+          //   context.dispatch('initializeBudgetCategories', { masterCategories, categories })
+          //   )
+          //   return Promise.all(initialize_budget_promises)
+          return context.dispatch('initializeBudgetCategories', { masterCategories, categories })
+        })
+        .then(() => {
+          context.dispatch('getAllDocsFromPouchDB')
         })
         .catch((err) => {
           console.log(err)
         })
     },
 
-    commitBudgetToVuex(context, {current, previous}) {
+    commitBudgetToVuex(context, { current, previous }) {
       if ((current && !current._id) || (previous && !previous._id)) {
         console.error(`commitBudgetToVuex called with invalid arguments, current: ${current}, previous: ${previous}`)
         return
       }
-      const new_budget_id = current 
-        ? current._id.slice(-ID_LENGTH.budget)
-        : previous._id.slice(-ID_LENGTH.budget)
-      
+      const new_budget_id = current ? current._id.slice(-ID_LENGTH.budget) : previous._id.slice(-ID_LENGTH.budget)
+
       return context.dispatch('setSelectedBudgetID', new_budget_id)
     },
 
@@ -115,7 +116,7 @@ export default {
       return selected_budget_id
     },
 
-    async updateBudgetAccessed({getters, dispatch}, budget_id) {
+    async updateBudgetAccessed({ getters, dispatch }, budget_id) {
       const db = this._vm.$pouch
       let budget = getters.budgetsById[budget_id]
       if (budget === undefined) {
@@ -129,7 +130,6 @@ export default {
         .then(() => {
           return dispatch('fetchAllBudgets')
         })
-      
     },
 
     /**
@@ -141,17 +141,16 @@ export default {
       const budget_id = budget_document._id.slice(-ID_LENGTH.budget)
       const budget_name = budget_document.name
 
-      if(!budget_id || !budget_document) {
+      if (!budget_id || !budget_document) {
         return
       }
 
-      return Promise
-        .all([
-          context.dispatch('deleteDocFromPouch', budget_document),
-          context.dispatch('deleteAllBudgetDocuments', budget_id),
-        ])
+      return Promise.all([
+        context.dispatch('deleteDocFromPouch', budget_document),
+        context.dispatch('deleteAllBudgetDocuments', budget_id)
+      ])
         .then((results) => {
-          if(results[0].ok) {
+          if (results[0].ok) {
             context.commit('SET_SNACKBAR_MESSAGE', `${budget_name} has been deleted`)
             return true
           }

@@ -359,9 +359,16 @@ export default {
       }
     },
 
-    categoryDocument: async (context, { name, master_id, sort }) => {
+    categoryDocument: async (context, { name, master_id, sort, input_id }) => {
       const prefix = `b_${context.rootState.selectedBudgetId}${ID_NAME.category}`
-      const id = await context.dispatch('generateUniqueShortId', { prefix: prefix })
+      // const id = await context.dispatch('generateUniqueShortId', { prefix: prefix })
+      const id = input_id
+        ? input_id.slice(-ID_LENGTH.category)
+        : await context.dispatch('generateUniqueShortId', { prefix: prefix })
+
+      // if (!id) {
+      //   id = await context.dispatch('generateUniqueShortId', { prefix: prefix })
+      // }
       return {
         _id: `b_${context.rootState.selectedBudgetId}${ID_NAME.category}${id}`,
         name: name,
@@ -486,57 +493,53 @@ export default {
       }
     },
 
-    async initializeIncomeCategory({ dispatch, getters }) {
-      const master_category_payload = {
-        name: 'Income',
-        sort: 0,
-        collapsed: false,
-        color: getRandomColor(getters.colorSwatches)
-      }
-      return dispatch('createMasterCategory', master_category_payload).then((response) => {
-        const payload = {
-          name: 'Paycheck 1',
-          master_id: response._id.slice(-ID_LENGTH.category)
-        }
-        return dispatch('createCategory', payload)
-      })
-    },
+    // async initializeIncomeCategory({ dispatch, getters, rootState }) {
+    //   // const master_category_payload = {
+    //   //   name: 'Income',
+    //   //   sort: 0,
+    //   //   collapsed: false,
+    //   //   color: getRandomColor(getters.colorSwatches)
+    //   // }
+    //   // return dispatch('createMasterCategory', master_category_payload).then((response) => {
+    //   //   console.log('RESPONSE: ', response)
+    //   //   const payload = {
+    //   //     name: 'Paycheck 1',
+    //   //     master_id: response
+    //   //   }
+    //   //   return dispatch('createCategory', payload)
+    //   // })
+    //   // const master_income_payload = {
+    //   //   name: 'Income',
+    //   //   sort: 0,
+    //   //   collapsed: false,
+    //   //   color: getRandomColor(getters.colorSwatches),
+    //   //   _id: `b_${rootState.selectedBudgetId}${ID_NAME.masterCategory}${INCOME._id}`
+    //   // }
+    //   // const paycheck_payload = {
+    //   //   input_id: INCOME._id,
+    //   //   sort: 0,
+    //   //   name: 'Paycheck 1',
+    //   //   master_id: INCOME._id
+    //   // }
+    //   // return dispatch('categoryDocument', paycheck_payload)
+    //   //   .then((response) => {
+    //   //     console.log('RESPONSE: ', response)
+    //   //   })
+    //   //   .catch((error) => {
+    //   //     console.log('initializeIncomeCategory error: ', error)
+    //   //   })
+    //   // return Promise.all([
+    //   //   // dispatch('createMasterCategory', master_income_payload),
+    //   //   dispatch('createCategory', paycheck_payload)
+    //   // ])
+    // },
 
     /**
      * Initialize categories in a new budget
      */
-    async initializeBudgetCategories(context) {
-      console.log('Init default budget categories')
-      const starter_categories = {
-        Giving: ['Tithing', 'Charitable'],
-        'Everyday Expenses': ['Restaurants', 'Groceries', 'Household Goods', 'Spending Money'],
-        'Monthly Bills': [
-          'Medical/Dental',
-          'Internet',
-          'Rent/Mortgage',
-          'Clothing',
-          'Water',
-          'Renters Insurance',
-          'Car Insurance',
-          'Phone',
-          'Fuel',
-          'Car Maintenance',
-          'Electricity',
-          'Cable TV'
-        ],
-        Debt: ['Student Loan Payment', 'Car Payment'],
-        'Savings Goals': [
-          'Rainy Day Funds',
-          'Christmas',
-          'Birthdays',
-          'Emergency Fund',
-          'Car Replacement',
-          'Retirement',
-          'Vacation'
-        ]
-      }
+    async initializeBudgetCategories(context, { masterCategories, categories }) {
       const master_category_docs = await Promise.all(
-        Object.keys(starter_categories).map((category_name, i) => {
+        masterCategories.map((category_name, i) => {
           return context.dispatch('masterCategoryDocument', {
             name: category_name,
             is_income: false,
@@ -546,9 +549,9 @@ export default {
       )
       const category_docs = await Promise.all(
         master_category_docs.reduce((partial, master_category) => {
-          const category_names = starter_categories[master_category.name]
+          const category_names = categories[master_category.name]
           const master_id = master_category._id.slice(-ID_LENGTH.category)
-          const categories = Promise.all(
+          const resultCategories = Promise.all(
             category_names.map((category_name, i) => {
               return context.dispatch('categoryDocument', {
                 name: category_name,
@@ -557,7 +560,7 @@ export default {
               })
             })
           )
-          partial = partial.concat(categories)
+          partial = partial.concat(resultCategories)
           return partial
         }, [])
       )

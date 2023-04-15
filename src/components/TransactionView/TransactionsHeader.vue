@@ -6,7 +6,7 @@
       heading="Account"
       :subheading="accountName"
     /> -->
-    <page-heading title="Account" :subtitle="accountName" />
+    <page-heading title="Account" :subtitle="accountName" data-testid="transactions-heading" />
     <v-alert
       border="left"
       align="right"

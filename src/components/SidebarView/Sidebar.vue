@@ -20,7 +20,7 @@
     </v-list-item>
     <sidebar-list :mini="mini">
       <sidebar-nav-item
-        :destination="{ path: `/budget/${selectedMonth}` }"
+        :destination="{ path: `/categories/${selectedMonth}` }"
         dataTestid="sidebar-button-budgets"
         id="nav-categories"
         :focused-id="focusedId"

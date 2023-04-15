@@ -1,11 +1,7 @@
 <template>
   <v-card class="ma-0 pa-0" elevation="0" color="transparent" width="250px" min-width="250px">
     <v-row class="pa-0 ma-0">
-      <month-next-prev-button
-        icon="mdi-chevron-left"
-        :destination="prevMonth"
-        data-testid="previous-month-button"
-      />
+      <month-next-prev-button icon="mdi-chevron-left" :destination="prevMonth" data-testid="previous-month-button" />
       <v-col class="pa-0 ma-0">
         <v-menu v-model="datePickerIsOpen" :close-on-content-click="false" min-width="auto">
           <template #activator="{ on, attrs }">
@@ -39,54 +35,50 @@
           />
         </v-menu>
       </v-col>
-      <month-next-prev-button
-        data-testid="next-month-button"
-        icon="mdi-chevron-right"
-        :destination="nextMonth"
-      />
+      <month-next-prev-button data-testid="next-month-button" icon="mdi-chevron-right" :destination="nextMonth" />
     </v-row>
   </v-card>
 </template>
 
 <script>
-import { mapMutations, mapGetters } from "vuex";
-import MonthNextPrevButton from "./MonthNextPrevButton.vue";
+import { mapMutations, mapGetters } from 'vuex'
+import MonthNextPrevButton from './MonthNextPrevButton.vue'
 
 export default {
   components: {
-    MonthNextPrevButton,
+    MonthNextPrevButton
   },
   data() {
     return {
-      datePickerIsOpen: false,
-    };
+      datePickerIsOpen: false
+    }
   },
 
   computed: {
-    ...mapGetters("categoryMonth", ["prevMonth", "nextMonth", "selectedMonth"]),
+    ...mapGetters('categoryMonth', ['prevMonth', 'nextMonth', 'selectedMonth']),
     monthName() {
-      const date = new Date(this.selectedMonth);
+      const date = new Date(this.selectedMonth)
 
       // Convert date to month name, year
-      return date.toLocaleString("default", { month: "long" });
+      return date.toLocaleString('default', { month: 'long' })
     },
     year() {
-      const date = new Date(this.selectedMonth);
-      return date.getFullYear();
+      const date = new Date(this.selectedMonth)
+      return date.getFullYear()
     },
     date: {
       get() {
-        return this.selectedMonth;
+        return this.selectedMonth
       },
       set(value) {
-        this.$router.push(`/budget/${value}`);
-      },
-    },
+        this.$router.push(`/categories/${value}`)
+      }
+    }
   },
   methods: {
-    ...mapMutations("categoryMonth", ["UPDATE_SELECTED_MONTH"]),
-  },
-};
+    ...mapMutations('categoryMonth', ['UPDATE_SELECTED_MONTH'])
+  }
+}
 </script>
 
 <style>

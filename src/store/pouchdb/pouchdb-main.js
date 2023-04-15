@@ -281,7 +281,6 @@ export default {
 
     getAllDocsFromPouchDB(context) {
       return Promise.all([context.dispatch('fetchAccounts'), context.dispatch('fetchPayees')]).then(() => {
-        console.log('Accounts', context.getters.accountsById)
         return context.dispatch('calculateAllValues')
       })
     },
