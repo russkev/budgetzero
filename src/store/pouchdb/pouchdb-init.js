@@ -114,21 +114,23 @@ export default {
           console.log(`Design document failure: ${err.message}`)
         })
     },
-    createLocalPouchDB(context) {
+    async createLocalPouchDB(context, restoreFiles) {
       PouchDB.adapter('worker', WorkerPouch)
       const db = new PouchDB(LOCAL_DB_NAME)
       Vue.prototype.$pouch = db
 
-      return (
-        context
-          .dispatch('initializeDesignDocs')
-          // .then(() => {
-          //   return context.dispatch('loadLocalBudget')
-          // })
-          .catch((err) => {
-            console.log(err)
-          })
-      )
+      if (restoreFiles) {
+        await db.bulkDocs(restoreFiles)
+      }
+
+      return await context.dispatch('initializeDesignDocs').catch((err) => {
+        console.log(err)
+      })
+    },
+    async restoreLocalPouchDB(context, restoreFiles) {
+      let pouch = new PouchDB(LOCAL_DB_NAME)
+      await pouch.destroy()
+      return await context.dispatch('createLocalPouchDB', restoreFiles)
     }
   }
 }

@@ -1,5 +1,5 @@
 <template>
-  <v-btn text width="min-content" @click="$emit('click')" :disabled="disabled" v-on="on">
+  <v-btn text :small="small" width="min-content" @click="$emit('click')" :disabled="disabled" v-on="on">
     <v-icon left>{{ icon }}</v-icon>
     <slot></slot>
   </v-btn>
@@ -21,6 +21,10 @@ export default {
       type: Object,
       required: false,
       default: () => {}
+    },
+    small: {
+      type: Boolean,
+      default: false
     }
   }
 }

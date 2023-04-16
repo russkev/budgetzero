@@ -327,7 +327,7 @@ describe('Test categories (budget) page', () => {
 
     it('Accesses transaction page and then categories page again', () => {
       cy.get('[data-testid="transactions-page-7kW"]').click()
-      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      cy.get('[data-testid="sidebar-button-categories"]').click()
       cy.url().should('include', 'categories/2022-01')
     })
   })
@@ -340,12 +340,8 @@ describe('Test categories (budget) page', () => {
       const vacation_selector = '[data-testid="category-budget-Lx7"]'
       const vacation_input_selector = '[data-testid="category-budget-input-Lx7"]'
       cy.get(vacation_selector).click()
-      // cy.wait(100)
       cy.get(vacation_input_selector).should('have.value', '$430.00')
       cy.get(vacation_input_selector).click('center')
-
-      // cy.get(vacation_input_selector).focus()
-
       cy.get(vacation_input_selector).clear()
       cy.get(vacation_input_selector).type('-100')
       cy.get(vacation_input_selector).type('{enter}')
@@ -466,14 +462,14 @@ describe('Test categories (budget) page', () => {
       cy.get('.transaction-row').should('have.length', 5)
 
       // Check categories
-      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      cy.get('[data-testid="sidebar-button-categories"]').click()
 
       cy.get('[data-testid="total-balance"]').should('contain.text', ' $367.47 ')
       cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount over budget:')
 
       cy.get('[data-testid="next-month-button"]').click()
       cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,918.67 ')
-      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      cy.get('[data-testid="sidebar-button-categories"]').click()
     })
   })
 

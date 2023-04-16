@@ -33,7 +33,6 @@ export default {
             })
 
           reformattedExport.push(b_object)
-
           var blob = new Blob([JSON.stringify(reformattedExport)], {
             type: 'text/plain;charset=utf-8'
           })

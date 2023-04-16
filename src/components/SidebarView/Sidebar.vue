@@ -21,7 +21,7 @@
     <sidebar-list :mini="mini">
       <sidebar-nav-item
         :destination="{ path: `/categories/${selectedMonth}` }"
-        dataTestid="sidebar-button-budgets"
+        dataTestid="sidebar-button-categories"
         id="nav-categories"
         :focused-id="focusedId"
         icon="mdi-shape-outline"
@@ -85,14 +85,14 @@
     <template #append>
       <sidebar-list :mini="mini">
         <sidebar-nav-item
-          :destination="{ path: '/budgets' }"
-          dataTestid="sidebar-button-settings"
+          :destination="{ path: '/manage' }"
+          dataTestid="sidebar-button-manage"
           id="nav-settings"
           :focused-id="focusedId"
           icon="mdi-cog-outline"
           icon-active="mdi-cog"
         >
-          Budgets
+          Manage Budgets
         </sidebar-nav-item>
       </sidebar-list>
     </template>

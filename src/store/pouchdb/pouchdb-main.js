@@ -177,7 +177,10 @@ export default {
     },
     commitRestoreBulkDocsToPouch({}, docs) {
       const db = this._vm.$pouch
-      return db.bulkDocs(docs)
+      return db.bulkDocs(docs).catch((error) => {
+        console.log('Unable to commit bulk docs to pouch')
+        console.log(error)
+      })
     },
 
     commitBulkNewDocsToPouch(context, docs) {
@@ -271,7 +274,7 @@ export default {
         context.dispatch('getAllDocsFromPouchDB')
       } catch (error) {
         console.log(error)
-        message = error.msg ? error.msg : error
+        const message = error.msg ? error.msg : error
         context.commit('SET_SNACKBAR_MESSAGE', {
           snackbarMessage: message,
           snackbarColor: 'error'

@@ -9,7 +9,7 @@ export const ID_LENGTH = {
   category: SHORT_ID_LENGTH,
   payee: LONG_ID_LENGTH,
   transaction: LONG_ID_LENGTH,
-  base64Date: 4,
+  base64Date: 4
 }
 
 export const ID_NAME = {
@@ -20,7 +20,7 @@ export const ID_NAME = {
   monthCategory: '_monthCategory_',
   masterCategory: '_masterCategory_',
   payee: '_payee_',
-  none: 'none',
+  none: 'none'
 }
 
 export const DEFAULT_ACCOUNT_BALANCE = {
@@ -28,13 +28,13 @@ export const DEFAULT_ACCOUNT_BALANCE = {
   uncleared: 0,
   working: 0,
   income: 0,
-  expense: 0,
+  expense: 0
 }
 
 export const DEFAULT_MONTH_BALANCE = {
   income: 0,
   expense: 0,
-  budgeted: 0,
+  budgeted: 0
 }
 
 export const DEFAULT_MONTH_CATEGORY = {
@@ -50,7 +50,7 @@ export const DEFAULT_CATEGORY_BALANCE = {
   doc: null,
   expense: 0,
   carryover: 0,
-  income: 0,
+  income: 0
 }
 
 export const DEFAULT_MASTER_CATEGORY_BALANCE = {
@@ -61,26 +61,33 @@ export const DEFAULT_MASTER_CATEGORY_BALANCE = {
   balance: 0
 }
 
+export const SYNC_STATE = {
+  SYNCING: { color: 'warning', icon: 'mdi-sync', text: 'Syncing...' },
+  SYNCED: { color: 'success', icon: 'mdi-check', text: 'Synced' },
+  ERROR: { color: 'error', icon: 'mdi-alert-circle', text: 'Sync Error' },
+  NOT_SYNCING: { color: 'info', icon: 'mdi-cancel', text: 'Disconnected' }
+}
+
 export const NONE = {
   _id: ':::', // ':' Is never used in an id and is URL safe
   name: 'Uncategorized',
   masterCategory: ':::',
   collapsed: false,
-  hexColor: '#444444',
+  hexColor: '#444444'
 }
 
 export const HIDDEN = {
   _id: '::0',
   name: 'Hidden',
   masterCategory: '::0',
-  collapsed: true,
+  collapsed: true
 }
 
 export const INCOME = {
   _id: ':in',
   name: 'Income',
   masterCategory: ':in',
-  collapsed: false,
+  collapsed: false
 }
 
 export const DEFAULT_TRANSACTION = {
@@ -110,9 +117,8 @@ export const DEFAULT_ACCOUNT = {
   sort: 0,
   onBudget: true,
   sign: 1,
-  initialBalance: 0,
+  initialBalance: 0
 }
-
 
 export const AMOUNT_RED = `error--text text--lighten-3`
 export const AMOUNT_GREEN = `success--text text--lighten-3`

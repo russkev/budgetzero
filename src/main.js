@@ -17,14 +17,13 @@ import Vuelidate from 'vuelidate'
 import VueRouter from 'vue-router' // prints 'idb'
 
 import store from './store'
-import Budgets from './components/BudgetsView/Budgets.vue'
 import Transactions from './components/TransactionView/Transactions.vue'
 
 import Accounts from './components/AccountView/Accounts.vue'
 import Categories from './components/CategoryView/Categories.vue'
 // import CreateBudget from './components/CreateBudget.vue'
 import NewBudget from './components/NewBudgetView/NewBudget.vue'
-import Manage from './components/Manage.vue'
+import Manage from './components/ManageView/Manage.vue'
 // import Reports from './components/Reports.vue'
 import Landing from './components/NewBudgetView/Landing.vue'
 import moment from 'moment'
@@ -85,10 +84,6 @@ export var router = new VueRouter({
       redirect: `/categories/${moment(new Date()).format('YYYY-MM')}`
     },
     {
-      path: '/budgets',
-      component: Budgets
-    },
-    {
       path: '/manage',
       component: Manage
     },
@@ -96,10 +91,6 @@ export var router = new VueRouter({
       path: '/accounts',
       component: Accounts
     },
-    // {
-    //   path: '/reports',
-    //   component: Reports
-    // },
     {
       path: '/transactions',
       name: 'all_transactions',

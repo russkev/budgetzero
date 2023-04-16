@@ -84,7 +84,7 @@ describe('Test transactions', () => {
     })
 
     it('Checks that budget was updated correctly', () => {
-      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      cy.get('[data-testid="sidebar-button-categories"]').click()
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $749.72 ')
       cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $958.97 ')
       cy.get('[data-testid="transactions-page-7kW"]').click()
@@ -129,7 +129,7 @@ describe('Test transactions', () => {
     })
 
     it('Checks that budget was updated correctly', () => {
-      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      cy.get('[data-testid="sidebar-button-categories"]').click()
       cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $202.60 ')
       cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $1,193.96 ')
     })
@@ -147,7 +147,7 @@ describe('Test transactions', () => {
     })
 
     it('Checks that budget was updated correctly', () => {
-      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      cy.get('[data-testid="sidebar-button-categories"]').click()
 
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $980.71 ')
       cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $1,189.96 ')
@@ -197,7 +197,7 @@ describe('Test transactions', () => {
     // July should have income of $1586.79 + $2300 = $3886.79
 
     it('Checks that budget was updated correctly', () => {
-      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      cy.get('[data-testid="sidebar-button-categories"]').click()
 
       cy.visit('http://localhost:8082/categories/2022-08')
       cy.get('[data-testid="working-income"]').should('have.text', '$581.64')
@@ -396,7 +396,7 @@ describe('Test transactions', () => {
     })
 
     it('Checks that budget was updated correctly', () => {
-      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      cy.get('[data-testid="sidebar-button-categories"]').click()
       cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $2,134.40 ') // Gas
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $995.39 ') // Groceries
       cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $3,315.20 ')
@@ -426,7 +426,7 @@ describe('Test transactions', () => {
     })
 
     it('Checks that budget was updated correctly', () => {
-      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      cy.get('[data-testid="sidebar-button-categories"]').click()
       cy.get('[data-testid="category-name-n00"]').should('have.text', ' Gas ')
       cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $197.60 ')
 
@@ -472,7 +472,7 @@ describe('Test transactions', () => {
     })
 
     it('Checks that budget was updated correctly', () => {
-      cy.get('[data-testid="sidebar-button-budgets"]').click()
+      cy.get('[data-testid="sidebar-button-categories"]').click()
 
       cy.get('[data-testid="category-name-2aW"]').should('have.text', ' Water ')
       cy.get('[data-testid="category-balance-2aW"]').should('have.text', ' $177.00 ')

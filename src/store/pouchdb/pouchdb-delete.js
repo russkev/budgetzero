@@ -10,6 +10,7 @@ export default {
 
       db.destroy()
         .then(() => {
+          Vue.prototype.$pouch = null
           context.dispatch('resetAllCurrentBudgetData')
         })
         .catch(function (err) {

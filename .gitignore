@@ -34,3 +34,6 @@ budgetzero_local_db/CURRENT
 budgetzero_local_db/LOCK
 budgetzero_local_db/LOG
 budgetzero_local_db/MANIFEST-000002
+
+#Cypress output
+/cypress

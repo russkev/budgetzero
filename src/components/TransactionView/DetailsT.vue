@@ -19,10 +19,7 @@
         <details-delete />
       </div>
       <div class="save-cancel-container pa-2">
-        <v-btn data-testid="cancel-edit-butotn" text small @click="onCancel"> Cancel </v-btn>
-        <v-btn data-testid="save-edit-button" small elevation="0" color="primary darken-3" class="ml-2" @click="onSave">
-          Save
-        </v-btn>
+        <cancel-save @cancel="onCancel" @save="onSave" />
       </div>
     </div>
     <details-buttons
@@ -106,6 +103,7 @@ import DetailsButton from '../Shared/DetailsButton.vue'
 import DetailsButtons from './DetailsButtons.vue'
 import DetailsDelete from './DetailsDelete.vue'
 import DeleteConfirm from '../Shared/DeleteConfirm.vue'
+import CancelSave from '../Shared/CancelSave.vue'
 
 export default {
   components: {
@@ -119,7 +117,8 @@ export default {
     DetailsButton,
     DetailsButtons,
     DetailsDelete,
-    DeleteConfirm
+    DeleteConfirm,
+    CancelSave
   },
   data() {
     return {
