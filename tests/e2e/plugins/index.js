@@ -14,20 +14,24 @@ module.exports = (on, config) => {
   //  webpackOptions: require('@vue/cli-service/webpack.config'),
   //  watchOptions: {}
   // }))
-  on('task', {
-    deleteFolder(folderName) {
-      console.log('Deleting folder %s', folderName)
-      return new Promise((resolve, reject) => {
-        rmdir(folderName, { maxRetries: 10, recursive: true }, (err) => {
-          if (err) {
-            console.log(err)
-            return reject(err)
-          }
-          resolve(null)
-        })
-      })
-    }
-  })
+
+  // on('task', {
+  //   // deleteFolder(folderName) {
+  //   //   console.log('Deleting folder %s', folderName)
+  //   //   return new Promise((resolve, reject) => {
+  //   //     rmdir(folderName, { maxRetries: 10, recursive: true }, (err) => {
+  //   //       if (err) {
+  //   //         console.log(err)
+  //   //         return reject(err)
+  //   //       }
+  //   //       resolve(null)
+  //   //     })
+  //   //   })
+  //   // },
+  //   getEnv(key) {
+  //     return process.env[key]
+  //   }
+  // })
   return Object.assign({}, config, {
     fixturesFolder: 'tests/e2e/fixtures',
     integrationFolder: 'tests/e2e/specs',

@@ -4,9 +4,9 @@ import moment from 'moment'
 import { SYNC_STATE } from '../../constants'
 
 const DEFAULT_REMOTE_STATE = {
-  remoteSyncURL: null,
+  remoteSyncURL: '',
   syncHandle: null,
-  syncState: SYNC_STATE.NOT_SYNCING,
+  syncState: SYNC_STATE.NOT_CONNECTED,
   errorMessage: ''
 }
 
@@ -64,16 +64,14 @@ export default {
       context.dispatch('GET_REMOTE_SYNC_URL')
     },
 
-    async setRemoteSyncToCustomURL({ commit, dispatch }, url) {
+    async setRemoteSyncToCustomURL({ commit, dispatch, getters }, url) {
       if (url === '') {
         dispatch('cancelRemoteSync')
-        commit('SET_SYNC_STATE', SYNC_STATE.NOT_SYNCING)
-        commit('SET_SYNC_STATE', SYNC_STATE.SYNCING)
+        commit('SET_SYNC_STATE', SYNC_STATE.NOT_CONNECTED)
         commit('RESET_ERROR_MESSAGE')
 
         return
       }
-      commit('SET_SYNC_STATE', SYNC_STATE.SYNCING)
       var url_expression =
         /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi
       var url_regex = new RegExp(url_expression)
@@ -89,14 +87,15 @@ export default {
         return
       }
 
-      var remoteDB = new PouchDB(url)
+      commit('SET_SYNC_STATE', SYNC_STATE.CONNECTING)
 
+      var remoteDB = new PouchDB(url)
       commit('SET_REMOTE_SYNC_URL', url)
 
       await remoteDB
         .info()
         .then((info) => {
-          commit('SET_SYNC_STATE', SYNC_STATE.SYNCED)
+          commit('SET_SYNC_STATE', SYNC_STATE.SYNCING)
           commit('RESET_ERROR_MESSAGE')
           commit('SET_SNACKBAR_MESSAGE', {
             snackbarMessage: 'Connection to remote database success!',
@@ -113,9 +112,10 @@ export default {
           return
         })
 
-      const localDB = this._vm.$pouch
+      let localDB = this._vm.$pouch
       if (!localDB) {
         await dispatch('createLocalPouchDB')
+        localDB = this._vm.$pouch
       }
       const sync = localDB
         .sync(remoteDB, {
@@ -126,19 +126,26 @@ export default {
           commit('SET_STATUS_MESSAGE', `Last sync [change] ${moment().format('MMM D, h:mm a')}`)
           console.log('change detected')
           console.log('!!! NOT GETING NEW CHANGES FROM LOCAL DB !!!')
+          commit('SET_SYNC_STATE', SYNC_STATE.SYNCED)
           // context.dispatch('getAllDocsFromPouchDB')
         })
         .on('complete', function (change) {
           commit('SET_STATUS_MESSAGE', `Last sync [complete] ${moment().format('MMM D, h:mm a')}`)
           console.log('pouch sync complete')
+          if (getters.syncState === SYNC_STATE.SYNCING) {
+            dispatch('getAllDocsFromPouchDB')
+          }
+          commit('SET_SYNC_STATE', SYNC_STATE.SYNCED)
         })
         .on('paused', function (info) {
-          commit('SET_STATUS_MESSAGE', `Last sync ${moment().format('MMM D, h:mm a')}`)
+          commit('SET_STATUS_MESSAGE', `Paused, Last sync ${moment().format('MMM D, h:mm a')}`)
           console.log('paused:', info)
+          commit('SET_SYNC_STATE', SYNC_STATE.PAUSED)
           // replication was paused, usually because of a lost connection
         })
         .on('active', function (info) {
           commit('SET_STATUS_MESSAGE', `active`)
+          commit('SET_SYNC_STATE', SYNC_STATE.SYNCED)
           // replication was resumed
         })
         .on('error', function (err) {
@@ -162,7 +169,7 @@ export default {
       dispatch('cancelRemoteSync')
       commit('CLEAR_REMOTE_SYNC_URL')
       commit('RESET_ERROR_MESSAGE')
-      commit('SET_SYNC_STATE', SYNC_STATE.NOT_SYNCING)
+      commit('SET_SYNC_STATE', SYNC_STATE.NOT_CONNECTED)
     }
   }
 }

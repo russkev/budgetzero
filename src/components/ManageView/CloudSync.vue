@@ -8,31 +8,30 @@
           {{ syncState.text }}
         </v-chip>
       </div>
-      <!-- <div class="ml-4">Not Connected</div> -->
       <div>Sync address:</div>
       <div>
-        <!-- {{ remoteSyncURL }} -->
         <v-text-field
           solo
           flat
           :background-color="isEditing ? 'background lighten-3' : 'transparent'"
           :readonly="!isEditing"
-          :value="remoteSyncURL || isEditing ? remoteSyncURL : 'No URL set'"
           dense
           id="cloud-sync-url"
+          data-testid="cloud-sync-url"
           style="font-size: 12px"
-          v-model="remoteSyncUrlInput"
           :error="syncState === SYNC_STATE.ERROR"
           :error-messages="[syncErrorMessage]"
+          v-model="remoteSyncUrlData"
         >
-          <!-- error="Unable to connect to sync url" -->
         </v-text-field>
         <div v-if="isEditing" id="cloud-sync-buttons">
           <div></div>
           <cancel-save @cancel="() => (isEditing = false)" @save="onSyncSave" />
         </div>
         <div v-else id="cloud-sync-buttons">
-          <button-transparent small icon="mdi-pencil" @click="enableEdit" class="ml-2"> Edit </button-transparent>
+          <button-transparent small icon="mdi-pencil" @click="enableEdit" class="ml-2" data-testid="edit-cloud-button">
+            Edit
+          </button-transparent>
         </div>
       </div>
     </div>
@@ -55,14 +54,39 @@ export default {
     return {
       remoteSyncUrlInput: '',
       isEditing: false,
+      // temp_url: 'NONE',
       SYNC_STATE
     }
   },
-  mounted() {
-    this.remoteSyncUrlInput = this.remoteSyncURL
-  },
+  // mounted() {
+  //   this.remoteSyncUrlInput = this.remoteSyncURL
+  // },
   computed: {
-    ...mapGetters(['remoteSyncURL', 'syncState', 'syncErrorMessage'])
+    ...mapGetters(['remoteSyncURL', 'syncState', 'syncErrorMessage']),
+    remoteSyncUrlData: {
+      get() {
+        if (this.remoteSyncURL !== '' && this.remoteSyncURL !== ' ') {
+          return this.remoteSyncURL
+        } else {
+          return 'No URL set'
+        }
+      },
+      set(value) {
+        this.remoteSyncUrlInput = value
+      }
+    }
+    // temp_url: {
+    //   get() {
+    //     // console.log('REMOTE', this.remoteSyncUrlData)
+    //     // return this.remoteSyncUrl == ' ' ? 'NONE' : this.remoteSyncUrl
+    //     if (this.remoteSyncURL === '') {
+    //       return 'NONE'
+    //     } else {
+    //       return this.remoteSyncURL
+    //     }
+    //   },
+    //   set(value) {}
+    // }
   },
   methods: {
     ...mapActions(['setRemoteSyncToCustomURL']),

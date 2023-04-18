@@ -10,6 +10,7 @@ docs/
 # local env files
 .env.local
 .env.*.local
+cypress.env.json
 
 # Log files
 npm-debug.log*

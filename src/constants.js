@@ -62,10 +62,12 @@ export const DEFAULT_MASTER_CATEGORY_BALANCE = {
 }
 
 export const SYNC_STATE = {
-  SYNCING: { color: 'warning', icon: 'mdi-sync', text: 'Syncing...' },
+  SYNCING: { color: 'success lighten-3', icon: 'mdi-sync', text: 'Syncing...' },
   SYNCED: { color: 'success', icon: 'mdi-check', text: 'Synced' },
   ERROR: { color: 'error', icon: 'mdi-alert-circle', text: 'Sync Error' },
-  NOT_SYNCING: { color: 'info', icon: 'mdi-cancel', text: 'Disconnected' }
+  NOT_CONNECTED: { color: 'info', icon: 'mdi-cancel', text: 'Disconnected' },
+  CONNECTING: { color: 'warning', icon: 'mdi-connection', text: 'Connecting...' },
+  PAUSED: { color: 'info', icon: 'mdi-pause', text: 'Paused' }
 }
 
 export const NONE = {
