@@ -122,37 +122,37 @@ export default {
           live: true,
           retry: true
         })
-        .on('change', function (change) {
+        .on('change', (change) => {
+          console.log('Sync change', change)
           commit('SET_STATUS_MESSAGE', `Last sync [change] ${moment().format('MMM D, h:mm a')}`)
-          console.log('change detected')
-          console.log('!!! NOT GETING NEW CHANGES FROM LOCAL DB !!!')
-          commit('SET_SYNC_STATE', SYNC_STATE.SYNCED)
-          // context.dispatch('getAllDocsFromPouchDB')
-        })
-        .on('complete', function (change) {
-          commit('SET_STATUS_MESSAGE', `Last sync [complete] ${moment().format('MMM D, h:mm a')}`)
-          console.log('pouch sync complete')
-          if (getters.syncState === SYNC_STATE.SYNCING) {
-            dispatch('getAllDocsFromPouchDB')
+          if (change.direction === 'pull') {
+            // dispatch('getAllDocsFromPouchDB')
+            dispatch('loadLocalBudget')
           }
           commit('SET_SYNC_STATE', SYNC_STATE.SYNCED)
         })
-        .on('paused', function (info) {
+        .on('complete', (change) => {
+          console.log('Sync complete', change)
+          commit('SET_STATUS_MESSAGE', `Last sync [complete] ${moment().format('MMM D, h:mm a')}`)
+          commit('SET_SYNC_STATE', SYNC_STATE.SYNCED)
+        })
+        .on('paused', (info) => {
+          console.log('Sync paused', info)
           commit('SET_STATUS_MESSAGE', `Paused, Last sync ${moment().format('MMM D, h:mm a')}`)
-          console.log('paused:', info)
           commit('SET_SYNC_STATE', SYNC_STATE.PAUSED)
           // replication was paused, usually because of a lost connection
         })
-        .on('active', function (info) {
+        .on('active', (info) => {
+          console.log('Sync active', info)
           commit('SET_STATUS_MESSAGE', `active`)
           commit('SET_SYNC_STATE', SYNC_STATE.SYNCED)
           // replication was resumed
         })
-        .on('error', function (err) {
+        .on('error', (err) => {
+          console.error('Sync error', err)
           commit('SET_SYNC_STATE', SYNC_STATE.ERROR)
           commit('SET_ERROR_MESSAGE', err)
           commit('SET_STATUS_MESSAGE', err)
-          console.error('Sync error', err)
         })
 
       Vue.prototype.$pouchSyncHandler = sync
