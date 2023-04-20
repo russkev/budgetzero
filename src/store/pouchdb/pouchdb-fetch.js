@@ -37,47 +37,58 @@ export default {
           return docs
         })
         .catch((err) => {
-          console.log(err)
-          context.commit('API_FAILURE', err)
+          if (!(err instanceof DOMException)) {
+            console.log(err)
+          }
+          return []
         })
     },
     fetchAccounts: (context) => {
       const db = Vue.prototype.$pouch
       const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.account, 'fetchAccounts').then((accounts) => {
-        context.commit('SET_ACCOUNTS', accounts)
-        return accounts
+        if (accounts !== undefined) {
+          context.commit('SET_ACCOUNTS', accounts)
+        }
+        return accounts === undefined ? [] : accounts
       })
     },
     fetchPayees: (context) => {
       const db = Vue.prototype.$pouch
       const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.payee, 'fetchPayees').then((result) => {
-        context.commit('SET_PAYEES', result)
-        return result
+        if (result !== undefined) {
+          context.commit('SET_PAYEES', result)
+        }
+        return result === undefined ? [] : result
       })
     },
     fetchCategories: (context) => {
       const db = Vue.prototype.$pouch
       const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.category, 'fetchCategories').then((result) => {
-        context.commit('SET_CATEGORIES', result)
-        return result
+        if (result !== undefined) {
+          context.commit('SET_CATEGORIES', result)
+        }
+        return result === undefined ? [] : result
       })
     },
     fetchMasterCategories: (context) => {
       const db = Vue.prototype.$pouch
       const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.masterCategory, 'fetchMasterCategories').then((result) => {
-        // result.push(NONE)
-        context.commit('SET_MASTER_CATEGORIES', result)
-        return result
+        if (result !== undefined) {
+          context.commit('SET_MASTER_CATEGORIES', result)
+        }
+        return result === undefined ? [] : result
       })
     },
     fetchMonthCategories: (context) => {
       const db = Vue.prototype.$pouch
       const budget_id = context.rootState.selectedBudgetId
-      return fetchDocsByType(context, db, budget_id, ID_NAME.monthCategory, 'fetchMonthCategories')
+      return fetchDocsByType(context, db, budget_id, ID_NAME.monthCategory, 'fetchMonthCategories').then((result) => {
+        return result === undefined ? [] : result
+      })
     },
     fetchTransactionsWithImportId: async (context, options) => {
       const db = Vue.prototype.$pouch
@@ -150,8 +161,8 @@ export default {
       }
       const start_date_encoded = base64Date(`${month}-00`)
       const end_date_encoded = base64Date(`${month}-32`)
-      const start_key = `b_${budget_id}${ID_NAME.transaction}${start_date_encoded}`;
-      const end_key = `b_${budget_id}${ID_NAME.transaction}${end_date_encoded}\ufff0`;
+      const start_key = `b_${budget_id}${ID_NAME.transaction}${start_date_encoded}`
+      const end_key = `b_${budget_id}${ID_NAME.transaction}${end_date_encoded}\ufff0`
       return db
         .allDocs({
           include_docs: true,
@@ -270,7 +281,19 @@ export default {
         })
         .then((result) => {
           logPerformanceTime('fetchAllTransactions', t1)
-          return result
+          if (!result) {
+            return []
+          } else {
+            return result
+          }
+        })
+        .catch((err) => {
+          if (err instanceof DOMException) {
+            console.log('Tried to access local db before it was ready')
+          } else {
+            console.log(err)
+          }
+          return []
         })
     }
   }
@@ -291,7 +314,10 @@ const fetchDocsByType = (context, db, budget_id, id_name, function_name) => {
       return result.rows.map((row) => row.doc)
     })
     .catch((err) => {
-      console.log(err)
-      context.commit('API_FAILURE', err)
+      if (err instanceof DOMException) {
+        return []
+      } else {
+        console.log(err)
+      }
     })
 }

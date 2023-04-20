@@ -306,7 +306,7 @@ export default {
         .then((result) => {
           const t1 = performance.now()
           const balances = parseAllTransactions(result.rows, month_category_balances, getters, dispatch)
-
+          console.log('!!!balances', balances)
           logPerformanceTime('calculateAllValues', t1)
           // commit('SET_MONTH_BALANCES', balances.month)
           dispatch('setMonthIncomeExpenseBalances', balances.month)

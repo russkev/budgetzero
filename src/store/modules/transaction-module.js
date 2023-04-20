@@ -300,9 +300,13 @@ const calculateTransactionBalanceUpdate = (current, previous, account) => {
 }
 
 const parseAllTransactions = (allTransactions, month_category_balances, getters, dispatch) => {
+  let balances = { account: {}, category: {}, month: {} }
+  if (allTransactions === undefined) {
+    return balances
+  }
+
   const month_category_months = Object.keys(month_category_balances)
   let month_category_index = 0
-  let balances = { account: {}, category: {}, month: {} }
   // let monthBalances = {}
   let updated_transaction_docs = []
 
