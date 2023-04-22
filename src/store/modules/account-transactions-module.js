@@ -178,6 +178,7 @@ export default {
 
       dispatch('fetchTransactionsForAccount', getters.accountOptions, { root: true })
         .then((result) => {
+          console.log('fetchTransactionsForAccount result:', result)
           commit('SET_NUM_SERVER_TRANSACTIONS', result.total_rows)
           const transactions = result.rows.map((row) => {
             const doc = row.doc
@@ -193,6 +194,9 @@ export default {
             return updatedDoc
           })
           commit('SET_TRANSACTIONS', transactions)
+        })
+        .catch((error) => {
+          console.log('getTransactions error, accountDoc:', getters.accountDoc)
         })
         .finally(() => {
           commit('SET_IS_LOADING', false)

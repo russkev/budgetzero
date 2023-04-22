@@ -7,7 +7,8 @@ import { ID_LENGTH, ID_NAME } from '../../constants.js'
 const DEFAULT_BUDGET_STATE = {
   allBudgets: [],
   budgetBalances: {},
-  budgetExists: true // This opens the create budget modal when 'false'
+  budgetExists: true, // This opens the create budget modal when 'false'
+  isLoadingFullscreen: false
 }
 
 export default {
@@ -25,7 +26,8 @@ export default {
       }, {})
     },
     budgetExists: (state) => state.budgetExists,
-    budgetBalances: (state) => state.budgetBalances
+    budgetBalances: (state) => state.budgetBalances,
+    isLoadingFullscreen: (state) => state.isLoadingFullscreen
   },
   mutations: {
     RESET_BUDGET_STATE(state) {
@@ -40,6 +42,9 @@ export default {
         Vue.set(state, 'budgetExists', true)
       }
       Vue.set(state, 'allBudgets', budgets)
+    },
+    SET_LOADING_FULLSCREEN(state, isLoading) {
+      Vue.set(state, 'isLoadingFullscreen', isLoading)
     }
   },
   actions: {

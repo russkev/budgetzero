@@ -265,27 +265,45 @@ export default {
       context.commit('RESET_PAYEES_STATE')
     },
 
-    async loadLocalBudget(context) {
+    async loadLocalBudget({ commit, dispatch }) {
+      commit('SET_LOADING_FULLSCREEN', true)
       try {
-        await context.dispatch('resetAllCurrentBudgetData')
-        context.commit('GET_REMOTE_SYNC_URL')
-        const budgets = await context.dispatch('fetchAllBudgets')
-        await context.dispatch('updateSelectedBudgetId', budgets)
-        context.dispatch('getAllDocsFromPouchDB')
+        await dispatch('resetAllCurrentBudgetData')
+        commit('GET_REMOTE_SYNC_URL')
+        await dispatch('fetchSelectedBudgetId')
+        dispatch('getAllDocsFromPouchDB')
       } catch (error) {
         console.log(error)
         const message = error.msg ? error.msg : error
-        context.commit('SET_SNACKBAR_MESSAGE', {
+        commit('SET_SNACKBAR_MESSAGE', {
           snackbarMessage: message,
           snackbarColor: 'error'
         })
+      } finally {
+        commit('SET_LOADING_FULLSCREEN', false)
       }
     },
 
-    getAllDocsFromPouchDB(context) {
-      return Promise.all([context.dispatch('fetchAccounts'), context.dispatch('fetchPayees')]).then(() => {
-        return context.dispatch('calculateAllValues')
-      })
+    async fetchSelectedBudgetId({ dispatch }) {
+      const budgets = await dispatch('fetchAllBudgets')
+      return await dispatch('updateSelectedBudgetId', budgets)
+    },
+
+    getAllDocsFromPouchDB({ dispatch, getters, commit }) {
+      let loadingFullScreenSet = false
+      if (!getters.isLoadingFullscreen) {
+        commit('SET_LOADING_FULLSCREEN', true)
+        loadingFullScreenSet = true
+      }
+      return Promise.all([dispatch('fetchAccounts'), dispatch('fetchPayees')])
+        .then(() => {
+          return dispatch('calculateAllValues')
+        })
+        .finally(() => {
+          if (loadingFullScreenSet) {
+            commit('SET_LOADING_FULLSCREEN', false)
+          }
+        })
     },
 
     async calculateAllValues({ commit, dispatch, getters }) {
@@ -306,7 +324,6 @@ export default {
         .then((result) => {
           const t1 = performance.now()
           const balances = parseAllTransactions(result.rows, month_category_balances, getters, dispatch)
-          console.log('!!!balances', balances)
           logPerformanceTime('calculateAllValues', t1)
           // commit('SET_MONTH_BALANCES', balances.month)
           dispatch('setMonthIncomeExpenseBalances', balances.month)

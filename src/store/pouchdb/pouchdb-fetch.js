@@ -11,6 +11,11 @@ export default {
     fetchAllBudgets: (context) => {
       const db = Vue.prototype.$pouch
       const t1 = performance.now()
+      if (!db) {
+        return new Promise((resolve) => {
+          resolve([])
+        })
+      }
       return db
         .allDocs({
           include_docs: true,
@@ -270,6 +275,11 @@ export default {
     },
     fetchAllTransactions: (context) => {
       const db = Vue.prototype.$pouch
+      if (!db) {
+        return new Promise((resolve) => {
+          resolve([])
+        })
+      }
       const t1 = performance.now()
       const budget_id = context.rootState.selectedBudgetId
 
@@ -300,6 +310,11 @@ export default {
 }
 
 const fetchDocsByType = (context, db, budget_id, id_name, function_name) => {
+  if (!db) {
+    return new Promise((resolve) => {
+      resolve([])
+    })
+  }
   const t2 = performance.now()
   const id_prefix = `b_${budget_id}${id_name}`
 

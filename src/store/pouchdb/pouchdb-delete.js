@@ -11,7 +11,8 @@ export default {
       db.destroy()
         .then(() => {
           Vue.prototype.$pouch = null
-          context.dispatch('resetAllCurrentBudgetData')
+          // context.dispatch('resetAllCurrentBudgetData')
+          context.dispatch('loadLocalBudget')
         })
         .catch(function (err) {
           console.log(`Error deleting database: ${err}`)

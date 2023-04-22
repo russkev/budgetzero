@@ -12,18 +12,9 @@
             :disabled="disabled"
             :data-testid="buttonTestid"
           >
-            <v-sheet
-              width="5px"
-              min-width="5px"
-              :color="selectedCategoryColor"
-              height="100%"
-              class="mr-2"
-            />
+            <v-sheet width="5px" min-width="5px" :color="selectedCategoryColor" height="100%" class="mr-2" />
             <category-item-text :category="selectedCategory" :show-balance="showBalance">
-              <div
-                v-if="itemIsUncategorized"
-                class="simple-ellipsis info--text text--lighten-1 font-weight-bold"
-              >
+              <div v-if="itemIsUncategorized" class="simple-ellipsis info--text text--lighten-1 font-weight-bold">
                 {{ selectedCategoryName }}
               </div>
               <div v-else class="simple-ellipsis">
@@ -33,9 +24,7 @@
           </v-chip>
         </template>
         <v-card v-if="!menu" flat outlined color="outline background" class="ma-0 px-4 py-1">
-          <v-card-subtitle class="ma-0 pa-0">
-            Category:
-          </v-card-subtitle>
+          <v-card-subtitle class="ma-0 pa-0"> Category: </v-card-subtitle>
           <v-card-title class="ma-0 pa-0" v-if="!itemIsUncategorized">
             {{ masterCategoryName }}: {{ selectedCategoryName }}
           </v-card-title>
@@ -51,14 +40,14 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import { ID_LENGTH, NONE } from "../../constants";
-import CategorySelect from "./CategorySelect.vue";
-import CategoryItemText from "./CategoryItemText.vue";
-import { isUncategorized } from "../../store/modules/transaction-module";
+import { mapGetters } from 'vuex'
+import { ID_LENGTH, NONE } from '../../constants'
+import CategorySelect from './CategorySelect.vue'
+import CategoryItemText from './CategoryItemText.vue'
+import { isUncategorized } from '../../store/modules/transaction-module'
 
 export default {
-  emits: ["selected"],
+  emits: ['selected'],
   components: { CategorySelect, CategoryItemText },
   props: {
     // item: {
@@ -67,54 +56,56 @@ export default {
     // },
     categoryId: {
       required: true,
-      type: String,
+      type: String
     },
     splits: {
       required: false,
       type: Array,
-      default: () => [],
+      default: () => []
     },
     disabled: {
       type: Boolean,
       required: false,
-      default: false,
+      default: false
     },
     buttonTestid: {
       type: String,
       required: false,
-      default: "",
+      default: ''
     },
     showBalance: {
       type: Boolean,
       required: false,
-      default: false,
-    },
+      default: false
+    }
   },
   data() {
     return {
       menu: false,
-      search: "",
-    };
+      search: ''
+    }
   },
   computed: {
-    ...mapGetters(["categoryColors", "categoriesById", "masterCategoriesById"]),
-    ...mapGetters("accountTransactions", ["selectedTransactions"]),
+    ...mapGetters(['categoryColors', 'categoriesById', 'masterCategoriesById']),
+    ...mapGetters('accountTransactions', ['selectedTransactions']),
     selectedCategory() {
-      return this.categoriesById[this.categoryId];
+      console.log('selectedCategoryId', this.categoryId)
+      console.log('selectedCategory', this.categoriesById[this.categoryId])
+      return this.categoriesById[this.categoryId]
     },
     selectedCategoryColor() {
-      const id = this.categoryId;
-      const color = this.categoryColors[id];
+      const id = this.categoryId
+      const color = this.categoryColors[id]
       if (color === undefined) {
-        return NONE.hexColor;
+        return NONE.hexColor
       }
-      return color;
+      return color
     },
     selectedCategoryName() {
       if (this.selectedCategory === undefined) {
-        return NONE.name;
+        return NONE.name
       }
-      return this.selectedCategory.name;
+      return this.selectedCategory.name
     },
     masterCategoryName() {
       if (
@@ -122,31 +113,31 @@ export default {
         this.selectedCategory === null ||
         this.selectedCategory.masterCategory === undefined
       ) {
-        return NONE.name;
+        return NONE.name
       }
-      const masterCategory = this.masterCategoriesById[this.selectedCategory.masterCategory];
+      const masterCategory = this.masterCategoriesById[this.selectedCategory.masterCategory]
       if (masterCategory === undefined) {
-        return NONE.name;
+        return NONE.name
       }
-      return masterCategory.name;
+      return masterCategory.name
     },
     categoryBackgroundColor() {
-      return `${this.selectedCategoryColor}55`;
+      return `${this.selectedCategoryColor}55`
     },
     itemIsUncategorized() {
-      return isUncategorized({ categoryId: this.categoryId, splits: this.splits });
-    },
+      return isUncategorized({ categoryId: this.categoryId, splits: this.splits })
+    }
   },
   methods: {
     onSelected(categoryId) {
-      const id = categoryId.slice(-ID_LENGTH.category);
+      const id = categoryId.slice(-ID_LENGTH.category)
       if (id !== this.categoryId) {
-        this.$emit("selected", id);
+        this.$emit('selected', id)
       }
-      this.menu = false;
-    },
-  },
-};
+      this.menu = false
+    }
+  }
+}
 </script>
 
 <style>
@@ -160,7 +151,8 @@ export default {
   text-overflow: ellipsis;
 }
 
-.category-chip, .v-chip__content {
+.category-chip,
+.v-chip__content {
   width: 100%;
 }
 </style>

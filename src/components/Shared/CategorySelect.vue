@@ -43,11 +43,7 @@
                 {{ intlCurrency.format(categoryBalance(category) / 100) }}
               </span>
             </span> -->
-            <category-item-text 
-              :category="category"
-              :show-balance="showBalance"
-              show-swatch
-            />
+            <category-item-text :category="category" :show-balance="showBalance" show-swatch />
           </v-list-item-content>
         </v-list-item>
         <v-list-item
@@ -60,15 +56,8 @@
           <v-list-item-content>
             <v-list-item-title>
               <v-row class="pa-0 ma-0">
-                <v-sheet
-                  width="3px"
-                  height="15px"
-                  :color="masterCategoryColor(masterId)"
-                  class="mr-1"
-                />
-                <v-col class="ma-0 pa-0">
-                  Add '{{ search }}' to {{ listMasterCategoryName(masterId) }}
-                </v-col>
+                <v-sheet width="3px" height="15px" :color="masterCategoryColor(masterId)" class="mr-1" />
+                <v-col class="ma-0 pa-0"> Add '{{ search }}' to {{ listMasterCategoryName(masterId) }} </v-col>
               </v-row>
             </v-list-item-title>
           </v-list-item-content>
@@ -79,75 +68,75 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import { ID_LENGTH, NONE, HIDDEN, AMOUNT_RED, AMOUNT_GREEN } from "../../constants";
-import _ from "lodash";
-import CategoryItemText from "./CategoryItemText.vue";
+import { mapActions, mapGetters } from 'vuex'
+import { ID_LENGTH, NONE, HIDDEN, AMOUNT_RED, AMOUNT_GREEN } from '../../constants'
+import _ from 'lodash'
+import CategoryItemText from './CategoryItemText.vue'
 
 export default {
-  emits: ["selected"],
+  emits: ['selected'],
   components: {
-    CategoryItemText,
+    CategoryItemText
   },
   props: {
     showBalance: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   data() {
     return {
-      search: "",
-    };
+      search: ''
+    }
   },
   computed: {
-    ...mapGetters(["categoryColors", "categoriesByMaster", "masterCategoriesById", "intlCurrency"]),
-    ...mapGetters("categoryMonth", ["categoriesDataById"]),
+    ...mapGetters(['categoryColors', 'categoriesByMaster', 'masterCategoriesById', 'intlCurrency']),
+    ...mapGetters('categoryMonth', ['categoriesDataById']),
 
     searchedMasterCategories() {
-      const search = this.search.toLowerCase();
-      return Object.entries(this.categoriesByMaster).reduce((partial, [masterId, categories]) => {
-        if ([HIDDEN._id, "undefined"].includes(masterId)) {
-          return partial;
+      const search = this.search.toLowerCase()
+      result = Object.entries(this.categoriesByMaster).reduce((partial, [masterId, categories]) => {
+        if ([HIDDEN._id, 'undefined'].includes(masterId)) {
+          return partial
         }
         if (search) {
-          const filteredCategories = categories.filter((category) =>
-            category.name.toLowerCase().includes(search)
-          );
-          partial[masterId] = filteredCategories;
+          const filteredCategories = categories.filter((category) => category.name.toLowerCase().includes(search))
+          partial[masterId] = filteredCategories
         } else {
-          partial[masterId] = categories;
+          partial[masterId] = categories
         }
-        return partial;
-      }, {});
-    },
+        return partial
+      }, {})
+      console.log('Search result', result)
+      return result
+    }
   },
   methods: {
-    ...mapActions(["createCategory"]),
+    ...mapActions(['createCategory']),
     onCategorySelected(categoryId) {
-      this.$emit("selected", categoryId);
+      this.$emit('selected', categoryId)
     },
     onCategoryAdd(masterId) {
       this.createCategory({ name: this.search, master_id: masterId }).then((category_id) => {
-        this.onCategorySelected(category_id);
-      });
+        this.onCategorySelected(category_id)
+      })
     },
     listMasterCategoryName(masterId) {
-      return _.get(this.masterCategoriesById, [masterId, "name"], "Undefined");
+      return _.get(this.masterCategoriesById, [masterId, 'name'], 'Undefined')
     },
     showAddCategory(masterId) {
       if (this.search.length < 1) {
-        return false;
+        return false
       }
-      return ![NONE._id].includes(masterId);
+      return ![NONE._id].includes(masterId)
     },
 
     // categoryColor(category) {
     //   return this.categoryColors[category._id.slice(-ID_LENGTH.category)];
     // },
     masterCategoryColor(master_id) {
-      return _.get(this, ["masterCategoriesById", master_id, "color", "hex"], "transparent");
-    },
+      return _.get(this, ['masterCategoriesById', master_id, 'color', 'hex'], 'transparent')
+    }
     // currencyColor(value) {
     //   if (value < 0) {
     //     return AMOUNT_RED;
@@ -167,8 +156,8 @@ export default {
     // categoryBalanceColor(category) {
     //   return this.currencyColor(this.categoryBalance(category));
     // },
-  },
-};
+  }
+}
 </script>
 
 <style>

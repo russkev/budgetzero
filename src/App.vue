@@ -1,6 +1,6 @@
 <template>
   <v-app id="app">
-    <!-- Global confirm dialog -->
+    <loading-full-screen :value="isLoadingFullscreen" />
     <confirm-dialog ref="confirm"></confirm-dialog>
     <sidebar />
     <v-main>
@@ -18,16 +18,19 @@
 
 <script>
 window.global ||= window
+import { mapGetters } from 'vuex'
 import Sidebar from './components/SidebarView/Sidebar.vue'
 import BaseDialogModalComponent from './components/Modals/BaseDialogModalComponent.vue'
 import ConfirmDialog from './components/Modals/ConfirmDialog.vue'
+import LoadingFullScreen from './components/Shared/LoadingFullScreen.vue'
 
 export default {
   name: 'App',
   components: {
     Sidebar,
     BaseDialogModalComponent,
-    ConfirmDialog
+    ConfirmDialog,
+    LoadingFullScreen
   },
   data() {
     return {
@@ -36,6 +39,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['isLoadingFullscreen']),
     snackbarMessage() {
       return this.$store.getters.snackbarMessage
     },
