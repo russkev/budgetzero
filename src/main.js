@@ -25,7 +25,12 @@ import Categories from './components/CategoryView/Categories.vue'
 import NewBudget from './components/NewBudgetView/NewBudget.vue'
 import Manage from './components/ManageView/Manage.vue'
 // import Reports from './components/Reports.vue'
-import Landing from './components/NewBudgetView/Landing.vue'
+// import Landing from './components/NewBudgetView/Landing.vue'
+import LandingContainer from './components/NewBudgetView/LandingContainer.vue'
+import LandingRestore from './components/NewBudgetView/LandingRestore.vue'
+import LandingNew from './components/NewBudgetView/LandingNew.vue'
+import LandingStart from './components/NewBudgetView/LandingStart.vue'
+import LandingCloudSync from './components/NewBudgetView/LandingCloudSync.vue'
 import moment from 'moment'
 
 import VueMoment from 'vue-moment'
@@ -76,45 +81,90 @@ export var router = new VueRouter({
   routes: [
     {
       path: '/landing',
-      name: 'landing',
-      component: Landing
+      component: LandingContainer,
+      meta: { requiresAuth: false },
+      children: [
+        {
+          path: '',
+          name: 'landing',
+          component: LandingStart
+        },
+        {
+          path: 'new',
+          name: 'new',
+          component: LandingNew
+        },
+        {
+          path: 'restore',
+          name: 'restore',
+          component: LandingRestore
+        },
+        {
+          path: 'sync',
+          name: 'sync',
+          component: LandingCloudSync
+        }
+      ]
     },
     {
       path: '*',
-      redirect: `/categories/${moment(new Date()).format('YYYY-MM')}`
+      redirect: `/categories/${moment(new Date()).format('YYYY-MM')}`,
+      meta: { requiresAuth: true }
     },
     {
       path: '/manage',
-      component: Manage
+      component: Manage,
+      meta: { requiresAuth: true }
     },
     {
       path: '/accounts',
-      component: Accounts
+      component: Accounts,
+      meta: { requiresAuth: true }
     },
     {
       path: '/transactions',
       name: 'all_transactions',
-      component: Transactions
+      component: Transactions,
+      meta: { requiresAuth: true }
     },
     {
       path: '/transactions/:account_id',
       name: 'transactions',
-      component: Transactions
+      component: Transactions,
+      meta: { requiresAuth: true }
     },
     {
       path: '/categories',
-      redirect: `/categories/${moment(new Date()).format('YYYY-MM')}`
+      redirect: `/categories/${moment(new Date()).format('YYYY-MM')}`,
+      meta: { requiresAuth: true }
     },
     {
       path: '/categories/:month',
       name: 'budget',
-      component: Categories
+      component: Categories,
+      meta: { requiresAuth: true }
     },
     {
       path: '/create',
-      component: NewBudget
+      component: NewBudget,
+      meta: { requiresAuth: true }
     }
   ]
+})
+
+function isAuthenticated() {
+  console.log(store.getters)
+  console.log('isAuthenticated: ', store.getters.budgetExists)
+  return store.getters.budgetExists
+}
+
+router.beforeEach((to, from, next) => {
+  if (to.matched.some((record) => record.meta.requiresAuth)) {
+    if (!isAuthenticated()) {
+      next({ name: 'landing' })
+    }
+  }
+  next()
 })
 
 import { sync } from 'vuex-router-sync'

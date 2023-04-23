@@ -7,7 +7,7 @@ import { ID_LENGTH, ID_NAME } from '../../constants.js'
 const DEFAULT_BUDGET_STATE = {
   allBudgets: [],
   budgetBalances: {},
-  budgetExists: true, // This opens the create budget modal when 'false'
+  budgetExists: false, // This opens the create budget modal when 'false'
   isLoadingFullscreen: false
 }
 

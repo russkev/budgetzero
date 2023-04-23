@@ -16,7 +16,6 @@
         />
       </v-col>
     </v-row>
-    <!-- <v-divider /> -->
     <v-list dense subheader color="background" data-testid="category-list">
       <template v-for="[masterId, categories] in Object.entries(searchedMasterCategories)">
         <v-subheader class="master-category-list-item text-h5" v-bind:key="masterId">
@@ -29,20 +28,6 @@
           @click="onCategorySelected(category._id)"
         >
           <v-list-item-content :key="`category-${category._id}`">
-            <!-- <span class="category-element-container">
-              <span>
-                <v-sheet
-                  width="3px"
-                  height="15px"
-                  :color="categoryColor(category)"
-                  class="mr-1"
-                />
-                {{ category.name }}
-              </span>
-              <span v-if="showBalance" :class="`ml-2 ${categoryBalanceColor(category)}`">
-                {{ intlCurrency.format(categoryBalance(category) / 100) }}
-              </span>
-            </span> -->
             <category-item-text :category="category" :show-balance="showBalance" show-swatch />
           </v-list-item-content>
         </v-list-item>
@@ -95,7 +80,7 @@ export default {
 
     searchedMasterCategories() {
       const search = this.search.toLowerCase()
-      result = Object.entries(this.categoriesByMaster).reduce((partial, [masterId, categories]) => {
+      return Object.entries(this.categoriesByMaster).reduce((partial, [masterId, categories]) => {
         if ([HIDDEN._id, 'undefined'].includes(masterId)) {
           return partial
         }
@@ -107,8 +92,6 @@ export default {
         }
         return partial
       }, {})
-      console.log('Search result', result)
-      return result
     }
   },
   methods: {
@@ -130,32 +113,9 @@ export default {
       }
       return ![NONE._id].includes(masterId)
     },
-
-    // categoryColor(category) {
-    //   return this.categoryColors[category._id.slice(-ID_LENGTH.category)];
-    // },
     masterCategoryColor(master_id) {
       return _.get(this, ['masterCategoriesById', master_id, 'color', 'hex'], 'transparent')
     }
-    // currencyColor(value) {
-    //   if (value < 0) {
-    //     return AMOUNT_RED;
-    //   } else if (value > 0) {
-    //     return AMOUNT_GREEN;
-    //   } else {
-    //     return "unset";
-    //   }
-    // },
-    // categoryBalance(category) {
-    //   return _.get(
-    //     this.categoriesDataById,
-    //     [category._id.slice(-ID_LENGTH.category), "balance"],
-    //     ""
-    //   );
-    // },
-    // categoryBalanceColor(category) {
-    //   return this.currencyColor(this.categoryBalance(category));
-    // },
   }
 }
 </script>

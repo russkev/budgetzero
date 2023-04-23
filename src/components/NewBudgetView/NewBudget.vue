@@ -1,9 +1,8 @@
 <template>
   <div>
     <v-container fluid class="py-0">
-      <page-heading title="New Budget" />
       <v-sheet max-width="800px" justify="center" id="new-budgets-sheet" class="mx-auto pa-2" color="transparent">
-        <div class="transaction-details-grid pa-2 pb-0 mt-3">
+        <div class="transaction-details-grid pb-0 mt-3">
           <div class="text-h5">Budget Name</div>
           <div>
             <v-card flat color="background lighten-2" class="pa-2 mb-4">
@@ -25,41 +24,56 @@
             </v-card>
           </div>
           <div>Categories</div>
-          <div>
-            <div v-for="masterCategory in Object.keys(selectedCategories)" :key="masterCategory" class="py-3">
-              <v-checkbox
-                v-model="selectedMasterCategories"
-                :value="masterCategory"
-                :indeterminate="masterIntermediateState(masterCategory)"
-                color="secondary lighten-2"
-                class="pa-0 ma-0 mb-2"
-                hide-details
-                :data-testid="`master-checkbox-${masterCategory}`"
-              >
-                <template #label>
-                  <div class="text-h6">{{ masterCategory }}</div>
+          <div style="max-height: 300px; overflow-y: scroll; overflow-x: hidden">
+            <v-list
+              dense
+              color="background lighten-2"
+              v-for="(masterCategory, index) in Object.keys(selectedCategories)"
+              :key="masterCategory"
+              id="start-list"
+              :class="`pa-0 ${index === 0 ? 'pt-3' : ''}`"
+            >
+              <v-list-group :value="true">
+                <template #activator>
+                  <v-list-item-action>
+                    <v-checkbox
+                      dense
+                      v-model="selectedMasterCategories"
+                      :value="masterCategory"
+                      :indeterminate="masterIntermediateState(masterCategory)"
+                      class="pa-0 ma-0 pr-3"
+                      hide-details
+                      :data-testid="`master-checkbox-${masterCategory}`"
+                      @click.stop
+                    />
+                  </v-list-item-action>
+                  <v-list-item-content>
+                    {{ masterCategory }}
+                  </v-list-item-content>
                 </template>
-              </v-checkbox>
-              <v-card flat color="background lighten-2" class="pa-2 mb-4">
-                <v-row>
-                  <v-col v-for="category in starterCategories[masterCategory]" :key="category" cols="4">
+                <v-list-item
+                  v-for="category in starterCategories[masterCategory]"
+                  :key="category"
+                  class="start-category-item"
+                >
+                  <v-list-item-action class="ml-4">
                     <v-checkbox
                       v-model="selectedCategories[masterCategory]"
                       :value="category"
-                      color="secondary lighten-2"
                       dense
-                      class="pa-0 ma-0"
+                      class="pr-3"
                       hide-details
                       :data-testid="`checkbox-${category}`"
-                    >
-                      <template #label>
-                        <div class="text-body-1">{{ category }}</div>
-                      </template>
-                    </v-checkbox>
-                  </v-col>
-                </v-row>
-              </v-card>
-            </div>
+                    />
+                  </v-list-item-action>
+                  <v-list-item-content>
+                    <v-list-item-title>
+                      {{ category }}
+                    </v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list-group>
+            </v-list>
           </div>
           <div>Create</div>
           <div>
@@ -119,15 +133,20 @@ export default {
           'Vacation'
         ]
       },
-      selectedCategories: {}
+      selectedCategories: {},
+      expandedMasterCategories: {}
     }
   },
   created() {
-    ;(this.selectedCategories = JSON.parse(JSON.stringify(this.starterCategories))),
-      (this.selectedMasterCategories = Object.keys(this.starterCategories).reduce((partial, category) => {
-        partial[category] = false
-        return partial
-      }, {}))
+    this.selectedCategories = JSON.parse(JSON.stringify(this.starterCategories))
+    this.selectedMasterCategories = Object.keys(this.starterCategories).reduce((partial, category) => {
+      partial[category] = false
+      return partial
+    }, {})
+    this.expandedMasterCategories = Object.keys(this.starterCategories).reduce((partial, category) => {
+      partial[category] = false
+      return partial
+    }, {})
   },
   computed: {
     createButtonIsEnabled() {
@@ -191,3 +210,28 @@ export default {
   }
 }
 </script>
+
+<style>
+.checkbox-list .v-list-item {
+  min-height: 0px;
+}
+
+.v-list-item.start-category-item {
+  min-height: 20px;
+}
+
+.v-list-item.start-category-item .v-list-item__content {
+  padding: 2px 5px;
+}
+
+#start-list .v-list-group__header {
+  min-height: 0px !important;
+}
+
+#start-list .v-list-item__action,
+#start-list .v-list-item__content,
+#start-list .v-list-item__icon {
+  margin: 0;
+  padding: 0;
+}
+</style>

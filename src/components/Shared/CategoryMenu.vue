@@ -89,8 +89,6 @@ export default {
     ...mapGetters(['categoryColors', 'categoriesById', 'masterCategoriesById']),
     ...mapGetters('accountTransactions', ['selectedTransactions']),
     selectedCategory() {
-      console.log('selectedCategoryId', this.categoryId)
-      console.log('selectedCategory', this.categoriesById[this.categoryId])
       return this.categoriesById[this.categoryId]
     },
     selectedCategoryColor() {

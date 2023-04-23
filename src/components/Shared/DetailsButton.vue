@@ -1,5 +1,14 @@
 <template>
-  <v-btn text class="no-uppercase justify-start test-h5" :width="width" v-on="on" v-bind="attrs" @click="onClick">
+  <v-btn
+    text
+    class="no-uppercase justify-start test-h5"
+    :width="width"
+    v-on="on"
+    v-bind="attrs"
+    @click="onClick"
+    exact
+    :to="to"
+  >
     <v-icon left :size="iconSize">
       {{ icon }}
     </v-icon>
@@ -35,6 +44,11 @@ export default {
       type: String,
       required: false,
       default: 'default'
+    },
+    to: {
+      type: String | Object,
+      required: false,
+      default: undefined
     }
   },
   methods: {
