@@ -174,7 +174,7 @@ export default {
             /*
              *  Direction === 'push'
              */
-            if (progress === 0) {
+            if (progress === 0 || progress === 100) {
               /*
                *  Very hacky way of determining if sync is complete.
                *  Sync occurs in batches of 100 docs, so we wait until
@@ -186,6 +186,7 @@ export default {
                 syncState = SYNC_STATE.SYNCED
               } else {
                 progress = 101
+                syncState = SYNC_STATE.SYNCING
               }
             }
           }

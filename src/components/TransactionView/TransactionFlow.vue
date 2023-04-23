@@ -1,47 +1,48 @@
 <template>
-  <row-element-wrapper @click="onTransactionDetailsClick(item)" right>
-    <span :class="`my-auto ellipsis text-body-1 text-right ${textColor}--text text--lighten-3`">
+  <row-element-wrapper @click="onTransactionDetailsClick(item)" right :disabled="isLoading">
+    <span :class="`my-auto ellipsis text-body-1 ${isLoading ? 'text-disabled' : textColor + '--text text--lighten-3'}`">
       {{ value }}
     </span>
   </row-element-wrapper>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import RowElementWrapper from "./RowElementWrapper.vue";
+import { mapGetters, mapActions } from 'vuex'
+import RowElementWrapper from './RowElementWrapper.vue'
 
 export default {
   props: {
     item: {
       type: Object,
-      required: true,
+      required: true
     },
     isOutflow: {
       type: Boolean,
       default: false,
-      required: true,
-    },
+      required: true
+    }
   },
   components: {
-    RowElementWrapper,
+    RowElementWrapper
   },
   computed: {
-    ...mapGetters(["intlCurrency"]),
+    ...mapGetters(['intlCurrency']),
+    ...mapGetters('accountTransactions', ['isLoading']),
     value() {
       if (this.isOutflow && this.item.value < 0) {
-        return this.intlCurrency.format(Math.abs(this.item.value / 100));
+        return this.intlCurrency.format(Math.abs(this.item.value / 100))
       } else if (!this.isOutflow && this.item.value >= 0) {
-        return this.intlCurrency.format(this.item.value / 100);
+        return this.intlCurrency.format(this.item.value / 100)
       } else {
-        return "";
+        return ''
       }
     },
     textColor() {
-      return this.isOutflow ? "error" : "success";
+      return this.isOutflow ? 'error' : 'success'
     }
   },
   methods: {
-    ...mapActions("accountTransactions", ["onTransactionDetailsClick"]),
+    ...mapActions('accountTransactions', ['onTransactionDetailsClick'])
   }
-};
+}
 </script>

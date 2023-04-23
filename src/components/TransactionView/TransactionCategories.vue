@@ -4,30 +4,25 @@
     class="transaction-categories-container mr-2"
     :style="`grid-template-columns: ${templateColumns}`"
   >
-  <!-- :item="item" -->
+    <!-- :item="item" -->
     <category-menu
-      :category-id="item.category? item.category : ''"
+      :category-id="item.category ? item.category : ''"
       :splits="item.splits"
       @selected="onCategorySelected"
       :disabled="isDisabled"
-      
     />
   </div>
-  <div
-    v-else
-    class="transaction-categories-container mr-2"
-    :style="`grid-template-columns: ${templateColumns}`"
-  >
+  <div v-else class="transaction-categories-container mr-2" :style="`grid-template-columns: ${templateColumns}`">
     <template v-for="(split, index) in this.item.splits">
       <category-menu
-      :key="`category-${index}`"
-      :category-id="split.category ? split.category : ''"
-      :disabled="isDisabled"
-      @selected="
+        :key="`category-${index}`"
+        :category-id="split.category ? split.category : ''"
+        :disabled="isDisabled"
+        @selected="
           (categoryId) => {
-            onSplitCategorySelected(index, categoryId);
+            onSplitCategorySelected(index, categoryId)
           }
-          "
+        "
       />
       <!-- :item="split" -->
     </template>
@@ -35,59 +30,59 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import CategoryMenu from "../Shared/CategoryMenu.vue";
+import { mapActions, mapGetters } from 'vuex'
+import CategoryMenu from '../Shared/CategoryMenu.vue'
 
 export default {
   props: {
     item: {
-      type: Object,
+      type: Object
     },
     highlighted: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   components: { CategoryMenu },
   computed: {
-    ...mapGetters("accountTransactions", ["selectedTransactions", "editedTransaction"]),
+    ...mapGetters('accountTransactions', ['selectedTransactions', 'editedTransaction', 'isLoading']),
     templateColumns() {
-      return this.isSplit ? `repeat(${this.item.splits.length}, 1fr)` : "1fr";
+      return this.isSplit ? `repeat(${this.item.splits.length}, 1fr)` : '1fr'
     },
     isSplit() {
-      return this.item.splits && this.item.splits.length > 1;
+      return this.item.splits && this.item.splits.length > 1
     },
     isDisabled() {
       // return this.highlighted || this.selectedTransactions.length > 0;
-      return this.editedTransaction._id === this.item._id;
-    },
+      return this.editedTransaction._id === this.item._id || this.isLoading
+    }
   },
   methods: {
-    ...mapActions("accountTransactions", ["getTransactions"]),
-    ...mapActions(["commitDocToPouchAndVuex"]),
+    ...mapActions('accountTransactions', ['getTransactions']),
+    ...mapActions(['commitDocToPouchAndVuex']),
     onCategorySelected(categoryId) {
-      const current = { ...this.item, category: categoryId };
-      const previous = this.item;
+      const current = { ...this.item, category: categoryId }
+      const previous = this.item
       this.commitDocToPouchAndVuex({ current, previous }).then(() => {
-        this.getTransactions();
-      });
+        this.getTransactions()
+      })
     },
     onSplitCategorySelected(index, categoryId) {
       const splits = this.item.splits.map((split, i) => {
         if (i === index) {
-          return { ...split, category: categoryId };
+          return { ...split, category: categoryId }
         } else {
-          return split;
+          return split
         }
-      });
-      const current = { ...this.item, splits };
-      const previous = this.item;
+      })
+      const current = { ...this.item, splits }
+      const previous = this.item
       this.commitDocToPouchAndVuex({ current, previous }).then(() => {
-        this.getTransactions();
-      });
-    },
-  },
-};
+        this.getTransactions()
+      })
+    }
+  }
+}
 </script>
 
 <style>

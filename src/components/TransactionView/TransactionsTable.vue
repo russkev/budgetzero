@@ -18,11 +18,11 @@
       :items-per-page="itemsPerPage"
       :footer-props="{
         'items-per-page-options': [5, 10, 20, 50, 100, 200],
-        'update.options': options,
+        'update.options': options
       }"
       :header-props="{
         'disable-sort': true,
-        class: 'text-body-2',
+        class: 'text-body-2'
       }"
       class="flex-table-main background lighten-1"
       :loading="isLoading"
@@ -39,7 +39,7 @@
       <template #header="{ name }">
         <span class="text-body-2">{{ name }}</span>
       </template>
-      <template #group.header="{items}">
+      <template #group.header="{ items }">
         <td colspan="20" class="date-row background">
           {{ formatDate(items[0].date) }}
         </td>
@@ -51,10 +51,10 @@
               <transaction-checked :item="item" :hover="hover" :is-selected="isSelected" @input="select($event)" />
             </td>
             <td class="row-cleared pa-0">
-              <transaction-cleared :item="item" :hover="hover" :highlighted="isHighlighted(item, isSelected)"/>
+              <transaction-cleared :item="item" :hover="hover" :highlighted="isHighlighted(item, isSelected)" />
             </td>
             <td class="row-category pa-0">
-              <transaction-categories :item="item" :highlighted="isHighlighted(item, isSelected)"/>
+              <transaction-categories :item="item" :highlighted="isHighlighted(item, isSelected)" />
             </td>
             <td class="row-description pa-0">
               <transaction-description :item="item" />
@@ -79,16 +79,16 @@
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from "vuex";
-import { DEFAULT_TRANSACTIONS_PER_PAGE } from "../../constants";
-import { formatDate } from "../../helper";
-import TransactionChecked from "./TransactionChecked.vue";
-import TransactionBalance from "./TransactionBalance.vue";
-import TransactionDescription from "./TransactionDescription.vue";
-import TransactionCleared from "./TransactionCleared.vue";
-import TransactionCategories from "./TransactionCategories.vue";
-import TransactionFlow from "./TransactionFlow.vue";
-import TransactionDelete from "./TransactionDelete.vue";
+import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { DEFAULT_TRANSACTIONS_PER_PAGE } from '../../constants'
+import { formatDate } from '../../helper'
+import TransactionChecked from './TransactionChecked.vue'
+import TransactionBalance from './TransactionBalance.vue'
+import TransactionDescription from './TransactionDescription.vue'
+import TransactionCleared from './TransactionCleared.vue'
+import TransactionCategories from './TransactionCategories.vue'
+import TransactionFlow from './TransactionFlow.vue'
+import TransactionDelete from './TransactionDelete.vue'
 
 export default {
   components: {
@@ -98,94 +98,91 @@ export default {
     TransactionCleared,
     TransactionCategories,
     TransactionFlow,
-    TransactionDelete,
+    TransactionDelete
   },
   computed: {
-    ...mapGetters("accountTransactions", [
-      "accountId",
-      "accountOptions",
-      "editedTransaction",
-      "selectedTransactions",
-      "expandedTransactions",
-      "dataTableHeaders",
-      "transactions",
-      "numServerTransactions",
-      "itemsPerPage",
-      "isCreatingNewTransaction",
-      "isLoading",
+    ...mapGetters('accountTransactions', [
+      'accountId',
+      'accountOptions',
+      'editedTransaction',
+      'selectedTransactions',
+      'expandedTransactions',
+      'dataTableHeaders',
+      'transactions',
+      'numServerTransactions',
+      'itemsPerPage',
+      'isCreatingNewTransaction',
+      'isLoading'
     ]),
-    ...mapGetters(["selectedBudgetId", "accounts", "intlCurrency"]),
+    ...mapGetters(['selectedBudgetId', 'accounts', 'intlCurrency']),
     numTransactionsTotal() {
-      return this.isCreatingNewTransaction
-        ? this.numServerTransactions + 1
-        : this.numServerTransactions;
+      return this.isCreatingNewTransaction ? this.numServerTransactions + 1 : this.numServerTransactions
     },
     selected: {
       get() {
-        return this.selectedTransactions;
+        return this.selectedTransactions
       },
       set(transactions) {
-        this.setSelectedTransactions(transactions);
-      },
+        this.setSelectedTransactions(transactions)
+      }
     },
     expanded: {
       get() {
-        return this.expandedTransactions;
+        return this.expandedTransactions
       },
       set(transactions) {
-        this.SET_EXPANDED_TRANSACTIONS(transactions);
-      },
+        this.SET_EXPANDED_TRANSACTIONS(transactions)
+      }
     },
     options: {
       get() {
-        return this.accountOptions;
+        return this.accountOptions
       },
       set(updated_options) {
-        this.SET_ACCOUNT_OPTIONS(updated_options);
-      },
-    },
+        this.SET_ACCOUNT_OPTIONS(updated_options)
+      }
+    }
   },
   watch: {
     options: {
       handler(current, prev) {
         if (current.itemsPerPage !== prev.itemsPerPage) {
-          localStorage.setItem("transactionsPerPage", current.itemsPerPage);
+          localStorage.setItem('transactionsPerPage', current.itemsPerPage)
         }
       },
-      deep: true,
-    },
+      deep: true
+    }
   },
   created() {
-    const saved_transactions_per_page = localStorage.getItem("transactionsPerPage");
+    const saved_transactions_per_page = localStorage.getItem('transactionsPerPage')
     if (saved_transactions_per_page) {
-      this.SET_ITEMS_PER_PAGE(parseInt(saved_transactions_per_page));
+      this.SET_ITEMS_PER_PAGE(parseInt(saved_transactions_per_page))
     } else {
-      this.SET_ITEMS_PER_PAGE(DEFAULT_TRANSACTIONS_PER_PAGE);
+      this.SET_ITEMS_PER_PAGE(DEFAULT_TRANSACTIONS_PER_PAGE)
     }
   },
   methods: {
-    ...mapMutations("accountTransactions", [
-      "SET_ACCOUNT_ID",
-      "SET_SELECTED_TRANSACTIONS",
-      "SET_EXPANDED_TRANSACTIONS",
-      "SET_ACCOUNT_OPTIONS",
-      "SET_ITEMS_PER_PAGE",
+    ...mapMutations('accountTransactions', [
+      'SET_ACCOUNT_ID',
+      'SET_SELECTED_TRANSACTIONS',
+      'SET_EXPANDED_TRANSACTIONS',
+      'SET_ACCOUNT_OPTIONS',
+      'SET_ITEMS_PER_PAGE'
     ]),
-    ...mapActions("accountTransactions", ["getTransactions", "setSelectedTransactions", "deleteTransaction"]),
-    ...mapActions(["commitDocToPouchAndVuex"]),
+    ...mapActions('accountTransactions', ['getTransactions', 'setSelectedTransactions', 'deleteTransaction']),
+    ...mapActions(['commitDocToPouchAndVuex']),
     formatDate: formatDate,
     isHighlighted(item, isSelected) {
-      return isSelected || item._id === this.editedTransaction._id;
-    },
-  },
-};
+      return !this.isLoading && (isSelected || item._id === this.editedTransaction._id)
+    }
+  }
+}
 </script>
 
 <style scoped>
 table {
   table-layout: fixed;
 }
-
 
 table tr.transaction-row > td {
   border-bottom: 1px solid var(--v-background-base) !important;
@@ -203,7 +200,6 @@ table tr.transaction-row > td {
   flex-grow: 1;
   overflow: hidden;
 }
-
 </style>
 <style>
 tbody tr:hover {
@@ -235,5 +231,9 @@ tr.v-data-table__empty-wrapper td {
 
 #transactions-table .v-input__slot {
   margin: 0;
+}
+
+.text-disabled {
+  color: var(--v-background-lighten5);
 }
 </style>

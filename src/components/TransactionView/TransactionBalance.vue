@@ -1,31 +1,32 @@
 <template>
-  <row-element-wrapper @click="onTransactionDetailsClick(item)" class="text-right" right>
-    <span class="my-auto">
+  <row-element-wrapper @click="onTransactionDetailsClick(item)" class="text-right" right :disabled="isLoading">
+    <span :class="`my-auto ${isLoading ? 'text-disabled' : ''}`">
       {{ intlCurrency.format(item.balance / 100) }}
     </span>
   </row-element-wrapper>
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import RowElementWrapper from "./RowElementWrapper.vue";
+import { mapGetters, mapActions } from 'vuex'
+import RowElementWrapper from './RowElementWrapper.vue'
 
 export default {
   props: {
     item: {
-      type: Object,
-    },
+      type: Object
+    }
   },
   components: {
-    RowElementWrapper,
+    RowElementWrapper
   },
   computed: {
-    ...mapGetters(["intlCurrency"]),
+    ...mapGetters(['intlCurrency']),
+    ...mapGetters('accountTransactions', ['isLoading'])
   },
   methods: {
-    ...mapActions("accountTransactions", ["onTransactionDetailsClick"]),
+    ...mapActions('accountTransactions', ['onTransactionDetailsClick'])
   }
-};
+}
 </script>
 
 <style>

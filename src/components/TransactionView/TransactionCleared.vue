@@ -18,13 +18,13 @@
     :style="isDisabled ? 'color: transparent !important;' : ''"
     :disabled="isDisabled"
     @click="toggleCleared()"
-    >
+  >
     mdi-alpha-c-circle
   </v-icon>
 </template>
 
 <script>
-import { mapGetters, mapMutations, mapActions } from "vuex";
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 
 export default {
   props: {
@@ -33,51 +33,50 @@ export default {
     },
     hover: {
       type: Boolean,
-      default: false,
+      default: false
     },
     highlighted: {
       type: Boolean,
-      default: false,
-    },
+      default: false
+    }
   },
   data() {
     return {
-      size: 20,
+      size: 20
     }
   },
   computed: {
-    ...mapGetters("accountTransactions", [
-      "editedTransactionIndex",
-      "transactions",
-      "editedTransaction",
-      "selectedTransactions",
+    ...mapGetters('accountTransactions', [
+      'editedTransactionIndex',
+      'transactions',
+      'editedTransaction',
+      'selectedTransactions',
+      'isLoading'
     ]),
     isDisabled() {
-      return this.editedTransaction._id === this.item._id;
+      return this.editedTransaction._id === this.item._id || this.isLoading
     }
   },
   methods: {
-    ...mapMutations("accountTransactions", [
-      "SET_EDITED_TRANSACTION_CLEARED",
-      "SET_EDITED_TRANSACTION",
-      "CLEAR_EDITED_TRANSACTION",
+    ...mapMutations('accountTransactions', [
+      'SET_EDITED_TRANSACTION_CLEARED',
+      'SET_EDITED_TRANSACTION',
+      'CLEAR_EDITED_TRANSACTION'
     ]),
-    ...mapActions("accountTransactions", ["prepareEditedItem", "getTransactions"]),
-    ...mapActions(["createOrUpdateTransaction"]),
+    ...mapActions('accountTransactions', ['prepareEditedItem', 'getTransactions']),
+    ...mapActions(['createOrUpdateTransaction']),
     toggleCleared() {
-      if(this.editedTransaction._id === this.item._id) {
-        this.SET_EDITED_TRANSACTION_CLEARED(!this.editedTransaction.cleared);
-        return;
+      if (this.editedTransaction._id === this.item._id) {
+        this.SET_EDITED_TRANSACTION_CLEARED(!this.editedTransaction.cleared)
+        return
       }
 
-      this.SET_EDITED_TRANSACTION({ ...this.item, cleared: !this.item.cleared });
-      this.prepareEditedItem();
+      this.SET_EDITED_TRANSACTION({ ...this.item, cleared: !this.item.cleared })
+      this.prepareEditedItem()
       const payload = { current: this.editedTransaction, previous: this.item }
-      this.createOrUpdateTransaction(payload).then(() =>
-        this.getTransactions()
-      );
+      this.createOrUpdateTransaction(payload).then(() => this.getTransactions())
       this.CLEAR_EDITED_TRANSACTION()
-    },
-  },
-};
+    }
+  }
+}
 </script>

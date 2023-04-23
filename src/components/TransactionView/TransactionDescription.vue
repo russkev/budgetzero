@@ -1,8 +1,8 @@
 <template>
   <description-tooltip :item="item">
     <template #activator="{ on }">
-      <row-element-wrapper @click="onTransactionDetailsClick(item)">
-        <span class="my-auto ellipsis text-body-1" v-on="on">
+      <row-element-wrapper @click="onTransactionDetailsClick(item)" :disabled="isLoading">
+        <span :class="`my-auto ellipsis text-body-1 ${isLoading ? 'text-disabled' : ''}`" v-on="on">
           {{ previewDescription }}
         </span>
       </row-element-wrapper>
@@ -12,8 +12,8 @@
 
 <script>
 import RowElementWrapper from './RowElementWrapper.vue'
-import DescriptionTooltip from "../Shared/DescriptionTooltip.vue"
-import { mapActions } from 'vuex'
+import DescriptionTooltip from '../Shared/DescriptionTooltip.vue'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   props: {
@@ -26,6 +26,7 @@ export default {
     RowElementWrapper
   },
   computed: {
+    ...mapGetters('accountTransactions', ['isLoading']),
     previewDescription() {
       if (this.item.note) {
         return this.item.note
@@ -37,8 +38,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions("accountTransactions", ["onTransactionDetailsClick"]),
-  },
+    ...mapActions('accountTransactions', ['onTransactionDetailsClick'])
+  }
 }
 </script>
 
