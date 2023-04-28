@@ -43,7 +43,9 @@ export default {
     editedTransaction: (state) => state.editedTransaction,
     editedTransactionInitialDate: (state) => state.editedTransactionInitialDate,
     editedTransactionIndex: (state) => state.editedTransactionIndex,
-    numServerTransactions: (state) => state.numServerTransactions,
+    // numServerTransactions: (state) => state.numServerTransactions,
+    numServerTransactions: (state, getters, rootState, rootGetters) =>
+      rootGetters.accountTransactionCounts[getters.accountId],
     itemsPerPage: (state) => state.itemsPerPage,
     accountDoc: (state, getters, rootState, rootGetters) => rootGetters.accountsById[getters.accountId],
     selectedTransactions: (state, getters) =>
@@ -145,9 +147,9 @@ export default {
     SET_EDITED_TRANSACTION_INDEX(state, index) {
       Vue.set(state, 'editedTransactionIndex', index)
     },
-    SET_NUM_SERVER_TRANSACTIONS(state, num_transactions) {
-      Vue.set(state, 'numServerTransactions', num_transactions)
-    },
+    // SET_NUM_SERVER_TRANSACTIONS(state, num_transactions) {
+    //   Vue.set(state, 'numServerTransactions', num_transactions)
+    // },
     SET_ITEMS_PER_PAGE(state, num_items) {
       Vue.set(state, 'itemsPerPage', num_items)
     },
@@ -178,8 +180,7 @@ export default {
 
       dispatch('fetchTransactionsForAccount', getters.accountOptions, { root: true })
         .then((result) => {
-          console.log('fetchTransactionsForAccount result:', result)
-          commit('SET_NUM_SERVER_TRANSACTIONS', result.total_rows)
+          // commit('SET_NUM_SERVER_TRANSACTIONS', result.total_rows)
           const transactions = result.rows.map((row) => {
             const doc = row.doc
             const category_name = _.get(rootGetters.categoriesById, [doc.category, 'name'], '')
@@ -201,6 +202,9 @@ export default {
         .finally(() => {
           commit('SET_IS_LOADING', false)
         })
+    },
+    updateAccountOptions({ commit, getters, rootGetters }, updatedOptions) {
+      commit('SET_ACCOUNT_OPTIONS', updatedOptions)
     },
     async save({ getters, dispatch, commit }, item) {
       let previous = getters.isCreatingNewTransaction ? null : item

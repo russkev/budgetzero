@@ -1,18 +1,27 @@
 import Vue from 'vue'
+import { SYNC_STATE } from '../../constants'
 
 export default {
   state: {},
   getters: {},
   mutations: {},
   actions: {
-    deleteLocalDatabase: (context) => {
+    deleteLocalDatabase: ({ dispatch, getters, commit }) => {
       const db = Vue.prototype.$pouch
 
       db.destroy()
         .then(() => {
           Vue.prototype.$pouch = null
+
+          if (getters.syncState === SYNC_STATE.NOT_CONNECTED || getters.syncState === SYNC_STATE.ERROR) {
+            /*
+             * If not connected to remote, no budget will be available.
+             * Reset budgets to trigger landing page load
+             */
+            commit('RESET_BUDGETS')
+          }
           // context.dispatch('resetAllCurrentBudgetData')
-          context.dispatch('loadLocalBudget')
+          dispatch('loadLocalBudget')
         })
         .catch(function (err) {
           console.log(`Error deleting database: ${err}`)

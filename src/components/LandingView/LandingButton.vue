@@ -1,5 +1,5 @@
 <template>
-  <details-button :icon="icon" :label="label" @click="click" width="240px" class="mb-2" :to="to" />
+  <details-button :icon="icon" :label="label" @click="click" :width="width" class="mb-2" :to="to" />
   <!-- <router-link :to="to">{{ label }}</router-link> -->
 </template>
 
@@ -23,6 +23,11 @@ export default {
     to: {
       type: String | Object,
       required: true
+    },
+    width: {
+      type: String,
+      required: false,
+      default: '240px'
     }
   },
   methods: {

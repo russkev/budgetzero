@@ -139,7 +139,7 @@ export default {
         return this.accountOptions
       },
       set(updated_options) {
-        this.SET_ACCOUNT_OPTIONS(updated_options)
+        this.updateAccountOptions(updated_options)
       }
     }
   },
@@ -149,6 +149,7 @@ export default {
         if (current.itemsPerPage !== prev.itemsPerPage) {
           localStorage.setItem('transactionsPerPage', current.itemsPerPage)
         }
+        this.getTransactions()
       },
       deep: true
     }
@@ -169,7 +170,12 @@ export default {
       'SET_ACCOUNT_OPTIONS',
       'SET_ITEMS_PER_PAGE'
     ]),
-    ...mapActions('accountTransactions', ['getTransactions', 'setSelectedTransactions', 'deleteTransaction']),
+    ...mapActions('accountTransactions', [
+      'getTransactions',
+      'setSelectedTransactions',
+      'deleteTransaction',
+      'updateAccountOptions'
+    ]),
     ...mapActions(['commitDocToPouchAndVuex']),
     formatDate: formatDate,
     isHighlighted(item, isSelected) {

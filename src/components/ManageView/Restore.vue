@@ -1,5 +1,5 @@
 <template>
-  <v-card flat color="background lighten-2" class="pa-2 mb-4" data-testid="restore-from-file-card">
+  <v-card flat color="background lighten-2" class="pa-2 mb-4 manage-card" data-testid="restore-from-file-card">
     <div class="mb-2">Choose a file to restore from</div>
     <v-file-input
       solo
@@ -16,7 +16,11 @@
       prepend-icon="mdi-folder-upload"
     >
     </v-file-input>
-    <div><strong style="color: red">Warning:</strong> All existing budgets will be overwritten by backup file</div>
+    <div style="height: 20px">
+      <span v-if="budgetExists">
+        <strong style="color: red">Warning:</strong> All existing budgets will be overwritten by backup file
+      </span>
+    </div>
     <button-transparent
       icon="mdi-file-restore"
       :disabled="!restoreButtonIsEnabled"
@@ -29,7 +33,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'Restore',
@@ -42,6 +46,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['budgetExists']),
     restoreButtonIsEnabled() {
       return this.restoreFileParsed !== null && this.restoreFileError === ''
     }

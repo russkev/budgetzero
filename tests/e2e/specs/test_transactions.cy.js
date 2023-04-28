@@ -481,4 +481,82 @@ describe('Test transactions', () => {
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $804.95 ')
     })
   })
+
+  context.only('Test that pagination works correctly', () => {
+    before(() => {
+      cy.initPath('transactions/7kW')
+    })
+
+    it('Checks pagination works for delete', () => {
+      // Check that pagination shows the correct number
+      cy.get('.v-data-footer__pagination').should('contain.text', '1-7 of 7')
+
+      // Import extra transactions
+      cy.get('[data-testid="import-transactions-button"]').click()
+      const file = 'tests/__mockdata__/bankexports/ing.ofx'
+      cy.get('input[type="file"]').selectFile(file, { force: true })
+      cy.get('.heading').should('contain.text', '18 transactions')
+      cy.get('[data-testid="import-ofx-transactions-button"]').click()
+
+      // Check that pagination shows the correct number
+      cy.get('.v-data-footer__pagination').should('contain.text', '1-20 of 25', { timeout: 10000 })
+
+      // Go to next page
+      cy.get('.v-data-footer__icons-after .v-icon').click()
+
+      // Check that the correct number of transactions are shown
+      cy.get('.transaction-row').should('have.length', 5)
+
+      // Check that pagination shows the correct number
+      cy.get('.v-data-footer__pagination').should('contain.text', '21-25 of 25')
+
+      // Delete a transaction
+      cy.get('.transaction-row .row-description').eq(0).click()
+      cy.get('[data-testid="delete-transaction-button"]').click()
+      cy.get('[data-testid="delete-confirm-button"]').click()
+
+      // Check that pagination shows the correct number
+      cy.get('.v-data-footer__pagination').should('contain.text', '21-24 of 24')
+
+      // Go to previous page
+      cy.get('.v-data-footer__icons-before .v-icon').click()
+
+      // Check that pagination shows the correct number
+      cy.get('.v-data-footer__pagination').should('contain.text', '1-20 of 24')
+
+      // Check that the correct number of transactions are shown
+      cy.get('.transaction-row').should('have.length', 20)
+      cy.get('.v-progress-linear__buffer').should('exist')
+      cy.get('.v-progress-linear__buffer').should('not.exist')
+
+      // Delete a number of transactions, click in the center of the checkbox
+      cy.get('.transaction-row > .row-checkbox button').eq(0).click()
+      cy.get('.transaction-row > .row-checkbox').eq(2).click()
+      cy.get('.transaction-row > .row-checkbox').eq(3).click()
+      cy.get('[data-testid="delete-selected-transactions-button"]').click()
+      cy.get('[data-testid="delete-confirm-button"]').click()
+      cy.get('.transaction-row').should('have.length', 20)
+
+      // Check that pagination shows the correct number
+      cy.get('.v-data-footer__pagination').should('contain.text', '1-20 of 21')
+    })
+
+    it('Checks pagination works for create', () => {
+      // Show 5 items per page
+      cy.get('.v-input__icon > .v-icon').click()
+      cy.get('.v-list-item__title').contains('5').click()
+
+      // Check that pagination shows the correct number
+      cy.get('.v-data-footer__pagination').should('contain.text', '1-5 of 7')
+
+      // Create a transaction
+      cy.get('[data-testid="create-transaction-button"]').click()
+      cy.get('[data-testid="details-value"]').type('56.23')
+      cy.get('[data-testid="save-edit-button"]').click()
+
+      // Check that pagination shows the correct number
+      cy.get('.v-data-footer__pagination').should('contain.text', '1-5 of 8')
+      cy.get('.transaction-row').should('have.length', 5)
+    })
+  })
 })

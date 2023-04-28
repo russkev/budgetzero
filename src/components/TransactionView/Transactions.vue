@@ -17,50 +17,50 @@
 </template>
 
 <script>
-import { mapActions, mapGetters, mapMutations } from "vuex";
-import TransactionsHeader from "./TransactionsHeader.vue";
-import TransactionsTable from "./TransactionsTable.vue";
-import TransactionDetails from "./DetailsT.vue";
+import { mapActions, mapGetters, mapMutations } from 'vuex'
+import TransactionsHeader from './TransactionsHeader.vue'
+import TransactionsTable from './TransactionsTable.vue'
+import TransactionDetails from './DetailsT.vue'
 
 export default {
   components: {
     TransactionsHeader,
     TransactionsTable,
-    TransactionDetails,
+    TransactionDetails
   },
   data() {
     return {
       test_items: [
-        { name: "John", age: 3 },
-        { name: "Susan", age: 2 },
+        { name: 'John', age: 3 },
+        { name: 'Susan', age: 2 }
       ],
-      items_per_page: 3,
-    };
+      items_per_page: 3
+    }
   },
   beforeRouteUpdate(to, from, next) {
-    console.log("TRANSACTIONS BEFORE ROOT UPDATE")
-    this.getTransactions(to.params.account_id);
-    next();
+    this.SET_ACCOUNT_ID(to.params.account_id)
+    next()
   },
   created() {
-    this.getTransactions(this.$route.params.account_id);
+    this.SET_ACCOUNT_ID(this.$route.params.account_id)
   },
   watch: {
     accounts: {
       handler() {
-        this.getTransactions();
-      },
-    },
+        console.log('ACCOUNTS WATCHER')
+        this.getTransactions()
+      }
+    }
   },
   computed: {
-    ...mapGetters("accountTransactions", ["accountId"]),
-    ...mapGetters(["accounts"]),
+    ...mapGetters('accountTransactions', ['accountId']),
+    ...mapGetters(['accounts'])
   },
   methods: {
-    ...mapMutations("accountTransactions", ["SET_ACCOUNT_ID"]),
-    ...mapActions("accountTransactions", ["getTransactions"]),
-  },
-};
+    ...mapMutations('accountTransactions', ['SET_ACCOUNT_ID']),
+    ...mapActions('accountTransactions', ['getTransactions'])
+  }
+}
 </script>
 
 <style scoped>
@@ -69,6 +69,4 @@ export default {
   display: flex;
   flex-direction: column;
 }
-
-
 </style>

@@ -27,7 +27,6 @@ export default {
      */
     async commitBulkDocsToPouchAndVuex(context, bulk_docs) {
       const valid_documents = await context.dispatch('validBulkDocs', bulk_docs)
-
       try {
         const results = await context.dispatch('commitBulkDocsToPouch', valid_documents)
         const results_by_id = results.reduce((partial, result) => {
@@ -241,21 +240,28 @@ export default {
       return result
     },
 
-    async commitTransactionToVuex(context, { current, previous }) {
+    async commitTransactionToVuex({ getters, dispatch, commit }, { current, previous }) {
       let account = null
       if (current) {
-        account = context.getters.accountsById[current.account]
+        account = getters.accountsById[current.account]
       } else if (previous) {
-        account = context.getters.accountsById[previous.account]
+        account = getters.accountsById[previous.account]
       }
+
+      if (current && !previous) {
+        commit('INCREMENT_ACCOUNT_TRANSACTION_COUNTS_BY', { account_id: current.account, increment: 1 })
+      } else if ((!current && previous) || (current && _.get(current, '_deleted', false))) {
+        commit('INCREMENT_ACCOUNT_TRANSACTION_COUNTS_BY', { account_id: previous.account, increment: -1 })
+      }
+
       if (!account) {
         console.error('account not found from either current or previous', current, previous)
         return
       }
       const transaction_payload = this._vm.calculateTransactionBalanceUpdate(current, previous, account)
-      this.commit('UPDATE_ACCOUNT_BALANCES', transaction_payload)
+      commit('UPDATE_ACCOUNT_BALANCES', transaction_payload)
 
-      await context.dispatch('updateCategoryBalance', { current, previous })
+      await dispatch('updateCategoryBalance', { current, previous })
       return true
     },
 
@@ -323,7 +329,7 @@ export default {
         })
         .then((result) => {
           const t1 = performance.now()
-          const balances = parseAllTransactions(result.rows, month_category_balances, getters, dispatch)
+          const balances = parseAllTransactions(result.rows, month_category_balances, getters, dispatch, commit)
           logPerformanceTime('calculateAllValues', t1)
           // commit('SET_MONTH_BALANCES', balances.month)
           dispatch('setMonthIncomeExpenseBalances', balances.month)

@@ -86,10 +86,18 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['categoryColors', 'categoriesById', 'masterCategoriesById']),
+    ...mapGetters(['categoryColors', 'categories', 'categoriesById', 'masterCategoriesById']),
     ...mapGetters('accountTransactions', ['selectedTransactions']),
     selectedCategory() {
-      return this.categoriesById[this.categoryId]
+      // console.log('SELECTED CATEGORY', this.categoryId)
+      // console.log(JSON.parse(JSON.stringify(this.categories)))
+      // console.log(this.categoriesById[this.categoryId])
+      // return this.categoriesById[this.categoryId]
+      let result = this.categoriesById[this.categoryId]
+      if (result === undefined) {
+        result = NONE
+      }
+      return result
     },
     selectedCategoryColor() {
       const id = this.categoryId

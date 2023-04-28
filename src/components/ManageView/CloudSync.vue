@@ -1,5 +1,5 @@
 <template>
-  <v-card flat color="background lighten-2" class="pa-2 mb-4">
+  <v-card flat color="background lighten-2" class="pa-2 mb-4 manage-card" id="cloud-sync-card">
     <div class="sync-stats">
       <div>Sync status:</div>
       <div>
@@ -150,12 +150,12 @@ export default {
   justify-content: flex-start;
 }
 
-#budgets-container-sheet .sync-stats {
+#cloud-sync-card .sync-stats {
   display: grid;
   grid-template-columns: max-content auto;
 }
 
-#budgets-container-sheet .sync-stats > div:nth-child(2n) {
+#cloud-sync-card .sync-stats > div:nth-child(2n) {
   margin-left: 4px;
 }
 /* #cloud-sync-url {

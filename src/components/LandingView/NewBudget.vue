@@ -1,95 +1,93 @@
 <template>
-  <div>
-    <v-container fluid class="py-0">
-      <v-sheet max-width="800px" justify="center" id="new-budgets-sheet" class="mx-auto pa-2" color="transparent">
-        <div class="transaction-details-grid pb-0 mt-3">
-          <div class="text-h5">Budget Name</div>
-          <div>
-            <v-card flat color="background lighten-2" class="pa-2 mb-4">
-              <div class="budgets-details">
-                <div class="mb-2">Enter a name for the new budget</div>
-                <v-text-field
-                  solo
-                  flat
-                  prepend-icon="mdi-file-document"
-                  color="secondary lighten-2"
-                  background-color="background lighten-3"
-                  v-model="budgetName"
-                  class="mx-2 text-body-1"
-                  :error="Boolean(budgetNameError)"
-                  :error-messages="budgetNameError"
-                  data-testid="budget-name-field"
-                />
-              </div>
-            </v-card>
-          </div>
-          <div>Categories</div>
-          <div style="max-height: 300px; overflow-y: scroll; overflow-x: hidden">
-            <v-list
-              dense
-              color="background lighten-2"
-              v-for="(masterCategory, index) in Object.keys(selectedCategories)"
-              :key="masterCategory"
-              id="start-list"
-              :class="`pa-0 ${index === 0 ? 'pt-3' : ''}`"
-            >
-              <v-list-group :value="true">
-                <template #activator>
-                  <v-list-item-action>
-                    <v-checkbox
-                      dense
-                      v-model="selectedMasterCategories"
-                      :value="masterCategory"
-                      :indeterminate="masterIntermediateState(masterCategory)"
-                      class="pa-0 ma-0 pr-3"
-                      hide-details
-                      :data-testid="`master-checkbox-${masterCategory}`"
-                      @click.stop
-                    />
-                  </v-list-item-action>
-                  <v-list-item-content>
-                    {{ masterCategory }}
-                  </v-list-item-content>
-                </template>
-                <v-list-item
-                  v-for="category in starterCategories[masterCategory]"
-                  :key="category"
-                  class="start-category-item"
-                >
-                  <v-list-item-action class="ml-4">
-                    <v-checkbox
-                      v-model="selectedCategories[masterCategory]"
-                      :value="category"
-                      dense
-                      class="pr-3"
-                      hide-details
-                      :data-testid="`checkbox-${category}`"
-                    />
-                  </v-list-item-action>
-                  <v-list-item-content>
-                    <v-list-item-title>
-                      {{ category }}
-                    </v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list-group>
-            </v-list>
-          </div>
-          <div>Create</div>
-          <div>
-            <button-transparent
-              icon="mdi-file-document"
-              :disabled="!createButtonIsEnabled"
-              @click="onCreate"
-              data-testid="create-budget-button"
-            >
-              Create
-            </button-transparent>
-          </div>
+  <v-container fluid class="py-0">
+    <v-sheet max-width="800px" justify="center" id="new-budgets-sheet" class="mx-auto" color="transparent">
+      <div class="transaction-details-grid pb-0">
+        <div class="text-h5">Budget Name</div>
+        <div>
+          <v-card flat color="background lighten-2" class="pa-2 mb-4">
+            <div class="budgets-details">
+              <div class="mb-2">Enter a name for the new budget</div>
+              <v-text-field
+                solo
+                flat
+                prepend-icon="mdi-file-document"
+                color="secondary lighten-2"
+                background-color="background lighten-3"
+                v-model="budgetName"
+                class="mx-2 text-body-1"
+                :error="Boolean(budgetNameError)"
+                :error-messages="budgetNameError"
+                data-testid="budget-name-field"
+              />
+            </div>
+          </v-card>
         </div>
-      </v-sheet>
-    </v-container>
-  </div>
+        <div>Categories</div>
+        <div style="max-height: 300px; overflow-y: scroll; overflow-x: hidden" class="mb-3">
+          <v-list
+            dense
+            color="background lighten-2"
+            v-for="(masterCategory, index) in Object.keys(selectedCategories)"
+            :key="masterCategory"
+            id="start-list"
+            :class="`pa-0 ${index === 0 ? 'pt-3' : index === Object.keys(selectedCategories).length - 1 ? 'pb-3' : ''}`"
+          >
+            <v-list-group :value="true">
+              <template #activator>
+                <v-list-item-action>
+                  <v-checkbox
+                    dense
+                    v-model="selectedMasterCategories"
+                    :value="masterCategory"
+                    :indeterminate="masterIntermediateState(masterCategory)"
+                    class="pa-0 ma-0 pr-3"
+                    hide-details
+                    :data-testid="`master-checkbox-${masterCategory}`"
+                    @click.stop
+                  />
+                </v-list-item-action>
+                <v-list-item-content>
+                  {{ masterCategory }}
+                </v-list-item-content>
+              </template>
+              <v-list-item
+                v-for="category in starterCategories[masterCategory]"
+                :key="category"
+                class="start-category-item"
+              >
+                <v-list-item-action class="ml-4">
+                  <v-checkbox
+                    v-model="selectedCategories[masterCategory]"
+                    :value="category"
+                    dense
+                    class="pr-3"
+                    hide-details
+                    :data-testid="`checkbox-${category}`"
+                  />
+                </v-list-item-action>
+                <v-list-item-content>
+                  <v-list-item-title>
+                    {{ category }}
+                  </v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-group>
+          </v-list>
+        </div>
+        <div>Create</div>
+        <div>
+          <button-transparent
+            icon="mdi-file-document"
+            :disabled="!createButtonIsEnabled"
+            @click="onCreate"
+            data-testid="create-budget-button"
+          >
+            Create
+          </button-transparent>
+        </div>
+      </div>
+    </v-sheet>
+  </v-container>
 </template>
 
 <script>
@@ -200,9 +198,9 @@ export default {
         masterCategories: masterCategories,
         categories: this.selectedCategories
       })
-        .then(() => {
-          this.$router.push({ path: '/categories' })
-        })
+        /*
+         * Rely on watch method to automatically redirect user
+         */
         .catch((error) => {
           console.log(error)
         })

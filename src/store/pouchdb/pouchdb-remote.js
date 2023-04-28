@@ -24,7 +24,6 @@ export default {
   mutations: {
     GET_REMOTE_SYNC_URL(state) {
       const remote_sync_url = localStorage.remoteSyncURL
-      console.log('GET_REMOTE_SYNC_URL', remote_sync_url)
       if (remote_sync_url) {
         Vue.set(state, 'remoteSyncURL', remote_sync_url)
         // state.remoteSyncURL = remote_sync_url

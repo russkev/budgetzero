@@ -7,7 +7,8 @@ import Vue from 'vue'
 const DEFAULT_ACCOUNT_STATE = {
   allAccountBalances: {},
   accounts: [],
-  intlCurrency: new Intl.NumberFormat("en-us", { style: "currency", currency: "USD" }),
+  accountTransactionCounts: {},
+  intlCurrency: new Intl.NumberFormat('en-us', { style: 'currency', currency: 'USD' })
 }
 
 export default {
@@ -25,17 +26,18 @@ export default {
     },
     accountsOnBudget: (state) => {
       return state.accounts
-      .filter((account) => account.onBudget)
-      .sort((a, b) => {
-        if (a.sort !== undefined && b.sort !== undefined) {
-          return a.sort - b.sort
-        } else return 0
-      })
+        .filter((account) => account.onBudget)
+        .sort((a, b) => {
+          if (a.sort !== undefined && b.sort !== undefined) {
+            return a.sort - b.sort
+          } else return 0
+        })
     },
     accountsOffBudget: (state) => {
       return state.accounts.filter((account) => !account.onBudget)
     },
     intlCurrency: (state) => state.intlCurrency,
+    accountTransactionCounts: (state) => state.accountTransactionCounts
   },
   mutations: {
     SET_ACCOUNTS(state, accounts) {
@@ -62,6 +64,12 @@ export default {
       Object.entries(DEFAULT_ACCOUNT_STATE).forEach(([key, value]) => {
         Vue.set(state, key, value)
       })
+    },
+    SET_ALL_ACCOUNT_TRANSACTION_COUNTS(state, accountTransactionCounts) {
+      Vue.set(state, 'accountTransactionCounts', accountTransactionCounts)
+    },
+    INCREMENT_ACCOUNT_TRANSACTION_COUNTS_BY(state, { account_id, increment }) {
+      Vue.set(state.accountTransactionCounts, account_id, state.accountTransactionCounts[account_id] + increment)
     }
   },
   actions: {
@@ -119,7 +127,7 @@ export default {
 }
 
 const updateAccountBalances = (current_balances, account, account_id, cleared, uncleared, working) => {
-  let updated_balances = {...current_balances[account_id]}
+  let updated_balances = { ...current_balances[account_id] }
   updated_balances.cleared += cleared * account.sign
   updated_balances.uncleared += uncleared * account.sign
   updated_balances.working += working * account.sign

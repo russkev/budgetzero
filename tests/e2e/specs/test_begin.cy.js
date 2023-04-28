@@ -1,12 +1,18 @@
 describe('Initial experience', () => {
   context('Test budget creation', () => {
-    before(() => {
-      cy.initPathEmpty('create')
-      // cy.visit(`http://localhost:8082/create`)
-    })
     it('Creates a new budget', () => {
+      cy.initPathEmpty('categories/2022-07')
+      // Ensure automatic redirect to landing page
+      cy.url().should('include', '/landing')
+
+      // Create new budget
+      cy.get('[data-testid="create-new-budget-button"]').click()
+
+      // Input name
       cy.get('[data-testid="budget-name-field"]').type('Cy1').type('{enter}')
       cy.get('[data-testid="budget-name-field"]').should('have.value', 'Cy1')
+
+      // Uncheck some checkboxes
       cy.get('[data-testid="master-checkbox-Giving"]').click({ force: true })
       cy.get('[data-testid="master-checkbox-Giving"]').should('not.be.checked')
       cy.get('[data-testid="checkbox-Tithing"]').should('not.be.checked')
@@ -18,15 +24,20 @@ describe('Initial experience', () => {
 
       cy.get('[data-testid="checkbox-Car Payment"]').click({ force: true })
 
+      // Click 'Create'
       cy.get('[data-testid="create-budget-button"]').click()
 
+      // Ensure automatic redirect to categories page
       cy.url().should('include', '/categories')
 
+      // Ensure 'Uncategorized' category is present
       cy.get('div.category-card .master-row').eq(0).should('contain', 'Uncategorized')
 
+      // Ensure 'Income' category is present
       cy.get('div.category-card .master-row').eq(1).should('contain', 'Income')
       cy.get('div.category-card').eq(1).find('div.category-name').eq(0).should('contain', 'Income')
 
+      // Ensure the rest of the categories display correctly
       cy.get('div.category-card .master-row input').eq(0).should('have.value', 'Everyday Expenses')
       cy.get('div.category-card').eq(2).find('div.category-name').eq(0).should('contain', 'Groceries')
       cy.get('div.category-card').eq(2).find('div.category-name').eq(1).should('contain', 'Household Goods')
@@ -57,6 +68,51 @@ describe('Initial experience', () => {
       cy.get('div.category-card').eq(5).find('div.category-name').eq(4).should('contain', 'Car Replacement')
       cy.get('div.category-card').eq(5).find('div.category-name').eq(5).should('contain', 'Retirement')
       cy.get('div.category-card').eq(5).find('div.category-name').eq(6).should('contain', 'Vacation')
+    })
+    it('Loads a budget from backup', () => {
+      cy.initPathEmpty('manage')
+
+      // Ensure automatic redirect to landing page
+      cy.url().should('include', '/landing')
+
+      // Click 'Load from backup'
+      cy.get('[data-testid="restore-budget-button"]').click()
+
+      // Load backup file
+      const file = 'tests/__mockdata__/budgetzero_export.json'
+      cy.get('input[type="file"]').selectFile(file, { force: true })
+
+      cy.get('[data-testid="restore-button"]').click()
+
+      // Check that accounts are back
+      cy.get('[data-testid="transactions-page-v6A"]').should('contain.text', '$918.43')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$2,836.10')
+      cy.get('[data-testid="transactions-page-ELC"]').should('contain.text', '-$1,081.32')
+    })
+    it('Loads a budget from cloud sync', () => {
+      cy.initPathEmpty('')
+
+      // Ensure automatic redirect to landing page
+      cy.url().should('include', '/landing')
+
+      // Click 'Sync with cloud'
+      cy.get('[data-testid="sync-budget-button"]').click()
+
+      // Input cloud server address
+      cy.get('[data-testid="edit-cloud-button"]').click()
+      cy.get('[data-testid="cloud-sync-url"]').type(Cypress.env('CYPRESS_CLOUD_ADDRESS'))
+      cy.get('[data-testid="save-edit-button"]').click()
+
+      // Confirm the data is updated
+      cy.get('[data-testid="transactions-page-v6A"]', { timeout: 20000 }).should('contain.text', '$918.43')
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$2,836.10')
+      cy.get('[data-testid="transactions-page-ELC"]').should('contain.text', '-$1,081.32')
+    })
+    it('Checks that landing page redirects if budget exists', () => {
+      cy.initPath('landing')
+
+      // Ensure automatic redirect to categories page
+      cy.url().should('include', '/categories')
     })
   })
 })

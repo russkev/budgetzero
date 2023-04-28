@@ -17,7 +17,12 @@
 
             <div v-if="selectedOfxTransactions">
               <span> Select Account to Import: </span>
-              <v-select v-model="selectedOfxTransactions" :items="accountsForImport" item-text="id" item-value="transactions" />
+              <v-select
+                v-model="selectedOfxTransactions"
+                :items="accountsForImport"
+                item-text="id"
+                item-value="transactions"
+              />
 
               <span class="heading"
                 >Preview
@@ -36,7 +41,7 @@
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="item in selectedOfxTransactions" :key="item.FITID">
+                    <tr v-for="item in selectedOfxTransactions" :key="item.FITID + item.MEMO + item.TRNAMT">
                       <td>{{ transactionDate(item.DTPOSTED) }}</td>
                       <td>{{ item.NAME }}</td>
                       <td>{{ item.MEMO }}</td>
@@ -54,7 +59,12 @@
           <v-card-actions>
             <v-spacer />
             <v-btn color="error" @click.stop="show = false"> Cancel </v-btn>
-            <v-btn color="primary" :disabled="!chosenFile" @click="pushTransactionsToBackend">
+            <v-btn
+              color="primary"
+              :disabled="!chosenFile"
+              @click="pushTransactionsToBackend"
+              data-testid="import-ofx-transactions-button"
+            >
               Import Transactions
             </v-btn>
           </v-card-actions>
@@ -68,7 +78,7 @@
               auto-match-fields
               auto-match-ignore-case
               table-select-class="map-fields-select"
-              :map-fields="['date', 'amount', 'memo', ]"
+              :map-fields="['date', 'amount', 'memo']"
             >
               <!-- <template slot="hasHeaders" slot-scope="{ headers, toggle }">
               :map-fields="{Date: {required: false, label: 'Date'}}"
@@ -108,7 +118,7 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr v-for="item in parseCsv" :key="item.date+item.memo+item.amount">
+                  <tr v-for="item in parseCsv" :key="item.date + item.memo + item.amount">
                     <td>{{ item.date }}</td>
                     <td>{{ item.payee }}</td>
                     <td>{{ item.amount }}</td>
@@ -121,7 +131,14 @@
             <v-card-actions>
               <v-spacer />
               <v-btn color="error" @click.stop="show = false"> Cancel </v-btn>
-              <v-btn color="primary" :disabled="!parseCsv" @click="importCSVTransactions"> Import Transactions </v-btn>
+              <v-btn
+                color="primary"
+                :disabled="!parseCsv"
+                @click="importCSVTransactions"
+                data-testid="import-csv-transactions-button"
+              >
+                Import Transactions
+              </v-btn>
             </v-card-actions>
           </v-card-text>
         </v-tab-item>
@@ -137,13 +154,7 @@ import { mapActions, mapGetters } from 'vuex'
 import _ from 'lodash'
 import { VueCsvImport } from 'vue-csv-import'
 import moment from 'moment'
-import {
-  getAccountId,
-  getAccountType,
-  getAccountBankId,
-  getAccountTransactions,
-  getDate,
-} from '../../ofxParse'
+import { getAccountId, getAccountType, getAccountBankId, getAccountTransactions, getDate } from '../../ofxParse'
 import { ID_NAME, NONE } from '../../constants'
 import ofx from 'node-ofx-parser'
 
@@ -154,12 +165,12 @@ export default {
   data() {
     return {
       csvFields: {
-        name: { required: false, label: 'Name'},
-        age: {required: true, label: 'Age'}
+        name: { required: false, label: 'Name' },
+        age: { required: true, label: 'Age' }
       },
       tab: null,
       parseCsv: null,
-      selectedOfxTransactions: null,
+      selectedOfxTransactions: [],
       accountsForImport: [],
       importCount: {
         imported: 0,
@@ -192,10 +203,9 @@ export default {
     readOFXfile(file) {
       const reader = new FileReader()
       this.accountsForImport = []
-      this.selectedOfxTransactions = {}
+      this.selectedOfxTransactions = []
 
       reader.onload = (e) => {
-        
         const parsed_ofx = ofx.parse(e.target.result)
         const potentialBankAccounts = _.get(parsed_ofx, 'OFX.BANKMSGSRSV1.STMTTRNRS', [])
         const potentialCreditAccounts = _.get(parsed_ofx, 'OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS', [])
@@ -231,10 +241,12 @@ export default {
           standardAcct.transactions = acct.CCSTMTRS.BANKTRANLIST.STMTTRN
           return standardAcct
         })
-
         this.accountsForImport = this.accountsForImport.concat(bankAccountsForImport, creditAccountsForImport)
         if (this.accountsForImport.length > 0 && this.accountsForImport[0]) {
           this.selectedOfxTransactions = this.accountsForImport[0].transactions
+          if (!Array.isArray(this.selectedOfxTransactions)) {
+            this.selectedOfxTransactions = []
+          }
         }
       }
       if (file) {
@@ -248,10 +260,8 @@ export default {
       const import_promises = this.selectedOfxTransactions.map((transaction) => {
         const import_id = `${this.account}_${transaction.FITID}`
         return this.$store
-          .dispatch(
-            'fetchTransactionsWithImportId',
-            { account_id: this.account, import_id: import_id}
-          ).then((results) => {
+          .dispatch('fetchTransactionsWithImportId', { account_id: this.account, import_id: import_id })
+          .then((results) => {
             if (results && results.length > 0) {
               this.importCount.skipped++
               return null
@@ -276,12 +286,14 @@ export default {
               _id: `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId(date, transaction.FITID)}`
             }
           })
+          .finally(() => {
+            this.resetData()
+          })
       })
 
       return this.doImport(import_promises).then(() => {
         this.loadLocalBudget()
       })
-
     },
     async importCSVTransactions() {
       const import_promises = this.parseCsv.map((transaction) => {
@@ -292,10 +304,8 @@ export default {
         // Create a custom import ID to prevent repeat imports
         const import_id = `${this.account}_${date}-${value}-${transaction.memo}`
         return this.$store
-          .dispatch(
-            'fetchTransactionsWithImportId', 
-            { account_id: this.account, import_id: import_id }
-          ).then((results) => {
+          .dispatch('fetchTransactionsWithImportId', { account_id: this.account, import_id: import_id })
+          .then((results) => {
             if (results && results.length > 0) {
               this.importCount.skipped++
               return null
@@ -337,8 +347,7 @@ export default {
       // })
 
       const import_promise_result = await Promise.all(import_promises)
-      const transaction_list_to_import = import_promise_result
-        .filter((transaction) => transaction !== null)
+      const transaction_list_to_import = import_promise_result.filter((transaction) => transaction !== null)
 
       try {
         await this.commitBulkNewDocsToPouch(transaction_list_to_import)
@@ -365,11 +374,11 @@ export default {
     resetData() {
       this.selectedOfxTransactions = null
       this.accountsForImport = null
-      this.importCount = {
+      ;(this.importCount = {
         imported: 0,
         skipped: 0
-      },
-      this.chosenFile = null
+      }),
+        (this.chosenFile = null)
     }
   }
 }

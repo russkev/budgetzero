@@ -8,7 +8,8 @@ const DEFAULT_BUDGET_STATE = {
   allBudgets: [],
   budgetBalances: {},
   budgetExists: false, // This opens the create budget modal when 'false'
-  isLoadingFullscreen: false
+  isLoadingFullscreen: true,
+  targetPage: null
 }
 
 export default {
@@ -27,7 +28,8 @@ export default {
     },
     budgetExists: (state) => state.budgetExists,
     budgetBalances: (state) => state.budgetBalances,
-    isLoadingFullscreen: (state) => state.isLoadingFullscreen
+    isLoadingFullscreen: (state) => state.isLoadingFullscreen,
+    targetPage: (state) => state.targetPage
   },
   mutations: {
     RESET_BUDGET_STATE(state) {
@@ -45,6 +47,13 @@ export default {
     },
     SET_LOADING_FULLSCREEN(state, isLoading) {
       Vue.set(state, 'isLoadingFullscreen', isLoading)
+    },
+    SET_TARGET_PAGE(state, targetPage) {
+      Vue.set(state, 'targetPage', targetPage)
+    },
+    RESET_BUDGETS(state) {
+      Vue.set(state, 'allBudgets', [])
+      Vue.set(state, 'budgetExists', false)
     }
   },
   actions: {

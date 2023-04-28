@@ -299,8 +299,9 @@ const calculateTransactionBalanceUpdate = (current, previous, account) => {
   return transaction_payload
 }
 
-const parseAllTransactions = (allTransactions, month_category_balances, getters, dispatch) => {
+const parseAllTransactions = (allTransactions, month_category_balances, getters, dispatch, commit) => {
   let balances = { account: {}, category: {}, month: {} }
+  let accountTransactionCounts = {}
   if (allTransactions === undefined) {
     return balances
   }
@@ -318,6 +319,10 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
 
   allTransactions.map((row) => {
     const account_id = row.doc.account
+
+    _.defaults(accountTransactionCounts, { [account_id]: 0 })
+    accountTransactionCounts[account_id] += 1
+
     const account_doc = getters.accountsById[account_id]
     if (account_doc === undefined) {
       console.error('Account not found for id:', account_id)
@@ -361,6 +366,7 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     })
   })
 
+  commit('SET_ALL_ACCOUNT_TRANSACTION_COUNTS', accountTransactionCounts)
   if (updated_transaction_docs.length > 0) {
     dispatch('commitBulkDocsToPouchAndVuex', updated_transaction_docs)
   }

@@ -22,15 +22,15 @@ import Transactions from './components/TransactionView/Transactions.vue'
 import Accounts from './components/AccountView/Accounts.vue'
 import Categories from './components/CategoryView/Categories.vue'
 // import CreateBudget from './components/CreateBudget.vue'
-import NewBudget from './components/NewBudgetView/NewBudget.vue'
+import NewBudget from './components/LandingView/NewBudget.vue'
 import Manage from './components/ManageView/Manage.vue'
 // import Reports from './components/Reports.vue'
-// import Landing from './components/NewBudgetView/Landing.vue'
-import LandingContainer from './components/NewBudgetView/LandingContainer.vue'
-import LandingRestore from './components/NewBudgetView/LandingRestore.vue'
-import LandingNew from './components/NewBudgetView/LandingNew.vue'
-import LandingStart from './components/NewBudgetView/LandingStart.vue'
-import LandingCloudSync from './components/NewBudgetView/LandingCloudSync.vue'
+// import Landing from './components/LandingView/Landing.vue'
+import LandingContainer from './components/LandingView/LandingContainer.vue'
+import LandingRestore from './components/LandingView/LandingRestore.vue'
+import LandingNew from './components/LandingView/LandingNew.vue'
+import LandingStart from './components/LandingView/LandingStart.vue'
+import LandingCloudSync from './components/LandingView/LandingCloudSync.vue'
 import moment from 'moment'
 
 import VueMoment from 'vue-moment'
@@ -135,6 +135,7 @@ export var router = new VueRouter({
     },
     {
       path: '/categories',
+      name: 'categories',
       redirect: `/categories/${moment(new Date()).format('YYYY-MM')}`,
       meta: { requiresAuth: true }
     },
@@ -153,15 +154,18 @@ export var router = new VueRouter({
 })
 
 function isAuthenticated() {
-  console.log(store.getters)
-  console.log('isAuthenticated: ', store.getters.budgetExists)
   return store.getters.budgetExists
 }
 
 router.beforeEach((to, from, next) => {
   if (to.matched.some((record) => record.meta.requiresAuth)) {
     if (!isAuthenticated()) {
+      store.commit('SET_TARGET_PAGE', to.path)
       next({ name: 'landing' })
+    }
+  } else if (to.matched.some((record) => record.meta.requiresAuth === false)) {
+    if (isAuthenticated()) {
+      next({ name: 'budget' })
     }
   }
   next()

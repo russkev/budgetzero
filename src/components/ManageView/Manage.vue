@@ -77,6 +77,10 @@ export default {
   text-transform: unset;
 }
 
+.manage-card {
+  width: 100%;
+}
+
 /* #budgets-container-sheet .sync-stats > div:nth-child(2n + 1) {
   text-align: right;
 } */
