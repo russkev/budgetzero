@@ -1,6 +1,6 @@
 <template>
-  <row-element-wrapper @click="onTransactionDetailsClick(item)" class="text-right" right :disabled="isLoading">
-    <span :class="`my-auto ${isLoading ? 'text-disabled' : ''}`">
+  <row-element-wrapper @click="onTransactionDetailsClick(item)" class="text-right" right :disabled="tableIsDisabled">
+    <span :class="`my-auto ${tableIsDisabled ? 'text-disabled' : ''}`">
       {{ intlCurrency.format(item.balance / 100) }}
     </span>
   </row-element-wrapper>
@@ -21,7 +21,7 @@ export default {
   },
   computed: {
     ...mapGetters(['intlCurrency']),
-    ...mapGetters('accountTransactions', ['isLoading'])
+    ...mapGetters('accountTransactions', ['tableIsDisabled'])
   },
   methods: {
     ...mapActions('accountTransactions', ['onTransactionDetailsClick'])

@@ -8,7 +8,7 @@
         class="row-delete"
         height="100%"
         :on="on"
-        :disabled="isLoading || item._id === editedTransaction._id"
+        :disabled="tableIsDisabled || item._id === editedTransaction._id"
       />
     </template>
   </delete-confirm>
@@ -37,7 +37,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('accountTransactions', ['editedTransaction', 'isLoading']),
+    ...mapGetters('accountTransactions', ['editedTransaction', 'tableIsDisabled']),
     itemId() {
       return this.item._id.slice(-ID_LENGTH.transaction)
     }

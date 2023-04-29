@@ -183,6 +183,7 @@ export default {
     },
 
     commitBulkNewDocsToPouch(context, docs) {
+      console.log('commit bulk new docs to pouch')
       const db = this._vm.$pouch
       return db.bulkDocs(docs)
     },

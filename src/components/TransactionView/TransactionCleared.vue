@@ -51,10 +51,10 @@ export default {
       'transactions',
       'editedTransaction',
       'selectedTransactions',
-      'isLoading'
+      'tableIsDisabled'
     ]),
     isDisabled() {
-      return this.editedTransaction._id === this.item._id || this.isLoading
+      return this.editedTransaction._id === this.item._id || this.tableIsDisabled
     }
   },
   methods: {

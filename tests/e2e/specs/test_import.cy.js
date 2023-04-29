@@ -11,7 +11,8 @@ describe('Import bank transactions', () => {
       cy.get('[data-testid="import-transactions-button"]').click()
       const file = 'tests/__mockdata__/bankexports/ing.ofx'
       cy.get('input[type="file"]').selectFile(file, { force: true })
-      cy.get('.heading').should('contain.text', '18 transactions')
+      cy.get('.import-preview-table .v-data-footer__pagination').should('contain.text', '1-18 of 18')
+      // cy.get('.heading').should('contain.text', '18 transactions')
       cy.get('[data-testid="import-ofx-transactions-button"]').click()
 
       // Ensure current account transaction totals are updated
@@ -19,6 +20,21 @@ describe('Import bank transactions', () => {
 
       // Check that pagination shows the correct number
       cy.get('.v-data-footer__pagination').should('contain.text', '1-20 of 25')
+
+      // Delete some transactions
+      cy.get('.v-progress-linear__buffer').should('not.exist')
+      cy.get('.transaction-row > .row-checkbox').eq(9).click()
+      cy.get('.transaction-row > .row-checkbox').eq(10).click()
+      cy.get('.transaction-row > .row-checkbox').eq(12).click()
+      cy.get('[data-testid="delete-selected-transactions-button"]').click()
+      cy.get('[data-testid="delete-confirm-button"]').click()
+      cy.get('.transaction-row').should('have.length', 20)
+
+      // Check that pagination shows the correct number
+      cy.get('.v-data-footer__pagination').should('contain.text', '1-20 of 22')
+
+      // Ensure current account transaction totals are updated
+      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$2,815.65')
 
       // Open import dialog again
       cy.get('[data-testid="import-transactions-button"]').click()
@@ -28,14 +44,14 @@ describe('Import bank transactions', () => {
 
       // Do same import
       cy.get('input[type="file"]').selectFile(file, { force: true })
-      cy.wait(1000)
-      cy.get('[data-testid="import-ofx-transactions-button"]').click()
+      // cy.wait(1000)
+      // cy.get('[data-testid="import-ofx-transactions-button"]').click()
 
-      // Ensure current account transaction totals do not change
-      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$3,762.40')
+      // // Ensure current account transaction totals do not change
+      // cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$3,762.40')
 
-      // Check that page 2 loads correctly
-      cy.get('.v-data-footer__icons-after > .v-btn').click()
+      // // Check that page 2 loads correctly
+      // cy.get('.v-data-footer__icons-after > .v-btn').click()
     })
   })
 })

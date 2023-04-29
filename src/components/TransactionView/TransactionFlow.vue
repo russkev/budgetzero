@@ -1,6 +1,10 @@
 <template>
-  <row-element-wrapper @click="onTransactionDetailsClick(item)" right :disabled="isLoading">
-    <span :class="`my-auto ellipsis text-body-1 ${isLoading ? 'text-disabled' : textColor + '--text text--lighten-3'}`">
+  <row-element-wrapper @click="onTransactionDetailsClick(item)" right :disabled="tableIsDisabled">
+    <span
+      :class="`my-auto ellipsis text-body-1 ${
+        tableIsDisabled ? 'text-disabled' : textColor + '--text text--lighten-3'
+      }`"
+    >
       {{ value }}
     </span>
   </row-element-wrapper>
@@ -27,7 +31,7 @@ export default {
   },
   computed: {
     ...mapGetters(['intlCurrency']),
-    ...mapGetters('accountTransactions', ['isLoading']),
+    ...mapGetters('accountTransactions', ['tableIsDisabled']),
     value() {
       if (this.isOutflow && this.item.value < 0) {
         return this.intlCurrency.format(Math.abs(this.item.value / 100))

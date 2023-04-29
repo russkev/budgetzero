@@ -1,5 +1,5 @@
 <template>
-  <v-card width="100%" flat color="background lighten-1" class="category-details-title ma-0 ml-2">
+  <v-card width="100%" flat color="background lighten-1" class="category-details-title flex-sheet ma-0 ml-2">
     <!-- <v-card-title class="primary darken-3 pa-3">{{ title }}</v-card-title> -->
     <v-card-title v-if="selectedCategory" class="background lighten-2 pa-3">
       Update Selected

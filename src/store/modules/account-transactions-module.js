@@ -21,7 +21,8 @@ const DEFAULT_ACCOUNT_TRANSACTIONS_STATE = {
   itemsPerPage: DEFAULT_TRANSACTIONS_PER_PAGE,
   selectedTransactionIds: [],
   isCreatingNewTransaction: false,
-  isLoading: false
+  isLoading: false,
+  importOfxIsOpen: false
 }
 
 export default {
@@ -52,7 +53,12 @@ export default {
       state.selectedTransactionIds.map((transactionId) => getters.transactionsById[transactionId]),
     isCreatingNewTransaction: (state) => state.isCreatingNewTransaction,
     dataTableHeaders: () => dataTableHeaders,
-    isLoading: (state) => state.isLoading
+    isLoading: (state) => state.isLoading,
+    tableIsDisabled: (state) => state.isLoading || state.importOfxIsOpen,
+    importOfxIsOpen: (state) => state.importOfxIsOpen,
+    importIds: (state, getters, rootState, rootGetters) => {
+      return _.get(rootGetters, ['allImportIds', getters.accountId], {})
+    }
   },
   mutations: {
     SET_ACCOUNT_ID(state, account_id) {
@@ -165,6 +171,9 @@ export default {
     },
     SET_IS_LOADING(state, is_loading) {
       Vue.set(state, 'isLoading', is_loading)
+    },
+    SET_IMPORT_OFX_IS_OPEN(state, is_open) {
+      Vue.set(state, 'importOfxIsOpen', is_open)
     }
   },
   actions: {
@@ -180,6 +189,7 @@ export default {
 
       dispatch('fetchTransactionsForAccount', getters.accountOptions, { root: true })
         .then((result) => {
+          console.log('getTransactions result:', result)
           // commit('SET_NUM_SERVER_TRANSACTIONS', result.total_rows)
           const transactions = result.rows.map((row) => {
             const doc = row.doc

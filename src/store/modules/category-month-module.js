@@ -447,14 +447,15 @@ export default {
       })
     },
     newCategory({ commit, dispatch, getters }, master_category) {
-      return dispatch('createCategory', { name: 'Name', master_id: master_category._id }, { root: true })
-      .then((new_category) => {
-        const id = new_category._id.slice(-ID_LENGTH.category)
-        console.log('newCategory', getters.categoriesDataById[id])
-        commit('SET_EDITED_CATEGORY_NAME_ID', id)
-        dispatch('selectCategory',  getters.categoriesDataById[id])
-        return id
-      })
+      return dispatch('createCategory', { name: 'Name', master_id: master_category._id }, { root: true }).then(
+        (new_category) => {
+          const id = new_category._id.slice(-ID_LENGTH.category)
+          console.log('newCategory', getters.categoriesDataById[id])
+          commit('SET_EDITED_CATEGORY_NAME_ID', id)
+          dispatch('selectCategory', getters.categoriesDataById[id])
+          return id
+        }
+      )
     },
     onDeleteMasterCategory({ dispatch }, master_category) {
       dispatch('deleteMasterCategory', master_category._id, { root: true })
@@ -551,8 +552,4 @@ const transactionHeaders = [
     text: 'Balance',
     value: 'balance'
   }
-  // {
-  //   text: "ID",
-  //   value: "_id",
-  // }
 ]

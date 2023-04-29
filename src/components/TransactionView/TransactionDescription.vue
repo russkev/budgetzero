@@ -1,8 +1,8 @@
 <template>
   <description-tooltip :item="item">
     <template #activator="{ on }">
-      <row-element-wrapper @click="onTransactionDetailsClick(item)" :disabled="isLoading">
-        <span :class="`my-auto ellipsis text-body-1 ${isLoading ? 'text-disabled' : ''}`" v-on="on">
+      <row-element-wrapper @click="onTransactionDetailsClick(item)" :disabled="tableIsDisabled">
+        <span :class="`my-auto ellipsis text-body-1 ${tableIsDisabled ? 'text-disabled' : ''}`" v-on="on">
           {{ previewDescription }}
         </span>
       </row-element-wrapper>
@@ -26,7 +26,7 @@ export default {
     RowElementWrapper
   },
   computed: {
-    ...mapGetters('accountTransactions', ['isLoading']),
+    ...mapGetters('accountTransactions', ['tableIsDisabled']),
     previewDescription() {
       if (this.item.note) {
         return this.item.note

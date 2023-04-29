@@ -6,12 +6,26 @@ import { updateAccountBalances } from './account-module'
 import { initCategoryBalancesMonth, updateSingleCategory } from './category-module'
 import { updateMonthBalances } from './category-module'
 import { compareAscii } from './id-module'
+import Vue from 'vue'
+
+const DEFAULT_TRANSACTION_STATE = {
+  allImportIds: {}
+}
 
 export default {
-  getters: {
-    dataTableHeaders: () => dataTableHeaders
+  state: {
+    ...DEFAULT_TRANSACTION_STATE
   },
-
+  getters: {
+    dataTableHeaders: () => dataTableHeaders,
+    importTransactionHeaders: () => importTransactionHeaders,
+    allImportIds: (state) => state.allImportIds
+  },
+  mutations: {
+    SET_ALL_IMPORT_IDS(state, ids) {
+      Vue.set(state, 'allImportIds', ids)
+    }
+  },
   actions: {
     /**
      * Create/update the mirrored transfer transaction
@@ -317,6 +331,9 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     return partial
   }, {})
 
+  let importIds = {}
+  console.log('allTransactions', allTransactions)
+
   allTransactions.map((row) => {
     const account_id = row.doc.account
 
@@ -338,6 +355,12 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     const cleared = row.doc.cleared ? working : 0
     const uncleared = row.doc.cleared ? 0 : working
     const splits = row.doc.splits ? row.doc.splits : []
+    const transaction_id = row.doc._id.slice(-ID_LENGTH.transaction)
+    const import_id = _.get(row.doc, 'importId', '')
+    if (import_id) {
+      _.defaultsDeep(importIds, { [account_id]: {} })
+      importIds[account_id][import_id] = transaction_id
+    }
 
     // _.defaultsDeep(balances.account, defaultAccountBalance(account_id))
     _.defaultsDeep(balances.account, { [account_id]: DEFAULT_ACCOUNT_BALANCE })
@@ -366,6 +389,8 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     })
   })
 
+  console.log('importIds', importIds)
+  commit('SET_ALL_IMPORT_IDS', importIds)
   commit('SET_ALL_ACCOUNT_TRANSACTION_COUNTS', accountTransactionCounts)
   if (updated_transaction_docs.length > 0) {
     dispatch('commitBulkDocsToPouchAndVuex', updated_transaction_docs)
@@ -435,3 +460,18 @@ function getUpdatedDoc(transaction_doc, running_balance) {
   }
   return updated_transaction_doc
 }
+
+const importTransactionHeaders = [
+  {
+    text: 'Date',
+    value: 'date'
+  },
+  {
+    text: 'Memo',
+    value: 'memo'
+  },
+  {
+    text: 'Amount',
+    value: 'amount'
+  }
+]

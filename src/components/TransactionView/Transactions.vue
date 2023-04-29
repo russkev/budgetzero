@@ -7,7 +7,7 @@
           <v-col class="flex-sheet pa-1" cols="8">
             <transactions-table />
           </v-col>
-          <v-col cols="4" class="pa-1">
+          <v-col cols="4" class="pa-0">
             <transaction-details />
           </v-col>
         </v-row>
@@ -63,7 +63,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style>
 .flex-sheet {
   height: calc(100vh - 70px);
   display: flex;

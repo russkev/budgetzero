@@ -1,8 +1,10 @@
 <template>
-  <v-card width="100%" height="100%" flat color="background lighten-1" class="ma-0">
-    <div v-if="editedTransaction._id !== DEFAULT_TRANSACTION._id">
+  <v-card width="100%" flat color="background lighten-1" class="flex-sheet pa-1 ma-0">
+    <!-- <div v-if="importOfx">Importing OFX file...</div> -->
+    <import-ofx v-if="importOfxIsOpen" @close="onCloseImportOfx" @apply="onApplyImportOfx" :account="accountId" />
+    <template v-else-if="editedTransaction._id !== DEFAULT_TRANSACTION._id">
       <v-card-title :class="`${titleColor} darken-3 pa-3`">{{ title }}</v-card-title>
-      <div class="transaction-details-grid pa-2 pb-0">
+      <div class="transaction-details-grid pa-2 pb-0" style="overflow-y: auto">
         <div class="text-h5" :style="borderRight['date']">Date</div>
         <details-date v-model="transactionDate" />
         <div class="text-h5" :style="borderRight['value']">Amount</div>
@@ -17,11 +19,13 @@
         <details-note />
         <div class="text-h5" :style="borderRight['payee']">Danger</div>
         <details-delete />
+        <div class="text-h5"></div>
+        <details-data :transaction="editedTransaction" />
       </div>
       <div class="save-cancel-container pa-2">
         <cancel-save @cancel="onCancel" @save="onSave" />
       </div>
-    </div>
+    </template>
     <details-buttons
       v-else-if="selectedTransactions.length > 0"
       icon="mdi-file-document-multiple"
@@ -74,16 +78,17 @@
         />
         <details-button
           data-testid="import-transactions-button"
-          icon="mdi-cloud-upload"
+          icon="mdi-file-upload"
           label="Import"
-          @click.stop="importModalIsVisible = true"
+          @click.stop="onOpenImportOfx"
         />
-        <import-transactions
+        <!-- @click.stop="importModalIsVisible = true" -->
+        <!-- <import-transactions
           :visible="importModalIsVisible"
           :account="accountId"
           @close="onImportModalClose"
           @apply="onImportModalApply"
-        />
+        /> -->
       </template>
     </details-buttons>
   </v-card>
@@ -102,8 +107,10 @@ import DetailsStatus from './DetailsStatus.vue'
 import DetailsButton from '../Shared/DetailsButton.vue'
 import DetailsButtons from './DetailsButtons.vue'
 import DetailsDelete from './DetailsDelete.vue'
+import DetailsData from './DetailsData.vue'
 import DeleteConfirm from '../Shared/DeleteConfirm.vue'
 import CancelSave from '../Shared/CancelSave.vue'
+import ImportOfx from './ImportOfx.vue'
 
 export default {
   components: {
@@ -117,14 +124,17 @@ export default {
     DetailsButton,
     DetailsButtons,
     DetailsDelete,
+    DetailsData,
     DeleteConfirm,
-    CancelSave
+    CancelSave,
+    ImportOfx
   },
   data() {
     return {
       DEFAULT_TRANSACTION,
       categoryMenu: false,
       importModalIsVisible: false
+      // importOfxIsOpen: false
     }
   },
   computed: {
@@ -134,7 +144,8 @@ export default {
       'accountId',
       'transactions',
       'editedTransactionIndex',
-      'isCreatingNewTransaction'
+      'isCreatingNewTransaction',
+      'importOfxIsOpen'
     ]),
     transactionDate: {
       get() {
@@ -204,7 +215,8 @@ export default {
       'SET_EDITED_TRANSACTION_NOTE',
       'SET_EDITED_TRANSACTION_DATE',
       'SET_EDITED_TRANSACTION_CATEGORY',
-      'CLEAR_EDITED_TRANSACTION'
+      'CLEAR_EDITED_TRANSACTION',
+      'SET_IMPORT_OFX_IS_OPEN'
     ]),
     ...mapActions('accountTransactions', [
       'addTransaction',
@@ -238,6 +250,16 @@ export default {
     onImportModalApply() {
       this.importModalIsVisible = false
       this.getTransactions()
+    },
+    onCloseImportOfx() {
+      this.SET_IMPORT_OFX_IS_OPEN(false)
+    },
+    onApplyImportOfx() {
+      this.SET_IMPORT_OFX_IS_OPEN(false)
+      this.getTransactions()
+    },
+    onOpenImportOfx() {
+      this.SET_IMPORT_OFX_IS_OPEN(true)
     }
   }
 }

@@ -1,12 +1,12 @@
 <template>
   <v-sheet class="flex-table-container ma-0 pa-0" color="transparent">
     <v-data-table
-      id="transactions-table"
       data-testid="transactions-table"
       v-model="selected"
       :headers="dataTableHeaders"
       :items="transactions"
       group-by="date"
+      group-desc
       item-key="_id"
       show-select
       single-expand
@@ -24,7 +24,7 @@
         'disable-sort': true,
         class: 'text-body-2'
       }"
-      class="flex-table-main background lighten-1"
+      class="transactions-table flex-table-main background lighten-1"
       :loading="isLoading"
     >
       <template #header.data-table-select="{ on, props }">
@@ -189,11 +189,8 @@ export default {
 table {
   table-layout: fixed;
 }
-
-table tr.transaction-row > td {
-  border-bottom: 1px solid var(--v-background-base) !important;
-}
-
+</style>
+<style>
 .flex-table-main {
   display: flex;
   width: 100%;
@@ -206,15 +203,13 @@ table tr.transaction-row > td {
   flex-grow: 1;
   overflow: hidden;
 }
-</style>
-<style>
 tbody tr:hover {
   background-color: var(--v-background-base) !important;
 }
 
 .date-row {
   min-height: 12px;
-  color: var(--v-secondary-lighten3);
+  color: var(--v-primary-lighten3);
   padding-left: 0px;
   height: 20px !important;
   transition: height 0s !important;
@@ -224,19 +219,23 @@ tr.v-data-table__empty-wrapper td {
   transition: height 0s !important;
 }
 
-#transactions-table th {
+.transactions-table th {
   min-width: min-content !important;
-  background: var(--v-background-base);
-  border: none;
-  box-shadow: none;
+  background: var(--v-background-base) !important;
+  border: none !important;
+  box-shadow: none !important;
 }
 
-#transactions-table .v-input--selection-controls__input {
+.transactions-table .v-input--selection-controls__input {
   margin: 0;
 }
 
-#transactions-table .v-input__slot {
+.transactions-table .v-input__slot {
   margin: 0;
+}
+
+.transactions-table table tr > td {
+  border-bottom: 1px solid var(--v-background-base) !important;
 }
 
 .text-disabled {

@@ -1,7 +1,7 @@
 <template>
   <div class="checkbox-container pl-0" style="height: 100%">
     <v-sheet width="3px" min-width="3px" :color="leftColor" height="100%" class="row-checkbox ml-0 mr-2" />
-    <v-icon v-if="isSelected" :size="size" @click="toggleSelected" color="primary" :disabled="isLoading">
+    <v-icon v-if="isSelected" :size="size" @click="toggleSelected" color="primary" :disabled="tableIsDisabled">
       mdi-checkbox-marked
     </v-icon>
     <v-icon
@@ -9,7 +9,7 @@
       :size="size"
       @click="toggleSelected"
       :color="isVisible(hover) ? 'grey lighten-2' : 'background lighten-3'"
-      :disabled="isLoading"
+      :disabled="tableIsDisabled"
     >
       mdi-checkbox-blank-outline
     </v-icon>
@@ -40,7 +40,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('accountTransactions', ['selectedTransactions', 'isCreatingNewTransaction', 'isLoading']),
+    ...mapGetters('accountTransactions', ['selectedTransactions', 'isCreatingNewTransaction', 'tableIsDisabled']),
     leftColor() {
       if (isUncategorized(this.item)) {
         return 'primary darken-1'
@@ -65,5 +65,8 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.checkbox-container > .theme--dark.v-icon.v-icon--disabled {
+  color: var(--v-background-lighten2) !important;
 }
 </style>
