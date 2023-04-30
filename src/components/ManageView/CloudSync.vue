@@ -108,18 +108,6 @@ export default {
         this.remoteSyncUrlInput = value
       }
     }
-    // temp_url: {
-    //   get() {
-    //     // console.log('REMOTE', this.remoteSyncUrlData)
-    //     // return this.remoteSyncUrl == ' ' ? 'NONE' : this.remoteSyncUrl
-    //     if (this.remoteSyncURL === '') {
-    //       return 'NONE'
-    //     } else {
-    //       return this.remoteSyncURL
-    //     }
-    //   },
-    //   set(value) {}
-    // }
   },
   methods: {
     ...mapActions(['setRemoteSyncToCustomURL', 'clearRemoteSync']),

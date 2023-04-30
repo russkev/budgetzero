@@ -33,7 +33,6 @@ export default {
     async onBackup() {
       await this.exportBudgetAsJSON()
       this.updateBackupTime()
-      console.log('Backup')
     },
     updateBackupTime() {
       this.lastBackupTime = localStorage.getItem('lastBackup')

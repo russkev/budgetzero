@@ -89,10 +89,6 @@ export default {
     ...mapGetters(['categoryColors', 'categories', 'categoriesById', 'masterCategoriesById']),
     ...mapGetters('accountTransactions', ['selectedTransactions']),
     selectedCategory() {
-      // console.log('SELECTED CATEGORY', this.categoryId)
-      // console.log(JSON.parse(JSON.stringify(this.categories)))
-      // console.log(this.categoriesById[this.categoryId])
-      // return this.categoriesById[this.categoryId]
       let result = this.categoriesById[this.categoryId]
       if (result === undefined) {
         result = NONE

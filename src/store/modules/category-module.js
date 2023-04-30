@@ -436,8 +436,6 @@ export default {
       }
     },
     setMasterCategoriesCollapsed({ getters, dispatch }, expanded_indices) {
-      console.log('main expanded', expanded_indices)
-
       // Set hidden category
       if (expanded_indices.includes(getters.masterCategories.length)) {
         if (getters.masterHiddenCategory.collapsed) {
@@ -492,47 +490,6 @@ export default {
         })
       }
     },
-
-    // async initializeIncomeCategory({ dispatch, getters, rootState }) {
-    //   // const master_category_payload = {
-    //   //   name: 'Income',
-    //   //   sort: 0,
-    //   //   collapsed: false,
-    //   //   color: getRandomColor(getters.colorSwatches)
-    //   // }
-    //   // return dispatch('createMasterCategory', master_category_payload).then((response) => {
-    //   //   console.log('RESPONSE: ', response)
-    //   //   const payload = {
-    //   //     name: 'Paycheck 1',
-    //   //     master_id: response
-    //   //   }
-    //   //   return dispatch('createCategory', payload)
-    //   // })
-    //   // const master_income_payload = {
-    //   //   name: 'Income',
-    //   //   sort: 0,
-    //   //   collapsed: false,
-    //   //   color: getRandomColor(getters.colorSwatches),
-    //   //   _id: `b_${rootState.selectedBudgetId}${ID_NAME.masterCategory}${INCOME._id}`
-    //   // }
-    //   // const paycheck_payload = {
-    //   //   input_id: INCOME._id,
-    //   //   sort: 0,
-    //   //   name: 'Paycheck 1',
-    //   //   master_id: INCOME._id
-    //   // }
-    //   // return dispatch('categoryDocument', paycheck_payload)
-    //   //   .then((response) => {
-    //   //     console.log('RESPONSE: ', response)
-    //   //   })
-    //   //   .catch((error) => {
-    //   //     console.log('initializeIncomeCategory error: ', error)
-    //   //   })
-    //   // return Promise.all([
-    //   //   // dispatch('createMasterCategory', master_income_payload),
-    //   //   dispatch('createCategory', paycheck_payload)
-    //   // ])
-    // },
 
     /**
      * Initialize categories in a new budget

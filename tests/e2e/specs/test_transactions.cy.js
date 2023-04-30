@@ -159,6 +159,7 @@ describe('Test transactions', () => {
     })
 
     it('Change category from Paycheck 1 to Uncategorized', () => {
+      cy.get('.v-progress-linear__buffer').should('not.exist')
       cy.get('.transaction-row .row-category').eq(2).click()
       cy.get('[data-testid="category-search"]')
         .type('Uncategorized')
@@ -482,8 +483,8 @@ describe('Test transactions', () => {
     })
   })
 
-  context.only('Test that pagination works correctly', () => {
-    before(() => {
+  context('Test that pagination works correctly', () => {
+    beforeEach(() => {
       cy.initPath('transactions/7kW')
     })
 
@@ -495,7 +496,7 @@ describe('Test transactions', () => {
       cy.get('[data-testid="import-transactions-button"]').click()
       const file = 'tests/__mockdata__/bankexports/ing.ofx'
       cy.get('input[type="file"]').selectFile(file, { force: true })
-      cy.get('.heading').should('contain.text', '18 transactions')
+      cy.get('.import-preview-table .v-data-footer__pagination').should('contain.text', '1-18 of 18')
       cy.get('[data-testid="import-ofx-transactions-button"]').click()
 
       // Check that pagination shows the correct number

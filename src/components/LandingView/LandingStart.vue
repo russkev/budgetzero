@@ -28,17 +28,6 @@ export default {
   name: 'LandingPage',
   components: {
     LandingButton
-  },
-  methods: {
-    onCreateNewBudget() {
-      console.log('create new budget')
-    },
-    onLoadBudget() {
-      console.log('load budget')
-    },
-    onSyncWithCloud() {
-      console.log('sync with cloud')
-    }
   }
 }
 </script>

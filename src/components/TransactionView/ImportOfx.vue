@@ -59,10 +59,12 @@
           </td>
         </template>
         <template #item.memo="{ item }">
-          <div :class="`ml-3 ellipsis ${item.exists ? existsColor : ''}`">{{ item.memo }}</div>
+          <div :class="`import-preview-memo ml-3 ellipsis ${item.exists ? existsColor : ''}`">{{ item.memo }}</div>
         </template>
         <template #item.amount="{ item }">
-          <div :class="item.exists ? existsColor : ''">{{ intlCurrency.format(item.amount) }}</div>
+          <div :class="`import-preview-amount ${item.exists ? existsColor : ''}`">
+            {{ intlCurrency.format(item.amount) }}
+          </div>
         </template>
       </v-data-table>
     </v-sheet>
@@ -104,7 +106,7 @@ export default {
       chosenFile: null,
       readOfxError: '',
       isLoading: false,
-      existsColor: 'secondary--text text--lighten-1',
+      existsColor: 'secondary--text text--darken-1',
       importCount: {
         imported: 0,
         skipped: 0
@@ -143,7 +145,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['commitBulkDocsToPouchAndVuex', 'loadLocalBudget']),
+    ...mapActions(['commitBulkDocsToPouchOnly', 'loadLocalBudget']),
     ...mapActions('accountTransactions', ['getTransactions']),
     getDate: getDate,
     onFileChange() {
@@ -218,11 +220,9 @@ export default {
     },
     async doImport(importPromises) {
       const import_promise_result = await Promise.all(importPromises)
-      console.log('Import promise result: ', import_promise_result)
       const transactions_list_to_import = import_promise_result.filter((transaction) => {
         return transaction !== null
       })
-      console.log('Transactions list to import: ', transactions_list_to_import)
       try {
         await this.commitBulkNewDocsToPouch(transactions_list_to_import)
       } finally {
@@ -231,39 +231,6 @@ export default {
       }
     },
     onSave() {
-      // const import_promises = this.selectedOfxTransactions.map((transaction) => {
-      //   const import_id = `${this.account}_${transaction.FITID}`
-      //   return this.$store
-      //     .dispatch('fetchTransactionsWithImportId', { account_id: this.account, import_id: import_id })
-      //     .then((results) => {
-      //       if (results && results.length > 0) {
-      //         this.importCount.skipped++
-      //         return null
-      //       }
-      //       this.importCount.imported++
-      //       const date = getDate(transaction.DTPOSTED)
-      //       return {
-      //         account: this.account,
-      //         category: NONE._id,
-      //         cleared: false,
-      //         approved: false,
-      //         value: Math.round(transaction.TRNAMT * 100),
-      //         date: date,
-      //         memo: transaction.MEMO,
-      //         reconciled: false,
-      //         flag: '#ffffff',
-      //         payee: transaction.NAME ? transaction.NAME : null,
-      //         importId: import_id,
-      //         transfer: null,
-      //         splits: [],
-      //         _id: `b_${this.selectedBudgetId}${ID_NAME.transaction}${this.generateId(date, transaction.FITID)}`
-      //       }
-      //     })
-      // })
-      // this.doImport(import_promises).then((result) => {
-      //   this.loadLocalBudget()
-      //   console.log('doImport result: ', result)
-      // })
       const transaction_documents = this.parsedOfxTransactions.reduce((partial, transaction) => {
         if (transaction.exists) {
           return partial
@@ -289,11 +256,15 @@ export default {
         partial.push({ current, previous })
         return partial
       }, [])
-      this.commitBulkDocsToPouchAndVuex(transaction_documents).then(() => {
-        this.loadLocalBudget()
-        this.$emit('apply')
-        this.resetData()
-      })
+      /* `loadLocalBudget` will update vuex so no need to do it here */
+      this.commitBulkDocsToPouchOnly(transaction_documents)
+        .then(() => {
+          return this.loadLocalBudget()
+        })
+        .finally(() => {
+          this.$emit('apply')
+          this.resetData()
+        })
     },
     resetData() {
       this.selectedOfxTransactions = []

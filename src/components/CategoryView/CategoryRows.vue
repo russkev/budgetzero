@@ -150,7 +150,6 @@ export default {
     onNewCategory(master_category) {
       this.newCategory(master_category).then((id) => {
         const element_id = `category-name-input-${id}`
-        console.log('element_id', element_id)
 
         nextTick(() => {
           const new_element = document.getElementById(element_id)

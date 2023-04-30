@@ -22,7 +22,8 @@ const DEFAULT_ACCOUNT_TRANSACTIONS_STATE = {
   selectedTransactionIds: [],
   isCreatingNewTransaction: false,
   isLoading: false,
-  importOfxIsOpen: false
+  importOfxIsOpen: false,
+  hoverId: ''
 }
 
 export default {
@@ -58,7 +59,8 @@ export default {
     importOfxIsOpen: (state) => state.importOfxIsOpen,
     importIds: (state, getters, rootState, rootGetters) => {
       return _.get(rootGetters, ['allImportIds', getters.accountId], {})
-    }
+    },
+    hoverId: (state) => state.hoverId
   },
   mutations: {
     SET_ACCOUNT_ID(state, account_id) {
@@ -174,9 +176,18 @@ export default {
     },
     SET_IMPORT_OFX_IS_OPEN(state, is_open) {
       Vue.set(state, 'importOfxIsOpen', is_open)
+    },
+    SET_HOVER_ID(state, id) {
+      Vue.set(state, 'hoverId', id)
+    },
+    CLEAR_HOVER_ID(state) {
+      Vue.set(state, 'hoverId', '')
     }
   },
   actions: {
+    /*
+     * Get just the transactions that will appear on screen
+     */
     getTransactions({ dispatch, commit, getters, rootGetters }, account_id) {
       commit('SET_IS_LOADING', true)
       if (account_id !== undefined) {
@@ -184,12 +195,12 @@ export default {
       }
 
       if (rootGetters.accounts.length < 1) {
+        commit('SET_IS_LOADING', false)
         return
       }
 
       dispatch('fetchTransactionsForAccount', getters.accountOptions, { root: true })
         .then((result) => {
-          console.log('getTransactions result:', result)
           // commit('SET_NUM_SERVER_TRANSACTIONS', result.total_rows)
           const transactions = result.rows.map((row) => {
             const doc = row.doc
@@ -208,6 +219,7 @@ export default {
         })
         .catch((error) => {
           console.log('getTransactions error, accountDoc:', getters.accountDoc)
+          console.error(error)
         })
         .finally(() => {
           commit('SET_IS_LOADING', false)

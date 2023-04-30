@@ -20,7 +20,6 @@ export default {
   },
   computed: {
     data() {
-      console.log('Transaction', this.transaction._id)
       if (this.transaction) {
         return [
           {

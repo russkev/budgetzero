@@ -47,9 +47,19 @@ export default {
         }, [])
         context.dispatch('commitDocsToVuex', vuex_documents)
       } catch (error) {
-        console.log('ACTION: commitBulkDocsToPouchAndVuex failed')
         return context.commit('API_FAILURE', error)
       }
+    },
+
+    /**
+     * Commit bulk docs to pouchdb only.
+     * Useful for cases where you want to update vuex manually
+     * @param {array} payload [{current, previous}] The  documents to commit to pouchdb
+     */
+    commitBulkDocsToPouchOnly({ dispatch }, bulk_docs) {
+      return dispatch('validBulkDocs', bulk_docs).then((valid_docs) => {
+        return dispatch('commitBulkDocsToPouch', valid_docs)
+      })
     },
 
     databaseExists(context) {
@@ -64,6 +74,7 @@ export default {
           return false
         })
     },
+
     async validBulkDocs(context, bulk_docs) {
       const database_exists = await context.dispatch('databaseExists')
       if (!database_exists) {
@@ -76,6 +87,7 @@ export default {
 
         if (doc.current !== undefined && doc.previous !== undefined) {
           doc_type = validateDocument(context, doc.current, doc.previous)
+          console.log('Validation doc type: ', doc_type)
         } else {
           console.warn('commitBulkDocsToPouchAndVuex requires payload of type [{current, previous}]')
         }
@@ -84,7 +96,7 @@ export default {
         } else {
           const current = doc.current ? { ...doc.current } : null
           const previous = doc.previous ? { ...doc.previous } : null
-          partial.push({ current, previous, doc_type })
+          partial.push({ current, previous, doc_type, is_multiple: true })
         }
         return partial
       }, [])
@@ -101,17 +113,20 @@ export default {
       }
       const doc_type = validateDocument(context, current, previous)
       if (doc_type) {
-        return context.dispatch('commitDocToPouch', { current, previous, doc_type }).then((result) => {
-          if (result.ok) {
-            if (current) {
-              current._rev = result.rev
+        return context
+          .dispatch('commitDocToPouch', { current, previous, doc_type, is_multiple: false })
+          .then((result) => {
+            if (result.ok) {
+              if (current) {
+                current._rev = result.rev
+              }
+              return context
+                .dispatch('commitDocToVuex', { current, previous, doc_type, is_multiple: false })
+                .then(() => result)
+            } else {
+              Promise.reject(`Pouch update failed`)
             }
-            return context.dispatch('commitDocToVuex', { current, previous, doc_type }).then(() => result)
-          } else {
-            console.log(result)
-            Promise.reject(`Pouch update failed`)
-          }
-        })
+          })
       } else {
         Promise.reject(`Invalid document type: ${doc_type}`)
       }
@@ -159,9 +174,13 @@ export default {
       }
     },
 
-    commitBulkDocsToPouch(context, docs) {
+    /**
+     * Internal method for committing multiple docs to pouch only
+     * @param {array} valid_docs [{current, previous}] Validated documents to commit to pouchdb
+     */
+    commitBulkDocsToPouch(context, valid_docs) {
       const db = this._vm.$pouch
-      const db_documents = docs.reduce((partial, doc) => {
+      const db_documents = valid_docs.reduce((partial, doc) => {
         if (doc.doc_type === ID_NAME.none) {
           return partial
         }
@@ -183,7 +202,6 @@ export default {
     },
 
     commitBulkNewDocsToPouch(context, docs) {
-      console.log('commit bulk new docs to pouch')
       const db = this._vm.$pouch
       return db.bulkDocs(docs)
     },
@@ -211,10 +229,10 @@ export default {
       })
     },
 
-    commitDocToVuex(context, { current, previous, doc_type }) {
+    commitDocToVuex(context, { current, previous, doc_type, is_multiple }) {
       switch (doc_type) {
         case ID_NAME.transaction:
-          return context.dispatch('commitTransactionToVuex', { current, previous })
+          return context.dispatch('commitTransactionToVuex', { current, previous, is_multiple })
         case ID_NAME.category:
           return context.dispatch('fetchCategories')
         case ID_NAME.masterCategory:
@@ -241,7 +259,7 @@ export default {
       return result
     },
 
-    async commitTransactionToVuex({ getters, dispatch, commit }, { current, previous }) {
+    async commitTransactionToVuex({ getters, dispatch, commit }, { current, previous, is_multiple }) {
       let account = null
       if (current) {
         account = getters.accountsById[current.account]
@@ -251,8 +269,14 @@ export default {
 
       if (current && !previous) {
         commit('INCREMENT_ACCOUNT_TRANSACTION_COUNTS_BY', { account_id: current.account, increment: 1 })
+        commit('ADD_IMPORT_ID', {
+          account_id: current.account,
+          transaction_id: current._id,
+          import_id: current.importId
+        })
       } else if ((!current && previous) || (current && _.get(current, '_deleted', false))) {
         commit('INCREMENT_ACCOUNT_TRANSACTION_COUNTS_BY', { account_id: previous.account, increment: -1 })
+        commit('REMOVE_IMPORT_ID', { account_id: previous.account, import_id: previous.importId })
       }
 
       if (!account) {
@@ -296,6 +320,7 @@ export default {
       return await dispatch('updateSelectedBudgetId', budgets)
     },
 
+    /* Get and recalculate all budget data */
     getAllDocsFromPouchDB({ dispatch, getters, commit }) {
       let loadingFullScreenSet = false
       if (!getters.isLoadingFullscreen) {
@@ -322,7 +347,6 @@ export default {
       ])
         .then((results) => {
           month_category_balances = parseAllMonthCategories(results, getters)
-          // console.log('month_category_balances', month_category_balances)
           dispatch('setMonthBudgetedBalances', month_category_balances)
         })
         .then(() => {
@@ -397,6 +421,7 @@ const validateDocument = (context, current, previous) => {
   }
 
   if (validation_result.errors.length > 0) {
+    console.error('Validation failed', validation_result.errors.toString())
     context.commit('SET_SNACKBAR_MESSAGE', {
       snackbarMessage: 'Validation failed: ' + validation_result.errors.toString(),
       snackbarColor: 'error'

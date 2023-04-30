@@ -218,8 +218,6 @@ export default {
       this.$store.dispatch('clearRemoteSync')
     },
     onFileChange() {
-      console.log(this.backupFile)
-
       const reader = new FileReader()
       this.accountsForImport = []
       this.selectedAccount = {}
@@ -242,7 +240,6 @@ export default {
       }
     },
     onMockTransactionCreate() {
-      console.log(this.mockTransactionsStartMonth)
       this.mockTransactionsCreateIsLoading = true
       this.$store
         .dispatch('createMockTransactions', {
@@ -251,8 +248,6 @@ export default {
           end: this.mockTransactionsEndMonth
         })
         .then((result) => {
-          console.log('mock transaction create result')
-          console.log(result)
           this.$store.commit('SET_SNACKBAR_MESSAGE', {
             snackbarMessage: `Created ${result[0].length} mock transactions and ${result[1].length} mock category budget values.`,
             color: 'success'

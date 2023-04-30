@@ -1,32 +1,38 @@
 <template>
-  <v-icon
-    v-if="this.item.cleared"
-    :size="size"
-    class="cleared-icon mx-1"
-    color="success"
-    @click="toggleCleared()"
-    :disabled="isDisabled"
-    :style="isDisabled ? 'color: var(--v-background-lighten5) !important;' : ''"
-  >
-    mdi-alpha-c-circle
-  </v-icon>
-  <v-icon
-    v-else
-    :size="size"
-    class="uncleared-icon px-1"
-    :color="hover ? 'background lighten-5' : 'transparent'"
-    :style="isDisabled ? 'color: transparent !important;' : ''"
-    :disabled="isDisabled"
-    @click="toggleCleared()"
-  >
-    mdi-alpha-c-circle
-  </v-icon>
+  <transaction-hover-container :hover="hover" :item="item">
+    <v-icon
+      v-if="this.item.cleared"
+      :size="size"
+      class="cleared-icon mx-1"
+      color="success"
+      @click="toggleCleared()"
+      :disabled="isDisabled"
+      :style="isDisabled ? 'color: var(--v-background-lighten5) !important;' : ''"
+    >
+      mdi-alpha-c-circle
+    </v-icon>
+    <v-icon
+      v-else
+      :size="size"
+      class="uncleared-icon px-1"
+      :color="isHovered ? 'background lighten-5' : 'transparent'"
+      :style="isDisabled ? 'color: transparent !important;' : ''"
+      :disabled="isDisabled"
+      @click="toggleCleared()"
+    >
+      mdi-alpha-c-circle
+    </v-icon>
+  </transaction-hover-container>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
+import TransactionHoverContainer from './TransactionHoverContainer.vue'
 
 export default {
+  components: {
+    TransactionHoverContainer
+  },
   props: {
     item: {
       type: Object
@@ -51,8 +57,12 @@ export default {
       'transactions',
       'editedTransaction',
       'selectedTransactions',
-      'tableIsDisabled'
+      'tableIsDisabled',
+      'hoverId'
     ]),
+    isHovered() {
+      return this.item._id === this.hoverId
+    },
     isDisabled() {
       return this.editedTransaction._id === this.item._id || this.tableIsDisabled
     }

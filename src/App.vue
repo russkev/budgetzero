@@ -42,7 +42,6 @@ export default {
     budgetExists(value) {
       if (value) {
         if (this.targetPage) {
-          console.log('push target page')
           this.$router.push({ path: this.targetPage })
         } else {
           this.$router.push({ name: 'categories' })

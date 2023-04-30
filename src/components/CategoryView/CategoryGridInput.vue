@@ -179,9 +179,6 @@ export default {
         event.target.select()
         this.isSelected = true
       }
-    },
-    testChange(event) {
-      console.log('TEST CHANGE')
     }
   }
 }

@@ -109,23 +109,6 @@ export default {
       'editedCategoryNameLoading',
       'categoriesDataSortedByBalance'
     ])
-    // title() {
-    //   return this.selectedCategory ? this.selectedCategory.name : "All Categories";
-    // },
-    // budgetedData: {
-    //   get() {
-    //     return this.selectedCategory ? this.selectedCategory.budget : 0;
-    //   },
-    //   set(value) {
-    //     // if (!this.selectedCategory || this.selectedCategory.budget === value) return;
-    //     // const event = { target: { value: value } };
-    //     // const id = this.selectedCategory._id.slice(-ID_LENGTH.category);
-    //     // this.onCategoryBudgetChanged({ category_id: this.selectedCategory._id, event });
-    //     // const category = this.categoriesById[id];
-    //     // console.log("Category", category);
-    //     // this.SET_SELECTED_CATEGORY({...this.selectedCategory, budget: category.budget} })
-    //   },
-    // },
   },
   methods: {
     ...mapActions(['fetchTransactionsForMonth']),

@@ -57,10 +57,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions('categoryMonth', ['onHideCategory', 'onUnhideCategory']),
-    testConfirm() {
-      console.log('testConform')
-    }
+    ...mapActions('categoryMonth', ['onHideCategory', 'onUnhideCategory'])
   }
 }
 </script>

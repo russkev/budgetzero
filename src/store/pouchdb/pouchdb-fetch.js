@@ -135,6 +135,10 @@ export default {
           logPerformanceTime('fetchTransactionsForAccount', t1)
           return result
         })
+        .catch((error) => {
+          console.error(error)
+          return []
+        })
     },
     fetchAccountIsEmpty: async (context, account_id) => {
       const t1 = performance.now()
@@ -151,13 +155,11 @@ export default {
           limit: 1
         })
         .then((result) => {
-          console.log('fetchAccountIsEmpty', result.rows)
           logPerformanceTime('fetchAccountIsEmpty', t1)
           return result.rows.length === 0
         })
     },
     fetchTransactionsForMonth: async (context, month) => {
-      console.log('fetchTransactionsForMonth')
       const t1 = performance.now()
       const db = Vue.prototype.$pouch
       const budget_id = context.getters.selectedBudgetId
@@ -196,7 +198,6 @@ export default {
         })
         .then((result) => {
           logPerformanceTime('fetchSucceedingTransaction', t1)
-          console.log(result)
           if (result.rows.length > 1) {
             return result.rows[1]
           }

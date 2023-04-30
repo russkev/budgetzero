@@ -1,37 +1,40 @@
 <template>
-  <div
-    v-if="!isSplit"
-    class="transaction-categories-container mr-2"
-    :style="`grid-template-columns: ${templateColumns}`"
-  >
-    <!-- :item="item" -->
-    <category-menu
-      :category-id="item.category ? item.category : ''"
-      :splits="item.splits"
-      @selected="onCategorySelected"
-      :disabled="isDisabled"
-    />
-  </div>
-  <div v-else class="transaction-categories-container mr-2" :style="`grid-template-columns: ${templateColumns}`">
-    <template v-for="(split, index) in this.item.splits">
+  <transaction-hover-container :hover="hover" :item="item">
+    <div
+      v-if="!isSplit"
+      class="transaction-categories-container mr-2"
+      :style="`grid-template-columns: ${templateColumns}`"
+    >
+      <!-- :item="item" -->
       <category-menu
-        :key="`category-${index}`"
-        :category-id="split.category ? split.category : ''"
+        :category-id="item.category ? item.category : ''"
+        :splits="item.splits"
+        @selected="onCategorySelected"
         :disabled="isDisabled"
-        @selected="
-          (categoryId) => {
-            onSplitCategorySelected(index, categoryId)
-          }
-        "
       />
-      <!-- :item="split" -->
-    </template>
-  </div>
+    </div>
+    <div v-else class="transaction-categories-container mr-2" :style="`grid-template-columns: ${templateColumns}`">
+      <template v-for="(split, index) in this.item.splits">
+        <category-menu
+          :key="`category-${index}`"
+          :category-id="split.category ? split.category : ''"
+          :disabled="isDisabled"
+          @selected="
+            (categoryId) => {
+              onSplitCategorySelected(index, categoryId)
+            }
+          "
+        />
+        <!-- :item="split" -->
+      </template>
+    </div>
+  </transaction-hover-container>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import CategoryMenu from '../Shared/CategoryMenu.vue'
+import TransactionHoverContainer from './TransactionHoverContainer.vue'
 
 export default {
   props: {
@@ -41,9 +44,13 @@ export default {
     highlighted: {
       type: Boolean,
       default: false
+    },
+    hover: {
+      type: Boolean,
+      default: false
     }
   },
-  components: { CategoryMenu },
+  components: { CategoryMenu, TransactionHoverContainer },
   computed: {
     ...mapGetters('accountTransactions', ['selectedTransactions', 'editedTransaction', 'tableIsDisabled']),
     templateColumns() {

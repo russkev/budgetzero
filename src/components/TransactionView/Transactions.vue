@@ -45,16 +45,41 @@ export default {
     this.SET_ACCOUNT_ID(this.$route.params.account_id)
   },
   watch: {
-    accounts: {
-      handler() {
-        console.log('ACCOUNTS WATCHER')
+    accountsById: {
+      handler(new_value, old_value) {
         this.getTransactions()
+        // if (!old_value[this.accountId] || !new_value[this.accountId]) {
+        //   /* If either new or old account is not defined, update will be handled elsewhere */
+        //   return
+        // }
+
+        // /* Check whether anything in the active account has changed */
+        // let thisAccountIsChanged = false
+
+        // const new_keys = Object.keys(new_value[this.accountId])
+        // const old_keys = Object.keys(old_value[this.accountId])
+
+        // if (new_keys.length !== old_keys.length) {
+        //   thisAccountIsChanged = true
+        // } else {
+        //   for (let i = 0; i < new_keys.length; i++) {
+        //     if (new_value[this.accountId][new_keys[i]] !== old_value[this.accountId][new_keys[i]]) {
+        //       thisAccountIsChanged = true
+        //       break
+        //     }
+        //   }
+        // }
+
+        // if (thisAccountIsChanged) {
+        //   console.log('ACCOUNTS WATCHER: Account changed')
+        //   this.getTransactions()
+        // }
       }
     }
   },
   computed: {
     ...mapGetters('accountTransactions', ['accountId']),
-    ...mapGetters(['accounts'])
+    ...mapGetters(['accountsById'])
   },
   methods: {
     ...mapMutations('accountTransactions', ['SET_ACCOUNT_ID']),

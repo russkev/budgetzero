@@ -31,13 +31,11 @@ export default {
       }
     },
     SET_REMOTE_SYNC_URL(state, url) {
-      console.log('SET_REMOTE_SYNC_URL', url)
       Vue.set(state, 'remoteSyncURL', url)
       // state.remoteSyncURL = url
       localStorage.remoteSyncURL = url
     },
     CLEAR_REMOTE_SYNC_URL(state) {
-      localStorage.removeItem('remoteSyncURL')
       Vue.set(state, 'remoteSyncURL', '')
       // state.remoteSyncURL = ''
     },

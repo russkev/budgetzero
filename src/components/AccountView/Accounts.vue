@@ -121,26 +121,6 @@ export default {
   computed: {
     ...mapGetters(['accounts', 'selectedBudgetId']),
     budgetExists() {
-      // const month_from_params =  this.$route.params.month
-      // console.log("ON MOUNTED")
-      // const db = this.$pouch
-      // console.log("DB", db)
-      // console.log(this.$pouch.allDocs())
-      // this.$pouch.allDocs().then((result) => {
-      //   console.log("ALL DOCS RESULT", result)
-      // })
-      // console.log(this.selectedBudgetId)
-      // console.log("MONTH FROM PARAMS", month_from_params)
-      // const docs = this.$pouch.get("b_N8Q_account_ELC")
-      //   .then((result) => {
-      //     console.log("ALL DOCS RESULT", result)
-      //     return 3
-      //   }).catch((err) => {
-      //     console.log("ALL DOCS ERROR", err)
-      //     return 2
-      //   })
-
-      // console.log("DOCS", docs)
       return this.selectedBudgetId != 'null'
     }
   },
@@ -155,19 +135,6 @@ export default {
     },
     editItem(item) {
       this.$store.dispatch('fetchAccounts')
-      // console.log("EDIT ITEM")
-      // // console.log(this.$pouch)
-      // this.$pouch.get('b_N8Q_account_7kW').then(() => {
-      //   console.log("DOC FOUND")
-      // }).catch(() => {
-      //   console.log("DOCUMENT NOT FOUND")
-      // }).finally(() => {
-      //   console.log("FINALLY")
-      // })
-      // setTimeout(() => {
-      //   console.log("AFTER TIMEOUT")
-      // }, 100)
-
       this.editedIndex = this.accounts.indexOf(item)
       this.editedItem = Object.assign({}, item)
       this.previousItem = item

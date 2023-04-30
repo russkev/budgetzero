@@ -160,15 +160,6 @@ export default {
       'allAccountBalances'
     ]),
     ...mapGetters('categoryMonth', ['selectedMonth']),
-    // mini: {
-    //   get() {
-    //     return this.$vuetify.breakpoint.mdAndDown
-    //   },
-    //   set(value) {
-    //     console.log('SET', value)
-    //   }
-    //   // return this.$vuetify.breakpoint.mdAndDown
-    // },
     isLessThanBreakpoint() {
       const is_less_than_breakpoint = this.$vuetify.breakpoint.mdAndDown
       this.mini = is_less_than_breakpoint
@@ -245,14 +236,10 @@ export default {
     }
   },
   created() {
-    console.log('created')
     document.addEventListener('focusin', this.onFocusIn)
     document.addEventListener('focusout', this.onFocusOut)
-    // document.addEventListener('mouseover', this.onFocusIn)
-    // document.addEventListener('mouseout', this.onFocusOut)
   },
   beforeDestroy() {
-    console.log('beforeDestroy')
     document.removeEventListener('focusin', this.onFocusIn)
   },
   methods: {

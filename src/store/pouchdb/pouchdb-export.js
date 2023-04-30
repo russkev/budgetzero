@@ -22,7 +22,6 @@ export default {
           var b_object = context.rootGetters.budgetRootsMap[selected_budget_id]
           delete b_object['_rev']
 
-          console.log('exportBudgetAsJSON', b_object.name)
           const export_date = moment(new Date()).format('YYYY-MM-DD_hh-mm')
 
           const reformattedExport = result.rows
@@ -51,7 +50,6 @@ export default {
           attachments: true
         })
 
-        // console.log('exportBudgetAsJSON', JSON.stringify(all_docs))
         const export_date = moment(new Date()).format('YYYY-MM-DD_hh-mm')
 
         const reformattedExport = all_docs.rows

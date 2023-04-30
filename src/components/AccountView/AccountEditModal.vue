@@ -208,7 +208,6 @@ export default {
         return
       }
       this.editedItem.name = name
-      // console.log('onEditAccountName', name)
     },
     onDeleteAccount() {
       console.log('Delete account')

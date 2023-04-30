@@ -389,7 +389,6 @@ export default {
     //   }
     // },
     getMonthTransactions({ commit, dispatch, getters, rootGetters }) {
-      console.log('Get momth transactions')
       if (rootGetters.accounts.length < 1 || !rootGetters.selectedBudgetId) {
         return
       }
@@ -450,7 +449,6 @@ export default {
       return dispatch('createCategory', { name: 'Name', master_id: master_category._id }, { root: true }).then(
         (new_category) => {
           const id = new_category._id.slice(-ID_LENGTH.category)
-          console.log('newCategory', getters.categoriesDataById[id])
           commit('SET_EDITED_CATEGORY_NAME_ID', id)
           dispatch('selectCategory', getters.categoriesDataById[id])
           return id
@@ -462,7 +460,6 @@ export default {
     },
 
     onHideCategory({ dispatch, rootGetters }, category_id) {
-      console.log('onHideCategory', category_id)
       const doc = rootGetters.categoriesById[category_id]
       if (doc !== undefined) {
         dispatch(
@@ -476,9 +473,7 @@ export default {
       }
     },
     onUnhideCategory({ dispatch, rootGetters }, category_id) {
-      console.log('onUnhideCategory', category_id)
       const doc = rootGetters.categoriesById[category_id]
-      console.log('onUnhideCategory', doc)
       if (doc === undefined) {
         return
       }
@@ -492,15 +487,12 @@ export default {
         !Object.keys(rootGetters.masterCategoriesById).includes(master_id)
       ) {
         for (let masterCategory of rootGetters.masterCategories) {
-          console.log('ID', masterCategory._id)
-          console.log('BAD IDS', [NONE._id, HIDDEN._id, INCOME._id])
           if (![NONE._id, HIDDEN._id, INCOME._id].includes(masterCategory._id.slice(-ID_LENGTH.category))) {
             master_id = masterCategory._id.slice(-ID_LENGTH.category)
             break
           }
         }
       }
-      console.log('master_id', master_id)
 
       let sort = 0
       const destination_categories = rootGetters.categoriesByMaster[master_id]

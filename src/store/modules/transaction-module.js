@@ -24,6 +24,16 @@ export default {
   mutations: {
     SET_ALL_IMPORT_IDS(state, ids) {
       Vue.set(state, 'allImportIds', ids)
+    },
+    ADD_IMPORT_ID(state, { account_id, transaction_id, import_id }) {
+      if (account_id && transaction_id && import_id) {
+        Vue.set(state.allImportIds[account_id], import_id, transaction_id.slice(-ID_LENGTH.transaction))
+      }
+    },
+    REMOVE_IMPORT_ID(state, { account_id, import_id }) {
+      if (account_id && import_id) {
+        Vue.delete(state.allImportIds[account_id], import_id)
+      }
     }
   },
   actions: {
@@ -332,7 +342,9 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
   }, {})
 
   let importIds = {}
-  console.log('allTransactions', allTransactions)
+  for (let account of getters.accounts) {
+    importIds[account._id.slice(-ID_LENGTH.account)] = {}
+  }
 
   allTransactions.map((row) => {
     const account_id = row.doc.account
@@ -358,7 +370,6 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     const transaction_id = row.doc._id.slice(-ID_LENGTH.transaction)
     const import_id = _.get(row.doc, 'importId', '')
     if (import_id) {
-      _.defaultsDeep(importIds, { [account_id]: {} })
       importIds[account_id][import_id] = transaction_id
     }
 
@@ -389,7 +400,6 @@ const parseAllTransactions = (allTransactions, month_category_balances, getters,
     })
   })
 
-  console.log('importIds', importIds)
   commit('SET_ALL_IMPORT_IDS', importIds)
   commit('SET_ALL_ACCOUNT_TRANSACTION_COUNTS', accountTransactionCounts)
   if (updated_transaction_docs.length > 0) {

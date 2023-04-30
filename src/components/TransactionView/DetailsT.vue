@@ -66,6 +66,12 @@
             />
           </template>
         </delete-confirm>
+        <details-button
+          data-testid="deselect-all-button"
+          icon="mdi-close"
+          label="Deselect All"
+          @click="onDeselectAll"
+        />
       </template>
     </details-buttons>
     <details-buttons v-else icon="mdi-file-document-outline" subtitle="No transactions selected">
@@ -216,6 +222,7 @@ export default {
       'SET_EDITED_TRANSACTION_DATE',
       'SET_EDITED_TRANSACTION_CATEGORY',
       'CLEAR_EDITED_TRANSACTION',
+      'CLEAR_SELECTED_TRANSACTIONS',
       'SET_IMPORT_OFX_IS_OPEN'
     ]),
     ...mapActions('accountTransactions', [
@@ -256,10 +263,13 @@ export default {
     },
     onApplyImportOfx() {
       this.SET_IMPORT_OFX_IS_OPEN(false)
-      this.getTransactions()
+      // this.getTransactions()
     },
     onOpenImportOfx() {
       this.SET_IMPORT_OFX_IS_OPEN(true)
+    },
+    onDeselectAll() {
+      this.CLEAR_SELECTED_TRANSACTIONS()
     }
   }
 }

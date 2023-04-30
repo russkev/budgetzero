@@ -27,7 +27,7 @@ export default new Vuetify({
         // primary: '#354148',
         primary: hslStringToHex('hsl(200, 36%, 62%)'),
         info: hslStringToHex('hsl(200, 34%, 53%)'),
-        secondary: hslStringToHex('hsl(244, 18%, 57%)'),
+        secondary: hslStringToHex('hsl(242, 15%, 61%)'),
         accent: hslStringToHex('hsl(253, 100%, 72%)'),
         background: {
           base: hslStringToHex('hsl(245, 9%, 19%)'),
