@@ -1,19 +1,18 @@
 <template>
-  <transaction-hover-container :hover="hover" :item="item">
-    <delete-confirm @confirm="onDeleteTransaction(item)">
-      <template #activator="{ on, open }">
-        <hover-button
-          :hover="isHovered"
-          :dialog-open="open"
-          :data-testid="`btn-delete-transaction-${item._id}`"
-          class="row-delete"
-          height="100%"
-          :on="on"
-          :disabled="tableIsDisabled || item._id === editedTransaction._id"
-        />
-      </template>
-    </delete-confirm>
-  </transaction-hover-container>
+  <delete-confirm @confirm="onDeleteTransaction(item)">
+    <template #activator="{ on, open }">
+      <!-- :hover="true" -->
+      <hover-button
+        :dialog-open="open"
+        :data-testid="`btn-delete-transaction-${item._id}`"
+        class="row-delete ml-3"
+        height="100%"
+        :on="on"
+        :disabled="tableIsDisabled || item._id === editedTransaction._id"
+        inactive-color="secondary darken-2"
+      />
+    </template>
+  </delete-confirm>
 </template>
 
 <script>
@@ -21,32 +20,23 @@ import { mapActions, mapGetters } from 'vuex'
 import DeleteConfirm from '../Shared/DeleteConfirm.vue'
 import HoverButton from '../Shared/HoverButton.vue'
 import { ID_LENGTH } from '../../constants'
-import TransactionHoverContainer from './TransactionHoverContainer.vue'
 
 export default {
   name: 'TransactionDelete',
   components: {
     DeleteConfirm,
-    HoverButton,
-    TransactionHoverContainer
+    HoverButton
   },
   props: {
     item: {
       type: Object,
       required: true
-    },
-    hover: {
-      type: Boolean,
-      default: false
     }
   },
   computed: {
-    ...mapGetters('accountTransactions', ['editedTransaction', 'tableIsDisabled', 'hoverId']),
+    ...mapGetters('accountTransactions', ['editedTransaction', 'tableIsDisabled']),
     itemId() {
       return this.item._id.slice(-ID_LENGTH.transaction)
-    },
-    isHovered() {
-      return this.item._id === this.hoverId
     }
   },
   methods: {

@@ -1,5 +1,5 @@
 <template>
-  <transaction-hover-container :hover="hover" :item="item">
+  <v-hover v-slot="{ hover }">
     <div class="checkbox-container pl-0" style="height: 100%">
       <v-sheet width="3px" min-width="3px" :color="leftColor" height="100%" class="row-checkbox ml-0 mr-2" />
       <v-icon v-if="isSelected" :size="size" @click="toggleSelected" color="primary" :disabled="tableIsDisabled">
@@ -9,31 +9,23 @@
         v-else
         :size="size"
         @click="toggleSelected"
-        :color="isVisible(isHovered) ? 'grey lighten-2' : 'background lighten-3'"
+        :color="isVisible(hover) ? 'white' : 'secondary darken-2'"
         :disabled="tableIsDisabled"
       >
         mdi-checkbox-blank-outline
       </v-icon>
     </div>
-  </transaction-hover-container>
+  </v-hover>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
 import { isUncategorized } from '../../store/modules/transaction-module'
-import TransactionHoverContainer from './TransactionHoverContainer.vue'
 
 export default {
   name: 'TransactionChecked',
-  components: {
-    TransactionHoverContainer
-  },
   props: {
     isSelected: {
-      type: Boolean,
-      default: false
-    },
-    hover: {
       type: Boolean,
       default: false
     },
@@ -47,21 +39,13 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('accountTransactions', [
-      'selectedTransactions',
-      'isCreatingNewTransaction',
-      'tableIsDisabled',
-      'hoverId'
-    ]),
+    ...mapGetters('accountTransactions', ['selectedTransactions', 'isCreatingNewTransaction', 'tableIsDisabled']),
     leftColor() {
       if (isUncategorized(this.item)) {
         return 'primary darken-1'
       } else {
         return 'transparent'
       }
-    },
-    isHovered() {
-      return this.item._id === this.hoverId
     }
   },
   methods: {

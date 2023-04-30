@@ -1,45 +1,37 @@
 <template>
-  <transaction-hover-container :hover="hover" :item="item">
+  <v-hover v-slot="{ hover }" v-if="this.item.cleared">
     <v-icon
-      v-if="this.item.cleared"
       :size="size"
       class="cleared-icon mx-1"
-      color="success"
+      :color="`${hover ? 'success darken-3' : 'success'}`"
       @click="toggleCleared()"
       :disabled="isDisabled"
       :style="isDisabled ? 'color: var(--v-background-lighten5) !important;' : ''"
     >
       mdi-alpha-c-circle
     </v-icon>
+  </v-hover>
+  <v-hover v-slot="{ hover }" v-else>
     <v-icon
-      v-else
       :size="size"
-      class="uncleared-icon px-1"
-      :color="isHovered ? 'background lighten-5' : 'transparent'"
+      class="uncleared-icon mx-1"
+      :color="`${hover ? 'white' : 'secondary darken-3'}`"
       :style="isDisabled ? 'color: transparent !important;' : ''"
       :disabled="isDisabled"
       @click="toggleCleared()"
     >
       mdi-alpha-c-circle
     </v-icon>
-  </transaction-hover-container>
+  </v-hover>
 </template>
 
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
-import TransactionHoverContainer from './TransactionHoverContainer.vue'
 
 export default {
-  components: {
-    TransactionHoverContainer
-  },
   props: {
     item: {
       type: Object
-    },
-    hover: {
-      type: Boolean,
-      default: false
     },
     highlighted: {
       type: Boolean,
@@ -57,12 +49,8 @@ export default {
       'transactions',
       'editedTransaction',
       'selectedTransactions',
-      'tableIsDisabled',
-      'hoverId'
+      'tableIsDisabled'
     ]),
-    isHovered() {
-      return this.item._id === this.hoverId
-    },
     isDisabled() {
       return this.editedTransaction._id === this.item._id || this.tableIsDisabled
     }

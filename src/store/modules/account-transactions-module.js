@@ -22,8 +22,7 @@ const DEFAULT_ACCOUNT_TRANSACTIONS_STATE = {
   selectedTransactionIds: [],
   isCreatingNewTransaction: false,
   isLoading: false,
-  importOfxIsOpen: false,
-  hoverId: ''
+  importOfxIsOpen: false
 }
 
 export default {
@@ -59,8 +58,7 @@ export default {
     importOfxIsOpen: (state) => state.importOfxIsOpen,
     importIds: (state, getters, rootState, rootGetters) => {
       return _.get(rootGetters, ['allImportIds', getters.accountId], {})
-    },
-    hoverId: (state) => state.hoverId
+    }
   },
   mutations: {
     SET_ACCOUNT_ID(state, account_id) {
@@ -176,12 +174,6 @@ export default {
     },
     SET_IMPORT_OFX_IS_OPEN(state, is_open) {
       Vue.set(state, 'importOfxIsOpen', is_open)
-    },
-    SET_HOVER_ID(state, id) {
-      Vue.set(state, 'hoverId', id)
-    },
-    CLEAR_HOVER_ID(state) {
-      Vue.set(state, 'hoverId', '')
     }
   },
   actions: {

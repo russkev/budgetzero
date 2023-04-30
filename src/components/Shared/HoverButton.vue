@@ -14,6 +14,7 @@
       v-on="on"
     >
       <slot>
+        <!-- <v-icon small color="red"> -->
         <v-icon small :color="deleteIconColor(deleteButtonHover)">
           {{ icon }}
         </v-icon>
@@ -29,7 +30,7 @@ export default {
   props: {
     hover: {
       type: Boolean,
-      default: false
+      default: true
     },
     dataTestid: {
       type: String,
@@ -46,6 +47,10 @@ export default {
     inactiveColor: {
       type: String,
       default: 'white'
+    },
+    baseColor: {
+      type: String,
+      default: 'transparent'
     },
     activeBackgroundColor: {
       type: String,
@@ -88,7 +93,7 @@ export default {
           return this.inactiveColor
         }
       } else {
-        return 'transparent'
+        return this.baseColor
       }
     }
   }

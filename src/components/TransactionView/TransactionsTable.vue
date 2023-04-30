@@ -48,46 +48,30 @@
         <tr :class="`transaction-row ${isHighlighted(item, isSelected) ? 'primary darken-4' : ''}`" :key="item._id">
           <!-- <tr> -->
           <!-- <td>{{ item.account }}</td> -->
-          <v-hover v-slot="{ hover: hover }">
-            <td class="row-checkbox pa-0 ma-0">
-              <transaction-checked :item="item" :hover="hover" :is-selected="isSelected" @input="select($event)" />
-            </td>
-          </v-hover>
-          <v-hover v-slot="{ hover: hover }">
-            <td class="row-cleared pa-0">
-              <transaction-cleared :item="item" :hover="hover" :highlighted="isHighlighted(item, isSelected)" />
-            </td>
-          </v-hover>
-          <v-hover v-slot="{ hover: hover }">
-            <td class="row-category pa-0">
-              <transaction-categories :item="item" :hover="hover" :highlighted="isHighlighted(item, isSelected)" />
-            </td>
-          </v-hover>
-          <v-hover v-slot="{ hover: hover }">
-            <td class="row-description pa-0">
-              <transaction-description :item="item" :hover="hover" />
-            </td>
-          </v-hover>
-          <v-hover v-slot="{ hover: hover }">
-            <td class="pr-0 row-outflow">
-              <transaction-flow :item="item" :hover="hover" :isOutflow="true" />
-            </td>
-          </v-hover>
-          <v-hover v-slot="{ hover: hover }">
-            <td class="pr-0 row-inflow">
-              <transaction-flow :item="item" :hover="hover" :isOutflow="false" />
-            </td>
-          </v-hover>
-          <v-hover v-slot="{ hover: hover }">
-            <td class="pr-0 pl-2 row-balance">
-              <transaction-balance :item="item" :hover="hover" />
-            </td>
-          </v-hover>
-          <v-hover v-slot="{ hover: hover }">
-            <td class="pa-0 ma-0">
-              <transaction-delete :item="item" :hover="hover" />
-            </td>
-          </v-hover>
+          <td class="row-checkbox pa-0 ma-0">
+            <transaction-checked :item="item" :is-selected="isSelected" @input="select($event)" />
+          </td>
+          <td class="row-cleared pa-0">
+            <transaction-cleared :item="item" :highlighted="isHighlighted(item, isSelected)" />
+          </td>
+          <td class="row-category pa-0">
+            <transaction-categories :item="item" :highlighted="isHighlighted(item, isSelected)" />
+          </td>
+          <td class="row-description pa-0">
+            <transaction-description :item="item" />
+          </td>
+          <td class="pr-0 row-outflow">
+            <transaction-flow :item="item" :isOutflow="true" />
+          </td>
+          <td class="pr-0 row-inflow">
+            <transaction-flow :item="item" :isOutflow="false" />
+          </td>
+          <td class="pr-0 pl-2 row-balance">
+            <transaction-balance :item="item" />
+          </td>
+          <td class="pa-0 ma-0">
+            <transaction-delete :item="item" />
+          </td>
         </tr>
       </template>
     </v-data-table>
