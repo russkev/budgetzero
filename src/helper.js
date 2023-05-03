@@ -194,6 +194,9 @@ function hexToHsl(hex) {
 // Convert date to weekday, day, month, year words
 function formatDate(date) {
   const date_obj = new Date(date)
+  if (isNaN(date_obj.getTime())) {
+    return ''
+  }
   const weekday = date_obj.toLocaleString('en-us', { weekday: 'long' })
   const day = date_obj.toLocaleString('en-us', { day: 'numeric' })
   const month = date_obj.toLocaleString('en-us', { month: 'long' })
@@ -217,5 +220,5 @@ export {
   hslStringToHex,
   hslToHex,
   hexToHsl,
-  formatDate,
+  formatDate
 }

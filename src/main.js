@@ -32,7 +32,7 @@ import LandingNew from './components/LandingView/LandingNew.vue'
 import LandingStart from './components/LandingView/LandingStart.vue'
 import LandingCloudSync from './components/LandingView/LandingCloudSync.vue'
 import moment from 'moment'
-
+import VuePapaParse from 'vue-papa-parse'
 import VueMoment from 'vue-moment'
 import pouchdb_find from 'pouchdb-find'
 import pouchdb_live_find from 'pouchdb-live-find'
@@ -74,6 +74,7 @@ Vue.use(Vuelidate)
 Vue.config.productionTip = false
 Vue.use(VueRouter)
 Vue.use(Fragment.Plugin)
+Vue.use(VuePapaParse)
 
 // eslint-disable-next-line vars-on-top
 export var router = new VueRouter({

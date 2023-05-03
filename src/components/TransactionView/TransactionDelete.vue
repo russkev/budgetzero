@@ -9,8 +9,9 @@
         height="100%"
         :on="on"
         :disabled="tableIsDisabled || item._id === editedTransaction._id"
-        inactive-color="secondary darken-2"
+        inactive-color="secondary darken-3"
       />
+      <!-- inactive-color="background lighten-1" -->
     </template>
   </delete-confirm>
 </template>
@@ -47,3 +48,13 @@ export default {
   }
 }
 </script>
+
+<style>
+.v-application tr.transaction-row:hover .row-delete .v-icon {
+  color: white !important;
+  transition: color 0.5s;
+}
+.v-application tr.transaction-row:hover .row-delete:hover .v-icon {
+  color: var(--v-error-base) !important;
+}
+</style>

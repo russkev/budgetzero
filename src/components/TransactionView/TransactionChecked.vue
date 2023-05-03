@@ -68,4 +68,9 @@ export default {
 .checkbox-container > .theme--dark.v-icon.v-icon--disabled {
   color: var(--v-background-lighten2) !important;
 }
+
+.v-application tr.transaction-row:hover .checkbox-container .v-icon {
+  color: white !important;
+  transition: color 0.5s;
+}
 </style>

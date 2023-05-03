@@ -15,6 +15,9 @@ function getAccountTransactions(ofx_object) {
 }
 
 function getDate(date_string) {
+  if (!date_string || date_string.length < 8) {
+    return ''
+  }
   const separator = '-'
   return (
     `${date_string.substring(0, 4)}${separator}` +

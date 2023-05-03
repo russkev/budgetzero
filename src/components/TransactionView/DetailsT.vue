@@ -2,6 +2,7 @@
   <v-card width="100%" flat color="background lighten-1" class="flex-sheet pa-1 ma-0">
     <!-- <div v-if="importOfx">Importing OFX file...</div> -->
     <import-ofx v-if="importOfxIsOpen" @close="onCloseImportOfx" @apply="onApplyImportOfx" :account="accountId" />
+    <import-csv v-else-if="importCsvIsOpen" @close="onCloseImportCsv" @apply="onCloseImportCsv" :account="accountId" />
     <template v-else-if="editedTransaction._id !== DEFAULT_TRANSACTION._id">
       <v-card-title :class="`${titleColor} darken-3 pa-3`">{{ title }}</v-card-title>
       <div class="transaction-details-grid pa-2 pb-0" style="overflow-y: auto">
@@ -85,8 +86,14 @@
         <details-button
           data-testid="import-transactions-button"
           icon="mdi-file-upload"
-          label="Import"
+          label="Import OFX"
           @click.stop="onOpenImportOfx"
+        />
+        <details-button
+          data-testid="import-csv-transactions-button"
+          icon="mdi-file-upload"
+          label="Import CSV"
+          @click.stop="onOpenImportCsv"
         />
         <!-- @click.stop="importModalIsVisible = true" -->
         <!-- <import-transactions
@@ -117,6 +124,7 @@ import DetailsData from './DetailsData.vue'
 import DeleteConfirm from '../Shared/DeleteConfirm.vue'
 import CancelSave from '../Shared/CancelSave.vue'
 import ImportOfx from './ImportOfx.vue'
+import ImportCsv from './ImportCsv.vue'
 
 export default {
   components: {
@@ -133,7 +141,8 @@ export default {
     DetailsData,
     DeleteConfirm,
     CancelSave,
-    ImportOfx
+    ImportOfx,
+    ImportCsv
   },
   data() {
     return {
@@ -151,7 +160,8 @@ export default {
       'transactions',
       'editedTransactionIndex',
       'isCreatingNewTransaction',
-      'importOfxIsOpen'
+      'importOfxIsOpen',
+      'importCsvIsOpen'
     ]),
     transactionDate: {
       get() {
@@ -223,7 +233,8 @@ export default {
       'SET_EDITED_TRANSACTION_CATEGORY',
       'CLEAR_EDITED_TRANSACTION',
       'CLEAR_SELECTED_TRANSACTIONS',
-      'SET_IMPORT_OFX_IS_OPEN'
+      'SET_IMPORT_OFX_IS_OPEN',
+      'SET_IMPORT_CSV_IS_OPEN'
     ]),
     ...mapActions('accountTransactions', [
       'addTransaction',
@@ -263,10 +274,15 @@ export default {
     },
     onApplyImportOfx() {
       this.SET_IMPORT_OFX_IS_OPEN(false)
-      // this.getTransactions()
     },
     onOpenImportOfx() {
       this.SET_IMPORT_OFX_IS_OPEN(true)
+    },
+    onOpenImportCsv() {
+      this.SET_IMPORT_CSV_IS_OPEN(true)
+    },
+    onCloseImportCsv() {
+      this.SET_IMPORT_CSV_IS_OPEN(false)
     },
     onDeselectAll() {
       this.CLEAR_SELECTED_TRANSACTIONS()

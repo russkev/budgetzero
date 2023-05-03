@@ -78,3 +78,10 @@ export default {
   }
 }
 </script>
+
+<style>
+.v-application tr.transaction-row:hover .uncleared-icon {
+  color: white !important;
+  transition: color 0.5s;
+}
+</style>

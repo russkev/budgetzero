@@ -18,15 +18,11 @@
       :error-messages="fileErrorMessage"
       :loading="isLoading"
     >
-      <!-- :error="false" -->
-      <!-- :error-messages="['Error']" -->
-      <!-- :error="Boolean(chosenFile)" -->
-      <!-- :error="Boolean(chosenFile) && !Boolean(accountsForImport)" -->
       <template #label>
         <div class="text-body-1">Upload OFX file</div>
       </template>
     </v-file-input>
-    <v-sheet class="flex-table-container ma-0 pa-0" color="transparent">
+    <!-- <v-sheet class="flex-table-container ma-0 pa-0" color="transparent">
       <v-data-table
         fixed-header
         class="transactions-table import-preview-table flex-table-main background lighten-1"
@@ -67,7 +63,8 @@
           </div>
         </template>
       </v-data-table>
-    </v-sheet>
+    </v-sheet> -->
+    <import-table :table-items="parsedOfxTransactions" :is-loading="isLoading" />
     <div class="save-cancel-container pa-2">
       <cancel-save
         save-text="Import"
@@ -87,11 +84,13 @@ import { NONE, ID_NAME } from '../../constants'
 import CancelSave from '../Shared/CancelSave.vue'
 import { formatDate } from '../../helper'
 import ofx from 'node-ofx-parser'
+import ImportTable from './ImportTable.vue'
 
 export default {
   name: 'ImportOfx',
   components: {
-    CancelSave
+    CancelSave,
+    ImportTable
   },
   props: {
     account: {
@@ -106,7 +105,6 @@ export default {
       chosenFile: null,
       readOfxError: '',
       isLoading: false,
-      existsColor: 'secondary--text text--darken-1',
       importCount: {
         imported: 0,
         skipped: 0
@@ -143,6 +141,18 @@ export default {
         }
       })
     }
+    // forTableOfxTransactions() {
+    //   const result = this.parsedOfxTransactions.map((transaction) => {
+    //     return {
+    //       date: this.formatDate(getDate(transaction.date)),
+    //       amount: this.intlCurrency.format(transaction.amount),
+    //       memo: transaction.memo,
+    //       exists: transaction.exists
+    //     }
+    //   })
+    //   console.log('forTableOfxTransactions', result)
+    //   return result
+    // }
   },
   methods: {
     ...mapActions(['commitBulkDocsToPouchOnly', 'loadLocalBudget']),

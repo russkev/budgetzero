@@ -22,7 +22,8 @@ const DEFAULT_ACCOUNT_TRANSACTIONS_STATE = {
   selectedTransactionIds: [],
   isCreatingNewTransaction: false,
   isLoading: false,
-  importOfxIsOpen: false
+  importOfxIsOpen: false,
+  importCsvIsOpen: false
 }
 
 export default {
@@ -54,8 +55,9 @@ export default {
     isCreatingNewTransaction: (state) => state.isCreatingNewTransaction,
     dataTableHeaders: () => dataTableHeaders,
     isLoading: (state) => state.isLoading,
-    tableIsDisabled: (state) => state.isLoading || state.importOfxIsOpen,
+    tableIsDisabled: (state) => state.isLoading || state.importOfxIsOpen || state.importCsvIsOpen,
     importOfxIsOpen: (state) => state.importOfxIsOpen,
+    importCsvIsOpen: (state) => state.importCsvIsOpen,
     importIds: (state, getters, rootState, rootGetters) => {
       return _.get(rootGetters, ['allImportIds', getters.accountId], {})
     }
@@ -174,6 +176,9 @@ export default {
     },
     SET_IMPORT_OFX_IS_OPEN(state, is_open) {
       Vue.set(state, 'importOfxIsOpen', is_open)
+    },
+    SET_IMPORT_CSV_IS_OPEN(state, is_open) {
+      Vue.set(state, 'importCsvIsOpen', is_open)
     }
   },
   actions: {
