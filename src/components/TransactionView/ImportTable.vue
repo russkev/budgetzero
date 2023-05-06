@@ -3,7 +3,7 @@
     <!-- sort-by="date" -->
     <v-data-table
       fixed-header
-      class="transactions-table import-preview-table flex-table-main background lighten-1"
+      class="transactions-table import-preview-table flex-table-main background"
       disable-sort
       dense
       group-by="date"
@@ -27,17 +27,19 @@
         <div class="text-h5">Amount</div>
       </template>
       <template #group.header="{ items }">
-        <td colspan="20" class="date-row background">
+        <td colspan="20" class="date-row background ellipsis">
           {{ parseDate(items[0].date) }}
           <!-- {{ formatDate(getDate(items[0].date)) }} -->
           <!-- {{ items[0].date }} -->
         </td>
       </template>
       <template #item.memo="{ item }">
-        <div :class="`import-preview-memo ml-3 ellipsis ${item.exists ? existsColor : ''}`">{{ item.memo }}</div>
+        <div :class="`import-preview-memo ml-3 ellipsis${item.exists ? existsColor : ''}`">
+          {{ item.memo }}
+        </div>
       </template>
       <template #item.amount="{ item }">
-        <div :class="`import-preview-amount text-right ${item.exists ? existsColor : ''}`">
+        <div :class="`import-preview-amount text-right ellipsis${item.exists ? existsColor : ''}`">
           {{ parseCurrency(item.amount) }}
           <!-- {{ intlCurrency.format(item.amount) }} -->
           <!-- {{ item.amount }} -->
@@ -48,9 +50,9 @@
 </template>
 
 <script>
+import moment from 'moment'
 import { mapGetters } from 'vuex'
 import { getDate } from '../../ofxParse'
-import { formatDate } from '../../helper'
 
 export default {
   name: 'ImportTable',
@@ -67,6 +69,10 @@ export default {
     isLoading: {
       type: Boolean,
       required: true
+    },
+    dateFormat: {
+      type: String,
+      default: 'YYYY-MM-DD'
     }
   },
   computed: {
@@ -74,25 +80,33 @@ export default {
   },
   methods: {
     parseDate(date) {
-      let result = getDate(date)
-      result = formatDate(result)
-      if (result) {
-        return result
-      }
-      result = formatDate(date)
-      if (result) {
-        return result
-      }
-      return date
+      // let result = getDate(date)
+      // result = formatDate(result)
+      // if (result) {
+      //   return result
+      // }
+      // result = formatDate(date)
+      // if (result) {
+      //   return result
+      // }
+      // return date
+      // return fns_parse(date, this.dateFormat, new Date())
+      const result = moment(date, this.dateFormat, true)
+      return result.isValid() ? result.format('dddd, Do MMM, YYYY') : date
     },
     parseCurrency(amount) {
-      let result = this.intlCurrency.format(amount)
-      if (!isNaN(result)) {
-        return result
-      } else {
+      if (isNaN(amount)) {
         return amount
+      } else {
+        return this.intlCurrency.format(amount)
       }
     }
   }
 }
 </script>
+
+<style>
+.transactions-table td.text-start {
+  background: var(--v-background-lighten1);
+}
+</style>
