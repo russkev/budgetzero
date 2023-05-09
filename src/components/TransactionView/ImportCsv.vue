@@ -1,74 +1,68 @@
 <template>
   <fragment>
     <v-card-title class="success darken-3 pa-3">Import CSV</v-card-title>
-    <v-file-input
-      show-size
-      filled
-      flat
-      solo
-      color="secondary lighten-2"
-      background-color="background lighten-3"
-      label="Upload CSV file"
-      prepend-icon="mdi-file-upload"
-      class="mx-2 mt-3 text-body-1"
-      accept=".csv"
-      style="flex: 0"
-      v-model="chosenFile"
-      @change="parseFile"
-    />
-
-    <v-checkbox dense v-model="useHeadersChecked" label="Use headers" class="text-body-1" />
-    <v-checkbox dense v-model="useDebitChecked" label="Separate credit and debit" />
-    <import-ofx-column :header-options="headerOptions" v-model="headerColumns.date" label="Date:" />
-    <import-ofx-column :header-options="headerOptions" v-model="headerColumns.memo" label="Memo:" />
-    <!-- <v-combobox :items="headerOptions" label="Memo" disable-lookup v-model="headerColumns.memo" /> -->
-    <!-- <template v-if="useSeparateDebits"> -->
-    <import-ofx-column
-      :header-options="headerOptions"
-      :label="useSeparateDebits ? 'Credit:' : 'Amount:'"
-      v-model="headerColumns.credit"
-      :error-text="amountError"
-    />
-    <import-ofx-column
-      v-if="useSeparateDebits"
-      :header-options="headerOptions"
-      label="Debit:"
-      v-model="headerColumns.debit"
-    />
-    <import-ofx-column
-      :header-options="dateFormatOptions"
-      label="Date Format:"
-      v-model="dateFormat"
-      @input="onDateFormatChange"
-      :errorText="dateFormatError"
-    />
-    <!-- <v-combobox
-      :items="headerOptions"
-      :label="useSeparateDebits ? 'Credit' : 'Amount'"
-      disable-lookup
-      v-model="headerColumns.credit"
-      :error-messages="amountError ? [amountError] : []"
-    />
-    <v-combobox
-      v-if="useSeparateDebits"
-      :items="headerOptions"
-      label="Debit"
-      disable-lookup
-      v-model="headerColumns.debit"
-    /> -->
-    <!-- </template> -->
-    <!-- <template v-else>
-      <v-combobox :items="headerOptions" label="Amount" disable-lookup v-model="headerColumns.credit" />
-    </template> -->
-    <!-- <v-combobox
-      :items="dateFormatOptions"
-      label="Date Format"
-      v-model="dateFormat"
-      @change="onDateFormatChange"
-      :error="false"
-      :error-messages="dateFormatError ? [dateFormatError] : []"
-    /> -->
-    <!-- :error="dateFormatError !== ''" -->
+    <div class="transaction-details-grid pa-2 pb-0">
+      <div class="text-h5">File</div>
+      <div class="d-flex flex-row justify-space-between">
+        <v-file-input
+          show-size
+          filled
+          flat
+          solo
+          color="primary lighten-2"
+          background-color="background lighten-3"
+          label="Upload CSV file"
+          prepend-icon="mdi-file-upload"
+          class="text-body-1 flex-grow-1"
+          accept=".csv"
+          style="flex: 0"
+          v-model="chosenFile"
+          @change="parseFile"
+          hide-details
+        >
+          <template #selection="{ text }">
+            <div class="text-body-1 ellipsis">{{ text }}</div>
+          </template>
+          <template #label>
+            <div class="text-body-1">Upload CSV file</div>
+          </template>
+        </v-file-input>
+      </div>
+      <div class="text-h5">Options</div>
+      <div>
+        <v-checkbox dense v-model="useHeadersChecked" class="text-body-1">
+          <template #label><span class="text-body1">Use headers</span></template>
+        </v-checkbox>
+        <v-checkbox dense v-model="useDebitChecked" label="Separate credit and debit" />
+      </div>
+      <div class="text-h5">Date</div>
+      <import-ofx-column :header-options="headerOptions" v-model="headerColumns.date" label="Date:" />
+      <div class="text-h5">Format</div>
+      <import-ofx-column
+        :header-options="dateFormatOptions"
+        label="Date Format:"
+        v-model="dateFormat"
+        @input="onDateFormatChange"
+        :errorText="dateFormatError"
+      />
+      <div class="text-h5">Memo</div>
+      <import-ofx-column :header-options="headerOptions" v-model="headerColumns.memo" label="Memo:" />
+      <div class="text-h5">Amount</div>
+      <import-ofx-column
+        :header-options="headerOptions"
+        :label="useSeparateDebits ? 'Credit:' : 'Amount:'"
+        v-model="headerColumns.credit"
+        :error-text="creditError"
+      />
+      <div class="text-h5">Debit</div>
+      <import-ofx-column
+        :header-options="headerOptions"
+        label="Debit:"
+        v-model="headerColumns.debit"
+        :disabled="!useSeparateDebits"
+        :errorText="debitError"
+      />
+    </div>
 
     <import-table :table-items="tableData" :is-loading="false" :date-format="dateFormat" />
     <!-- :error-messages="fileErrorMessage"
@@ -98,6 +92,10 @@ const findHeader = (headers, candidates) => {
     return headers[index]
   }
   return headers[0]
+}
+
+const rowDataInfoMessage = (row) => {
+  return `Row data is: ${JSON.stringify(row)}`
 }
 
 export default {
@@ -148,7 +146,15 @@ export default {
           this.headerColumns.credit = 2
           this.headerColumns.debit = 3
         }
+        console.log('parsed results update table data')
+        this.updateTableData()
       }
+    },
+    headerColumns: {
+      handler() {
+        this.updateTableData()
+      },
+      deep: true
     }
   },
   data() {
@@ -165,7 +171,8 @@ export default {
         debit: 3
       },
       truncateLength: 20,
-      amountError: '',
+      creditError: '',
+      debitError: '',
       dateFormat: 'DD/MM/YYYY',
       dateFormatOptions: [
         'DD/MM/YYYY',
@@ -178,9 +185,17 @@ export default {
         'YYYY-MM-DD',
         'YYYY.MM.DD'
       ],
-      dateFormatError: ''
+      dateFormatError: '',
+      tableData: []
     }
   },
+  // watch: {
+  //   headerColumns: {
+  //     handler(newVal, oldVal) {
+  //       console.log('Header columns hanged from ' + oldVal + ' to ' + newVal)
+  //     }
+  //   }
+  // },
   computed: {
     useHeadersChecked: {
       get() {
@@ -200,49 +215,7 @@ export default {
         this.parseFile()
       }
     },
-    tableData() {
-      if (!this.parsedResults) {
-        return []
-      }
-      let error_discovered = false
-      return this.parsedResults.data.map((row) => {
-        this.amountError = ''
-        const credit_raw = row[this.headerColumns.credit]
-        let credit = parseFloat(row[this.headerColumns.credit])
-        let credit_is_nan = false
-        if (isNaN(credit)) {
-          if (!this.useSeparateDebits) {
-            const credit_string = this.truncate(credit_raw, this.truncateLength)
-            this.amountError = `Could not parse number (${credit_string})`
-            error_discovered = true
-          }
-          credit = 0
-          credit_is_nan = true
-        }
 
-        let debit = 0
-        if (this.useSeparateDebits) {
-          const debit_raw = row[this.headerColumns.debit]
-          debit = parseFloat(debit_raw)
-          if (isNaN(debit)) {
-            debit = 0
-            if (credit_is_nan && !error_discovered) {
-              const credit_string = this.truncate(credit_raw, this.truncateLength)
-              const debit_string = this.truncate(debit_raw, this.truncateLength)
-              this.amountError = `Could not parse one of either credit (${credit_string}) or debit (${debit_string})`
-              error_discovered = true
-            }
-          }
-          debit = Math.abs(debit)
-        }
-
-        return {
-          date: row[this.headerColumns.date],
-          memo: row[this.headerColumns.memo],
-          amount: credit - debit
-        }
-      })
-    },
     headerOptions() {
       if (!this.parsedResults) {
         return []
@@ -259,12 +232,74 @@ export default {
     }
   },
   methods: {
+    updateTableData() {
+      console.log('Getting table data', this.useHeaders)
+      if (!this.parsedResults) {
+        return []
+      }
+      this.creditError = ''
+      this.debitError = ''
+      let credit_error_discovered = false
+      let debit_error_discovered = false
+      const row_offset = this.useSeparateDebits ? 1 : 0
+      this.tableData = this.parsedResults.data.map((row, index) => {
+        this.creditError = ''
+        const credit_raw = row[this.headerColumns.credit]
+        let credit = parseFloat(row[this.headerColumns.credit])
+        if (isNaN(credit)) {
+          if (!credit_raw) {
+            if (!this.useSeparateDebits && !credit_error_discovered) {
+              this.creditError = `Credit is empty for row ${index + row_offset}, treating as 0`
+              credit_error_discovered = true
+            }
+          } else {
+            if (!credit_error_discovered) {
+              const credit_string = this.truncate(credit_raw, this.truncateLength)
+              this.creditError = `Could not parse number (${credit_string}) for row ${
+                index + row_offset
+              }, treating as 0`
+              credit_error_discovered = true
+            }
+          }
+          credit = 0
+        }
+
+        let debit = 0
+        if (this.useSeparateDebits) {
+          const debit_raw = row[this.headerColumns.debit]
+          debit = parseFloat(debit_raw)
+          if (isNaN(debit)) {
+            if (!debit_error_discovered) {
+              if (!debit_raw && !credit_raw) {
+                this.debitError = `Both credit and debit are empty for row ${
+                  index + row_offset
+                }, treating as 0 <${credit_raw}> <${debit_raw}>`
+                debit_error_discovered = true
+              } else if (debit_raw) {
+                const debit_string = this.truncate(debit_raw, this.truncateLength)
+                this.debitError = `Could not parse number (${debit_string}) for row ${
+                  index + row_offset
+                }, treating as 0`
+              }
+              debit_error_discovered = true
+            }
+            debit = 0
+          }
+          debit = Math.abs(debit)
+        }
+
+        return {
+          date: row[this.headerColumns.date],
+          memo: row[this.headerColumns.memo],
+          amount: credit - debit
+        }
+      })
+    },
     parseFile() {
       if (!this.chosenFile) {
         return
       }
-      console.log('on file change')
-      this.onDateFormatChange(this.dateFormat)
+      this.onDateFormatChange(this.dateFormat, false)
       this.isLoading = true
       const config = {
         delimiter: ',',
@@ -272,13 +307,10 @@ export default {
         skipEmptyLines: true,
         complete: (results) => (this.parsedResults = results)
       }
-      this.parsedResults = this.$papa.parse(this.chosenFile, config)
-      console.log(this.parsedResults)
+      this.$papa.parse(this.chosenFile, config)
     },
 
-    onDateFormatChange(date_format) {
-      console.log('onDateFormatChange', date_format)
-      console.log('parsedResults', this.tableData)
+    onDateFormatChange(date_format, doUpdateTableData) {
       this.dateFormatError = ''
       if (!this.tableData) {
         return
@@ -287,9 +319,12 @@ export default {
         for (let i = 0; i < this.tableData.length; i++) {
           const date_raw = this.tableData[i].date
           if (!moment(date_raw, date_format, true).isValid()) {
-            this.dateFormatError = `Unable to match ${date_raw} with ${date_format}`
+            this.dateFormatError = `Unable to match input '${date_raw}' with format '${date_format}''`
             break
           }
+        }
+        if (doUpdateTableData) {
+          this.updateTableData()
         }
       } catch (error) {
         this.dateFormatError = error.message
@@ -313,3 +348,10 @@ export default {
   }
 }
 </script>
+
+<style>
+.transaction-details-grid .v-file-input .v-input__prepend-outer {
+  margin-top: auto;
+  margin-bottom: auto;
+}
+</style>
