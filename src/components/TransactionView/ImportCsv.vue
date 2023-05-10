@@ -36,7 +36,7 @@
         <v-checkbox dense v-model="useDebitChecked" label="Separate credit and debit" />
       </div>
       <div class="text-h5">Date</div>
-      <import-ofx-column :header-options="headerOptions" v-model="headerColumns.date" label="Date:" />
+      <import-ofx-column :header-options="headerOptions" v-model="headerColumnsDisplay.date" label="Date:" />
       <div class="text-h5">Format</div>
       <import-ofx-column
         :header-options="dateFormatOptions"
@@ -46,19 +46,19 @@
         :errorText="dateFormatError"
       />
       <div class="text-h5">Memo</div>
-      <import-ofx-column :header-options="headerOptions" v-model="headerColumns.memo" label="Memo:" />
+      <import-ofx-column :header-options="headerOptions" v-model="headerColumnsDisplay.memo" label="Memo:" />
       <div class="text-h5">Amount</div>
       <import-ofx-column
         :header-options="headerOptions"
         :label="useSeparateDebits ? 'Credit:' : 'Amount:'"
-        v-model="headerColumns.credit"
+        v-model="headerColumnsDisplay.credit"
         :error-text="creditError"
       />
       <div class="text-h5">Debit</div>
       <import-ofx-column
         :header-options="headerOptions"
         label="Debit:"
-        v-model="headerColumns.debit"
+        v-model="headerColumnsDisplay.debit"
         :disabled="!useSeparateDebits"
         :errorText="debitError"
       />
@@ -94,10 +94,6 @@ const findHeader = (headers, candidates) => {
   return headers[0]
 }
 
-const rowDataInfoMessage = (row) => {
-  return `Row data is: ${JSON.stringify(row)}`
-}
-
 export default {
   name: 'ImportCsv',
   components: {
@@ -111,52 +107,15 @@ export default {
       required: true
     }
   },
-  watch: {
-    parsedResults(current) {
-      if (current) {
-        if (this.useHeaders) {
-          const headers = _.get(current, ['meta', 'fields'], [])
-          if (!headers) {
-            return
-          }
-          const date_candidates = ['date', 'Date', 'Date Posted', 'date posted', 'Date Transacted', 'date transacted']
-          const memo_candidates = ['memo', 'description', 'description posted', 'description transacted']
-          const credit_candidates = [
-            'amount',
-            'amount posted',
-            'amount transacted',
-            'value',
-            'credit',
-            'incoming',
-            'in'
-          ]
-          const debit_candidates = ['debit', 'debit posted', 'debit transacted', 'outgoing', 'out']
-
-          this.headerColumns.date = findHeader(headers, date_candidates)
-          this.headerColumns.memo = findHeader(headers, memo_candidates)
-          if (this.useSeparateDebits) {
-            this.headerColumns.credit = findHeader(headers, credit_candidates)
-            this.headerColumns.debit = findHeader(headers, debit_candidates)
-          } else {
-            this.headerColumns.credit = findHeader(headers, credit_candidates)
-          }
-        } else {
-          this.headerColumns.date = 0
-          this.headerColumns.memo = 1
-          this.headerColumns.credit = 2
-          this.headerColumns.debit = 3
-        }
-        console.log('parsed results update table data')
-        this.updateTableData()
-      }
-    },
-    headerColumns: {
-      handler() {
-        this.updateTableData()
-      },
-      deep: true
-    }
-  },
+  // watch: {
+  //   headerColumns: {
+  //     handler() {
+  //       this.updateTableData()
+  //       this.verifyDateFormat()
+  //     },
+  //     deep: true
+  //   }
+  // },
   data() {
     return {
       parsedResults: null,
@@ -189,13 +148,6 @@ export default {
       tableData: []
     }
   },
-  // watch: {
-  //   headerColumns: {
-  //     handler(newVal, oldVal) {
-  //       console.log('Header columns hanged from ' + oldVal + ' to ' + newVal)
-  //     }
-  //   }
-  // },
   computed: {
     useHeadersChecked: {
       get() {
@@ -213,6 +165,16 @@ export default {
       set(value) {
         this.useSeparateDebits = value
         this.parseFile()
+      }
+    },
+    headerColumnsDisplay: {
+      get() {
+        return this.headerColumns
+      },
+      set(value) {
+        console.log('Setting header columns')
+        this.headerColumns = value
+        this.updateTableData()
       }
     },
 
@@ -233,6 +195,9 @@ export default {
   },
   methods: {
     updateTableData() {
+      /**
+       * Interpret the parsed csv file into a table
+       */
       console.log('Getting table data', this.useHeaders)
       if (!this.parsedResults) {
         return []
@@ -296,35 +261,43 @@ export default {
       })
     },
     parseFile() {
+      /**
+       * Parse the csv file and then update the table data
+       */
       if (!this.chosenFile) {
         return
       }
-      this.onDateFormatChange(this.dateFormat, false)
       this.isLoading = true
-      const config = {
+      this.$papa.parse(this.chosenFile, {
         delimiter: ',',
         header: this.useHeaders,
         skipEmptyLines: true,
-        complete: (results) => (this.parsedResults = results)
-      }
-      this.$papa.parse(this.chosenFile, config)
+        complete: (results) => {
+          this.parsedResults = results
+          this.processHeaders()
+          this.updateTableData()
+          this.verifyDateFormat()
+        }
+      })
     },
-
-    onDateFormatChange(date_format, doUpdateTableData) {
+    onDateFormatChange(date_format) {
+      this.dateFormat = date_format
+      this.updateTableData()
+      this.verifyDateFormat()
+    },
+    verifyDateFormat() {
       this.dateFormatError = ''
       if (!this.tableData) {
         return
       }
       try {
-        for (let i = 0; i < this.tableData.length; i++) {
+        let i = this.useHeaders ? 1 : 0
+        for (; i < this.tableData.length; i++) {
           const date_raw = this.tableData[i].date
-          if (!moment(date_raw, date_format, true).isValid()) {
-            this.dateFormatError = `Unable to match input '${date_raw}' with format '${date_format}''`
+          if (!moment(date_raw, this.dateFormat, true).isValid()) {
+            this.dateFormatError = `Unable to match input '${date_raw}' with format '${this.dateFormat}' for row ${i}`
             break
           }
-        }
-        if (doUpdateTableData) {
-          this.updateTableData()
         }
       } catch (error) {
         this.dateFormatError = error.message
@@ -344,6 +317,32 @@ export default {
     },
     onSave() {
       this.$emit('apply')
+    },
+    processHeaders() {
+      if (this.useHeaders) {
+        const headers = _.get(this.parsedResults, ['meta', 'fields'], [])
+        if (!headers) {
+          return
+        }
+        const date_candidates = ['date', 'Date', 'Date Posted', 'date posted', 'Date Transacted', 'date transacted']
+        const memo_candidates = ['memo', 'description', 'description posted', 'description transacted']
+        const credit_candidates = ['amount', 'amount posted', 'amount transacted', 'value', 'credit', 'incoming', 'in']
+        const debit_candidates = ['debit', 'debit posted', 'debit transacted', 'outgoing', 'out']
+
+        this.headerColumns.date = findHeader(headers, date_candidates)
+        this.headerColumns.memo = findHeader(headers, memo_candidates)
+        if (this.useSeparateDebits) {
+          this.headerColumns.credit = findHeader(headers, credit_candidates)
+          this.headerColumns.debit = findHeader(headers, debit_candidates)
+        } else {
+          this.headerColumns.credit = findHeader(headers, credit_candidates)
+        }
+      } else {
+        this.headerColumns.date = 0
+        this.headerColumns.memo = 1
+        this.headerColumns.credit = 2
+        this.headerColumns.debit = 3
+      }
     }
   }
 }
