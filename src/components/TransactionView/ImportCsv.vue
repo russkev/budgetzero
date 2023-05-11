@@ -36,7 +36,7 @@
         <v-checkbox dense v-model="useDebitChecked" label="Separate credit and debit" />
       </div>
       <div class="text-h5">Date</div>
-      <import-ofx-column :header-options="headerOptions" v-model="headerColumnsDisplay.date" label="Date:" />
+      <import-ofx-column :header-options="headerOptions" v-model="headerColumns.date" label="Date:" />
       <div class="text-h5">Format</div>
       <import-ofx-column
         :header-options="dateFormatOptions"
@@ -46,19 +46,19 @@
         :errorText="dateFormatError"
       />
       <div class="text-h5">Memo</div>
-      <import-ofx-column :header-options="headerOptions" v-model="headerColumnsDisplay.memo" label="Memo:" />
+      <import-ofx-column :header-options="headerOptions" v-model="headerColumns.memo" label="Memo:" />
       <div class="text-h5">Amount</div>
       <import-ofx-column
         :header-options="headerOptions"
         :label="useSeparateDebits ? 'Credit:' : 'Amount:'"
-        v-model="headerColumnsDisplay.credit"
+        v-model="headerColumns.credit"
         :error-text="creditError"
       />
       <div class="text-h5">Debit</div>
       <import-ofx-column
         :header-options="headerOptions"
         label="Debit:"
-        v-model="headerColumnsDisplay.debit"
+        v-model="headerColumns.debit"
         :disabled="!useSeparateDebits"
         :errorText="debitError"
       />
@@ -107,15 +107,18 @@ export default {
       required: true
     }
   },
-  // watch: {
-  //   headerColumns: {
-  //     handler() {
-  //       this.updateTableData()
-  //       this.verifyDateFormat()
-  //     },
-  //     deep: true
-  //   }
-  // },
+  watch: {
+    headerColumns: {
+      handler() {
+        if (this.toUpdateHeaderColumns) {
+          console.log('Header columns changed')
+          this.updateTableData()
+          this.verifyDateFormat()
+        }
+      },
+      deep: true
+    }
+  },
   data() {
     return {
       parsedResults: null,
@@ -129,6 +132,7 @@ export default {
         credit: 2,
         debit: 3
       },
+      toUpdateHeaderColumns: true,
       truncateLength: 20,
       creditError: '',
       debitError: '',
@@ -167,16 +171,16 @@ export default {
         this.parseFile()
       }
     },
-    headerColumnsDisplay: {
-      get() {
-        return this.headerColumns
-      },
-      set(value) {
-        console.log('Setting header columns')
-        this.headerColumns = value
-        this.updateTableData()
-      }
-    },
+    // headerColumnsDisplay: {
+    //   get() {
+    //     return this.headerColumns
+    //   },
+    //   set(value) {
+    //     console.log('Setting header columns')
+    //     this.headerColumns = value
+    //     this.updateTableData()
+    //   }
+    // },
 
     headerOptions() {
       if (!this.parsedResults) {
@@ -206,9 +210,8 @@ export default {
       this.debitError = ''
       let credit_error_discovered = false
       let debit_error_discovered = false
-      const row_offset = this.useSeparateDebits ? 1 : 0
+      const row_offset = this.useHeaders ? 2 : 1
       this.tableData = this.parsedResults.data.map((row, index) => {
-        this.creditError = ''
         const credit_raw = row[this.headerColumns.credit]
         let credit = parseFloat(row[this.headerColumns.credit])
         if (isNaN(credit)) {
@@ -219,6 +222,7 @@ export default {
             }
           } else {
             if (!credit_error_discovered) {
+              console.log("Couldn't parse credit", credit_raw)
               const credit_string = this.truncate(credit_raw, this.truncateLength)
               this.creditError = `Could not parse number (${credit_string}) for row ${
                 index + row_offset
@@ -274,14 +278,20 @@ export default {
         skipEmptyLines: true,
         complete: (results) => {
           this.parsedResults = results
+          this.toUpdateHeaderColumns = false
           this.processHeaders()
+          console.log('parse file update table data')
           this.updateTableData()
           this.verifyDateFormat()
+          this.$nextTick(() => {
+            this.toUpdateHeaderColumns = true
+          })
         }
       })
     },
     onDateFormatChange(date_format) {
       this.dateFormat = date_format
+      console.log('on date format change update table data')
       this.updateTableData()
       this.verifyDateFormat()
     },
