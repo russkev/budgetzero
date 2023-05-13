@@ -12,11 +12,11 @@
       :items-per-page="200"
       :headers="importTransactionHeaders"
       :header-props="{
-        'disable-sort': true
+        'disable-sort': true,
       }"
       :footer-props="{
         'items-per-page-options': [5, 10, 20, 50, 100, 200],
-        'items-per-page-text': 'rows'
+        'items-per-page-text': 'rows',
       }"
       :loading="isLoading"
     >
@@ -34,12 +34,12 @@
         </td>
       </template>
       <template #item.memo="{ item }">
-        <div :class="`import-preview-memo ml-3 ellipsis${item.exists ? existsColor : ''}`">
+        <div :class="`import-preview-memo ml-3 ellipsis ${item.exists ? existsColor : ''}`">
           {{ item.memo }}
         </div>
       </template>
       <template #item.amount="{ item }">
-        <div :class="`import-preview-amount text-right ellipsis${item.exists ? existsColor : ''}`">
+        <div :class="`import-preview-amount text-right ellipsis ${item.exists ? existsColor : ''}`">
           {{ parseCurrency(item.amount) }}
           <!-- {{ intlCurrency.format(item.amount) }} -->
           <!-- {{ item.amount }} -->
@@ -50,33 +50,33 @@
 </template>
 
 <script>
-import moment from 'moment'
-import { mapGetters } from 'vuex'
-import { getDate } from '../../ofxParse'
+import moment from "moment";
+import { mapGetters } from "vuex";
+import { getDate } from "../../ofxParse";
 
 export default {
-  name: 'ImportTable',
+  name: "ImportTable",
   data() {
     return {
-      existsColor: 'secondary--text text--darken-1'
-    }
+      existsColor: "secondary--text text--darken-1",
+    };
   },
   props: {
     tableItems: {
       type: Array,
-      required: true
+      required: true,
     },
     isLoading: {
       type: Boolean,
-      required: true
+      required: true,
     },
     dateFormat: {
       type: String,
-      default: 'YYYY-MM-DD'
-    }
+      default: "YYYY-MM-DD",
+    },
   },
   computed: {
-    ...mapGetters(['importTransactionHeaders', 'intlCurrency'])
+    ...mapGetters(["importTransactionHeaders", "intlCurrency"]),
   },
   methods: {
     parseDate(date) {
@@ -91,18 +91,18 @@ export default {
       // }
       // return date
       // return fns_parse(date, this.dateFormat, new Date())
-      const result = moment(date, this.dateFormat, true)
-      return result.isValid() ? result.format('dddd, Do MMM, YYYY') : date
+      const result = moment(date, this.dateFormat, true);
+      return result.isValid() ? result.format("dddd, Do MMM, YYYY") : date;
     },
     parseCurrency(amount) {
       if (isNaN(amount)) {
-        return amount
+        return amount;
       } else {
-        return this.intlCurrency.format(amount)
+        return this.intlCurrency.format(amount);
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style>

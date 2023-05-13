@@ -61,5 +61,92 @@ describe('Import bank transactions', () => {
       // // Check that page 2 loads correctly
       // cy.get('.v-data-footer__icons-after > .v-btn').click()
     })
-  })
+  }),
+    context('Test import CSV', () => {
+      it.only('Tests basic import', () => {
+        cy.initPath('')
+        cy.get('[data-testid="transactions-page-7kW"]').click()
+
+        // Import transactions
+        cy.get('[data-testid="import-csv-transactions-button"]').click()
+        const file = 'tests/__mockdata__/bankexports/csv.csv'
+
+        // Select the file to import and click the "Use headers" checkbox
+        cy.get('input[type="file"]').selectFile(file, { force: true })
+        cy.get('[data-testid="import-csv-transactions-button"]').should('be.disabled')
+        cy.get('[data-testid="use-headers-checkbox"]').click({ force: true })
+
+        // Check that the date format select has an alert icon
+        cy.get('[data-testid="date-format-select"]').find('.mdi-alert-circle-outline').should('be.visible')
+
+        // Check that the pagination shows the correct number of transactions
+        cy.get('.import-preview-table .v-data-footer__pagination').should('contain.text', '1-22 of 22')
+        // cy.get('.import-preview-table .v-data-footer__pagination').should('contain.text', '1-200 of 563')
+
+        cy.get('[data-testid="import-csv-transactions-button"]').should('be.disabled')
+
+        // Click the date format select and select the "M/D/YYYY" option
+        cy.get('[data-testid="date-format-select"]').click()
+        cy.get('.v-list-item__title').filter(':contains("M/D/YYYY")').click()
+
+        // Check that the alert icon is no longer visible in the date format select
+        cy.get('[data-testid="date-format-select"]').should('not.have.descendants', '.mdi-alert-circle-outline')
+
+        // Choose column 3 for the 'memo' column
+        cy.get('[data-testid="memo-column-select"]').click()
+        cy.get('.v-list-item__title').filter(':contains("3")').click()
+
+        // Check that the first transaction's memo contains the expected text
+        cy.get('.import-preview-memo').eq(0).should('contain.text', 'memo')
+
+        // Check if import button is enabled
+        cy.get('[data-testid="import-csv-transactions-button"]').should('not.be.disabled')
+
+        cy.get('[data-testid="import-csv-transactions-button"]').click()
+        // Total from import: 43924.02
+        // Total from before: 2646.80
+
+        // Ensure loading indicator appears and goes away
+        cy.get('.v-progress-circular__overlay').should('exist')
+        cy.get('.v-progress-circular__overlay').should('not.exist')
+
+        // Check that pagination shows the correct number
+        cy.get('.v-data-footer__pagination').should('contain.text', '1-20 of 29')
+
+        // Ensure current account transaction totals are updated
+        cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$5,482.90')
+
+        // Delete some transactions
+        cy.get('.v-progress-linear__buffer').should('not.exist')
+        cy.get('.transaction-row > .row-checkbox').eq(9).click()
+        cy.get('.transaction-row > .row-checkbox').eq(11).click()
+        cy.get('.transaction-row > .row-checkbox').eq(12).click()
+        cy.get('[data-testid="delete-selected-transactions-button"]').click()
+        cy.get('[data-testid="delete-confirm-button"]').click()
+        cy.get('.transaction-row').should('have.length', 20)
+
+        // Check that pagination shows the correct number
+        cy.get('.v-data-footer__pagination').should('contain.text', '1-20 of 26')
+
+        // Ensure current account transaction totals are updated
+        cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$5,938.76')
+
+        // Open import view again
+        cy.get('[data-testid="import-csv-transactions-button"]').click()
+
+        // Ensure that previous data has been cleared
+        cy.get('.v-file-input__text').should('not.contain.text', 'csv.csv')
+
+        // Do same import
+        cy.get('input[type="file"]').selectFile(file, { force: true })
+
+        // Check that only transactions that were just deleted are white
+        cy.get('.import-preview-amount').eq(1).should('not.have.css', 'color', 'rgb(255, 255, 255)')
+        cy.get('.import-preview-amount').eq(2).should('have.css', 'color', 'rgb(255, 255, 255)')
+        cy.get('.import-preview-amount').eq(3).should('not.have.css', 'color', 'rgb(255, 255, 255)')
+        cy.get('.import-preview-amount').eq(4).should('have.css', 'color', 'rgb(255, 255, 255)')
+        cy.get('.import-preview-amount').eq(5).should('have.css', 'color', 'rgb(255, 255, 255)')
+        cy.get('.import-preview-amount').eq(6).should('not.have.css', 'color', 'rgb(255, 255, 255)')
+      })
+    })
 })

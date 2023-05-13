@@ -393,6 +393,37 @@ export default {
       } else {
         dispatch('editTransaction', item)
       }
+    },
+    onImportTransactions({ dispatch, rootGetters }, { transactions, account }) {
+      const transaction_documents = transactions.reduce((partial, transaction) => {
+        if (transaction.exists) {
+          return partial
+        }
+        const previous = null
+        const current = {
+          account: account,
+          category: NONE._id,
+          cleared: false,
+          approved: false,
+          value: Math.round(Number(transaction.amount) * 100),
+          date: transaction.date,
+          memo: transaction.memo,
+          reconciled: false,
+          flag: '#ffffff',
+          payee: transaction.name ? transaction.name : null,
+          importId: transaction.importId,
+          transfer: null,
+          splits: [],
+          _id: `b_${rootGetters.selectedBudgetId}${ID_NAME.transaction}${generateId(
+            transaction.date,
+            transaction.importId
+          )}`
+        }
+        partial.push({ current, previous })
+        return partial
+      }, [])
+
+      return dispatch('commitBulkDocsToPouchAndVuex', transaction_documents, { root: true })
     }
   }
 }

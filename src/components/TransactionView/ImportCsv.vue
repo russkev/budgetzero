@@ -15,7 +15,7 @@
           prepend-icon="mdi-file-upload"
           class="text-body-1 flex-grow-1"
           accept=".csv"
-          style="flex: 0"
+          style="flex: 0;"
           v-model="chosenFile"
           @change="parseFile"
           hide-details
@@ -30,13 +30,31 @@
       </div>
       <div class="text-h5">Options</div>
       <div>
-        <v-checkbox dense v-model="useHeadersChecked" class="text-body-1">
-          <template #label><span class="text-body1">Use headers</span></template>
+        <v-checkbox
+          dense
+          v-model="useHeadersChecked"
+          hide-details
+          data-testid="use-headers-checkbox"
+        >
+          <template #label><span class="text-body-1">Use headers</span></template>
         </v-checkbox>
-        <v-checkbox dense v-model="useDebitChecked" label="Separate credit and debit" />
+        <v-checkbox
+          dense
+          v-model="useDebitChecked"
+          hide-details
+          data-testid="separate-credit-debit-checkbox"
+        >
+          <template #label><span class="text-body-1">Separate credit and debit</span></template>
+        </v-checkbox>
       </div>
       <div class="text-h5">Date</div>
-      <import-ofx-column :header-options="headerOptions" v-model="headerColumns.date" label="Date:" />
+      <import-ofx-column
+        :header-options="headerOptions"
+        v-model="headerColumns.date"
+        label="Date:"
+        :disabled="tableData.length < 1"
+        data-testid="date-column-select"
+      />
       <div class="text-h5">Format</div>
       <import-ofx-column
         :header-options="dateFormatOptions"
@@ -44,27 +62,38 @@
         v-model="dateFormat"
         @input="onDateFormatChange"
         :errorText="dateFormatError"
+        :disabled="tableData.length < 1"
+        data-testid="date-format-select"
       />
       <div class="text-h5">Memo</div>
-      <import-ofx-column :header-options="headerOptions" v-model="headerColumns.memo" label="Memo:" />
+      <import-ofx-column
+        :header-options="headerOptions"
+        v-model="headerColumns.memo"
+        label="Memo:"
+        :disabled="tableData.length < 1"
+        data-testid="memo-column-select"
+      />
       <div class="text-h5">Amount</div>
       <import-ofx-column
         :header-options="headerOptions"
         :label="useSeparateDebits ? 'Credit:' : 'Amount:'"
         v-model="headerColumns.credit"
         :error-text="creditError"
+        :disabled="tableData.length < 1"
+        data-testid="credit-column-select"
       />
       <div class="text-h5">Debit</div>
       <import-ofx-column
         :header-options="headerOptions"
         label="Debit:"
         v-model="headerColumns.debit"
-        :disabled="!useSeparateDebits"
+        :disabled="!useSeparateDebits || tableData.length < 1"
         :errorText="debitError"
+        data-testid="debit-column-select"
       />
     </div>
 
-    <import-table :table-items="tableData" :is-loading="false" :date-format="dateFormat" />
+    <import-table :table-items="tableData" :is-loading="false" />
     <!-- :error-messages="fileErrorMessage"
       :loading="isLoading" -->
     <div></div>
@@ -72,7 +101,7 @@
       <cancel-save
         save-text="Import"
         save-id="import-csv-transactions-button"
-        :save-disabled="selectedCsvTransactions.length < 1"
+        :save-disabled="applyIsDisabled"
         @cancel="onCancel"
         @save="onSave"
       />
@@ -81,43 +110,45 @@
 </template>
 
 <script>
-import CancelSave from '../Shared/CancelSave.vue'
-import ImportTable from './ImportTable.vue'
-import ImportOfxColumn from './ImportOfxColumn.vue'
-import moment from 'moment'
+import { mapGetters, mapActions } from "vuex";
+import CancelSave from "../Shared/CancelSave.vue";
+import ImportTable from "./ImportTable.vue";
+import ImportOfxColumn from "./ImportOfxColumn.vue";
+import moment from "moment";
+import { NONE } from "../../constants";
 
 const findHeader = (headers, candidates) => {
-  const index = headers.findIndex((header) => candidates.includes(header.toLowerCase()))
+  const index = headers.findIndex((header) => candidates.includes(header.toLowerCase()));
   if (index > -1) {
-    return headers[index]
+    return headers[index];
   }
-  return headers[0]
-}
+  return headers[0];
+};
 
 export default {
-  name: 'ImportCsv',
+  name: "ImportCsv",
   components: {
     CancelSave,
     ImportTable,
-    ImportOfxColumn
+    ImportOfxColumn,
   },
   props: {
     account: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   watch: {
     headerColumns: {
       handler() {
         if (this.toUpdateHeaderColumns) {
-          console.log('Header columns changed')
-          this.updateTableData()
-          this.verifyDateFormat()
+          console.log("Header columns changed");
+          this.updateTableData();
+          // this.verifyDateFormat();
         }
       },
-      deep: true
-    }
+      deep: true,
+    },
   },
   data() {
     return {
@@ -130,46 +161,51 @@ export default {
         date: 0,
         memo: 1,
         credit: 2,
-        debit: 3
+        debit: 3,
       },
       toUpdateHeaderColumns: true,
       truncateLength: 20,
-      creditError: '',
-      debitError: '',
-      dateFormat: 'DD/MM/YYYY',
+      creditError: "",
+      debitError: "",
+      dateFormatError: "",
+      dateFormat: "DD/MM/YYYY",
       dateFormatOptions: [
-        'DD/MM/YYYY',
-        'DD-MM-YYYY',
-        'DD.MM.YYYY',
-        'MM/DD/YYYY',
-        'MM-DD-YYYY',
-        'MM.DD.YYYY',
-        'YYYY/MM/DD',
-        'YYYY-MM-DD',
-        'YYYY.MM.DD'
+        "D/M/YYYY",
+        "D-M-YYYY",
+        "D.M.YYYY",
+        "M/D/YYYY",
+        "M-D-YYYY",
+        "M.D.YYYY",
+        "YYYY/M/D",
+        "YYYY-M-D",
+        "YYYY.M.D",
       ],
-      dateFormatError: '',
-      tableData: []
-    }
+      tableData: [],
+      initialData: null,
+    };
+  },
+  created() {
+    this.setInitialData();
   },
   computed: {
+    ...mapGetters("accountTransactions", ["importIds"]),
     useHeadersChecked: {
       get() {
-        return this.useHeaders
+        return this.useHeaders;
       },
       set(value) {
-        this.useHeaders = value
-        this.parseFile()
-      }
+        this.useHeaders = value;
+        this.parseFile();
+      },
     },
     useDebitChecked: {
       get() {
-        return this.useSeparateDebits
+        return this.useSeparateDebits;
       },
       set(value) {
-        this.useSeparateDebits = value
-        this.parseFile()
-      }
+        this.useSeparateDebits = value;
+        this.parseFile();
+      },
     },
     // headerColumnsDisplay: {
     //   get() {
@@ -181,186 +217,259 @@ export default {
     //     this.updateTableData()
     //   }
     // },
-
+    applyIsDisabled() {
+      // console.log(this.$data)
+      return (
+        this.tableData.length < 1 ||
+        Boolean(this.creditError) ||
+        (this.useSeparateDebits && Boolean(this.debitError)) ||
+        Boolean(this.dateFormatError)
+      );
+    },
     headerOptions() {
       if (!this.parsedResults) {
-        return []
+        return [];
       }
       if (this.useHeaders) {
-        return Object.keys(this.parsedResults.data[0])
+        return Object.keys(this.parsedResults.data[0]);
       } else {
-        let result = []
+        let result = [];
         for (let i = 0; i < this.parsedResults.data[0].length; i++) {
-          result.push(i)
+          result.push(i);
         }
-        return result
+        return result;
       }
-    }
+    },
   },
   methods: {
+    ...mapActions(["loadLocalBudget"]),
+    ...mapActions("accountTransactions", ["onImportTransactions"]),
     updateTableData() {
       /**
        * Interpret the parsed csv file into a table
        */
-      console.log('Getting table data', this.useHeaders)
+      console.log("Getting table data", this.useHeaders);
       if (!this.parsedResults) {
-        return []
+        return [];
       }
-      this.creditError = ''
-      this.debitError = ''
-      let credit_error_discovered = false
-      let debit_error_discovered = false
-      const row_offset = this.useHeaders ? 2 : 1
+      this.creditError = "";
+      this.debitError = "";
+      this.dateFormatError = "";
+      let credit_error_discovered = false;
+      let debit_error_discovered = false;
+      const row_offset = this.useHeaders ? 2 : 1;
       this.tableData = this.parsedResults.data.map((row, index) => {
-        const credit_raw = row[this.headerColumns.credit]
-        let credit = parseFloat(row[this.headerColumns.credit])
+        const credit_raw = row[this.headerColumns.credit];
+        let credit = parseFloat(row[this.headerColumns.credit]);
         if (isNaN(credit)) {
           if (!credit_raw) {
             if (!this.useSeparateDebits && !credit_error_discovered) {
-              this.creditError = `Credit is empty for row ${index + row_offset}, treating as 0`
-              credit_error_discovered = true
+              this.creditError = `Credit is empty for row ${index + row_offset}, treating as 0`;
+              credit_error_discovered = true;
             }
           } else {
             if (!credit_error_discovered) {
-              console.log("Couldn't parse credit", credit_raw)
-              const credit_string = this.truncate(credit_raw, this.truncateLength)
+              console.log("Couldn't parse credit", credit_raw);
+              const credit_string = this.truncate(credit_raw, this.truncateLength);
               this.creditError = `Could not parse number (${credit_string}) for row ${
                 index + row_offset
-              }, treating as 0`
-              credit_error_discovered = true
+              }, treating as 0`;
+              credit_error_discovered = true;
             }
           }
-          credit = 0
+          credit = 0;
         }
 
-        let debit = 0
+        let debit = 0;
         if (this.useSeparateDebits) {
-          const debit_raw = row[this.headerColumns.debit]
-          debit = parseFloat(debit_raw)
+          const debit_raw = row[this.headerColumns.debit];
+          debit = parseFloat(debit_raw);
           if (isNaN(debit)) {
             if (!debit_error_discovered) {
               if (!debit_raw && !credit_raw) {
                 this.debitError = `Both credit and debit are empty for row ${
                   index + row_offset
-                }, treating as 0 <${credit_raw}> <${debit_raw}>`
-                debit_error_discovered = true
+                }, treating as 0 <${credit_raw}> <${debit_raw}>`;
+                debit_error_discovered = true;
               } else if (debit_raw) {
-                const debit_string = this.truncate(debit_raw, this.truncateLength)
+                const debit_string = this.truncate(debit_raw, this.truncateLength);
                 this.debitError = `Could not parse number (${debit_string}) for row ${
                   index + row_offset
-                }, treating as 0`
+                }, treating as 0`;
               }
-              debit_error_discovered = true
+              debit_error_discovered = true;
             }
-            debit = 0
+            debit = 0;
           }
-          debit = Math.abs(debit)
+          debit = Math.abs(debit);
+        }
+        const row_date = _.get(row, [this.headerColumns.date], "");
+        let date = moment(row_date, this.dateFormat);
+
+        if (!date.isValid()) {
+          if (!this.dateFormatError) {
+            this.dateFormatError = `Could not parse date '${row_date}'' with format '${
+              this.dateFormat
+            }' for row ${index + row_offset}, please check the date format`;
+          }
+          date = row_date;
+        } else {
+          date = date.format("YYYY-MM-DD");
         }
 
-        return {
-          date: row[this.headerColumns.date],
-          memo: row[this.headerColumns.memo],
-          amount: credit - debit
-        }
-      })
+        let data = {
+          date: date,
+          memo: _.get(row, [this.headerColumns.memo], ""),
+          amount: credit - debit,
+        };
+
+        data.importId = `${this.account}-${data.date}-${data.memo.substring(0, 20)}-${data.amount}`;
+        data.exists = data.importId in this.importIds;
+
+        return data;
+      });
     },
     parseFile() {
+      console.log("Parsing file");
       /**
        * Parse the csv file and then update the table data
        */
       if (!this.chosenFile) {
-        return
+        console.log("No file chosen");
+        this.reset();
+        return;
       }
-      this.isLoading = true
+      this.isLoading = true;
       this.$papa.parse(this.chosenFile, {
-        delimiter: ',',
+        delimiter: ",",
         header: this.useHeaders,
         skipEmptyLines: true,
         complete: (results) => {
-          this.parsedResults = results
-          this.toUpdateHeaderColumns = false
-          this.processHeaders()
-          console.log('parse file update table data')
-          this.updateTableData()
-          this.verifyDateFormat()
+          this.parsedResults = results;
+          this.toUpdateHeaderColumns = false;
+          this.processHeaders();
+          console.log("parse file update table data");
+          this.updateTableData();
+          // this.verifyDateFormat();
           this.$nextTick(() => {
-            this.toUpdateHeaderColumns = true
-          })
-        }
-      })
+            this.toUpdateHeaderColumns = true;
+          });
+        },
+      });
     },
     onDateFormatChange(date_format) {
-      this.dateFormat = date_format
-      console.log('on date format change update table data')
-      this.updateTableData()
-      this.verifyDateFormat()
+      this.dateFormat = date_format;
+      console.log("on date format change update table data");
+      this.updateTableData();
+      // this.verifyDateFormat();
     },
-    verifyDateFormat() {
-      this.dateFormatError = ''
-      if (!this.tableData) {
-        return
-      }
-      try {
-        let i = this.useHeaders ? 1 : 0
-        for (; i < this.tableData.length; i++) {
-          const date_raw = this.tableData[i].date
-          if (!moment(date_raw, this.dateFormat, true).isValid()) {
-            this.dateFormatError = `Unable to match input '${date_raw}' with format '${this.dateFormat}' for row ${i}`
-            break
-          }
-        }
-      } catch (error) {
-        this.dateFormatError = error.message
-      }
-    },
+    // verifyDateFormat() {
+    //   this.dateFormatError = "";
+    //   if (!this.tableData) {
+    //     return;
+    //   }
+    //   try {
+    //     let i = this.useHeaders ? 1 : 0;
+    //     for (; i < this.tableData.length; i++) {
+    //       const date_raw = this.tableData[i].date;
+    //       if (!moment(date_raw, this.dateFormat, true).isValid()) {
+    //         this.dateFormatError = `Unable to match input '${date_raw}' with format '${this.dateFormat}' for row ${i}`;
+    //         break;
+    //       }
+    //     }
+    //   } catch (error) {
+    //     this.dateFormatError = error.message;
+    //   }
+    // },
     truncate(input_string, length) {
       if (!input_string) {
-        return ''
+        return "";
       }
       if (input_string.length <= length) {
-        return input_string
+        return input_string;
       }
-      return input_string.substring(0, length - 3) + '...'
+      return input_string.substring(0, length - 3) + "...";
     },
     onCancel() {
-      this.$emit('close')
+      this.$emit("close");
     },
     onSave() {
-      this.$emit('apply')
+      return this.onImportTransactions({
+        transactions: this.tableData,
+        account: this.account,
+      })
+        .then(() => {
+          return this.loadLocalBudget();
+        })
+        .finally(() => {
+          this.$emit("apply");
+          this.reset();
+        });
+    },
+    setInitialData() {
+      this.initialData = JSON.parse(JSON.stringify(this.$data));
+    },
+    reset() {
+      Object.assign(this.$data, JSON.parse(JSON.stringify(this.initialData)));
+      this.setInitialData();
     },
     processHeaders() {
       if (this.useHeaders) {
-        const headers = _.get(this.parsedResults, ['meta', 'fields'], [])
+        const headers = _.get(this.parsedResults, ["meta", "fields"], []);
         if (!headers) {
-          return
+          return;
         }
-        const date_candidates = ['date', 'Date', 'Date Posted', 'date posted', 'Date Transacted', 'date transacted']
-        const memo_candidates = ['memo', 'description', 'description posted', 'description transacted']
-        const credit_candidates = ['amount', 'amount posted', 'amount transacted', 'value', 'credit', 'incoming', 'in']
-        const debit_candidates = ['debit', 'debit posted', 'debit transacted', 'outgoing', 'out']
+        const date_candidates = [
+          "date",
+          "Date",
+          "Date Posted",
+          "date posted",
+          "Date Transacted",
+          "date transacted",
+        ];
+        const memo_candidates = [
+          "memo",
+          "description",
+          "description posted",
+          "description transacted",
+        ];
+        const credit_candidates = [
+          "amount",
+          "amount posted",
+          "amount transacted",
+          "value",
+          "credit",
+          "incoming",
+          "in",
+        ];
+        const debit_candidates = ["debit", "debit posted", "debit transacted", "outgoing", "out"];
 
-        this.headerColumns.date = findHeader(headers, date_candidates)
-        this.headerColumns.memo = findHeader(headers, memo_candidates)
+        this.headerColumns.date = findHeader(headers, date_candidates);
+        this.headerColumns.memo = findHeader(headers, memo_candidates);
         if (this.useSeparateDebits) {
-          this.headerColumns.credit = findHeader(headers, credit_candidates)
-          this.headerColumns.debit = findHeader(headers, debit_candidates)
+          this.headerColumns.credit = findHeader(headers, credit_candidates);
+          this.headerColumns.debit = findHeader(headers, debit_candidates);
         } else {
-          this.headerColumns.credit = findHeader(headers, credit_candidates)
+          this.headerColumns.credit = findHeader(headers, credit_candidates);
         }
       } else {
-        this.headerColumns.date = 0
-        this.headerColumns.memo = 1
-        this.headerColumns.credit = 2
-        this.headerColumns.debit = 3
+        this.headerColumns.date = 0;
+        this.headerColumns.memo = 1;
+        this.headerColumns.credit = 2;
+        this.headerColumns.debit = 3;
       }
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style>
 .transaction-details-grid .v-file-input .v-input__prepend-outer {
   margin-top: auto;
   margin-bottom: auto;
+}
+
+.transaction-details-grid > div {
+  padding-bottom: 3px;
 }
 </style>

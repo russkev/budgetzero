@@ -4,7 +4,7 @@
     <div class="d-flex flex-row align-center">
       <v-menu offset-y :disabled="disabled">
         <template #activator="{ attrs, on }">
-          <v-btn small text v-bind="attrs" v-on="on" style="flex: 1">
+          <v-btn small text :disabled="disabled" v-bind="attrs" v-on="on" style="flex: 1">
             <span style="font-size: 1rem"> {{ value }} </span><v-spacer /><v-icon>mdi-menu-down</v-icon>
           </v-btn>
         </template>
