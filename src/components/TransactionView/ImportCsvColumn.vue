@@ -5,12 +5,14 @@
       <v-menu offset-y :disabled="disabled">
         <template #activator="{ attrs, on }">
           <v-btn small text :disabled="disabled" v-bind="attrs" v-on="on" style="flex: 1">
-            <span style="font-size: 1rem"> {{ value }} </span><v-spacer /><v-icon>mdi-menu-down</v-icon>
+            <span style="font-size: 1rem"> {{ valueWithPreview }} </span><v-spacer /><v-icon>mdi-menu-down</v-icon>
           </v-btn>
         </template>
         <v-list>
-          <v-list-item v-for="header in headerOptions" :key="header" link>
-            <v-list-item-title @click="$emit('input', header)">{{ header }} </v-list-item-title>
+          <v-list-item v-for="(header, index) in headerOptions" :key="header" link class="csv-column-item">
+            <v-list-item-title @click="$emit('input', header)">
+              {{ headerOptionPreviews.length >= index + 1 ? `${header} (${headerOptionPreviews[index]})` : header }}
+            </v-list-item-title>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -53,6 +55,10 @@ export default {
       type: Array,
       required: true
     },
+    headerOptionPreviews: {
+      type: Array,
+      default: () => []
+    },
     errorText: {
       type: String,
       default: ''
@@ -60,6 +66,13 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    }
+  },
+  computed: {
+    valueWithPreview() {
+      return this.headerOptionPreviews.length >= this.headerOptions.length && this.headerOptionPreviews.length > 0
+        ? `${this.value} (${this.headerOptionPreviews[this.headerOptions.indexOf(this.value)]})`
+        : this.value
     }
   }
 }

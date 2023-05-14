@@ -185,10 +185,21 @@ export default {
     /*
      * Get just the transactions that will appear on screen
      */
-    getTransactions({ dispatch, commit, getters, rootGetters }, account_id) {
+    async getTransactions({ dispatch, commit, getters, rootGetters }, account_id) {
       commit('SET_IS_LOADING', true)
+
       if (account_id !== undefined) {
         commit('SET_ACCOUNT_ID', account_id)
+        const accountExists = await nextTick(() => {
+          if (getters.accountDoc === undefined) {
+            return false
+          } else {
+            return true
+          }
+        })
+        if (!accountExists) {
+          return
+        }
       }
 
       if (rootGetters.accounts.length < 1) {
@@ -202,7 +213,7 @@ export default {
           const transactions = result.rows.map((row) => {
             const doc = row.doc
             const category_name = _.get(rootGetters.categoriesById, [doc.category, 'name'], '')
-            const sign = getters.accountDoc.sign
+            const sign = _.get(getters, ['accountDoc', 'sign'], 1)
             const updatedDoc = {
               ...doc,
               value: doc.value * sign,
@@ -394,7 +405,10 @@ export default {
         dispatch('editTransaction', item)
       }
     },
-    onImportTransactions({ dispatch, rootGetters }, { transactions, account }) {
+    onImportTransactions({ dispatch, rootGetters }, { transactions, account, csvInfo }) {
+      const prev_account_document = rootGetters.accountsById[account]
+      const current_account_document = { ...prev_account_document, csvInfo: csvInfo }
+
       const transaction_documents = transactions.reduce((partial, transaction) => {
         if (transaction.exists) {
           return partial
@@ -422,8 +436,13 @@ export default {
         partial.push({ current, previous })
         return partial
       }, [])
-
-      return dispatch('commitBulkDocsToPouchAndVuex', transaction_documents, { root: true })
+      return dispatch(
+        'commitDocToPouchAndVuex',
+        { current: current_account_document, previous: prev_account_document },
+        { root: true }
+      ).then(() => {
+        return dispatch('commitBulkDocsToPouchAndVuex', transaction_documents, { root: true })
+      })
     }
   }
 }

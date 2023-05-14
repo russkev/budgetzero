@@ -61,6 +61,18 @@ export const DEFAULT_MASTER_CATEGORY_BALANCE = {
   balance: 0
 }
 
+export const DEFAULT_CSV_INFO = {
+  useHeaders: true,
+  useSeparateDebits: false,
+  headerColumns: {
+    date: 0,
+    memo: 1,
+    credit: 2,
+    debit: 3
+  },
+  dateFormat: 'D/M/YYYY'
+}
+
 export const SYNC_STATE = {
   SYNCING: { color: 'success lighten-3', icon: 'mdi-sync', text: 'Syncing...' },
   SYNCED: { color: 'success', icon: 'mdi-check', text: 'Synced' },

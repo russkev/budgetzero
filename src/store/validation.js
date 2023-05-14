@@ -27,6 +27,9 @@ const schema_account = {
     },
     sort: {
       type: 'integer'
+    },
+    csvInfo: {
+      type: 'object'
     }
   },
   required: ['_id', 'onBudget', 'name', 'sort', 'closed', 'type']
@@ -119,7 +122,7 @@ const schema_category = {
     },
     hidden: {
       type: ['boolean', 'null']
-    },
+    }
   },
   required: ['_id', 'sort', 'masterCategory', 'name']
 }
@@ -140,7 +143,7 @@ const schema_monthCategory = {
     spent: {
       type: ['null', 'integer']
     },
-    
+
     note: {
       type: ['string', 'null']
     }
