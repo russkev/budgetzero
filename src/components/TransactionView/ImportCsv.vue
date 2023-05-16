@@ -3,7 +3,7 @@
     <v-card-title class="success darken-3 pa-3">Import CSV</v-card-title>
     <div class="transaction-details-grid pa-2 pb-0">
       <div class="text-h5">File</div>
-      <div class="d-flex flex-row justify-space-between">
+      <div class="d-flex flex-row justify-space-between" id="csv-file-input">
         <v-file-input
           show-size
           filled
@@ -21,10 +21,10 @@
           full-width
         >
           <template #selection="{ text }">
-            <div class="text-body-1">{{ text }}</div>
+            <div class="text-body-1 ellipsis">{{ text }}</div>
           </template>
           <template #label>
-            <div class="text-body-1">Upload CSV file</div>
+            <div class="text-body-1 ellipsis">Upload CSV file</div>
           </template>
         </v-file-input>
         <!-- <v-file-input
@@ -498,5 +498,20 @@ export default {
 
 .transaction-details-grid > div {
   padding-bottom: 3px;
+}
+
+/* #csv-file-input .v-input__slot {
+  padding: 0;
+  padding-left: 8px;
+  width: calc(100% - 8px);
+  overflow: hidden;
+}
+
+#csv-file-input .v-text-field__slot {
+  width: calc(100% - 38px);
+} */
+
+#csv-file-input {
+  overflow: hidden;
 }
 </style>
