@@ -62,15 +62,15 @@ export default {
      * @param {*} context
      * @param {string} budgetName The name of the budget to be created
      */
-    createBudget: async (context, { name, masterCategories, categories }) => {
+    createBudget: async ({ commit, dispatch }, { name, masterCategories, categories }) => {
       if (!name) {
-        context.commit('SET_SNACKBAR_MESSAGE', {
+        commit('SET_SNACKBAR_MESSAGE', {
           snackbarMessage: 'Invalid budget name',
           snackbarColor: 'error'
         })
         Promise.reject(`Invalid budget name: ${name}`)
       }
-      const budget_id = await context.dispatch('generateUniqueShortId', { prefix: ID_NAME.budget })
+      const budget_id = await dispatch('generateUniqueShortId', { prefix: ID_NAME.budget })
 
       const budget = {
         name: name,
@@ -81,21 +81,18 @@ export default {
         _id: `${ID_NAME.budget}${budget_id}`
       }
 
-      return context
-        .dispatch('commitDocToPouchAndVuex', { current: budget, previous: null })
+      return dispatch('createLocalPouchDB')
         .then(() => {
-          return context.dispatch('loadLocalBudget')
+          return dispatch('commitDocToPouchAndVuex', { current: budget, previous: null })
         })
         .then(() => {
-          // let initialize_budget_promises = [context.dispatch('initializeIncomeCategory')]
-          // initialize_budget_promises.push(
-          //   context.dispatch('initializeBudgetCategories', { masterCategories, categories })
-          //   )
-          //   return Promise.all(initialize_budget_promises)
-          return context.dispatch('initializeBudgetCategories', { masterCategories, categories })
+          return dispatch('loadLocalBudget')
         })
         .then(() => {
-          context.dispatch('getAllDocsFromPouchDB')
+          return dispatch('initializeBudgetCategories', { masterCategories, categories })
+        })
+        .then(() => {
+          dispatch('getAllDocsFromPouchDB')
         })
         .catch((err) => {
           console.log(err)

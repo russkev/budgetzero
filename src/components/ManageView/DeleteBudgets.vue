@@ -22,16 +22,26 @@
         </button-transparent>
       </template>
     </delete-confirm>
+    <!-- <create-mock-transactions v-model="mockTransactionsIsOpen" /> -->
   </v-card>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
+import CreateMockTransactions from './CreateMockTransactions.vue'
 
 export default {
   name: 'DeleteDB',
   computed: {
     ...mapGetters(['budgetExists'])
+  },
+  components: {
+    CreateMockTransactions
+  },
+  data() {
+    return {
+      mockTransactionsIsOpen: true
+    }
   },
   methods: {
     ...mapActions(['deleteLocalDatabase']),

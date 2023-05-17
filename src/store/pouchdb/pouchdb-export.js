@@ -67,6 +67,9 @@ export default {
       } catch (err) {
         console.log(err)
       }
+    },
+    async exportExcel() {
+      console.log('exporting as excel document')
     }
   }
 }

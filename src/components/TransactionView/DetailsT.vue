@@ -95,6 +95,12 @@
           label="Import CSV"
           @click.stop="onOpenImportCsv"
         />
+        <details-button
+          data-testid="export-excel-button"
+          icon="mdi-table-arrow-right"
+          label="Export Excel"
+          @click.stop="onExportExcel"
+        />
         <!-- @click.stop="importModalIsVisible = true" -->
         <!-- <import-transactions
           :visible="importModalIsVisible"
@@ -245,6 +251,7 @@ export default {
       'save',
       'cancel'
     ]),
+    ...mapActions(['exportExcel']),
     onSave() {
       const item = this.transactions[this.editedTransactionIndex]
       this.save(item)
@@ -286,6 +293,9 @@ export default {
     },
     onDeselectAll() {
       this.CLEAR_SELECTED_TRANSACTIONS()
+    },
+    onExportExcel() {
+      this.exportExcel()
     }
   }
 }

@@ -37,6 +37,7 @@ export default {
     },
     CLEAR_REMOTE_SYNC_URL(state) {
       Vue.set(state, 'remoteSyncURL', '')
+      localStorage.removeItem('remoteSyncURL')
       // state.remoteSyncURL = ''
     },
     SET_SYNC_HANDLER(state, syncHandler) {
