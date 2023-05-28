@@ -39,6 +39,7 @@ import pouchdb_live_find from 'pouchdb-live-find'
 import pouchdb_authentication from 'pouchdb-authentication'
 import pouchdb_erase from 'pouchdb-erase'
 import Fragment from 'vue-fragment'
+// import excel from 'vue-excel-export'
 
 /**
  * Sweet Alert
@@ -75,6 +76,7 @@ Vue.config.productionTip = false
 Vue.use(VueRouter)
 Vue.use(Fragment.Plugin)
 Vue.use(VuePapaParse)
+// Vue.use(excel)
 
 // eslint-disable-next-line vars-on-top
 export var router = new VueRouter({

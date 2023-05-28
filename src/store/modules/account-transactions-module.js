@@ -55,7 +55,8 @@ export default {
     isCreatingNewTransaction: (state) => state.isCreatingNewTransaction,
     dataTableHeaders: () => dataTableHeaders,
     isLoading: (state) => state.isLoading,
-    tableIsDisabled: (state) => state.isLoading || state.importOfxIsOpen || state.importCsvIsOpen,
+    tableIsDisabled: (state, getters, rootState, rootGetters) =>
+      state.isLoading || state.importOfxIsOpen || state.importCsvIsOpen || rootGetters.isExporting,
     importOfxIsOpen: (state) => state.importOfxIsOpen,
     importCsvIsOpen: (state) => state.importCsvIsOpen,
     importIds: (state, getters, rootState, rootGetters) => {

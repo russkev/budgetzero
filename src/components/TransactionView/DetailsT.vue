@@ -82,25 +82,31 @@
           icon="mdi-plus"
           label="Create"
           @click="addTransaction"
+          :disabled="isExporting"
         />
         <details-button
           data-testid="import-transactions-button"
           icon="mdi-file-upload"
           label="Import OFX"
           @click.stop="onOpenImportOfx"
+          :disabled="isExporting"
         />
         <details-button
           data-testid="import-csv-transactions-button"
           icon="mdi-file-upload"
           label="Import CSV"
           @click.stop="onOpenImportCsv"
+          :disabled="isExporting"
         />
+        <!-- <export-excel :data="[]" :fields="{}" worksheet="My Worksheet" name="transactions.xlsx"> -->
         <details-button
           data-testid="export-excel-button"
           icon="mdi-table-arrow-right"
           label="Export Excel"
           @click.stop="onExportExcel"
+          :loading="isExporting"
         />
+        <!-- </export-excel> -->
         <!-- @click.stop="importModalIsVisible = true" -->
         <!-- <import-transactions
           :visible="importModalIsVisible"
@@ -159,6 +165,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters(['isExporting']),
     ...mapGetters('accountTransactions', [
       'editedTransaction',
       'selectedTransactions',
@@ -251,7 +258,7 @@ export default {
       'save',
       'cancel'
     ]),
-    ...mapActions(['exportExcel']),
+    ...mapActions(['exportAccountToExcel']),
     onSave() {
       const item = this.transactions[this.editedTransactionIndex]
       this.save(item)
@@ -295,7 +302,7 @@ export default {
       this.CLEAR_SELECTED_TRANSACTIONS()
     },
     onExportExcel() {
-      this.exportExcel()
+      this.exportAccountToExcel({ accountId: this.accountId })
     }
   }
 }

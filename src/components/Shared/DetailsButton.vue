@@ -8,6 +8,8 @@
     @click="onClick"
     exact
     :to="to"
+    :loading="loading"
+    :disabled="disabled"
   >
     <v-icon left :size="iconSize">
       {{ icon }}
@@ -49,6 +51,16 @@ export default {
       type: String | Object,
       required: false,
       default: undefined
+    },
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false
+    },
+    loading: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   methods: {
