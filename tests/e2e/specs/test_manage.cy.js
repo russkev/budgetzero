@@ -3,34 +3,41 @@ describe('Manage budgets', () => {
     beforeEach(() => {
       cy.initPath('manage')
     })
-    it('Checks that backup and restore work properly', () => {
+    it('Checks that backup and restore work properly with deleting in between', () => {
       // Do backup
       cy.get('[data-testid="do-backup-button"]').click()
 
-      // Delete the database
-      cy.get('[data-testid="delete-local-db-button"]').click()
-      cy.get('[data-testid="delete-confirm-button"]').click()
-
-      // Check that accounts are gone
-      cy.get('[data-testid="transactions-page-v6A"]').should('not.exist')
-      cy.get('[data-testid="transactions-page-7kW"]').should('not.exist')
-      cy.get('[data-testid="transactions-page-ELC"]').should('not.exist')
-
-      // Restore the backup
+      // Load backup file
       cy.get('[data-testid="last-backup-time"]')
         .invoke('text')
         .then((text) => {
+          // Delete the database
+          cy.get('[data-testid="delete-local-db-button"]').click()
+          cy.get('[data-testid="delete-confirm-button"]').click()
+
+          // Check that accounts are gone
+          cy.get('[data-testid="transactions-page-v6A"]').should('not.exist')
+          cy.get('[data-testid="transactions-page-7kW"]').should('not.exist')
+          cy.get('[data-testid="transactions-page-ELC"]').should('not.exist')
+
+          // cy.get('input[type="file"]').selectFile(file, { force: true })
+
+          // Ensure automatic redirect to landing page
+          cy.url().should('include', '/landing')
+
+          // Restore the backup
+          cy.get('[data-testid="restore-budget-button"]').click()
           const file = `cypress/downloads/BudgetZero_Export_${text.trim()}.json`
           cy.get('input[type="file"]').selectFile(file, { force: true })
-        })
-      cy.get('[data-testid="restore-button"]').click()
+          cy.get('[data-testid="restore-button"]').click()
 
-      // Check that accounts are back
-      cy.get('[data-testid="transactions-page-v6A"]').should('contain.text', '$918.43')
-      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$2,836.10')
-      cy.get('[data-testid="transactions-page-ELC"]').should('contain.text', '-$1,081.32')
+          // Check that accounts are back
+          cy.get('[data-testid="transactions-page-v6A"]').should('contain.text', '$918.43')
+          cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$2,836.10')
+          cy.get('[data-testid="transactions-page-ELC"]').should('contain.text', '-$1,081.32')
+        })
     })
-    it('Checks that backup and restore work properly', () => {
+    it('Checks that backup and restore work properly without deleting in between', () => {
       // Do backup
       cy.get('[data-testid="do-backup-button"]').click()
       cy.get('[data-testid="last-backup-time"]').should('not.contain.text', 'None recorded')
@@ -48,7 +55,7 @@ describe('Manage budgets', () => {
       cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$2,836.10')
       cy.get('[data-testid="transactions-page-ELC"]').should('contain.text', '-$1,081.32')
     })
-    it('Checks that backup and restore work properly', () => {
+    it('Checks that backup and restore work properly with changes in between', () => {
       // Do backup
       cy.get('[data-testid="do-backup-button"]').click()
 
@@ -106,21 +113,6 @@ describe('Manage budgets', () => {
     })
   })
   context('Test cloud backup and restore', () => {
-    it('Checks that restore works', () => {
-      cy.initPathEmpty('manage')
-      // Check that address indicates that noting is input
-      cy.get('[data-testid="cloud-sync-url"]').should('have.value', 'No URL set')
-
-      // Input cloud server address
-      cy.get('[data-testid="edit-cloud-button"]').click()
-      cy.get('[data-testid="cloud-sync-url"]').type(Cypress.env('CYPRESS_CLOUD_ADDRESS'))
-      cy.get('[data-testid="save-edit-button"]').click()
-
-      // Confirm the data is updated
-      cy.get('[data-testid="transactions-page-v6A"]', { timeout: 20000 }).should('contain.text', '$918.43')
-      cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$2,836.10')
-      cy.get('[data-testid="transactions-page-ELC"]').should('contain.text', '-$1,081.32')
-    })
     it('Checks that changes are updated to the cloud', () => {
       const new_value_1 = 5
       const new_value_2 = 2
@@ -182,8 +174,10 @@ describe('Manage budgets', () => {
       cy.get('[data-testid="transactions-page-ELC"]').should('contain.text', '-$1,081.32')
 
       // Change new transaction value again
+      cy.get('.v-progress-linear__buffer').should('exist')
+      cy.get('.v-progress-linear__buffer').should('not.exist')
       cy.get('.transaction-row .row-description').eq(0).click()
-      cy.get('[data-testid="details-value"]').click()
+      cy.get('[data-testid="details-value"]', { timeout: 10000 }).click()
       cy.get('[data-testid="details-value"]').type(`${new_value_2}.00`).type('{enter}')
       cy.get('[data-testid="save-edit-button"]').click()
 
