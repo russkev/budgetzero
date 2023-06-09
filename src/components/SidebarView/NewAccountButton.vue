@@ -2,14 +2,8 @@
   <v-list-item dense>
     <account-edit-modal is-new v-model="dialogIsOpen" :edited-item="editedItem" @save="onSave" />
     <!-- @close="onClose" -->
-    <v-btn
-      small
-      tile
-      text
-      class="ml-5 text-none sidebar-item"
-      :data-testid="`btn-new-account-off-budget`"
-      @click="onClick"
-    >
+    <v-btn small tile text class="ml-5 text-none sidebar-item" @click="onClick" :data-testid="dataTestid">
+      <!-- :data-testid="`btn-new-account-off-budget`" -->
       <v-icon small class="ma-1">mdi-plus</v-icon>
       <span> New Account </span>
     </v-btn>
@@ -35,6 +29,10 @@ export default {
     isOnBudget: {
       type: Boolean,
       default: false
+    },
+    dataTestid: {
+      type: String,
+      default: ''
     }
   },
   data() {
