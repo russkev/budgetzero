@@ -25,9 +25,6 @@ const schema_account = {
     type: {
       type: 'string'
     },
-    sort: {
-      type: 'integer'
-    },
     csvInfo: {
       type: 'object'
     }

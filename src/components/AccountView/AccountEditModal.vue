@@ -12,14 +12,13 @@
                 :id="`account-name-input`"
                 :data-testid="`account-name-input`"
                 :is-editing="true"
-                @apply="onEditAccountName"
                 :loading="false"
                 placeholder="Account Name"
-                :rules="nameRules"
                 show-details
+                :rules="nameRules"
                 :value="editedItem.name"
+                @apply="onEditAccountName"
               />
-              <!-- @edit="(onEditAccountName)" -->
             </div>
             <div class="text-h5">Initial Balance</div>
             <div>

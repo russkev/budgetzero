@@ -1,5 +1,5 @@
 <template>
-  <div v-if="!readonly" @blur="onBlur">
+  <div v-if="!readonly" @blur="onApply">
     <div v-if="!isEditing">
       <v-hover v-slot="{ hover }">
         <!-- Not read only and not editing -->
@@ -37,10 +37,6 @@
         :id="id"
         :data-testid="dataTestid"
         :value="value"
-        @change="onApply"
-        @blur="onBlur"
-        @keyup.enter="onEnterPressed"
-        @click="onEditedClicked"
         :suffix="currency ? '$' : ''"
         :reverse="currency"
         :height="height"
@@ -49,6 +45,11 @@
         :disabled="loading"
         :placeholder="placeholder"
         :rules="rules"
+        @change="onApply"
+        @keyup.enter="onEnterPressed"
+        @blur="onApply"
+        @click="onEditedClicked"
+        @input="onApply"
       />
     </div>
   </div>
@@ -155,9 +156,6 @@ export default {
     }
   },
   methods: {
-    onBlur(event) {
-      this.onApply(event)
-    },
     onApply(event) {
       this.$emit('apply', event)
       this.isSelected = false

@@ -51,6 +51,7 @@
             :data-testid="`transactions-page-${account._id.slice(-ID_LENGTH.account)}`"
             :id="`nav-account-${account._id.slice(-ID_LENGTH.account)}`"
             :mini="mini"
+            class="sidebar-on-account-item"
           />
         </template>
       </draggable>
@@ -77,6 +78,7 @@
             :data-testid="`transactions-page-${account._id.slice(-ID_LENGTH.account)}`"
             :id="`nav-account-${account._id.slice(-ID_LENGTH.account)}`"
             :mini="mini"
+            class="sidebar-off-account-item"
           />
         </template>
       </draggable>

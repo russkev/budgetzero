@@ -2,7 +2,7 @@
   <v-overlay opacity="1" z-index="10000" color="background" :value="value">
     <v-container fluid fill-height>
       <v-layout align-center justify-center>
-        <div style="position: relative">
+        <div style="position: relative" data-testid="full-screen-loading">
           <v-icon large> $custom</v-icon>
           <v-progress-circular
             indeterminate
