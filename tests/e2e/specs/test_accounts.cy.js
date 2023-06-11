@@ -1,28 +1,31 @@
 describe('Test accounts', () => {
-  before(() => {
+  beforeEach(() => {
     cy.initPath('transactions/7kW')
   })
-  it('Adds an account', () => {
+  it('Adds a simple account', () => {
+    // Open the add account modal
     cy.get('[data-testid="full-screen-loading"]').should('not.exist')
     cy.get('.v-progress-linear__buffer').should('exist')
     cy.get('.v-progress-linear__buffer').should('not.exist')
     cy.get('[data-testid="btn-new-account-on-budget"]', { force: true }).click({ force: true })
+
+    // Give a name
     cy.get('[data-testid="account-name-input"]').type('Emergency')
+
+    // Apply
     cy.get('[data-testid="btn-modal-confirm"]').click()
+
+    // Check that account list has been updated correctly
     cy.get('.sidebar-on-account-item').should('have.length', 4)
-
-    // Check if third one is Emergency
     cy.get('.sidebar-on-account-item').eq(3).should('contain', 'Emergency')
+  })
 
-    // cy.get('.crud-actions', { timeout: 6000 }).should('have.length', 3)
-    // cy.get('#add-account-button').click()
-    // cy.get('[data-testid="account-name"]', { timeout: 400 }).type('Emergency')
-    // cy.get('.v-select__selections').click()
-    // cy.get('div').contains('CHECKING').click()
-    // cy.get('[data-testid="account-notes"]').type('e1')
-    // cy.get('#save-account-button').click()
-
-    // cy.contains('#accounts-table', 'Emergency')
-    // cy.contains('#accounts-table', 'CHECKING')
+  it.only('Deletes an account', () => {
+    // Open the add account modal
+    cy.get('[data-testid="full-screen-loading"]').should('not.exist')
+    cy.get('.v-progress-linear__buffer').should('exist')
+    cy.get('.v-progress-linear__buffer').should('not.exist')
+    cy.get('.sidebar-on-account-item').eq(1).click().trigger('mouseover').should('have.class', 'expanded')
+    cy.get('[data-testid="btn-edit-account-ELC"]').click()
   })
 })

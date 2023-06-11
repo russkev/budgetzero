@@ -38,3 +38,4 @@ budgetzero_local_db/MANIFEST-000002
 
 #Cypress output
 /cypress
+/tests/e2e/screenshots

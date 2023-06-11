@@ -42,12 +42,12 @@
           <hover-button
             v-if="!mini"
             :id="`btn-edit-account-${id}`"
+            :data-testid="`btn-edit-account-${id}`"
             :hover="isHighlighted(false, hover)"
             icon="mdi-pencil"
             active-color="secondary lighten-4"
             inactive-color="secondary lighten-2"
             active-background-color="background lighten-4"
-            :data-testid="`btn-edit-account-${id}`"
             @click="onEditAccount"
             :width="buttonWidth"
           />

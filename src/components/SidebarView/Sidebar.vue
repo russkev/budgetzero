@@ -49,9 +49,9 @@
             :focused-id="focusedId"
             :destination="{ path: `/transactions/${account._id.slice(-ID_LENGTH.account)}` }"
             :data-testid="`transactions-page-${account._id.slice(-ID_LENGTH.account)}`"
-            :id="`nav-account-${account._id.slice(-ID_LENGTH.account)}`"
+            :id="`${account._id.slice(-ID_LENGTH.account)}`"
             :mini="mini"
-            class="sidebar-on-account-item"
+            :class="`sidebar-on-account-item ${mini ? '' : 'expanded'}`"
           />
         </template>
       </draggable>
@@ -76,7 +76,7 @@
             :focused-id="focusedId"
             :destination="{ path: `/transactions/${account._id.slice(-ID_LENGTH.account)}` }"
             :data-testid="`transactions-page-${account._id.slice(-ID_LENGTH.account)}`"
-            :id="`nav-account-${account._id.slice(-ID_LENGTH.account)}`"
+            :id="`${account._id.slice(-ID_LENGTH.account)}`"
             :mini="mini"
             class="sidebar-off-account-item"
           />
