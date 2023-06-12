@@ -33,6 +33,8 @@ export default {
   },
   getters: {
     accountId: (state) => state.accountId,
+    accountName: (state, getters, rootState, rootGetters) =>
+      rootGetters.accountsById[getters.accountId.slice(-ID_LENGTH.account)].name,
     accountOptions: (state) => {
       return { ...state.accountOptions, accountId: state.accountId }
     },

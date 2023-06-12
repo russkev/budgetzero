@@ -95,7 +95,7 @@
                 :data-testid="`account-transactions-delete-confirm`"
                 @confirm="onDeleteAccountTransactions"
                 title-text="Delete Transactions"
-                body-text="Are you sure you want to delete all transactions for this account?"
+                :body-text="`Are you sure you want to delete all ${numServerTransactions} transactions for account '${accountName}'?`"
               >
                 <template #activator="{ on }">
                   <v-btn v-on="on" text color="error lighten-1" :loading="deleteLoading">
@@ -132,7 +132,7 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { ACCOUNT_TYPES, ID_LENGTH } from '../../constants'
 import BaseModalComponent from './../Modals/BaseModalComponent.vue'
 import StringInput from '../Shared/StringInput.vue'
@@ -178,6 +178,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('accountTransactions', ['numServerTransactions', 'accountName']),
     show: {
       get() {
         return this.value
