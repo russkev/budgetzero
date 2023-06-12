@@ -75,7 +75,7 @@
             <div class="text-h5">Notes</div>
             <div>
               <v-textarea
-                class="text-body-1"
+                class="text-body-1 mb-3"
                 id="account-notes-field"
                 v-model="editedItem.note"
                 data-testid="account-notes-field"
@@ -90,6 +90,21 @@
             </div>
             <div v-if="!isNew">Danger</div>
             <div v-if="!isNew">
+              <delete-confirm
+                id="account-transactions-delete-confirm"
+                :data-testid="`account-transactions-delete-confirm`"
+                @confirm="onDeleteAccountTransactions"
+                title-text="Delete Transactions"
+                body-text="Are you sure you want to delete all transactions for this account?"
+              >
+                <template #activator="{ on }">
+                  <v-btn v-on="on" text color="error lighten-1" :loading="deleteLoading">
+                    <v-icon small left>mdi-delete</v-icon>
+                    Delete transactions
+                  </v-btn>
+                </template>
+              </delete-confirm>
+              <br />
               <delete-confirm
                 :id="`account-delete-confirm`"
                 :data-testid="`account-delete-confirm`"
@@ -207,6 +222,9 @@ export default {
         return
       }
       this.editedItem.name = name
+    },
+    onDeleteAccountTransactions() {
+      console.log('Delete account transactions')
     },
     onDeleteAccount() {
       console.log('Delete account')
