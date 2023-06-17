@@ -27,5 +27,9 @@ describe('Test accounts', () => {
     cy.get('.v-progress-linear__buffer').should('not.exist')
     cy.get('.sidebar-on-account-item').eq(1).click().trigger('mouseover').should('have.class', 'expanded')
     cy.get('[data-testid="btn-edit-account-ELC"]').click()
+
+    // Delete account transactions
+    cy.get('[data-testid="btn-delete-account-transactions"]').click()
+    cy.get('[data-testid="delete-confirm-button"]').click()
   })
 })

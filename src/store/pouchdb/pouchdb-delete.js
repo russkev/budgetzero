@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { SYNC_STATE } from '../../constants'
+import { ID_LENGTH, ID_NAME, SYNC_STATE } from '../../constants'
 
 export default {
   state: {},
@@ -75,36 +75,36 @@ export default {
       })
     },
 
-    /**
-     * Delete local transactions only
-     */
-    deleteTransactions: ({ getters, dispatch }) => {
-      const db = Vue.prototype.$pouch
-      return new Promise((resolve, reject) => {
-        let accounts = getters.transactions_by_account
-        let account_ids = Object.keys(accounts)
+    // /**
+    //  * Delete local transactions only
+    //  */
+    // deleteTransactions: ({ getters, dispatch }) => {
+    //   const db = Vue.prototype.$pouch
+    //   return new Promise((resolve, reject) => {
+    //     let accounts = getters.transactions_by_account
+    //     let account_ids = Object.keys(accounts)
 
-        account_ids.forEach((account_id) => {
-          let account_transactions = accounts[account_id]
-          account_transactions.map(function (transaction) {
-            return db.remove(transaction._id, transaction._rev)
-          })
-        })
+    //     account_ids.forEach((account_id) => {
+    //       let account_transactions = accounts[account_id]
+    //       account_transactions.map(function (transaction) {
+    //         return db.remove(transaction._id, transaction._rev)
+    //       })
+    //     })
 
-        dispatch('getAllDocsFromPouchDB')
-        db.compact()
-          .then(function (info) {
-            // compaction complete
-            console.log('compact complete')
-            resolve(info)
-          })
-          .catch(function (err) {
-            // handle errors
-            console.log(`compact failed: ${err}`)
-            reject(err)
-          })
-      })
-    },
+    //     dispatch('getAllDocsFromPouchDB')
+    //     db.compact()
+    //       .then(function (info) {
+    //         // compaction complete
+    //         console.log('compact complete')
+    //         resolve(info)
+    //       })
+    //       .catch(function (err) {
+    //         // handle errors
+    //         console.log(`compact failed: ${err}`)
+    //         reject(err)
+    //       })
+    //   })
+    // },
 
     /**
      * Deletes single document from pouchdb and then calls DELETE_DOCUMENT to remove from current list.
@@ -139,6 +139,45 @@ export default {
             }
           })
           return db.bulkDocs(documents)
+        })
+    },
+
+    deleteAllAccountTransactions: ({ getters, dispatch }, accountId) => {
+      const db = Vue.prototype.$pouch
+      accountId = accountId.slice(-ID_LENGTH.account)
+      const budgetId = getters.selectedBudgetId.slice(-ID_LENGTH.budget)
+      console.log('accountId', accountId)
+      console.log('start key', `b_${budgetId}${ID_NAME.transaction}`)
+      return db
+        .allDocs({
+          include_docs: true,
+          startkey: `b_${budgetId}${ID_NAME.transaction}`,
+          endkey: `b_${budgetId}${ID_NAME.transaction}\ufff0`
+        })
+        .then((result) => {
+          const documents = result.rows.reduce((partial, item) => {
+            if (item.doc.account === accountId) {
+              partial.push(item.doc)
+            }
+            return partial
+          }, [])
+          dispatch('deleteBulkDocumentsFromPouchAndVuex', { documents })
+
+          // const documents = result.rows.reduce((partial, item) => {
+          //   console.log('doc', item)
+          //   if (item.doc.account === accountId) {
+          //     const delete_doc = {
+          //       // _id: item.id,
+          //       ...item.doc,
+          //       _deleted: true
+          //       // rev: item.value.rev
+          //     }
+          //     partial.push(delete_doc)
+          //   }
+          //   return partial
+          // }, [])
+          // console.log('About to delete', documents)
+          // return db.bulkDocs(documents)
         })
     },
 

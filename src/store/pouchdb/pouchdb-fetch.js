@@ -203,17 +203,19 @@ export default {
           }
         })
     },
-    fetchPrecedingTransaction: async (context, { transaction, isDeleted }) => {
+    fetchPrecedingTransaction: async ({ getters }, { transaction, isDeleted }) => {
       const t1 = performance.now()
 
       const db = Vue.prototype.$pouch
-      const budget_id = transaction._id.slice(2, 2 + ID_LENGTH.budget)
+      // const budget_id = transaction._id.slice(2, 2 + ID_LENGTH.budget)
+      const budget_id = getters.selectedBudgetId
       const limit = isDeleted ? 1 : 2
+      const transaction_id = transaction._id.slice(-ID_LENGTH.transaction)
 
       return db
         .query(`stats/transactions_by_account`, {
           include_docs: true,
-          startkey: [budget_id, transaction.account, transaction._id.slice(-ID_LENGTH.transaction)],
+          startkey: [budget_id, transaction.account, transaction_id],
           endkey: [budget_id, transaction.account, ''],
           limit: limit,
           descending: true

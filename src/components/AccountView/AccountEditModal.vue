@@ -98,7 +98,13 @@
                 :body-text="`Are you sure you want to delete all ${numServerTransactions} transactions for account '${accountName}'?`"
               >
                 <template #activator="{ on }">
-                  <v-btn v-on="on" text color="error lighten-1" :loading="deleteLoading">
+                  <v-btn
+                    v-on="on"
+                    text
+                    color="error lighten-1"
+                    :loading="deleteLoading"
+                    data-testid="btn-delete-account-transactions"
+                  >
                     <v-icon small left>mdi-delete</v-icon>
                     Delete transactions
                   </v-btn>
@@ -111,7 +117,14 @@
                 @confirm="onDeleteAccount"
               >
                 <template #activator="{ on }">
-                  <v-btn v-on="on" text color="error lighten-1" :loading="deleteLoading" :disabled="!accountIsEmpty">
+                  <v-btn
+                    v-on="on"
+                    text
+                    color="error lighten-1"
+                    :loading="deleteLoading"
+                    :disabled="!accountIsEmpty"
+                    data-testid="btn=delete-account"
+                  >
                     <v-icon small left>mdi-delete</v-icon>
                     Delete Account
                   </v-btn>
@@ -178,7 +191,8 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('accountTransactions', ['numServerTransactions', 'accountName']),
+    ...mapGetters(['budgetId']),
+    ...mapGetters('accountTransactions', ['numServerTransactions', 'accountName', 'accountId']),
     show: {
       get() {
         return this.value
@@ -212,7 +226,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['fetchAccountIsEmpty']),
+    ...mapActions(['fetchAccountIsEmpty', 'deleteAllAccountTransactions', 'getTransactions', 'updateRunningBalance']),
     onEditAccountName(event) {
       let name = ''
       if (typeof event === 'string' || event instanceof String) {
@@ -225,7 +239,16 @@ export default {
       this.editedItem.name = name
     },
     onDeleteAccountTransactions() {
-      console.log('Delete account transactions')
+      this.deleteAllAccountTransactions(this.accountId)
+        .then(() => {
+          return this.getTransactions()
+        })
+        // .then(() => {
+        //   return this.updateRunningBalance()
+        // })
+        .finally(() => {
+          this.close()
+        })
     },
     onDeleteAccount() {
       console.log('Delete account')
