@@ -121,7 +121,8 @@ export default {
         const budgets = await context.dispatch('fetchAllBudgets')
         budget_id = await context.dispatch('updateSelectedBudgetId', budgets)
       }
-      const skip_amount = (options.page - 1) * options.itemsPerPage
+
+      const skip_amount = options.itemsPerPage ? (options.page - 1) * options.itemsPerPage : false
       return db
         .query(`stats/transactions_by_account`, {
           include_docs: true,

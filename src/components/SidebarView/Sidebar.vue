@@ -37,7 +37,7 @@
       icon-active="mdi-wallet"
       :focused-id="focusedId"
       id="sidebar-group-accounts"
-      data-test-id="sidebar-group-accounts"
+      data-testid="sidebar-group-accounts"
       :child-is-selected="isOnTransactionsOnBudgetPage"
       :mini="mini"
     >
@@ -64,7 +64,7 @@
       icon-active="mdi-piggy-bank"
       :focused-id="focusedId"
       id="sidebar-group-untracked"
-      data-test-id="sidebar-group-untracked"
+      data-testid="sidebar-group-untracked"
       :child-is-selected="isOnTransactionsOffBudgetPage"
       :mini="mini"
     >

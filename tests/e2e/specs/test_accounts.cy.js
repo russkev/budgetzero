@@ -31,5 +31,18 @@ describe('Test accounts', () => {
     // Delete account transactions
     cy.get('[data-testid="btn-delete-account-transactions"]').click()
     cy.get('[data-testid="delete-confirm-button"]').click()
+
+    // Check that there are no transactions left
+    cy.get('.transaction-row').should('have.length', 0)
+
+    // Check that header was updated
+    cy.get('[data-testid="account-balance-cleared"]').should('contain.text', ' $0.00')
+    cy.get('[data-testid="account-balance-uncleared"]').should('contain.text', ' $0.00')
+    cy.get('[data-testid="account-balance-working"]').should('contain.text', ' $0.00')
+
+    // Check that sidebar balance was updated
+    cy.get('[data-testid="transactions-page-ELC"]').should('contain.text', '$0.00')
+    cy.get('[data-testid="sidebar-group-accounts"]').should('contain.text', '$3,754.53')
   })
+  // Test invert balance
 })

@@ -306,7 +306,7 @@ const calculateTransactionBalanceUpdate = (current, previous, account) => {
     account: account,
     cleared: 0,
     uncleared: 0,
-    working: (current.value - previous.value) * account.sign
+    working: current.value - previous.value // * account.sign
   }
 
   if (current.cleared && previous.cleared) {
