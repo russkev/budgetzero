@@ -57,7 +57,8 @@ export default {
       } else {
         Vue.set(state, 'progress', -1)
       }
-      state.syncState = syncState
+      // state.syncState = syncState
+      Vue.set(state, 'syncState', syncState)
     },
     SET_ERROR_MESSAGE(state, errorMessage) {
       state.errorMessage = errorMessage
@@ -82,20 +83,20 @@ export default {
         commit('RESET_ERROR_MESSAGE')
         return
       }
-      var url_expression =
-        /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi
-      var url_regex = new RegExp(url_expression)
+      // var url_expression =
+      //   /https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)?/gi
+      // var url_regex = new RegExp(url_expression)
 
-      if (!url || !url.match(url_regex)) {
-        commit('SET_SYNC_STATE', SYNC_STATE.ERROR)
-        commit('SET_ERROR_MESSAGE', 'Invalid URL provided')
-        commit('SET_SNACKBAR_MESSAGE', {
-          snackbarMessage: 'Invalid URL provided',
-          snackbarColor: 'error'
-        })
-        dispatch('cancelRemoteSync')
-        return
-      }
+      // if (!url || !url.match(url_regex)) {
+      //   commit('SET_SYNC_STATE', SYNC_STATE.ERROR)
+      //   commit('SET_ERROR_MESSAGE', 'Invalid URL provided')
+      //   commit('SET_SNACKBAR_MESSAGE', {
+      //     snackbarMessage: 'Invalid URL provided',
+      //     snackbarColor: 'error'
+      //   })
+      //   dispatch('cancelRemoteSync')
+      //   return
+      // }
 
       commit('SET_SYNC_STATE', SYNC_STATE.CONNECTING)
 
@@ -107,6 +108,7 @@ export default {
         .info()
         .then((info) => {
           commit('SET_SYNC_STATE', SYNC_STATE.SYNCING)
+          // commit('SET_SYNC_STATE', SYNC_STATE.SYNCED)
           commit('RESET_ERROR_MESSAGE')
           commit('SET_SNACKBAR_MESSAGE', {
             snackbarMessage: 'Connection to remote database success!',

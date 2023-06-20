@@ -95,7 +95,10 @@
                 :data-testid="`account-transactions-delete-confirm`"
                 @confirm="onDeleteAccountTransactions"
                 title-text="Delete Transactions"
-                :body-text="`Are you sure you want to delete all ${numServerTransactions} transactions for account '${accountName}'?`"
+                :body-text="
+                  `Are you sure you want to delete all ${numAccountTransactions} ` +
+                  `transactions for account '${editedItem.name}'?`
+                "
               >
                 <template #activator="{ on }">
                   <v-btn
@@ -123,7 +126,7 @@
                     color="error lighten-1"
                     :loading="deleteLoading"
                     :disabled="!accountIsEmpty"
-                    data-testid="btn=delete-account"
+                    data-testid="btn-delete-account"
                   >
                     <v-icon small left>mdi-delete</v-icon>
                     Delete Account
@@ -187,12 +190,13 @@ export default {
       ],
       valid: false,
       deleteLoading: true,
-      accountIsEmpty: true
+      accountIsEmpty: false
     }
   },
   computed: {
-    ...mapGetters(['budgetId']),
-    ...mapGetters('accountTransactions', ['numServerTransactions', 'accountName', 'accountId']),
+    ...mapGetters(['budgetId', 'accounts', 'accountTransactionCounts']),
+    // ...mapGetters('accountTransactions', ['numServerTransactions', 'accountName', 'accountId']),
+    ...mapGetters('categoryMonth', ['selectedMonth']),
     show: {
       get() {
         return this.value
@@ -200,6 +204,12 @@ export default {
       set(value) {
         this.$emit('input', value)
       }
+    },
+    accountId() {
+      return this.editedItem._id.slice(-ID_LENGTH.account)
+    },
+    numAccountTransactions() {
+      return this.accountTransactionCounts[this.accountId]
     }
   },
   // beforeMount() {
@@ -226,7 +236,8 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['fetchAccountIsEmpty', 'deleteAllAccountTransactions', 'getTransactions', 'updateRunningBalance']),
+    ...mapActions(['fetchAccountIsEmpty', 'deleteAllAccountTransactions', 'updateRunningBalance', 'deleteAccount']),
+    // ...mapActions('accountTransactions', ['deleteAccount']),
     onEditAccountName(event) {
       let name = ''
       if (typeof event === 'string' || event instanceof String) {
@@ -239,24 +250,35 @@ export default {
       this.editedItem.name = name
     },
     onDeleteAccountTransactions() {
-      this.deleteAllAccountTransactions(this.accountId)
-        .then(() => {
-          return this.getTransactions()
-        })
-        // .then(() => {
-        //   return this.updateRunningBalance()
-        // })
-        .finally(() => {
-          this.close()
-        })
+      this.deleteAccount(this.accountId)
+      // this.deleteAllAccountTransactions(this.accountId).finally(() => {
+      //   this.close()
+      // })
     },
     onDeleteAccount() {
-      console.log('Delete account')
+      console.log('this.accountIsEmpty', this.accountIsEmpty)
+      // const account_id = this.accountId
+      if (this.accountIsEmpty) {
+        this.deleteAccount()
+          .then(() => {
+            const account_id = this.accounts[0]._id.slice(-ID_LENGTH.account)
+            if (this.accounts.length > 0) {
+              this.$router.push({ name: 'transactions', params: { account_id } })
+            } else {
+              this.$router.push({ name: 'categories', month: this.selectedMonth })
+            }
+          })
+          .finally(() => {
+            this.close()
+          })
+      }
     },
     close() {
       this.$emit('close')
-      this.$refs.form.resetValidation()
-
+      const form = this.$refs.form
+      if (form) {
+        form.resetValidation()
+      }
       this.show = false
     },
     save() {

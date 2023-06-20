@@ -38,7 +38,9 @@ export default {
     }
   },
   beforeRouteUpdate(to, from, next) {
-    this.SET_ACCOUNT_ID(to.params.account_id)
+    if (to.params.account_id) {
+      this.SET_ACCOUNT_ID(to.params.account_id)
+    }
     next()
   },
   created() {

@@ -43,6 +43,21 @@ describe('Test accounts', () => {
     // Check that sidebar balance was updated
     cy.get('[data-testid="transactions-page-ELC"]').should('contain.text', '$0.00')
     cy.get('[data-testid="sidebar-group-accounts"]').should('contain.text', '$3,754.53')
+
+    // Re-open the account modal
+    cy.get('.sidebar-on-account-item').eq(1).click().trigger('mouseover').should('have.class', 'expanded')
+    cy.get('[data-testid="btn-edit-account-ELC"]').click()
+
+    // Delete the account
+    cy.get('[data-testid="btn-delete-account"]').click()
+    cy.get('[data-testid="delete-confirm-button"]').filter(':visible').click()
+
+    // Check that account is removed from list
+    cy.get('.sidebar-on-account-item').should('have.length', 2)
+    cy.get('.sidebar-on-account-item').eq(1).should('not.contain', 'Credit')
+
+    // Check that we are redirected
+    cy.get('[data-testid="transactions-heading"]').should('contain.text', 'Savings')
   })
   // Test invert balance
 })

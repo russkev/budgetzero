@@ -330,7 +330,7 @@ export default {
       if (getters.selectedTransactions.length < 1) {
         return
       }
-      dispatch('deleteBulkDocumentsFromPouchAndVuex', { documents: getters.selectedTransactions }, { root: true })
+      dispatch('deleteBulkDocumentsFromPouchAndVuex', getters.selectedTransactions, { root: true })
         .then(() => {
           let oldest_document = { date: '9999-99-99' }
           for (let document of getters.selectedTransactions) {

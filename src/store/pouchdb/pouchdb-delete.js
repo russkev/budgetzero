@@ -28,52 +28,52 @@ export default {
         })
     },
 
-    /**
-     * Deletes all docs (transactions, accounts, budget amounts, etc). This will replicate deletion to remote databases.
-     *
-     */
-    deleteAllDocs: (context) => {
-      const db = Vue.prototype.$pouch
-      db.allDocs()
-        .then(function (result) {
-          // Promise isn't supported by all browsers; you may want to use bluebird
-          return Promise.all(
-            result.rows.map(function (row) {
-              return db.remove(row.id, row.value.rev)
-            })
-          )
-        })
-        .then(function (result) {
-          console.log('all docs deleted')
-          context.dispatch('getAllDocsFromPouchDB')
+    // /**
+    //  * Deletes all docs (transactions, accounts, budget amounts, etc). This will replicate deletion to remote databases.
+    //  *
+    //  */
+    // deleteAllDocs: (context) => {
+    //   const db = Vue.prototype.$pouch
+    //   db.allDocs()
+    //     .then(function (result) {
+    //       // Promise isn't supported by all browsers; you may want to use bluebird
+    //       return Promise.all(
+    //         result.rows.map(function (row) {
+    //           return db.remove(row.id, row.value.rev)
+    //         })
+    //       )
+    //     })
+    //     .then(function (result) {
+    //       console.log('all docs deleted')
+    //       context.dispatch('getAllDocsFromPouchDB')
 
-          db.compact()
-            .then(function (info) {
-              // compaction complete
-              console.log('compact complete')
-            })
-            .catch(function (err) {
-              console.log(`compact failed: ${err}`)
-              // handle errors
-            })
-          // done!
-        })
-        .catch(function (err) {
-          console.log('error', err)
-          // error!
-        })
-    },
+    //       db.compact()
+    //         .then(function (info) {
+    //           // compaction complete
+    //           console.log('compact complete')
+    //         })
+    //         .catch(function (err) {
+    //           console.log(`compact failed: ${err}`)
+    //           // handle errors
+    //         })
+    //       // done!
+    //     })
+    //     .catch(function (err) {
+    //       console.log('error', err)
+    //       // error!
+    //     })
+    // },
 
-    /**
-     * Delete the entire pouchdb database. If there's a remote, then the database will just re-sync.
-     *
-     */
-    eraseAllDocs: (context) => {
-      const db = Vue.prototype.$pouch
-      db.erase().then(function (resp) {
-        console.log(resp) //{ok: true}
-      })
-    },
+    // /**
+    //  * Delete the entire pouchdb database. If there's a remote, then the database will just re-sync.
+    //  *
+    //  */
+    // eraseAllDocs: (context) => {
+    //   const db = Vue.prototype.$pouch
+    //   db.erase().then(function (resp) {
+    //     console.log(resp) //{ok: true}
+    //   })
+    // },
 
     // /**
     //  * Delete local transactions only
@@ -161,7 +161,7 @@ export default {
             }
             return partial
           }, [])
-          dispatch('deleteBulkDocumentsFromPouchAndVuex', { documents })
+          dispatch('deleteBulkDocumentsFromPouchAndVuex', documents)
 
           // const documents = result.rows.reduce((partial, item) => {
           //   console.log('doc', item)
@@ -185,7 +185,7 @@ export default {
      * Deletes bulk documents from pouchdb.
      * @param {array} documents The documents to delete.
      */
-    deleteBulkDocumentsFromPouchAndVuex: (context, { documents }) => {
+    deleteBulkDocumentsFromPouchAndVuex: (context, documents) => {
       const payload = documents.map((doc) => {
         return {
           current: {
@@ -197,6 +197,18 @@ export default {
         }
       })
       return context.dispatch('commitBulkDocsToPouchAndVuex', payload)
+    },
+
+    deleteDocumentFromPouchAndVuex: ({ dispatch }, document) => {
+      const payload = {
+        current: {
+          ...document,
+          _deleted: true,
+          value: 0
+        },
+        previous: document
+      }
+      return dispatch('commitDocToPouchAndVuex', payload)
     }
   }
 }

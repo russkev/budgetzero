@@ -49,8 +49,8 @@
         @keyup.enter="onEnterPressed"
         @blur="onApply"
         @click="onEditedClicked"
-        @input="onApply"
       />
+      <!-- @input="onApply" -->
     </div>
   </div>
   <!-- Read only and editing -->

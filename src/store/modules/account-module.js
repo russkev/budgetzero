@@ -98,29 +98,49 @@ export default {
         return
       })
     },
-    deleteAccount(context, payload) {
-      return new Promise((resolve, reject) => {
-        const myId = payload._id.slice(-ID_LENGTH.account)
-        this._vm.$pouch
-          .query((doc, emit) => {
-            if (doc.account === myId) {
-              emit(doc)
-            }
+    // deleteAccount({ dispatch, getters }, accountId) {
+    //   const account = getters.accountsById[accountId.slice(-ID_LENGTH.account)]
+    //   console.log('account', account)
+    //   return dispatch('deleteDocumentFromPouchAndVuex', account, { root: true })
+    // },
+    // deleteAccount({dispatch}, accountId) {
+    //   return new Promise((resolve, reject) => {
+    //     accountId = accountId.slice(-ID_LENGTH.account)
+    //     this._vm.$pouch
+    //       .query((doc, emit) => {
+    //         if (doc.account === accountId) {
+    //           emit(doc)
+    //         }
+    //       })
+    //       .then((result2) => {
+    //         if (result2.total_rows > 0) {
+    //           // Account still has transactions, so resolve with amount of transactions in account for error message.
+    //           reject(result2.total_rows)
+    //         } else {
+    //           // Dispatch account for deletion
+    //           dispatch('commitDocToPouchAndVuex', { current: null, previous: payload })
+    //           resolve('Success')
+    //         }
+    //       })
+    //       .catch((err) => {
+    //         reject('Error')
+    //         console.log(err)
+    //       })
+    //   })
+    // }
+    deleteAccount({ dispatch, commit, getters }, accountId) {
+      accountId = accountId.slice(-ID_LENGTH.account)
+      return dispatch('fetchAccountTransactionsCount', accountId).then((count) => {
+        if (count > 0) {
+          commit('SET_SNACKBAR_MESSAGE', {
+            snackbarMessage: `Account still has ${count} transactions. Cannot delete.`,
+            snackbarColor: 'error'
           })
-          .then((result2) => {
-            if (result2.total_rows > 0) {
-              // Account still has transactions, so resolve with amount of transactions in account for error message.
-              reject(result2.total_rows)
-            } else {
-              // Dispatch account for deletion
-              context.dispatch('commitDocToPouchAndVuex', { current: null, previous: payload })
-              resolve('Success')
-            }
-          })
-          .catch((err) => {
-            reject('Error')
-            console.log(err)
-          })
+          console.warn(`Account still has ${count} transactions. Cannot delete.`)
+          return
+        }
+        const account = getters.accountsById[accountId]
+        dispatch('commitDocToPouchAndVuex', { current: null, previous: account })
       })
     }
   }

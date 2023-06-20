@@ -230,6 +230,24 @@ export default {
           }
         })
     },
+    fetchAccountTransactionsCount: async ({ getters }, account_id) => {
+      const t1 = performance.now()
+      const db = Vue.prototype.$pouch
+      const budget_id = getters.selectedBudgetId
+      if (!budget_id) {
+        return 0
+      }
+      return db
+        .query(`stats/transactions_by_account`, {
+          include_docs: false,
+          startkey: [budget_id, account_id, ''],
+          endkey: [budget_id, account_id, '\ufff0']
+        })
+        .then((result) => {
+          logPerformanceTime('fetchAccountTransactionsCount', t1)
+          return result.rows.length
+        })
+    },
     /**
      *
      * @param {*} context
