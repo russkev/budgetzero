@@ -62,7 +62,7 @@ export default {
       })
     },
 
-    databaseExists(context) {
+    databaseExists() {
       const db = this._vm.$pouch
       // const db = new PouchDB(LOCAL_DB_NAME, { skip_setup: true })
       return db
@@ -75,12 +75,22 @@ export default {
         })
     },
 
-    async validBulkDocs(context, bulk_docs) {
-      const database_exists = await context.dispatch('databaseExists')
-      if (!database_exists) {
-        await context.dispatch('createLocalPouchDB')
-        await context.dispatch('loadLocalBudget')
+    async ensureDatabaseExists({ dispatch }) {
+      const databaseExists = await dispatch('databaseExists')
+      if (!databaseExists) {
+        await dispatch('createLocalPouchDB')
+        await dispatch('loadLocalBudget')
       }
+      return
+    },
+
+    async validBulkDocs(context, bulk_docs) {
+      // const database_exists = await context.dispatch('databaseExists')
+      // if (!database_exists) {
+      //   await context.dispatch('createLocalPouchDB')
+      //   await context.dispatch('loadLocalBudget')
+      // }
+      await context.dispatch('ensureDatabaseExists')
 
       return bulk_docs.reduce((partial, doc) => {
         let doc_type = ''

@@ -20,7 +20,7 @@ const getData = (mock) => {
 }
 
 Cypress.Commands.add('initPath', (path) => {
-  cy.visit(`http://localhost:8082/${path}`)
+  cy.visit(path)
   cy.on('window:before:load', async () => {
     let pouch = new PouchDB(LOCAL_DB_NAME)
     await pouch.destroy()
@@ -31,8 +31,24 @@ Cypress.Commands.add('initPath', (path) => {
   })
 })
 
+Cypress.Commands.add('initPathRemote', (path) => {
+  cy.visit(path)
+  cy.on('window:before:load', async () => {
+    let pouch = new PouchDB(Cypress.env('CYPRESS_CLOUD_ADDRESS'))
+    await pouch.destroy()
+
+    pouch = new PouchDB(Cypress.env('CYPRESS_CLOUD_ADDRESS'))
+    const data = getData(mock_budget.rows)
+    await pouch.bulkDocs(data)
+    pouch = new PouchDB(LOCAL_DB_NAME)
+    await pouch.destroy()
+    pouch = new PouchDB(LOCAL_DB_NAME)
+    return
+  })
+})
+
 Cypress.Commands.add('initPathLarge', (path) => {
-  cy.visit(`http://localhost:8082/${path}`)
+  cy.visit(path)
   cy.on('window:before:load', async () => {
     let pouch = new PouchDB(LOCAL_DB_NAME)
     await pouch.destroy()
@@ -44,7 +60,7 @@ Cypress.Commands.add('initPathLarge', (path) => {
 })
 
 Cypress.Commands.add('initPathEmpty', (path) => {
-  cy.visit(`http://localhost:8082/${path}`)
+  cy.visit(path)
   cy.on('window:before:load', async () => {
     let pouch = new PouchDB(LOCAL_DB_NAME)
     await pouch.destroy()

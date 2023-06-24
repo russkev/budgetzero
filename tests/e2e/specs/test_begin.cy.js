@@ -90,7 +90,8 @@ describe('Initial experience', () => {
       cy.get('[data-testid="transactions-page-ELC"]').should('contain.text', '-$1,081.32')
     })
     it('Loads a budget from cloud sync', () => {
-      cy.initPathEmpty('')
+      // cy.initPathEmpty('')
+      cy.initPathRemote('')
 
       // Ensure automatic redirect to landing page
       cy.url().should('include', '/landing')

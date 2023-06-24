@@ -295,15 +295,18 @@ export default {
           console.log(err)
         })
     },
-    fetchAllTransactions: (context) => {
+    fetchAllTransactions: async ({ rootState, dispatch }) => {
       const db = Vue.prototype.$pouch
       if (!db) {
         return new Promise((resolve) => {
           resolve([])
         })
       }
+
       const t1 = performance.now()
-      const budget_id = context.rootState.selectedBudgetId
+      const budget_id = rootState.selectedBudgetId
+
+      await dispatch('ensureDatabaseExists')
 
       return db
         .allDocs({
@@ -321,6 +324,7 @@ export default {
         })
         .catch((err) => {
           if (err instanceof DOMException) {
+            console.log(err)
             console.log('Tried to access local db before it was ready')
           } else {
             console.log(err)
