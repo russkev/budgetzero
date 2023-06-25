@@ -51,6 +51,7 @@
         label="Date:"
         :disabled="tableData.length < 1"
         data-testid="date-column-select"
+        name="date"
       />
       <div class="text-h5">Format</div>
       <import-csv-column
@@ -61,6 +62,7 @@
         :errorText="dateFormatError"
         :disabled="tableData.length < 1"
         data-testid="date-format-select"
+        name="date-format"
       />
       <div class="text-h5">Memo</div>
       <import-csv-column
@@ -71,6 +73,7 @@
         label="Memo:"
         :disabled="tableData.length < 1"
         data-testid="memo-column-select"
+        name="memo"
       />
       <div class="text-h5">Amount</div>
       <import-csv-column
@@ -82,6 +85,7 @@
         :error-text="creditError"
         :disabled="tableData.length < 1"
         data-testid="credit-column-select"
+        name="credit"
       />
       <div class="text-h5">Debit</div>
       <import-csv-column
@@ -93,6 +97,7 @@
         :disabled="!csvInfo.useSeparateDebits || tableData.length < 1"
         :errorText="debitError"
         data-testid="debit-column-select"
+        name="debit"
       />
     </div>
 

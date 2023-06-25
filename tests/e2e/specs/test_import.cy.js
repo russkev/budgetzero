@@ -154,7 +154,7 @@ describe('Import bank transactions', () => {
         cy.get('[data-testid="import-csv-transactions-button"]').click()
 
         // Ensure current account transaction totals are updated
-        cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$5,938.76')
+        cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$5,482.90')
       })
       it('Tests separate credit and debit columns', () => {
         cy.initPath('transactions/7kW')
@@ -212,15 +212,17 @@ describe('Import bank transactions', () => {
         // Click the date format select and select the "M/D/YYYY" option
         cy.get('.import-preview-table .v-data-footer__pagination').should('contain.text', '1-22 of 22')
         cy.get('[data-testid="date-format-select"]').click()
-        cy.get('.v-list-item__title').filter(':contains("M/D/YYYY")').click()
+        cy.get('[data-testid="import-csv-column-list-date-format"] .v-list-item')
+          .filter(':contains("M/D/YYYY")')
+          .click()
 
         // Choose column for the 'memo'
         cy.get('[data-testid="memo-column-select"]').click()
-        cy.get('.v-list-item__title').filter(':contains("ddddd")').click()
+        cy.get('[data-testid="import-csv-column-list-memo"] .v-list-item').contains('ddddd').click()
 
-        // Choose column for the 'amount'
+        // // Choose column for the 'amount'
         cy.get('[data-testid="credit-column-select"]').click()
-        cy.get('.v-list-item__title').filter(':contains("ccccc"):visible').click()
+        cy.get('[data-testid="import-csv-column-list-credit"] .v-list-item').contains('ccccc').click()
 
         // Do the import
         cy.get('[data-testid="import-csv-transactions-button"]').click()

@@ -24,7 +24,7 @@ Use at https://frabjous-pithivier-23dcc3.netlify.app/
 npm run dev
 ```
 
-# To run Cypress integration tests:
+# To run Cypress integration tests with UI:
 
 This application makes extensive use of end to end testing.
 
@@ -42,8 +42,23 @@ npm run dev
 npm run tempdb
 ```
 
-### Open the Cypress UI
+### Option 1: Cypress UI
 
 ```
 npx cypress open
+```
+
+### Option 2: Command line
+
+Save the record key as an environment variable.
+Using Windows Powershell:
+
+```
+[System.Environment]::SetEnvironmentVariable('CYPRESS_RECORD_KEY','<record_key>')
+```
+
+Run a specific test (add the `--record` if a record key environment variable was saved)
+
+```
+npx cypress run --spec tests\e2e\specs\test_begin.cy.js --browser firefox --record
 ```

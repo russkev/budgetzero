@@ -165,7 +165,12 @@ export default {
       Vue.set(state, 'itemsPerPage', num_items)
     },
     SET_SELECTED_TRANSACTIONS(state, transactions) {
-      const transactionIds = transactions.map((transaction) => transaction._id)
+      const transactionIds = transactions.reduce((partial, transaction) => {
+        if (transaction && transaction._id) {
+          partial.push(transaction._id)
+        }
+        return partial
+      }, [])
       Vue.set(state, 'selectedTransactionIds', transactionIds)
     },
     CLEAR_SELECTED_TRANSACTIONS(state) {

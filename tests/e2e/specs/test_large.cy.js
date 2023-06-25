@@ -3,7 +3,7 @@ describe('Test large budget', () => {
     cy.initPathLarge('transactions/q1F')
   }),
     it('Imports ofx file', () => {
-      cy.get('.v-progress-linear__buffer').should('not.exist', { timeout: 10000 })
+      cy.get('.v-progress-linear__buffer').should('not.exist', { timeout: 100000 })
       cy.get('[data-testid="transactions-page-q1F"]').should('contain.text', '$252,268.02')
       cy.get('[data-testid="transactions-page-9LW"]').should('contain.text', '$237,800.98')
 

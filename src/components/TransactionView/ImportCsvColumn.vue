@@ -8,7 +8,7 @@
             <span style="font-size: 1rem"> {{ valueWithPreview }} </span><v-spacer /><v-icon>mdi-menu-down</v-icon>
           </v-btn>
         </template>
-        <v-list>
+        <v-list :data-testid="`import-csv-column-list-${name}`">
           <v-list-item v-for="(header, index) in headerOptions" :key="header" link class="csv-column-item">
             <v-list-item-title @click="$emit('input', header)">
               {{ headerOptionPreviews.length >= index + 1 ? `${header} (${headerOptionPreviews[index]})` : header }}
@@ -66,6 +66,10 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    name: {
+      type: String,
+      default: ''
     }
   },
   computed: {

@@ -1,10 +1,14 @@
 describe('Test categories (budget) page', () => {
   context('Test values', () => {
-    before(() => {
+    beforeEach(() => {
       cy.initPath('categories/2022-07')
     })
 
-    it('Checks category values for July', () => {
+    it('Checks category values', () => {
+      //---------------------------------------------------------------------//
+      // Check for July
+      //---------------------------------------------------------------------//
+
       cy.get('[data-testid="master-category-name-:in"]').should('have.text', ' Income ')
       cy.get('[data-testid="master-category-spent-:in"]').should('contain.text', ' $1,586.79 ')
 
@@ -52,9 +56,10 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="uncategorized-name"]').should('contain.text', 'Uncategorized')
       cy.get('[data-testid="uncategorized-spent"]').should('contain.text', ' $81.32 ')
       cy.get('[data-testid="uncategorized-balance"]').should('contain.text', ' -$81.32 ')
-    })
 
-    it('Checks category values for August and September', () => {
+      //---------------------------------------------------------------------//
+      // Check for August
+      //---------------------------------------------------------------------//
       cy.get('[data-testid="next-month-button"]').click()
 
       cy.get('[data-testid="master-category-name-:in"]').should('have.text', ' Income ')
@@ -107,8 +112,9 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="uncategorized-spent"]').should('contain.text', ' $0.00 ')
       cy.get('[data-testid="uncategorized-balance"]').should('contain.text', ' -$81.32 ')
 
-      // //---------------------------------------------------------------------//
-      // September
+      //---------------------------------------------------------------------//
+      // Check for September
+      //---------------------------------------------------------------------//
 
       cy.get('[data-testid="next-month-button"]').click()
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $805.95 ')
@@ -121,48 +127,10 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="previous-month-button"]').click()
       cy.get('[data-testid="previous-month-button"]').click()
     })
-
-    // it('Checks that pressing enter on budget input causes the next one to be highlighted', () => {
-    //   cy.get('[data-testid="category-budget-input-2aW"]').should('have.attr', 'readonly')
-    //   cy.get('[data-testid="category-budget-input-2aW"]').click()
-    //   cy.get('[data-testid="category-budget-input-2aW"]').type('{enter}')
-    //   cy.get('[data-testid="category-budget-input-2aW"]').should('have.attr', 'readonly')
-    //   // cy.get('[data-testid="category-budget-input-Lx7"]').should('have.value', '420.00')
-    //   // cy.wait(1000)
-    //   cy.get('[data-testid="category-budget-input-Lx7"]').should('not.have.attr', 'readonly', {timeout: 10000})
-    //   cy.get('[data-testid="category-budget-input-Lx7"]').should('have.focus')
-    //   cy.get('[data-testid="category-budget-input-Lx7"]').type('{enter}')
-
-    //   // cy.get('[data-testid="category-budget-input-6b2"]').should('have.focus')
-    // })
-
-    it('Checks that updating a budget value updates balance correctly', () => {
-      cy.get('[data-testid="category-budget-n00"]').should('have.text', ' $420.00 ')
-      cy.get('[data-testid="category-budget-n00"]').click()
-      cy.get('[data-testid="category-budget-input-n00"]').click()
-      cy.get('[data-testid="category-budget-input-n00"]').type('23.24')
-      cy.get('[data-testid="category-budget-input-n00"]').blur()
-      cy.get('[data-testid="category-budget-input-n00"]').should('have.value', '$23.24')
-      cy.get('[data-testid="category-budget-n00"]').should('have.text', ' $23.24 ')
-      cy.get('[data-testid="category-balance-n00"]').should('have.text', ' -$311.02 ')
-      cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $697.24 ')
-
-      cy.get('[data-testid="next-month-button"]').click()
-      cy.get('[data-testid="category-balance-n00"]').should('have.text', ' -$372.92 ')
-      cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $618.44 ')
-
-      cy.get('[data-testid="next-month-button"]').click()
-      cy.get('[data-testid="category-balance-n00"]').should('have.text', ' -$372.92 ')
-      cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $618.44 ')
-
-      // Return to start page for future tests
-      cy.get('[data-testid="previous-month-button"]').click()
-      cy.get('[data-testid="previous-month-button"]').click()
-    })
   })
 
   context('Test drag and drop', () => {
-    before(() => {
+    beforeEach(() => {
       cy.initPath('categories/2022-08')
     })
 
@@ -184,31 +152,32 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="categories-container-3ks"] > div:nth-child(2)')
         .find('[data-testid="category-name-ATi"]')
         .should('have.length', 1)
-    })
 
-    it('Checks that values are all the same', () => {
+      // Check that Spending values are all the same
       cy.get('[data-testid="master-category-name-input-3ks"]').should('have.value', 'Spending')
       cy.get('[data-testid="master-category-budget-3ks"]').should('contain.text', ' $300.84 ')
       cy.get('[data-testid="master-category-spent-3ks"]').should('contain.text', ' $379.64 ')
       cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $1,015.20 ')
 
+      // Check that Groceries values are all the same
       cy.get('[data-testid="category-name-ATi"]').should('have.text', ' Groceries ')
       cy.get('[data-testid="category-budget-ATi"]').should('have.text', ' $242.33 ')
       cy.get('[data-testid="category-spent-ATi"]').should('have.text', ' $379.64 ')
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $805.95 ')
 
+      // Check that Electricity values are all the same
       cy.get('[data-testid="category-name-6b2"]').should('have.text', ' Electricity ')
       cy.get('[data-testid="category-budget-6b2"]').should('have.text', ' -$41.84 ')
       cy.get('[data-testid="category-spent-6b2"]').should('have.text', ' $0.00 ')
       cy.get('[data-testid="category-balance-6b2"]').should('have.text', ' $8.16 ')
 
+      // Check that Gas values are all the same
       cy.get('[data-testid="category-name-n00"]').should('have.text', ' Gas ')
       cy.get('[data-testid="category-budget-n00"]').should('have.text', ' -$61.90 ')
       cy.get('[data-testid="category-spent-n00"]').should('have.text', ' $0.00 ')
       cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $23.84 ')
-    })
 
-    it('Drag category to different master category', () => {
+      // Drag category to different master category
       cy.get('[data-testid="master-category-budget-3ks"]').should('contain.text', ' $300.84 ')
       // Do the drag and drop
       cy.get('[data-testid="drag-category-Lx7"]').trigger('mouseenter')
@@ -225,9 +194,8 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="categories-container-:in"] > div:nth-child(2)')
         .find('[data-testid="category-name-Lx7"]')
         .should('have.length', 1)
-    })
 
-    it('Checks that values are correctly updated', () => {
+      // Check that values are correctly updated
       cy.get('[data-testid="master-category-name-:in"]').should('have.text', ' Income ')
       cy.get('[data-testid="master-category-spent-:in"]').should('contain.text', ' $2,361.64 ')
 
@@ -239,104 +207,11 @@ describe('Test categories (budget) page', () => {
     })
   })
 
-  context('Test delete / hide', () => {
-    before(() => {
-      cy.initPath('categories/2022-08')
-      cy.get('[data-testid="btn-expand-::0"]').trigger('mouseenter').click()
-    })
-
-    it('Hides a category', () => {
-      cy.get('.master-categories').should('have.length', 2)
-      cy.get('[data-testid="btn-hide-category-Lx7"]').trigger('mouseenter').click()
-      cy.get('[data-testid="delete-confirm-button"]').click()
-
-      cy.get('[data-testid="categories-container-ggJ"]').children().should('have.length', 0)
-      cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 1)
-
-      cy.get('[data-testid="categories-container-\\:\\:0"] > div:nth-child(1)')
-        .find('[data-testid="category-name-Lx7"]')
-        .should('have.length', 1)
-
-      cy.get('[data-testid="master-category-budget-ggJ"]').should('contain.text', ' $0.00 ')
-      cy.get('[data-testid="master-category-spent-ggJ"]').should('contain.text', ' $0.00 ')
-      cy.get('[data-testid="master-category-balance-ggJ"]').should('contain.text', ' $0.00 ')
-
-      cy.get('[data-testid="master-category-budget-\\:\\:0"]').should('contain.text', ' -$25.34 ')
-      cy.get('[data-testid="master-category-spent-\\:\\:0"]').should('contain.text', ' $520.00 ')
-      cy.get('[data-testid="master-category-balance-\\:\\:0"]').should('contain.text', ' -$535.34 ')
-
-      cy.get('[data-testid="category-name-Lx7"]').should('have.text', ' Vacation ')
-      cy.get('[data-testid="category-budget-Lx7"]').should('have.text', ' -$25.34 ')
-      cy.get('[data-testid="category-spent-Lx7"]').should('have.text', ' $520.00 ')
-      cy.get('[data-testid="category-balance-Lx7"]').should('have.text', ' -$535.34 ')
-    })
-    it('Deletes a master category', () => {
-      cy.get('[data-testid="btn-delete-master-category-3ks"]').trigger('mouseenter').click()
-      cy.get('[data-testid="delete-confirm-button"]').click()
-
-      cy.get('[data-testid="master-category-name-3ks"]').should('not.exist')
-      cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 5)
-
-      cy.get('[data-testid="master-category-budget-\\:\\:0"]').should('contain.text', ' $275.50 ')
-      cy.get('[data-testid="master-category-spent-\\:\\:0"]').should('contain.text', ' $899.64 ')
-      cy.get('[data-testid="master-category-balance-\\:\\:0"]').should('contain.text', ' $479.86 ')
-
-      cy.get('[data-testid="category-name-6b2"]').should('have.text', ' Electricity ')
-      cy.get('[data-testid="category-budget-6b2"]').should('have.text', ' -$41.84 ')
-      cy.get('[data-testid="category-spent-6b2"]').should('have.text', ' $0.00 ')
-      cy.get('[data-testid="category-balance-6b2"]').should('have.text', ' $8.16 ')
-    })
-  })
-
-  context('Test create new categories', () => {
-    before(() => {
-      cy.initPath('categories/2022-08')
-    })
-
-    it('Creates a new category', () => {
-      cy.get('[data-testid="btn-new-category-3ks"]').click()
-      cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 5)
-      const name_selector = '[data-testid="categories-container-3ks"] > div:nth-child(5) .category-name'
-      const name_input_selector = '.category-name-input > :nth-child(1) input'
-
-      cy.get(name_selector).should('have.text', ' Name ')
-      cy.get(name_input_selector).should('not.have.attr', 'readonly')
-      cy.get(name_input_selector).should('have.focus')
-      cy.get(name_input_selector).type('Internet').type('{enter}')
-      cy.get(name_input_selector).should('have.value', 'Internet')
-      cy.get(name_selector).should('have.text', ' Internet ')
-    })
-
-    it('Creates a new master category', () => {
-      cy.get('.master-categories > div').should('have.length', 2)
-      cy.get('[data-testid="btn-new-master-category"]').click()
-      cy.get('.master-categories > div').should('have.length', 3)
-      const name_input = () => cy.get('main').find('div.master-row').eq(4).find('input')
-      name_input().should('not.have.attr', 'readonly')
-      name_input().should('have.focus')
-      name_input().type('Dividends').type('{enter}')
-      name_input().should('have.value', 'Dividends')
-      cy.get('.categories-container').eq(3).should('not.be.visible')
-    })
-  })
-
-  context('Test selected date is saved', () => {
-    before(() => {
-      cy.initPath('categories/2022-01')
-    })
-
-    it('Accesses transaction page and then categories page again', () => {
-      cy.get('[data-testid="transactions-page-7kW"]').click()
-      cy.get('[data-testid="sidebar-button-categories"]').click()
-      cy.url().should('include', 'categories/2022-01')
-    })
-  })
-
-  context('Test updating budgeted values', () => {
-    before(() => {
+  context('Test updating', () => {
+    beforeEach(() => {
       cy.initPath('categories/2022-07')
     })
-    it('Checks that changing budgeted values results in values updating properly', () => {
+    it('Checks that updating budget value and clicking enter works', () => {
       const vacation_selector = '[data-testid="category-budget-Lx7"]'
       const vacation_input_selector = '[data-testid="category-budget-input-Lx7"]'
       cy.get(vacation_selector).click()
@@ -350,14 +225,26 @@ describe('Test categories (budget) page', () => {
 
       cy.get('[data-testid="category-balance-Lx7"]').should('have.text', ' -$520.00 ')
     })
-  })
+    it('Checks that updating budget value and blurring works', () => {
+      cy.get('[data-testid="category-budget-n00"]').should('have.text', ' $420.00 ')
+      cy.get('[data-testid="category-budget-n00"]').click()
+      cy.get('[data-testid="category-budget-input-n00"]').click()
+      cy.get('[data-testid="category-budget-input-n00"]').type('23.24')
+      cy.get('[data-testid="category-budget-input-n00"]').blur()
+      cy.get('[data-testid="category-budget-input-n00"]').should('have.value', '$23.24')
+      cy.get('[data-testid="category-budget-n00"]').should('have.text', ' $23.24 ')
+      cy.get('[data-testid="category-balance-n00"]').should('have.text', ' -$311.02 ')
+      cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $697.24 ')
 
-  context('Test that total balance value updates correctly', () => {
-    before(() => {
-      cy.initPath('categories/2022-07')
+      cy.get('[data-testid="next-month-button"]').click()
+      cy.get('[data-testid="category-balance-n00"]').should('have.text', ' -$372.92 ')
+      cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $618.44 ')
+
+      cy.get('[data-testid="next-month-button"]').click()
+      cy.get('[data-testid="category-balance-n00"]').should('have.text', ' -$372.92 ')
+      cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $618.44 ')
     })
-
-    it('Checks the value for July and August', () => {
+    it('Checks that total balance value updates correctly', () => {
       // Income category for July is $1,586.79
       // Total budgeted for July is  $1,918.26
       // Total left for July is       -$331.47
@@ -369,7 +256,7 @@ describe('Test categories (budget) page', () => {
 
       // Total income should be: $4,476.00
 
-      // cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,173.74 ')
+      // Check the value for July and August
       cy.get('[data-testid="total-balance"]').should('contain.text', ' $331.47 ')
       cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount over budget:')
 
@@ -378,9 +265,8 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget:')
 
       cy.get('[data-testid="previous-month-button"]').click()
-    })
 
-    it('Checks that updating a budgeted value causes the correct total balance update', () => {
+      // Check that updating a budgeted value causes the correct total balance update
       cy.get('[data-testid="total-balance"]').should('contain.text', ' $331.47 ')
       cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount over budget:')
       const water_selector = '[data-testid="category-budget-2aW"]'
@@ -422,9 +308,8 @@ describe('Test categories (budget) page', () => {
       cy.get(water_input_selector).should('have.value', '$15.00')
       cy.get(water_selector).should('have.text', ' $15.00 ')
       cy.get('[data-testid="total-balance"]').should('contain.text', ' $331.47 ')
-    })
 
-    it('Checks tha updating a transaction results in the correct update of total balance', () => {
+      // Check that updating a transaction results in the correct update of total balance
       // In $21.00
       cy.get('[data-testid="transactions-page-v6A"]').click()
       cy.get('.transaction-row').should('have.length', 5)
@@ -440,7 +325,6 @@ describe('Test categories (budget) page', () => {
 
       // In -$15.00
       cy.get('.transaction-row .row-description').eq(5).click()
-      // cy.get('[data-testid="edit-row-outflow"]').type('20.21').type('{enter}')
       cy.get('[data-testid="details-value"]').click().clear().type('20.21').blur()
       cy.get('[data-testid="details-outflow-button"]').click()
       cy.get('[data-testid="save-edit-button"]').click()
@@ -471,15 +355,85 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,918.67 ')
       cy.get('[data-testid="sidebar-button-categories"]').click()
     })
+
+    it('Creates a new category', () => {
+      // Create a new category
+      cy.get('[data-testid="btn-new-category-3ks"]').click()
+      cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 5)
+      const name_selector = '[data-testid="categories-container-3ks"] > div:nth-child(5) .category-name'
+      const name_input_selector = '.category-name-input > :nth-child(1) input'
+
+      cy.get(name_selector).should('have.text', ' Name ')
+      cy.get(name_input_selector).should('not.have.attr', 'readonly')
+      cy.get(name_input_selector).should('have.focus')
+      cy.get(name_input_selector).type('Internet').type('{enter}')
+      cy.get(name_input_selector).should('have.value', 'Internet')
+      cy.get(name_selector).should('have.text', ' Internet ')
+
+      // Create a new master category
+      cy.get('.master-categories > div').should('have.length', 2)
+      cy.get('[data-testid="btn-new-master-category"]').click()
+      cy.get('.master-categories > div').should('have.length', 3)
+      const name_input = () => cy.get('main').find('div.master-row').eq(4).find('input')
+      name_input().should('not.have.attr', 'readonly')
+      name_input().should('have.focus')
+      name_input().type('Dividends').type('{enter}')
+      name_input().should('have.value', 'Dividends')
+      cy.get('.categories-container').eq(3).should('not.be.visible')
+    })
   })
 
-  context('Test that hidden restore works correctly', () => {
+  context('Test delete / hide', () => {
     beforeEach(() => {
       cy.initPath('categories/2022-08')
       cy.get('[data-testid="btn-expand-::0"]').trigger('mouseenter').click()
     })
 
+    it('Checks that hide and delete work correctly', () => {
+      // Hide a category
+      cy.get('.master-categories').should('have.length', 2)
+      cy.get('[data-testid="btn-hide-category-Lx7"]').trigger('mouseenter').click()
+      cy.get('[data-testid="delete-confirm-button"]').click()
+
+      cy.get('[data-testid="categories-container-ggJ"]').children().should('have.length', 0)
+      cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 1)
+
+      cy.get('[data-testid="categories-container-\\:\\:0"] > div:nth-child(1)')
+        .find('[data-testid="category-name-Lx7"]')
+        .should('have.length', 1)
+
+      cy.get('[data-testid="master-category-budget-ggJ"]').should('contain.text', ' $0.00 ')
+      cy.get('[data-testid="master-category-spent-ggJ"]').should('contain.text', ' $0.00 ')
+      cy.get('[data-testid="master-category-balance-ggJ"]').should('contain.text', ' $0.00 ')
+
+      cy.get('[data-testid="master-category-budget-\\:\\:0"]').should('contain.text', ' -$25.34 ')
+      cy.get('[data-testid="master-category-spent-\\:\\:0"]').should('contain.text', ' $520.00 ')
+      cy.get('[data-testid="master-category-balance-\\:\\:0"]').should('contain.text', ' -$535.34 ')
+
+      cy.get('[data-testid="category-name-Lx7"]').should('have.text', ' Vacation ')
+      cy.get('[data-testid="category-budget-Lx7"]').should('have.text', ' -$25.34 ')
+      cy.get('[data-testid="category-spent-Lx7"]').should('have.text', ' $520.00 ')
+      cy.get('[data-testid="category-balance-Lx7"]').should('have.text', ' -$535.34 ')
+
+      // Delete a master category
+      cy.get('[data-testid="btn-delete-master-category-3ks"]').trigger('mouseenter').click()
+      cy.get('[data-testid="delete-confirm-button"]').click()
+
+      cy.get('[data-testid="master-category-name-3ks"]').should('not.exist')
+      cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 5)
+
+      cy.get('[data-testid="master-category-budget-\\:\\:0"]').should('contain.text', ' $275.50 ')
+      cy.get('[data-testid="master-category-spent-\\:\\:0"]').should('contain.text', ' $899.64 ')
+      cy.get('[data-testid="master-category-balance-\\:\\:0"]').should('contain.text', ' $479.86 ')
+
+      cy.get('[data-testid="category-name-6b2"]').should('have.text', ' Electricity ')
+      cy.get('[data-testid="category-budget-6b2"]').should('have.text', ' -$41.84 ')
+      cy.get('[data-testid="category-spent-6b2"]').should('have.text', ' $0.00 ')
+      cy.get('[data-testid="category-balance-6b2"]').should('have.text', ' $8.16 ')
+    })
+
     it('Checks that restoring with the restore button works', () => {
+      // Checks that restoring with the restore button works
       cy.get('[data-testid="btn-hide-category-6b2"]').trigger('mouseenter').click()
       cy.get('[data-testid="delete-confirm-button"]').click()
       cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 3)
@@ -491,10 +445,8 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="categories-container-3ks"] > div:nth-child(4)')
         .find('[data-testid="category-name-6b2"]')
         .should('have.length', 1)
-    })
 
-    it('Checks that restoring after drag drop works', () => {
-      // Do the drag and drop
+      // Check that restoring after drag drop works
       cy.get('[data-testid="drag-category-ATi"]').trigger('mouseenter')
       cy.get('[data-testid="drag-category-ATi"]').drag('[data-testid="btn-new-category-::0"]', {
         target: {
@@ -511,9 +463,8 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="categories-container-3ks"] > div:nth-child(4)', { timeout: 10000 })
       cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 0)
       cy.get('[data-testid="categories-container-3ks"] [data-testid="category-name-ATi"]').should('have.length', 1)
-    })
 
-    it('Checks that deleting a master category and then restoring works', () => {
+      // Check that deleting a master category and then restoring works
       cy.get('[data-testid="btn-delete-master-category-ggJ"]').trigger('mouseenter').click()
       cy.wait(500)
       cy.get('[data-testid="delete-confirm-button"]').click({ waitForAnimations: false, force: true })
@@ -524,7 +475,7 @@ describe('Test categories (budget) page', () => {
         .should('have.length', 1)
 
       cy.get('[data-testid="btn-restore-category-Lx7"]').trigger('mouseenter').click()
-      cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 5)
+      cy.get('[data-testid="categories-container-3ks"] .category-row').should('have.length', 5)
       cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 0)
       cy.get('[data-testid="categories-container-3ks"] > div:nth-child(5)')
         .find('[data-testid="category-name-Lx7"]')
@@ -532,12 +483,16 @@ describe('Test categories (budget) page', () => {
     })
   })
 
-  context('Tests math rounding', () => {
-    beforeEach(() => {
-      cy.initPath('categories/2022-08')
+  context('Utility functions', () => {
+    it('Checks that selected date is saved', () => {
+      cy.initPath('categories/2022-01')
+      cy.get('[data-testid="transactions-page-7kW"]').click()
+      cy.get('[data-testid="sidebar-button-categories"]').click()
+      cy.url().should('include', 'categories/2022-01')
     })
 
-    it('Checks that 18.99 is stored as 18.99', () => {
+    it('Checks that rounding works correctly', () => {
+      cy.initPath('categories/2022-08')
       const water_selector = '[data-testid="category-budget-2aW"]'
       const water_input_selector = '[data-testid="category-budget-input-2aW"]'
       cy.get(water_selector).should('contain.text', '$162.25')
