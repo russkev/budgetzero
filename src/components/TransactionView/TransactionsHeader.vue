@@ -58,6 +58,7 @@ export default {
   },
   props: ['selected_account_id'],
   computed: {
+    ...mapGetters('accountTransactions', ['initialBalance']),
     ...mapGetters(['allAccountBalances', 'accountsById', 'intlCurrency']),
     accountBalance() {
       const accountBalance = this.allAccountBalances[this.selected_account_id]

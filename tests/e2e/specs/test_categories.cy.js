@@ -42,6 +42,17 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="category-spent-2aW"]').should('have.text', ' $0.00 ')
       cy.get('[data-testid="category-balance-2aW"]').should('have.text', ' $15.00 ')
 
+      // Check working
+      cy.get('[data-testid="working-carryover"]').should('contain.text', '$0.00')
+      cy.get('[data-testid="working-income"]').should('contain.text', '$1,586.79')
+      cy.get('[data-testid="working-spent"]').should('not.exist')
+      cy.get('[data-testid="working-budgeted"]').should('contain.text', '$1,918.26')
+      cy.get('[data-testid="working-available"]').should('contain.text', '-$331.47')
+
+      // Check total balance header item
+      cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount over budget')
+      cy.get('[data-testid="total-balance"]').should('contain.text', '$331.47')
+
       //---------------------------------------------------------------------//
 
       cy.get('[data-testid="master-category-name-input-ggJ"]').should('have.value', 'Misc')
@@ -111,6 +122,16 @@ describe('Test categories (budget) page', () => {
 
       cy.get('[data-testid="uncategorized-spent"]').should('contain.text', ' $0.00 ')
       cy.get('[data-testid="uncategorized-balance"]').should('contain.text', ' -$81.32 ')
+
+      // Check working
+      cy.get('[data-testid="working-carryover"]').should('contain.text', '-$331.47')
+      cy.get('[data-testid="working-income"]').should('contain.text', '$2,881.64')
+      cy.get('[data-testid="working-budgeted"]').should('contain.text', '$275.50')
+      cy.get('[data-testid="working-available"]').should('contain.text', '$2,274.67')
+
+      // Check total balance header item
+      cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget')
+      cy.get('[data-testid="total-balance"]').should('contain.text', '$2,274.67')
 
       //---------------------------------------------------------------------//
       // Check for September

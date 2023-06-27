@@ -16,7 +16,21 @@ export default {
     ...DEFAULT_ACCOUNT_STATE
   },
   getters: {
-    allAccountBalances: (state) => state.allAccountBalances,
+    allAccountBalances: (state, getters) => {
+      return Object.entries(state.allAccountBalances).reduce((partial, [account_id, balance]) => {
+        // const initial = _.get(getters, [('accountsById', account_id, 'initialBalance')], 0)
+        let initial = 0
+        if (getters.accountsById[account_id] && getters.accountsById[account_id].initialBalance !== undefined) {
+          initial = getters.accountsById[account_id].initialBalance
+        }
+        partial[account_id] = {
+          ...balance,
+          cleared: balance.cleared + initial,
+          working: balance.working + initial
+        }
+        return partial
+      }, {})
+    },
     accounts: (state) => state.accounts,
     accountsById: (state) => {
       return state.accounts.reduce((partial, account) => {
@@ -37,7 +51,15 @@ export default {
       return state.accounts.filter((account) => !account.onBudget)
     },
     intlCurrency: (state) => state.intlCurrency,
-    accountTransactionCounts: (state) => state.accountTransactionCounts
+    accountTransactionCounts: (state) => state.accountTransactionCounts,
+    totalInitialBalance: (state, getters) => {
+      return getters.accounts.reduce((partial, account) => {
+        if (account.initialBalance !== undefined) {
+          partial += account.initialBalance
+        }
+        return partial
+      }, 0)
+    }
   },
   mutations: {
     SET_ACCOUNTS(state, accounts) {

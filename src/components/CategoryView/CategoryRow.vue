@@ -105,12 +105,7 @@ export default {
   },
   computed: {
     ...mapGetters(['intlCurrency', 'categoryColors', 'categories', 'categoriesByMaster', 'masterCategories']),
-    ...mapGetters('categoryMonth', [
-      'editedCategoryBudgetId',
-      'editedCategoryNameId',
-      'categoriesData',
-      'selectedCategory'
-    ]),
+    ...mapGetters('categoryMonth', ['editedCategoryBudgetId', 'editedCategoryNameId', 'selectedCategory']),
     negativeMultiplier() {
       return this.isIncome ? 1 : -1
     },

@@ -54,15 +54,18 @@
           :budgeted="selectedCategory.budget"
           :available="selectedCategory.balance"
           add-budgeted
+          include-spent
         />
       </div>
     </div>
     <div v-else class="transaction-details-grid pa-2 pb-0">
       <div class="text-h5">Working</div>
       <div>
+        <!-- Don't need to include monthStats.spent_this_month since this would make tool less useful -->
         <categories-working
           :last-month="monthStats.available_last_month"
           :income="monthStats.income_this_month"
+          :spent="monthStats.spent_this_month"
           :budgeted="monthStats.budgeted_this_month"
           :available="monthStats.available_this_month"
         />

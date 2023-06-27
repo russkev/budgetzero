@@ -27,6 +27,9 @@ const schema_account = {
     },
     csvInfo: {
       type: 'object'
+    },
+    initialBalance: {
+      type: 'integer'
     }
   },
   required: ['_id', 'onBudget', 'name', 'sort', 'closed', 'type']

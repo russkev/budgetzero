@@ -342,7 +342,7 @@ describe('Test transactions', () => {
         .type('{downArrow}{downArrow}{downArrow}{downArrow}{enter}')
       cy.get('.transaction-row .row-category').eq(2).should('contain.text', 'Uncategorized')
 
-      // // Check that budget was updated correctly
+      // Check that budget was updated correctly
       cy.get('[data-testid="sidebar-button-categories"]').click()
 
       cy.get('[data-testid="master-category-name-:in"]').should('have.text', ' Income ')

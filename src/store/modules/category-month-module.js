@@ -108,6 +108,9 @@ export default {
             0
           )
           const expense = _.get(rootGetters.allCategoryBalances, [getters.selectedMonth, category_id, 'expense'], 0)
+          // console.log('month', getters.selectedMonth)
+          // console.log('data', rootGetters.allCategoryBalances[getters.selectedMonth][category_id].expense)
+          // console.log('!!!expense', expense)
           const income = _.get(rootGetters.allCategoryBalances, [getters.selectedMonth, category_id, 'income'], 0)
           const carryover = getCarryover(rootGetters.allCategoryBalances, getters.selectedMonth, category_id)
           const name = _.get(rootGetters.categoriesById, [category_id, 'name'], '')
@@ -167,13 +170,14 @@ export default {
       }, {})
     },
     monthStats: (state, getters, rootState, rootGetters) => {
+      const initial = rootGetters.totalInitialBalance
       let stats = {
-        available_last_month: 0,
+        available_last_month: initial,
         income_this_month: 0,
         budgeted_this_month: 0,
+        spent_this_month: 0,
         available_this_month: 0
       }
-
       const sortedMonths = Object.keys(rootGetters.monthBalances).sort((a, b) => compareAscii(a, b))
       if (sortedMonths.length > 0) {
         let previous_month = sortedMonths[0]
@@ -184,20 +188,23 @@ export default {
             }
             previous_month = sortedMonths[i]
           }
-          stats.available_last_month = rootGetters.monthBalances[previous_month].available
+          stats.available_last_month = rootGetters.monthBalances[previous_month].available + initial
         }
       }
 
       if (rootGetters.monthBalances[getters.selectedMonth]) {
         stats.income_this_month = rootGetters.monthBalances[getters.selectedMonth].income
         stats.budgeted_this_month = rootGetters.monthBalances[getters.selectedMonth].budgeted
-        stats.available_this_month = rootGetters.monthBalances[getters.selectedMonth].available
+        stats.spent_this_month += rootGetters.monthBalances[getters.selectedMonth].expense
+        stats.available_this_month = rootGetters.monthBalances[getters.selectedMonth].available + initial
       } else {
         stats.income_this_month = 0
         stats.budgeted_this_month = 0
+        stats.spent_this_month = 0
         stats.available_this_month = stats.available_last_month
       }
-
+      console.log('initial', initial)
+      console.log('Stats', stats)
       return stats
     },
     transactionHeaders: () => transactionHeaders,
