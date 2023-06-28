@@ -24,6 +24,7 @@
             <div>
               <currency-input
                 fill-unfocused
+                allow-negative
                 input-testid="account-initial-balance-input"
                 v-model="editedItem.initialBalance"
               />
@@ -283,7 +284,6 @@ export default {
     },
     save() {
       this.$refs.form.validate()
-      console.log('Valid', this.valid)
       if (this.valid) {
         this.$emit('save', this.editedItem)
         this.close()

@@ -203,8 +203,6 @@ export default {
         stats.spent_this_month = 0
         stats.available_this_month = stats.available_last_month
       }
-      console.log('initial', initial)
-      console.log('Stats', stats)
       return stats
     },
     transactionHeaders: () => transactionHeaders,

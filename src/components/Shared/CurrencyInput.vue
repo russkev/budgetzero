@@ -55,6 +55,10 @@ export default {
     fillUnfocused: {
       type: Boolean,
       default: false
+    },
+    allowNegative: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -68,7 +72,12 @@ export default {
     ...mapGetters(['intlCurrency']),
     valueData: {
       get() {
-        const edited_value = Math.abs(this.value / 100)
+        let edited_value = 0
+        if (this.allowNegative) {
+          edited_value = this.value / 100
+        } else {
+          edited_value = Math.abs(this.value / 100)
+        }
         if (this.isFocused) {
           if (this.justFocused) {
             this.justFocused = false
@@ -107,9 +116,12 @@ export default {
       let currency_value = ''
       if (input_currency !== undefined) {
         // Remove all non-digit chars except for period
-        currency_value = input_currency.toString().replace(/[^0-9.]/g, '')
+        if (this.allowNegative) {
+          currency_value = input_currency.toString().replace(/[^0-9.-]/g, '')
+        } else {
+          currency_value = input_currency.toString().replace(/[^0-9.]/g, '')
+        }
       }
-
       return currency_value
     }
   }
