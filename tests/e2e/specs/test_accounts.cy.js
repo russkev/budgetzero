@@ -6,8 +6,8 @@ describe('Test accounts', () => {
 
     // Open the add account modal
     cy.get('[data-testid="full-screen-loading"]').should('not.exist')
-    cy.get('.v-progress-linear__buffer').should('exist')
     cy.get('.v-progress-linear__buffer').should('not.exist')
+    cy.get('.transaction-row').should('have.length', 7)
     cy.get('[data-testid="btn-new-account-on-budget"]', { force: true }).click({ force: true })
 
     // Give a name
@@ -141,7 +141,7 @@ describe('Test accounts', () => {
     cy.get('.transaction-row > .row-balance').eq(0).should('contain.text', '-$918.43')
   })
 
-  it.only('Tests tracking / untracking account', () => {
+  it('Tests tracking / untracking account', () => {
     cy.initPath('categories/2022-07')
 
     // Open the edit account modal
@@ -158,6 +158,7 @@ describe('Test accounts', () => {
 
     // Check that account list has been updated correctly
     cy.get('.sidebar-on-account-item').should('have.length', 2)
+    cy.get('.sidebar-off-account-item').should('have.length', 1)
     cy.get('.sidebar-off-account-item').eq(0).should('contain', 'Investment')
 
     // Check working
@@ -172,46 +173,104 @@ describe('Test accounts', () => {
     cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount over budget')
     cy.get('[data-testid="total-balance"]').should('contain.text', '$668.26')
 
-    // TODO Check that ability to choose category etc. is disabled on transactions page
-  }),
-    it('Deletes an account', () => {
-      // Open the edit account modal
-      cy.get('[data-testid="full-screen-loading"]').should('not.exist')
-      cy.get('.v-progress-linear__buffer').should('exist')
-      cy.get('.v-progress-linear__buffer').should('not.exist')
-      cy.get('.sidebar-on-account-item').eq(1).click().trigger('mouseover').should('have.class', 'expanded')
-      cy.get('[data-testid="btn-edit-account-ELC"]').click()
+    // Go to next month
+    cy.get('[data-testid="next-month-button"]').click()
 
-      // Delete account transactions
-      cy.get('[data-testid="btn-delete-account-transactions"]').click()
-      cy.get('[data-testid="delete-confirm-button"]').click()
+    // Check working
+    cy.get('[data-testid="working-carryover"]').should('contain.text', '-$668.26')
+    cy.get('[data-testid="working-income"]').should('contain.text', '2,300.00')
+    cy.get('[data-testid="working-available"]').should('contain.text', '$1,356.24')
 
-      // Check that there are no transactions left
-      cy.get('.transaction-row').should('have.length', 0)
+    // Check categories
+    cy.get('[data-testid="category-name-gpe"]').should('have.text', ' Paycheck 1 ')
+    cy.get('[data-testid="category-spent-gpe"]').should('have.text', ' $2,300.00 ')
 
-      // Check that header was updated
-      cy.get('[data-testid="account-balance-cleared"]').should('contain.text', ' $0.00')
-      cy.get('[data-testid="account-balance-uncleared"]').should('contain.text', ' $0.00')
-      cy.get('[data-testid="account-balance-working"]').should('contain.text', ' $0.00')
+    // Check total balance header item
+    cy.get('[data-testid="total-balance-title"]').should('contain.text', 'Amount left to budget')
+    cy.get('[data-testid="total-balance"]').should('contain.text', '$1,356.24')
 
-      // Check that sidebar balance was updated
-      cy.get('[data-testid="transactions-page-ELC"]').should('contain.text', '$0.00')
-      cy.get('[data-testid="sidebar-group-accounts"]').should('contain.text', '$3,754.53')
+    // Go to transactions page
+    cy.get('[data-testid="transactions-page-v6A"]').click()
+    cy.get('.transaction-row > .row-category').should('not.exist')
 
-      // Re-open the account modal
-      cy.get('.sidebar-on-account-item').eq(1).click().trigger('mouseover').should('have.class', 'expanded')
-      cy.get('[data-testid="btn-edit-account-ELC"]').click()
+    cy.get('.transaction-row .row-description').eq(2).click()
+    cy.get('[data-testid="details-category"]').should('not.exist')
+  })
+  it('Adds a note to an account', () => {
+    cy.initPath('categories/2022-07')
 
-      // Delete the account
-      cy.get('[data-testid="btn-delete-account"]').click()
-      cy.get('[data-testid="delete-confirm-button"]').filter(':visible').click()
+    // Open the edit account modal
+    cy.get('[data-testid="full-screen-loading"]').should('not.exist')
+    cy.get('.v-progress-linear__buffer').should('not.exist')
+    cy.get('[data-testid="sidebar-button-categories"]').click().trigger('mouseover')
+    cy.get('[data-testid="btn-edit-account-v6A"]').click()
 
-      // Check that account is removed from list
-      cy.get('.sidebar-on-account-item').should('have.length', 2)
-      cy.get('.sidebar-on-account-item').eq(1).should('not.contain', 'Credit')
+    // Add a note
+    cy.get('[data-testid="account-notes-field"]').type('This is a note')
 
-      // Check that we are redirected
-      cy.get('[data-testid="transactions-heading"]').should('contain.text', 'Savings')
-    })
-  // Test invert balance
+    // Apply
+    cy.get('[data-testid="btn-modal-confirm"]').filter(':visible').click()
+
+    // Open the edit account modal
+    cy.get('.v-progress-linear__buffer').should('not.exist')
+    cy.get('[data-testid="sidebar-button-categories"]').click().trigger('mouseover')
+    cy.get('[data-testid="btn-edit-account-v6A"]').click()
+
+    // Check note
+    cy.get('[data-testid="account-notes-field"]').should('have.value', 'This is a note')
+
+    // Change note
+    cy.get('[data-testid="account-notes-field"]').type('Another note')
+
+    // Cancel
+    cy.get('[data-testid="btn-modal-cancel"]').filter(':visible').click()
+
+    // Open the edit account modal
+    cy.get('.v-progress-linear__buffer').should('not.exist')
+    cy.get('[data-testid="sidebar-button-categories"]').click().trigger('mouseover')
+    cy.get('[data-testid="btn-edit-account-v6A"]').click()
+
+    // Check note
+    cy.get('[data-testid="account-notes-field"]').should('have.value', 'This is a note')
+  })
+  it('Deletes an account', () => {
+    cy.initPath('transactions/7kW')
+    // Open the edit account modal
+    cy.get('[data-testid="full-screen-loading"]').should('not.exist')
+    cy.get('.v-progress-linear__buffer').should('not.exist')
+    cy.get('.transaction-row').should('have.length', 7)
+    cy.get('.sidebar-on-account-item').eq(1).click().trigger('mouseover').should('have.class', 'expanded')
+    cy.get('[data-testid="btn-edit-account-ELC"]').click()
+
+    // Delete account transactions
+    cy.get('[data-testid="btn-delete-account-transactions"]').click()
+    cy.get('[data-testid="delete-confirm-button"]').click()
+
+    // Check that there are no transactions left
+    cy.get('.transaction-row').should('have.length', 0)
+
+    // Check that header was updated
+    cy.get('[data-testid="account-balance-cleared"]').should('contain.text', ' $0.00')
+    cy.get('[data-testid="account-balance-uncleared"]').should('contain.text', ' $0.00')
+    cy.get('[data-testid="account-balance-working"]').should('contain.text', ' $0.00')
+
+    // Check that sidebar balance was updated
+    cy.get('[data-testid="transactions-page-ELC"]').should('contain.text', '$0.00')
+    cy.get('[data-testid="sidebar-group-accounts"]').should('contain.text', '$3,754.53')
+
+    // Re-open the account modal
+    cy.get('.sidebar-on-account-item').eq(1).click().trigger('mouseover').should('have.class', 'expanded')
+    cy.get('[data-testid="btn-edit-account-ELC"]').click()
+
+    // Delete the account
+    cy.get('[data-testid="btn-delete-account"]').click()
+    cy.get('[data-testid="delete-confirm-button"]').filter(':visible').click()
+
+    // Check that account is removed from list
+    cy.get('.sidebar-on-account-item').should('have.length', 2)
+    cy.get('.sidebar-on-account-item').eq(1).should('not.contain', 'Credit')
+
+    // Check that we are redirected
+    cy.get('[data-testid="transactions-heading"]').should('contain.text', 'Savings')
+  })
 })

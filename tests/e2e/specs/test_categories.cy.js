@@ -233,6 +233,8 @@ describe('Test categories (budget) page', () => {
       cy.initPath('categories/2022-07')
     })
     it('Checks that updating budget value and clicking enter works', () => {
+      cy.get('[data-testid="full-screen-loading"]').should('not.exist')
+      cy.get('.v-progress-linear__buffer').should('not.exist')
       const vacation_selector = '[data-testid="category-budget-Lx7"]'
       const vacation_input_selector = '[data-testid="category-budget-input-Lx7"]'
       cy.get(vacation_selector).click()

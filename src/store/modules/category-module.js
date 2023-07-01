@@ -194,6 +194,9 @@ export default {
       Vue.set(state, 'categories', categories)
     },
     UPDATE_CATEGORY_BALANCES(state, { account, month, category_id, amount, doc }) {
+      if (account && !account.onBudget) {
+        return
+      }
       let month_balances = initCategoryBalancesMonth(state.allCategoryBalances, month, state.categories)
       month_balances = updateSingleCategory(month_balances, category_id, {
         account: account,
@@ -762,6 +765,9 @@ const getCategoryBalance = (current_balances, month, category_id, default_carryo
  * Note: Use null for carryover if not intending to update this value
  */
 const updateSingleCategory = (existing_month_balances, category_id, { amount, carryover, doc, account }) => {
+  if (account && !account.onBudget) {
+    return existing_month_balances
+  }
   let month_balances = existing_month_balances === undefined ? {} : existing_month_balances
   const sign = account ? account.sign : 1
 
@@ -790,6 +796,9 @@ const updateSingleCategory = (existing_month_balances, category_id, { amount, ca
 }
 
 const updateMonthBalances = (month_balances, master_id, account, month, amount) => {
+  if (!account.onBudget) {
+    return
+  }
   let updated_balances = { ...month_balances[month] }
   const final_amount = (amount *= account.sign)
   if (master_id === INCOME._id) {

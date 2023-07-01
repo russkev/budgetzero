@@ -20,8 +20,9 @@ export default {
       return Object.entries(state.allAccountBalances).reduce((partial, [account_id, balance]) => {
         // const initial = _.get(getters, [('accountsById', account_id, 'initialBalance')], 0)
         let initial = 0
-        if (getters.accountsById[account_id] && getters.accountsById[account_id].initialBalance !== undefined) {
-          initial = getters.accountsById[account_id].initialBalance
+        const account = getters.accountsById[account_id]
+        if (account && account.initialBalance !== undefined) {
+          initial = account.initialBalance
         }
         partial[account_id] = {
           ...balance,

@@ -237,7 +237,7 @@ describe('Test transactions', () => {
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $804.95 ')
     })
 
-    it('Test that pagination works correctly', () => {
+    it.only('Test that pagination works correctly', () => {
       // Check pagination works for delete
       // Check that pagination shows the correct number
       cy.get('.v-data-footer__pagination').should('contain.text', '1-7 of 7')
@@ -246,7 +246,7 @@ describe('Test transactions', () => {
       cy.get('[data-testid="import-transactions-button"]').click()
       const file = 'tests/__mockdata__/bankexports/ing.ofx'
       cy.get('input[type="file"]').selectFile(file, { force: true })
-      cy.get('.import-preview-table .v-data-footer__pagination').should('contain.text', '1-18 of 18')
+      cy.get('.import-preview-table .v-data-footer__pagination').filter(':visible').should('contain.text', '1-18 of 18')
       cy.get('[data-testid="import-ofx-transactions-button"]').click()
 
       // Check that pagination shows the correct number

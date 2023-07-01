@@ -3,7 +3,7 @@
     <v-data-table
       data-testid="transactions-table"
       v-model="selected"
-      :headers="dataTableHeaders"
+      :headers="tableHeaders"
       :items="transactions"
       group-by="date"
       item-key="_id"
@@ -54,7 +54,7 @@
           <td class="row-cleared pa-0">
             <transaction-cleared :item="item" :highlighted="isHighlighted(item, isSelected)" />
           </td>
-          <td class="row-category pa-0">
+          <td v-if="account.onBudget" class="row-category pa-0">
             <transaction-categories :item="item" :highlighted="isHighlighted(item, isSelected)" />
           </td>
           <td class="row-description pa-0">
@@ -102,6 +102,7 @@ export default {
   },
   computed: {
     ...mapGetters('accountTransactions', [
+      'account',
       'accountId',
       'accountOptions',
       'editedTransaction',
@@ -143,6 +144,12 @@ export default {
       set(updated_options) {
         this.updateAccountOptions(updated_options)
       }
+    },
+    tableHeaders() {
+      if (!this.account) {
+        return []
+      }
+      return this.dataTableHeaders.filter((header) => this.account.onBudget || header.text !== 'Category')
     }
   },
   watch: {

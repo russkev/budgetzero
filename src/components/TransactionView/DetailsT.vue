@@ -12,8 +12,8 @@
         <details-value />
         <div class="text-h5" :style="borderRight['cleared']">Status</div>
         <details-status />
-        <div class="text-h5" :style="borderRight['category']">Category</div>
-        <details-category />
+        <div v-if="account.onBudget" class="text-h5" :style="borderRight['category']">Category</div>
+        <details-category v-if="account.onBudget" />
         <div class="text-h5" :style="borderRight['memo']">Memo</div>
         <details-memo />
         <div class="text-h5" :style="borderRight['note']">Note</div>
@@ -167,6 +167,7 @@ export default {
   computed: {
     ...mapGetters(['isExporting']),
     ...mapGetters('accountTransactions', [
+      'account',
       'editedTransaction',
       'selectedTransactions',
       'accountId',

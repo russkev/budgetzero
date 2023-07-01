@@ -413,7 +413,8 @@ export default {
             date: transaction.date,
             memo: transaction.memo,
             account: account.name,
-            group: group
+            group: group,
+            onBudget: account.onBudget
           }
           if (transaction.splits && transaction.splits.length > 1) {
             transaction.splits.forEach((split) => {

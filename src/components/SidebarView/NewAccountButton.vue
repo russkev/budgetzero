@@ -53,6 +53,10 @@ export default {
         sort: this.isOnBudget ? this.accountsOnBudget.length : this.accountsOffBudget.length,
         _id: `b_${this.selectedBudgetId}${ID_NAME.account}${this.generateShortId()}`
       }
+      console.log('isOnBudget = ', this.isOnBudget)
+      console.log('accountsOnBudget = ', this.accountsOnBudget)
+      console.log('accountsOffBudget = ', this.accountsOffBudget)
+      console.log('NewAccountButton.onClick: this.editedItem = ', this.editedItem)
       this.dialogIsOpen = true
     },
     onSave(currentAccount) {

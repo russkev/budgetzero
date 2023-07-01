@@ -95,6 +95,7 @@ describe('Initial experience', () => {
 
       // Ensure automatic redirect to landing page
       cy.url().should('include', '/landing')
+      cy.get('[data-testid="full-screen-loading"]').should('not.exist')
 
       // Click 'Sync with cloud'
       cy.get('[data-testid="sync-budget-button"]').click()
