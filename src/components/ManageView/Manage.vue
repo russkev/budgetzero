@@ -4,6 +4,10 @@
       <page-heading title="Budgets" />
       <v-sheet max-width="800px" justify="center" id="budgets-container-sheet" class="mx-auto pa-2" color="transparent">
         <div class="transaction-details-grid pa-2 pb-0 mt-3">
+          <div class="text-h5">Budgets</div>
+          <div>
+            <select-budget />
+          </div>
           <div class="text-h5">Backup</div>
           <div>
             <backup />
@@ -33,6 +37,7 @@ import Restore from './Restore.vue'
 import Backup from './Backup.vue'
 import CloudSync from './CloudSync.vue'
 import DeleteBudgets from './DeleteBudgets.vue'
+import SelectBudget from './SelectBudget.vue'
 
 export default {
   name: 'Budgets',
@@ -44,7 +49,8 @@ export default {
     Restore,
     Backup,
     CloudSync,
-    DeleteBudgets
+    DeleteBudgets,
+    SelectBudget
   }
 }
 </script>

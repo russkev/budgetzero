@@ -97,7 +97,6 @@ export default {
 
         if (doc.current !== undefined && doc.previous !== undefined) {
           doc_type = validateDocument(context, doc.current, doc.previous)
-          console.log('Validation doc type: ', doc_type)
         } else {
           console.warn('commitBulkDocsToPouchAndVuex requires payload of type [{current, previous}]')
         }

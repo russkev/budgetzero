@@ -54,7 +54,7 @@
           <td class="row-cleared pa-0">
             <transaction-cleared :item="item" :highlighted="isHighlighted(item, isSelected)" />
           </td>
-          <td v-if="account.onBudget" class="row-category pa-0">
+          <td v-if="account && account.onBudget" class="row-category pa-0">
             <transaction-categories :item="item" :highlighted="isHighlighted(item, isSelected)" />
           </td>
           <td class="row-description pa-0">

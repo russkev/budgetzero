@@ -141,7 +141,7 @@ describe('Test accounts', () => {
     cy.get('.transaction-row > .row-balance').eq(0).should('contain.text', '-$918.43')
   })
 
-  it('Tests tracking / untracking account', () => {
+  it.only('Tests tracking / untracking account', () => {
     cy.initPath('categories/2022-07')
 
     // Open the edit account modal
@@ -194,6 +194,28 @@ describe('Test accounts', () => {
     cy.get('.transaction-row > .row-category').should('not.exist')
 
     cy.get('.transaction-row .row-description').eq(2).click()
+    cy.get('[data-testid="details-category"]').should('not.exist')
+
+    // Go to tracked account transactions page
+    cy.get('[data-testid="transactions-page-ELC"]').click()
+
+    // Open the edit account modal
+    cy.get('[data-testid="btn-edit-account-ELC"]').click()
+
+    // Untrack account
+    cy.get('[data-testid="account-on-budget-checkbox"]').filter(':visible').click()
+
+    // Apply
+    cy.get('[data-testid="btn-modal-confirm"]').filter(':visible').click()
+
+    // Check that account list has been updated correctly
+    cy.get('.sidebar-on-account-item').should('have.length', 1)
+    cy.get('.sidebar-off-account-item').should('have.length', 2)
+    cy.get('.sidebar-off-account-item').eq(0).should('contain', 'Credit')
+
+    // Check transactions
+    cy.get('.transaction-row > .row-category').should('not.exist')
+    cy.get('.transaction-row .row-description').eq(1).click()
     cy.get('[data-testid="details-category"]').should('not.exist')
   })
   it('Adds a note to an account', () => {

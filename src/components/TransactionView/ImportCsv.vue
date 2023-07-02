@@ -27,11 +27,6 @@
             <div class="text-body-1 ellipsis">Upload CSV file</div>
           </template>
         </v-file-input>
-        <!-- <v-file-input
-          style="flex: 0 white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
-          class="text-body-1 flex-grow-1"
-          class="text-body-1 flex-grow-1"
-        > -->
       </div>
       <div class="text-h5">Options</div>
       <div>
@@ -146,20 +141,6 @@ export default {
       required: true
     }
   },
-  // watch: {
-  //   csvInfo: {
-  //     handler(next, prev) {
-  //       console.log('csvInfo changed', JSON.stringify(next), JSON.stringify(prev))
-  //       console.log(JSON.parse(JSON.stringify(this.csvInfo)))
-  //       if (next.headerColumns !== prev.headerColumns && this.toUpdateHeaderColumns) {
-  //         console.log('Header columns changed')
-  //         this.updateTableData()
-  //         // this.verifyDateFormat();
-  //       }
-  //     },
-  //     deep: true
-  //   }
-  // },
   data() {
     return {
       parsedResults: null,
@@ -167,15 +148,6 @@ export default {
       selectedCsvTransactions: [],
       defaultCsvInfo: DEFAULT_CSV_INFO,
       csvInfo: DEFAULT_CSV_INFO,
-      // useHeaders: true,
-      // useSeparateDebits: false,
-      // headerColumns: {
-      //   date: 0,
-      //   memo: 1,
-      //   credit: 2,
-      //   debit: 3,
-      // },
-      // dateFormat: "D/M/YYYY",
       toUpdateHeaderColumns: true,
       truncateLength: 20,
       creditError: '',
@@ -221,18 +193,7 @@ export default {
         this.parseFile()
       }
     },
-    // headerColumnsDisplay: {
-    //   get() {
-    //     return this.headerColumns
-    //   },
-    //   set(value) {
-    //     console.log('Setting header columns')
-    //     this.headerColumns = value
-    //     this.updateTableData()
-    //   }
-    // },
     applyIsDisabled() {
-      // console.log(this.$data)
       return (
         this.tableData.length < 1 ||
         Boolean(this.creditError) ||
@@ -267,7 +228,6 @@ export default {
         for (let i = 0; i < this.parsedResults.data[0].length; i++) {
           result.push(this.parsedResults.data[0][i].slice(0, this.truncateLength))
         }
-        console.log('Header option previews', result)
         return result
       }
     }
@@ -279,7 +239,6 @@ export default {
       /**
        * Interpret the parsed csv file into a table
        */
-      console.log('Getting table data', JSON.parse(JSON.stringify(this.csvInfo)))
       if (!this.parsedResults) {
         return []
       }
@@ -356,20 +315,15 @@ export default {
 
         data.importId = `${this.account}-${data.date}-${data.memo.substring(0, 20)}-${data.amount}`
         data.exists = data.importId in this.importIds
-        // console.log('Data exists', data.exists, data.importId, this.importIds)
 
         return data
       })
-      // console.log('Table data', this.tableData)
-      // console.log('Import ids', this.importIds)
     },
     parseFile() {
-      console.log('Parsing file')
       /**
        * Parse the csv file and then update the table data
        */
       if (!this.chosenFile) {
-        console.log('No file chosen')
         this.reset()
         return
       }
@@ -384,9 +338,7 @@ export default {
           if (!this.accountsById[this.account]['csvInfo']) {
             this.processHeaders()
           }
-          console.log('parse file update table data')
           this.updateTableData()
-          // this.verifyDateFormat();
           this.$nextTick(() => {
             this.toUpdateHeaderColumns = true
           })
@@ -395,28 +347,8 @@ export default {
     },
     onDateFormatChange(date_format) {
       this.csvInfo.dateFormat = date_format
-      console.log('on date format change update table data')
       this.updateTableData()
-      // this.verifyDateFormat();
     },
-    // verifyDateFormat() {
-    //   this.dateFormatError = "";
-    //   if (!this.tableData) {
-    //     return;
-    //   }
-    //   try {
-    //     let i = this.csvInfo.useHeaders ? 1 : 0;
-    //     for (; i < this.tableData.length; i++) {
-    //       const date_raw = this.tableData[i].date;
-    //       if (!moment(date_raw, this.dateFormat, true).isValid()) {
-    //         this.dateFormatError = `Unable to match input '${date_raw}' with format '${this.dateFormat}' for row ${i}`;
-    //         break;
-    //       }
-    //     }
-    //   } catch (error) {
-    //     this.dateFormatError = error.message;
-    //   }
-    // },
     truncate(input_string, length) {
       if (!input_string) {
         return ''
@@ -436,7 +368,6 @@ export default {
         csvInfo: this.csvInfo
       })
         .then(() => {
-          console.log('on save update default csv info', this.accountsById[this.account]['csvInfo'])
           this.updateDefaultCsvInfo(this.accountsById[this.account]['csvInfo'])
           return this.loadLocalBudget()
         })
@@ -446,7 +377,6 @@ export default {
         })
     },
     onHeaderChanged(header, value) {
-      console.log('on header changed update table data', header, value)
       this.csvInfo.headerColumns[header] = value
       this.updateTableData()
     },
@@ -455,7 +385,6 @@ export default {
     },
     updateDefaultCsvInfo(csvInfo) {
       if (csvInfo) {
-        console.log('update default csv info', JSON.parse(JSON.stringify(csvInfo)))
         this.defaultCsvInfo = JSON.parse(JSON.stringify(csvInfo))
         this.csvInfo = JSON.parse(JSON.stringify(csvInfo))
         this.updateTableData()
@@ -504,17 +433,6 @@ export default {
 .transaction-details-grid > div {
   padding-bottom: 3px;
 }
-
-/* #csv-file-input .v-input__slot {
-  padding: 0;
-  padding-left: 8px;
-  width: calc(100% - 8px);
-  overflow: hidden;
-}
-
-#csv-file-input .v-text-field__slot {
-  width: calc(100% - 38px);
-} */
 
 #csv-file-input {
   overflow: hidden;

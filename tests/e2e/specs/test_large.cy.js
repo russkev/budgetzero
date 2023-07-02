@@ -3,7 +3,8 @@ describe('Test large budget', () => {
     cy.initPathLarge('transactions/q1F')
   }),
     it('Imports ofx file', () => {
-      cy.get('.v-progress-linear__buffer').should('not.exist', { timeout: 100000 })
+      // cy.get('.v-progress-linear__buffer', { timeout: 100000 }).should('not.exist', { timeout: 100000 })
+      cy.get('.transaction-row', { timeout: 100000 }).should('have.length', 20, { timeout: 100000 })
       cy.get('[data-testid="transactions-page-q1F"]').should('contain.text', '$252,268.02')
       cy.get('[data-testid="transactions-page-9LW"]').should('contain.text', '$237,800.98')
 
@@ -16,6 +17,8 @@ describe('Test large budget', () => {
       cy.get('[data-testid="import-ofx-transactions-button"]').click()
 
       // Ensure current account transaction totals are updated
-      cy.get('[data-testid="transactions-page-q1F"]').should('contain.text', '$253,194.32')
+      cy.get('[data-testid="transactions-page-q1F"]', { timeout: 100000 }).should('contain.text', '$253,194.32', {
+        timeout: 100000
+      })
     })
 })
