@@ -23,7 +23,7 @@ describe('Test accounts', () => {
     cy.get('.sidebar-on-account-item').eq(3).should('contain', 'Emergency')
   })
 
-  it('Tests starting balance', () => {
+  it.only('Tests starting balance', () => {
     cy.initPath('categories/2022-07')
     cy.get('[data-testid="transactions-page-7kW"]').click()
 
@@ -35,10 +35,10 @@ describe('Test accounts', () => {
     cy.get('[data-testid="btn-edit-account-ELC"]').click()
 
     // Give a starting balance
-    cy.get('[data-testid="account-initial-balance-input"]').type('1000').blur()
+    cy.get('[data-testid="account-initial-balance-input"]').type('1000').type('{ctrl+enter}')
 
-    // Apply
-    cy.get('[data-testid="btn-modal-confirm"]').click()
+    // Check that modal is closed
+    cy.get('[data-testid="account-edit-modal"]').should('not.be.visible')
 
     // Check transactions values
     cy.get('.transaction-row > .row-balance').eq(3).should('contain.text', '$580.00')
@@ -141,7 +141,7 @@ describe('Test accounts', () => {
     cy.get('.transaction-row > .row-balance').eq(0).should('contain.text', '-$918.43')
   })
 
-  it.only('Tests tracking / untracking account', () => {
+  it('Tests tracking / untracking account', () => {
     cy.initPath('categories/2022-07')
 
     // Open the edit account modal
@@ -218,6 +218,9 @@ describe('Test accounts', () => {
     cy.get('.transaction-row .row-description').eq(1).click()
     cy.get('[data-testid="details-category"]').should('not.exist')
   })
+
+  it('Tests drag drop accounts', () => {})
+
   it('Adds a note to an account', () => {
     cy.initPath('categories/2022-07')
 
@@ -227,11 +230,11 @@ describe('Test accounts', () => {
     cy.get('[data-testid="sidebar-button-categories"]').click().trigger('mouseover')
     cy.get('[data-testid="btn-edit-account-v6A"]').click()
 
-    // Add a note
-    cy.get('[data-testid="account-notes-field"]').type('This is a note')
+    // Add a note and apply
+    cy.get('[data-testid="account-notes-field"]').type('This is a note').type('{ctrl+enter}')
 
-    // Apply
-    cy.get('[data-testid="btn-modal-confirm"]').filter(':visible').click()
+    // Check that modal is closed
+    cy.get('[data-testid="account-edit-modal"]').should('not.be.visible')
 
     // Open the edit account modal
     cy.get('.v-progress-linear__buffer').should('not.exist')

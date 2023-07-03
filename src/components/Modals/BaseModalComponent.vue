@@ -14,7 +14,9 @@
       <v-card-actions class="white--text">
         <v-spacer />
         <slot name="actions">
-          <v-btn text @click="$emit('cancel')" data-testid="btn-modal-cancel">{{ cancelLabel }}</v-btn>
+          <v-btn text @click="$emit('cancel')" data-testid="btn-modal-cancel">
+            {{ cancelLabel }}
+          </v-btn>
           <v-btn color="primary darken-3" :elevation="0" data-testid="btn-modal-confirm" @click="$emit('confirm')">
             {{ confirmLabel }}
           </v-btn>
@@ -56,6 +58,13 @@ export default {
     create() {
       this.$emit('create', this.itemName)
       this.close()
+    },
+    handleKeyDown(event) {
+      console.log('keydown event', event)
+      if (event.ctrlKey && event.key === 'Enter') {
+        event.preventDefault()
+        this.create()
+      }
     }
   }
 }

@@ -1,6 +1,12 @@
 <template>
-  <v-dialog v-model="show" max-width="500px">
-    <base-modal-component :show="show" confirm-label="Save" @cancel="close" @confirm="save">
+  <v-dialog v-model="show" max-width="500px" @keydown.enter.ctrl.exact.prevent="save">
+    <base-modal-component
+      :show="show"
+      confirm-label="Save"
+      @cancel="close"
+      @confirm="save"
+      data-testid="account-edit-modal"
+    >
       <template #title> {{ isNew ? 'Add Account' : 'Edit Account' }} </template>
       <template #body>
         <v-form ref="form" v-model="valid">
@@ -87,6 +93,7 @@
                 hide-details
                 placeholder="Notes"
                 rows="5"
+                @keydown.enter.ctrl.exact.prevent="save"
               />
             </div>
             <div v-if="!isNew">Danger</div>
@@ -297,6 +304,9 @@ export default {
         .finally(() => {
           this.deleteLoading = false
         })
+    },
+    handleKeyDown(event) {
+      console.log('event', event)
     }
   }
 }
