@@ -8,10 +8,11 @@
         flat
         solo
         hide-details
-        @focus="isFocused = true"
-        @blur="isFocused = false"
         :background-color="isFocused || hover ? 'background lighten-2' : 'transparent'"
         :readonly="!isFocused"
+        @focus="isFocused = true"
+        @blur="isFocused = false"
+        @keydown.enter.ctrl.exact.prevent="onCtrlEnter"
       />
     </div>
   </v-hover>
@@ -38,7 +39,10 @@ export default {
     }
   },
   methods: {
-    ...mapMutations('accountTransactions', ['SET_EDITED_TRANSACTION_MEMO'])
+    ...mapMutations('accountTransactions', ['SET_EDITED_TRANSACTION_MEMO']),
+    onCtrlEnter() {
+      this.$emit('ctrl-enter')
+    }
   }
 }
 </script>

@@ -23,7 +23,7 @@ describe('Test accounts', () => {
     cy.get('.sidebar-on-account-item').eq(3).should('contain', 'Emergency')
   })
 
-  it.only('Tests starting balance', () => {
+  it('Tests starting balance', () => {
     cy.initPath('categories/2022-07')
     cy.get('[data-testid="transactions-page-7kW"]').click()
 

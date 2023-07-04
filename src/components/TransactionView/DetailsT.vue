@@ -1,6 +1,11 @@
 <template>
-  <v-card width="100%" flat color="background lighten-1" class="flex-sheet pa-1 ma-0">
-    <!-- <div v-if="importOfx">Importing OFX file...</div> -->
+  <v-card
+    width="100%"
+    flat
+    color="background lighten-1"
+    class="flex-sheet pa-1 ma-0"
+    @keydown.enter.ctrl.exact.prevent="onCtrlEnter"
+  >
     <import-ofx v-if="importOfxIsOpen" @close="onCloseImportOfx" @apply="onApplyImportOfx" :account="accountId" />
     <import-csv v-else-if="importCsvIsOpen" @close="onCloseImportCsv" @apply="onCloseImportCsv" :account="accountId" />
     <template v-else-if="editedTransaction._id !== DEFAULT_TRANSACTION._id">
@@ -15,9 +20,9 @@
         <div v-if="account.onBudget" class="text-h5" :style="borderRight['category']">Category</div>
         <details-category v-if="account.onBudget" />
         <div class="text-h5" :style="borderRight['memo']">Memo</div>
-        <details-memo />
+        <details-memo @ctrl-enter="onCtrlEnter" />
         <div class="text-h5" :style="borderRight['note']">Note</div>
-        <details-note />
+        <details-note @ctrl-enter="onCtrlEnter" />
         <div class="text-h5" :style="borderRight['payee']">Danger</div>
         <details-delete />
         <div class="text-h5"></div>
@@ -109,11 +114,11 @@
         <!-- </export-excel> -->
         <!-- @click.stop="importModalIsVisible = true" -->
         <!-- <import-transactions
-          :visible="importModalIsVisible"
-          :account="accountId"
-          @close="onImportModalClose"
-          @apply="onImportModalApply"
-        /> -->
+            :visible="importModalIsVisible"
+            :account="accountId"
+            @close="onImportModalClose"
+            @apply="onImportModalApply"
+          /> -->
       </template>
     </details-buttons>
   </v-card>
@@ -304,6 +309,15 @@ export default {
     },
     onExportExcel() {
       this.exportAccountToExcel({ accountId: this.accountId })
+    },
+    onCtrlEnter() {
+      if (this.importOfxIsOpen) {
+        // this.onApplyImportOfx()
+      } else if (this.importCsvIsOpen) {
+        // this.onApplyImportCsv()
+      } else {
+        this.onSave()
+      }
     }
   }
 }

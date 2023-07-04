@@ -89,8 +89,8 @@ describe('Test transactions', () => {
       cy.get('.transaction-row .row-description').eq(4).click()
       cy.get('[data-testid="details-value"]').click()
       cy.get('[data-testid="details-value"]').type('5.00').type('{enter}')
-      cy.get('[data-testid="details-inflow-button"]').click()
-      cy.get('[data-testid="save-edit-button"]').click()
+      cy.get('[data-testid="details-inflow-button"]').click().type('{ctrl+enter}')
+      cy.get('.transaction-details-grid').should('not.exist')
 
       cy.get('.transaction-row').should('have.length', 7)
       cy.get('.transaction-row > .row-inflow').eq(4).should('have.text', ' $5.00 ')
@@ -117,6 +117,19 @@ describe('Test transactions', () => {
       cy.get('[data-testid="sidebar-button-categories"]').click()
       cy.get('[data-testid="category-balance-n00"]').should('have.text', ' $202.60 ')
       cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $1,193.96 ')
+    })
+
+    it.only('Test ctrl+enter and that note update is saved', () => {
+      // cy.get('.transaction-row .row-description').eq(4).click()
+      // cy.get('[data-testid="details-note"]').click()
+      // cy.get('[data-testid="details-note"]').type('This is a note').type('{ctrl+enter}')
+      // cy.get('.transaction-details-grid').should('not.exist')
+      // cy.get('.transaction-row > .row-description').eq(4).should('contain.text', 'This is a note')
+
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('.save-cancel-container').click()
+      cy.get('body').type('{ctrl+enter}')
+      cy.get('.transaction-details-grid').should('not.exist')
     })
 
     it('Test clear and unclear multiple transactions at once', () => {
