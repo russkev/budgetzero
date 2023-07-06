@@ -119,17 +119,69 @@ describe('Test transactions', () => {
       cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', ' $1,193.96 ')
     })
 
-    it.only('Test ctrl+enter and that note update is saved', () => {
-      // cy.get('.transaction-row .row-description').eq(4).click()
-      // cy.get('[data-testid="details-note"]').click()
-      // cy.get('[data-testid="details-note"]').type('This is a note').type('{ctrl+enter}')
-      // cy.get('.transaction-details-grid').should('not.exist')
-      // cy.get('.transaction-row > .row-description').eq(4).should('contain.text', 'This is a note')
-
+    it('Test ctrl+enter and that note update is saved', () => {
       cy.get('.transaction-row .row-description').eq(4).click()
-      cy.get('.save-cancel-container').click()
-      cy.get('body').type('{ctrl+enter}')
+      cy.get('[data-testid="details-note"]').click()
+      cy.get('[data-testid="details-note"]').type('This is a note').type('{ctrl+enter}')
       cy.get('.transaction-details-grid').should('not.exist')
+      cy.get('.transaction-row > .row-description').eq(4).should('contain.text', 'This is a note')
+
+      // Ctrl + Enter on date
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="details-date"]').type('{ctrl+enter}')
+      cy.get('.transaction-details-grid').should('not.exist')
+      cy.get('.v-progress-linear__buffer').should('exist')
+      cy.get('.v-progress-linear__buffer').should('not.exist')
+
+      // Ctrl + Enter on category
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="details-value"]').type('{ctrl+enter}')
+      cy.get('.transaction-details-grid').should('not.exist')
+      cy.get('.v-progress-linear__buffer').should('exist')
+      cy.get('.v-progress-linear__buffer').should('not.exist')
+
+      // Ctrl + Enter on value
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="details-value"]').type('{ctrl+enter}')
+      cy.get('.transaction-details-grid').should('not.exist')
+      cy.get('.v-progress-linear__buffer').should('exist')
+      cy.get('.v-progress-linear__buffer').should('not.exist')
+
+      // Ctrl + Enter on outflow
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="details-outflow-button"]').type('{ctrl+enter}')
+      cy.get('.transaction-details-grid').should('not.exist')
+      cy.get('.v-progress-linear__buffer').should('exist')
+      cy.get('.v-progress-linear__buffer').should('not.exist')
+
+      // Ctrl + Enter on cleared
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="details-cleared"]').type('{ctrl+enter}')
+      cy.get('.transaction-details-grid').should('not.exist')
+      cy.get('.v-progress-linear__buffer').should('exist')
+      cy.get('.v-progress-linear__buffer').should('not.exist')
+
+      // Ctrl + Enter on category
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="details-category"]').type('{ctrl+enter}')
+      cy.get('.transaction-details-grid').should('not.exist')
+      cy.get('.v-progress-linear__buffer').should('exist')
+      cy.get('.v-progress-linear__buffer').should('not.exist')
+
+      // Ctrl + Enter on split
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="add-split-button"]').click()
+      cy.get('[data-testid="split-1-value"]').type('{ctrl+enter}')
+      cy.get('.transaction-details-grid').should('not.exist')
+      cy.get('.v-progress-linear__buffer').should('exist')
+      cy.get('.v-progress-linear__buffer').should('not.exist')
+
+      // Ctrl + Enter on memo
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="details-memo"]').type('{ctrl+enter}')
+      cy.get('.transaction-details-grid').should('not.exist')
+      cy.get('.v-progress-linear__buffer').should('exist')
+      cy.get('.v-progress-linear__buffer').should('not.exist')
     })
 
     it('Test clear and unclear multiple transactions at once', () => {

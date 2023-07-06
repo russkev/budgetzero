@@ -11,6 +11,7 @@
             :color="categoryBackgroundColor"
             :disabled="disabled"
             :data-testid="buttonTestid"
+            :tabindex="0"
           >
             <v-sheet width="5px" min-width="5px" :color="selectedCategoryColor" height="100%" class="mr-2" />
             <category-item-text :category="selectedCategory" :show-balance="showBalance">

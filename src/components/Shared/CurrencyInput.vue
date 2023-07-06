@@ -7,6 +7,7 @@
       dense
       flat
       solo
+      :autofocus="autofocus"
       :hide-details="rules.length === 0"
       :rules="rules"
       :disabled="disabled"
@@ -57,6 +58,10 @@ export default {
       default: false
     },
     allowNegative: {
+      type: Boolean,
+      default: false
+    },
+    autofocus: {
       type: Boolean,
       default: false
     }
