@@ -1,5 +1,5 @@
 <template>
-  <restore />
+  <restore is-landing />
 </template>
 
 <script>

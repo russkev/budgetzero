@@ -242,7 +242,7 @@ export default {
 
       dispatch('updateMonthCategory', { current, previous }, { root: true })
         .then(() => {
-          if (getters.selectedCategory._id === category_id) {
+          if (getters.selectedCategory && getters.selectedCategory._id === category_id) {
             dispatch('syncSelectedCategory')
           }
         })

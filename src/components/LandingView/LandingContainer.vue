@@ -3,7 +3,7 @@
     <v-container>
       <div class="landing-page">
         <v-icon icon dark color="primary" size="50">{{ icon }} </v-icon>
-        <div class="text-h4 mb-4" style="color: var(--v-primary-base)">{{ title }}</div>
+        <div class="text-h4 mb-4" style="color: var(--v-primary-base)" data-testid="landing-title">{{ title }}</div>
         <router-view></router-view>
         <div style="width: 100%; display: flex; flex-direction: row" class="mt-3">
           <landing-button
@@ -12,6 +12,7 @@
             icon="mdi-arrow-left"
             :to="{ path: '/landing' }"
             width="80px"
+            data-testid="landing-back-button"
           />
         </div>
       </div>

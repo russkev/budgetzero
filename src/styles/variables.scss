@@ -1,4 +1,4 @@
-@use "sass:math";
+@use 'sass:math';
 
 // @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;1,500;1,400;1,600&display=swap');
 // $material-dark: (
@@ -10,56 +10,56 @@
   font-style: normal;
   font-weight: 300;
   // src: url("~@/assets/fonts/Poppins-Light.ttf");
-  src: url("@/assets/fonts/poppins/Poppins-Light.ttf");
+  src: url('@/assets/fonts/poppins/Poppins-Light.ttf');
 }
 
 @font-face {
   font-family: 'Poppins';
   font-style: italic;
   font-weight: 300;
-  src: url("@/assets/fonts/poppins/Poppins-LightItalic.ttf");
+  src: url('@/assets/fonts/poppins/Poppins-LightItalic.ttf');
 }
 
 @font-face {
   font-family: 'Poppins';
   font-style: normal;
   font-weight: 400;
-  src: url("@/assets/fonts/poppins/Poppins-Regular.ttf");
+  src: url('@/assets/fonts/poppins/Poppins-Regular.ttf');
 }
 
 @font-face {
   font-family: 'Poppins';
   font-style: italic;
   font-weight: 400;
-  src: url("@/assets/fonts/poppins/Poppins-Italic.ttf");
+  src: url('@/assets/fonts/poppins/Poppins-Italic.ttf');
 }
 
 @font-face {
   font-family: 'Poppins';
   font-style: normal;
   font-weight: 500;
-  src: url("@/assets/fonts/poppins/Poppins-Medium.ttf");
+  src: url('@/assets/fonts/poppins/Poppins-Medium.ttf');
 }
 
 @font-face {
   font-family: 'Poppins';
   font-style: italic;
   font-weight: 500;
-  src: url("@/assets/fonts/poppins/Poppins-MediumItalic.ttf");
+  src: url('@/assets/fonts/poppins/Poppins-MediumItalic.ttf');
 }
 
 @font-face {
   font-family: 'Poppins';
   font-style: normal;
   font-weight: 600;
-  src: url("@/assets/fonts/poppins/Poppins-SemiBold.ttf");
+  src: url('@/assets/fonts/poppins/Poppins-SemiBold.ttf');
 }
 
 @font-face {
   font-family: 'Poppins';
   font-style: italic;
   font-weight: 600;
-  src: url("@/assets/fonts/poppins/Poppins-SemiBoldItalic.ttf");
+  src: url('@/assets/fonts/poppins/Poppins-SemiBoldItalic.ttf');
 }
 
 $body-font-family: 'Poppins', sans-serif;
@@ -70,27 +70,27 @@ $headings: (
   'h2': (
     'size': 2rem,
     'weight': 800,
-    'line-height': 2rem,
+    'line-height': 2rem
   ),
   'h3': (
     'size': 2rem,
     'weight': 500,
-    'line-height': 2rem,
+    'line-height': 2rem
   ),
   'h4': (
     'size': 1.4rem,
-    'weight': 600,
+    'weight': 600
   ),
   'h5': (
     'size': 0.9rem,
-    'weight': 500,
+    'weight': 500
   ),
   'body-1': (
     'size': 1rem,
-    'weight': 400,
+    'weight': 300
   ),
   'body-2': (
-    'size': 1.08rem,
-    'weight': 400,
-  ),
+    'size': 0.85rem,
+    'weight': 300
+  )
 );

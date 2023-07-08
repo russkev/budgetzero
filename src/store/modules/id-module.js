@@ -3,7 +3,6 @@ import Vue from 'vue'
 import { randomInt } from '../../helper'
 import moment from 'moment'
 
-
 export default {
   state: {},
   getters: {},
@@ -47,6 +46,9 @@ export default {
  */
 function idExists(id) {
   const db = Vue.prototype.$pouch
+  if (!db) {
+    return false
+  }
   return db
     .get(id)
     .then(() => {
@@ -63,7 +65,6 @@ function validateId(id) {
 
 function daySeconds() {
   return moment().second() + 60 * moment().minute() + 60 * 60 * moment().hour()
-
 }
 
 function daySecondsBase64() {
@@ -78,7 +79,7 @@ function isValidDate(date_string) {
 }
 
 const original_encoding = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
-const new_encoding      = '-.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz'
+const new_encoding = '-.0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz'
 const encode_mapping = original_encoding.split('').reduce((partial, letter, i) => {
   partial[letter] = new_encoding[i]
   return partial
@@ -147,20 +148,20 @@ function generateShortId() {
 }
 
 /**
- * 
+ *
  * @param {string} a first item to compare
  * @param {string} b second item to compare
- * @returns 
+ * @returns
  *  -1 if a <  b
  *   0 if a == b
- *   1 if a >  b 
+ *   1 if a >  b
  */
 function compareAscii(a, b) {
-  if (typeof(a) !== 'string' || typeof(b) !== 'string') {
-    console.error(`compareAscii expected strings but got a: ${typeof(a)}, b: ${typeof(b)}` )
+  if (typeof a !== 'string' || typeof b !== 'string') {
+    console.error(`compareAscii expected strings but got a: ${typeof a}, b: ${typeof b}`)
   }
   const length = Math.min(a.length, b.length)
-  for(let i = 0; i < length; i++) {
+  for (let i = 0; i < length; i++) {
     if (a.charCodeAt(i) < b.charCodeAt(i)) {
       return -1
     } else if (a.charCodeAt(i) > b.charCodeAt(i)) {

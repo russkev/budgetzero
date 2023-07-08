@@ -116,5 +116,101 @@ describe('Initial experience', () => {
       // Ensure automatic redirect to categories page
       cy.url().should('include', '/categories')
     })
+    it('Checks that enter and ctrl+enter works', () => {
+      cy.initPathEmpty('landing')
+
+      /* ------- Name Field ------- */
+      cy.get('[data-testid="create-new-budget-button"]').click()
+      // Input name
+      cy.get('[data-testid="budget-name-field"]').type('Cy1').type('{ctrl+enter}')
+
+      // Ensure automatic redirect to categories page
+      cy.url().should('include', '/categories')
+
+      /* ------- Master Categories Checkbox ------- */
+      cy.get('[data-testid="sidebar-button-manage"]').click()
+      cy.get('[data-testid="delete-local-db-button"]').click()
+      cy.get('[data-testid="delete-confirm-button"]').click()
+
+      // Create new budget
+      cy.get('[data-testid="create-new-budget-button"]').click()
+      // Input name
+      cy.get('[data-testid="budget-name-field"]').type('Cy1')
+      // Uncheck a checkbox
+      cy.get('[data-testid="master-checkbox-Giving"]').click({ force: true }).type('{ctrl+enter}', { force: true })
+
+      // Ensure automatic redirect to categories page
+      cy.url().should('include', '/categories')
+
+      /* ------- Category Checkbox ------- */
+      cy.get('[data-testid="sidebar-button-manage"]').click()
+      cy.get('[data-testid="delete-local-db-button"]').click()
+      cy.get('[data-testid="delete-confirm-button"]').click()
+
+      // Create new budget
+      cy.get('[data-testid="create-new-budget-button"]').click()
+      // Input name
+      cy.get('[data-testid="budget-name-field"]').type('Cy1')
+      // Uncheck a checkbox
+      cy.get('[data-testid="checkbox-Tithing"]').click({ force: true }).type('{ctrl+enter}', { force: true })
+
+      // Ensure automatic redirect to categories page
+      cy.url().should('include', '/categories')
+
+      /* ------- Cloud Sync Address ------- */
+      cy.get('[data-testid="sidebar-button-manage"]').click()
+      cy.get('[data-testid="delete-local-db-button"]').click()
+      cy.get('[data-testid="delete-confirm-button"]').click()
+
+      cy.get('[data-testid="sync-budget-button"]').click()
+      cy.get('[data-testid="edit-cloud-button"]').click()
+      cy.get('[data-testid="cloud-sync-url"]').type('TestAddress').type('{enter}')
+      cy.get('[data-testid="cloud-sync-url"]').should('have.attr', 'readonly')
+      cy.get('[data-testid="cloud-sync-url"]').should('have.value', 'TestAddress')
+    })
+
+    it('Checks that esc key goes back to main landing page', () => {
+      cy.initPathEmpty('landing')
+
+      /* ------- Name Field ------- */
+      cy.get('[data-testid="create-new-budget-button"]').click()
+      cy.get('[data-testid="budget-name-field"]').type('Cy1').type('{esc}')
+      cy.get('[data-testid="landing-title"]').should('contain.text', 'No budget loaded')
+
+      /* ------- Master Categories Checkbox ------- */
+      cy.get('[data-testid="create-new-budget-button"]').click()
+      cy.get('[data-testid="master-checkbox-Giving"]').click({ force: true }).type('{esc}', { force: true })
+      cy.get('[data-testid="landing-title"]').should('contain.text', 'No budget loaded')
+
+      /* ------- Category Checkbox ------- */
+      cy.get('[data-testid="create-new-budget-button"]').click()
+      cy.get('[data-testid="checkbox-Tithing"]').click({ force: true }).type('{esc}', { force: true })
+      cy.get('[data-testid="landing-title"]').should('contain.text', 'No budget loaded')
+
+      /* ------- Import From File ------- */
+      cy.get('[data-testid="restore-budget-button"]').click()
+      const file = 'tests/__mockdata__/budgetzero_export.json'
+      cy.get('input[type="file"]').selectFile(file, { force: true })
+      cy.get('[data-testid="restore-button"]').should('not.be.disabled')
+      cy.get('[data-testid="restore-button"]').focus().type('{esc}')
+      cy.get('[data-testid="landing-title"]').should('contain.text', 'No budget loaded')
+
+      /* ------- Cloud Sync Address ------- */
+      cy.get('[data-testid="sync-budget-button"]').click()
+      cy.get('[data-testid="edit-cloud-button"]').click()
+      cy.get('[data-testid="cloud-sync-url"]').type('{esc}')
+      cy.get('[data-testid="cloud-sync-url"]').should('have.attr', 'readonly')
+      cy.get('[data-testid="landing-back-button"]').click()
+
+      /* ------- Cloud Edit Button ------- */
+      cy.get('[data-testid="sync-budget-button"]').click()
+      cy.get('[data-testid="edit-cloud-button"]').focus().type('{esc}')
+      cy.get('[data-testid="landing-title"]').should('contain.text', 'No budget loaded')
+
+      /* ------- Cloud Clear Button ------- */
+      cy.get('[data-testid="sync-budget-button"]').click()
+      cy.get('[data-testid="clear-cloud-button"]').focus().type('{esc}')
+      cy.get('[data-testid="landing-title"]').should('contain.text', 'No budget loaded')
+    })
   })
 })

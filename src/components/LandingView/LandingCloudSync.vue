@@ -1,5 +1,5 @@
 <template>
-  <cloud-sync />
+  <cloud-sync is-landing />
 </template>
 
 <script>

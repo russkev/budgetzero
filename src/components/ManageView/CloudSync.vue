@@ -31,13 +31,15 @@
           :error="syncState === SYNC_STATE.ERROR"
           :error-messages="[syncErrorMessage]"
           v-model="remoteSyncUrlData"
+          @keydown.escape.prevent="onCancelEdit"
+          @keydown.enter.exact.prevent="onSyncSave"
         >
         </v-text-field>
-        <div v-if="isEditing" id="cloud-sync-buttons" class="sync-editing">
+        <div v-if="isEditing" id="cloud-sync-buttons" class="sync-editing" @keydown.escape.prevent="onCancelEdit">
           <div></div>
-          <cancel-save @cancel="() => (isEditing = false)" @save="onSyncSave" />
+          <cancel-save @cancel="onCancelEdit" @save="onSyncSave" />
         </div>
-        <div v-else id="cloud-sync-buttons" class="sync-not-editing">
+        <div v-else id="cloud-sync-buttons" class="sync-not-editing" @keydown.escape.prevent="onCancel">
           <button-transparent small icon="mdi-pencil" @click="enableEdit" class="ml-2" data-testid="edit-cloud-button">
             Edit
           </button-transparent>
@@ -87,13 +89,15 @@ export default {
     return {
       remoteSyncUrlInput: '',
       isEditing: false,
-      // temp_url: 'NONE',
       SYNC_STATE
     }
   },
-  // mounted() {
-  //   this.remoteSyncUrlInput = this.remoteSyncURL
-  // },
+  props: {
+    isLanding: {
+      type: Boolean,
+      default: false
+    }
+  },
   computed: {
     ...mapGetters(['remoteSyncURL', 'syncState', 'syncErrorMessage', 'syncProgress']),
     remoteSyncUrlData: {
@@ -112,6 +116,9 @@ export default {
   methods: {
     ...mapActions(['setRemoteSyncToCustomURL', 'clearRemoteSync']),
     onSyncSave() {
+      if (!this.isEditing) {
+        return
+      }
       this.isEditing = false
       this.setRemoteSyncToCustomURL(this.remoteSyncUrlInput)
     },
@@ -119,6 +126,17 @@ export default {
       this.isEditing = !this.isEditing
       this.remoteSyncUrlInput = this.remoteSyncURL
       document.getElementById('cloud-sync-url').select()
+    },
+    onCancelEdit() {
+      this.isEditing = false
+      document.getElementById('cloud-sync-url').blur()
+    },
+    onCancel() {
+      if (!this.isLanding) {
+        return
+      }
+      this.isEditing = false
+      this.$router.push({ name: 'landing' })
     }
   }
 }

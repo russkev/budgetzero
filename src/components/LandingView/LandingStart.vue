@@ -5,6 +5,7 @@
       label="Create New Budget"
       to="/landing/new"
       data-testid="create-new-budget-button"
+      autofocus
     />
     <landing-button
       icon="mdi-folder-upload-outline"

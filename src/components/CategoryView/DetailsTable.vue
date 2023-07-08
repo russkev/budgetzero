@@ -13,6 +13,7 @@
         'items-per-page-options': [5, 10, 20, 50, 100, 200],
         'items-per-page-text': 'rows'
       }"
+      @keydown.esc.prevent="onEsc"
     >
       <template #group.header="{ items }">
         <td colspan="20" class="date-row background pl-1">
@@ -71,7 +72,10 @@ export default {
     }
   },
   methods: {
-    formatDate: formatDate
+    formatDate: formatDate,
+    onEsc() {
+      this.$emit('esc')
+    }
   }
 }
 </script>

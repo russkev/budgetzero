@@ -5,6 +5,7 @@
     color="background lighten-1"
     class="flex-sheet pa-1 ma-0"
     @keydown.enter.ctrl.exact.prevent="onCtrlEnter"
+    @keydown.esc.prevent="onCancel"
   >
     <import-ofx v-if="importOfxIsOpen" @close="onCloseImportOfx" @apply="onApplyImportOfx" :account="accountId" />
     <import-csv v-else-if="importCsvIsOpen" @close="onCloseImportCsv" @apply="onCloseImportCsv" :account="accountId" />
@@ -20,9 +21,9 @@
         <div v-if="account.onBudget" class="text-h5" :style="borderRight['category']">Category</div>
         <details-category v-if="account.onBudget" />
         <div class="text-h5" :style="borderRight['memo']">Memo</div>
-        <details-memo @ctrl-enter="onCtrlEnter" />
+        <details-memo @ctrl-enter="onCtrlEnter" @esc="onCancel" />
         <div class="text-h5" :style="borderRight['note']">Note</div>
-        <details-note @ctrl-enter="onCtrlEnter" />
+        <details-note @ctrl-enter="onCtrlEnter" @esc="onCancel" />
         <div class="text-h5" :style="borderRight['payee']">Danger</div>
         <details-delete />
         <div class="text-h5"></div>

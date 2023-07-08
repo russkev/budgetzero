@@ -33,7 +33,7 @@ export default {
       }
     },
     availableBudgets() {
-      return this.allBudgets.sort((a, b) => {
+      return [...this.allBudgets].sort((a, b) => {
         return a.name.localeCompare(b.name)
       })
     }

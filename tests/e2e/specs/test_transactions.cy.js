@@ -133,13 +133,6 @@ describe('Test transactions', () => {
       cy.get('.v-progress-linear__buffer').should('exist')
       cy.get('.v-progress-linear__buffer').should('not.exist')
 
-      // Ctrl + Enter on category
-      cy.get('.transaction-row .row-description').eq(4).click()
-      cy.get('[data-testid="details-value"]').type('{ctrl+enter}')
-      cy.get('.transaction-details-grid').should('not.exist')
-      cy.get('.v-progress-linear__buffer').should('exist')
-      cy.get('.v-progress-linear__buffer').should('not.exist')
-
       // Ctrl + Enter on value
       cy.get('.transaction-row .row-description').eq(4).click()
       cy.get('[data-testid="details-value"]').type('{ctrl+enter}')
@@ -182,6 +175,50 @@ describe('Test transactions', () => {
       cy.get('.transaction-details-grid').should('not.exist')
       cy.get('.v-progress-linear__buffer').should('exist')
       cy.get('.v-progress-linear__buffer').should('not.exist')
+    })
+
+    it('Test esc', () => {
+      // Note
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="details-note"]').click()
+      cy.get('[data-testid="details-note"]').type('{esc}')
+      cy.get('.transaction-details-grid').should('not.exist')
+
+      // Date
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="details-date"]').type('{esc}')
+      cy.get('.transaction-details-grid').should('not.exist')
+
+      // Value
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="details-value"]').type('{esc}')
+      cy.get('.transaction-details-grid').should('not.exist')
+
+      // Outflow
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="details-outflow-button"]').type('{esc}')
+      cy.get('.transaction-details-grid').should('not.exist')
+
+      // Cleared
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="details-cleared"]').type('{esc}')
+      cy.get('.transaction-details-grid').should('not.exist')
+
+      // Category
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="details-category"]').type('{esc}')
+      cy.get('.transaction-details-grid').should('not.exist')
+
+      // Split
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="add-split-button"]').click()
+      cy.get('[data-testid="split-1-value"]').type('{esc}')
+      cy.get('.transaction-details-grid').should('not.exist')
+
+      // Memo
+      cy.get('.transaction-row .row-description').eq(4).click()
+      cy.get('[data-testid="details-memo"]').type('{esc}')
+      cy.get('.transaction-details-grid').should('not.exist')
     })
 
     it('Test clear and unclear multiple transactions at once', () => {

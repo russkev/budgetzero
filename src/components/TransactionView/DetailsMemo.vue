@@ -13,6 +13,7 @@
         @focus="isFocused = true"
         @blur="isFocused = false"
         @keydown.enter.ctrl.exact.prevent="onCtrlEnter"
+        @keydown.esc.prevent="onEsc"
       />
     </div>
   </v-hover>
@@ -42,6 +43,9 @@ export default {
     ...mapMutations('accountTransactions', ['SET_EDITED_TRANSACTION_MEMO']),
     onCtrlEnter() {
       this.$emit('ctrl-enter')
+    },
+    onEsc() {
+      this.$emit('esc')
     }
   }
 }

@@ -1,5 +1,11 @@
 <template>
-  <v-card flat color="background lighten-2" class="pa-2 mb-4 manage-card" data-testid="restore-from-file-card">
+  <v-card
+    flat
+    color="background lighten-2"
+    class="pa-2 mb-4 manage-card"
+    data-testid="restore-from-file-card"
+    @keydown.escape.prevent="onCancel"
+  >
     <div class="mb-2">Choose a file to restore from</div>
     <v-file-input
       solo
@@ -37,7 +43,12 @@ import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'Restore',
-  props: {},
+  props: {
+    isLanding: {
+      type: Boolean,
+      default: false
+    }
+  },
   data() {
     return {
       restoreFile: null,
@@ -78,9 +89,19 @@ export default {
       }
     },
     async onRestore() {
+      if (!this.restoreButtonIsEnabled) {
+        return
+      }
       await this.restoreLocalPouchDB(this.restoreFileParsed)
       this.reset()
       await this.loadLocalBudget()
+    },
+    onCancel() {
+      if (!this.isLanding) {
+        return
+      }
+      this.reset()
+      this.$router.push({ name: 'landing' })
     },
     reset() {
       this.restoreFile = null

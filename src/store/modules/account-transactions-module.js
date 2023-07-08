@@ -390,7 +390,7 @@ export default {
     },
     setSelectedTransactions({ getters, commit, dispatch }, transactions) {
       commit('SET_SELECTED_TRANSACTIONS', transactions)
-      if (transactions.length === 1 && transactions[0]._id !== getters.editedTransaction._id) {
+      if (transactions.length === 1 && transactions[0] && transactions[0]._id !== getters.editedTransaction._id) {
         dispatch('editTransaction', transactions[0])
       } else if (transactions.length !== 1 && getters.editedTransaction._id !== DEFAULT_TRANSACTION._id) {
         commit('CLEAR_EDITED_TRANSACTION')

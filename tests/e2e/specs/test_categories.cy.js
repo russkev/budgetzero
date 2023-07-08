@@ -404,6 +404,29 @@ describe('Test categories (budget) page', () => {
       name_input().should('have.value', 'Dividends')
       cy.get('.categories-container').eq(3).should('not.be.visible')
     })
+
+    it('Tests that esc key works', () => {
+      // Budgeted
+      cy.get('[data-testid="category-budget-n00"]').click()
+      cy.get('[data-testid="category-budget-input-n00"]').focus()
+      cy.get('[data-testid="category-budget-input-n00"]').type('{esc}')
+      cy.get('[data-testid="details-title"]').should('not.contain.text', 'Update Selected')
+      // Move amount
+      cy.get('[data-testid="category-budget-n00"]').click()
+      cy.get('[data-testid="category-move-input-n00"]').focus()
+      cy.get('[data-testid="category-move-input-n00"]').type('{esc}')
+      cy.get('[data-testid="details-title"]').should('not.contain.text', 'Update Selected')
+      // Move to
+      cy.get('[data-testid="category-budget-n00"]').click()
+      cy.get('[data-testid="details-moving-to-button"]').focus()
+      cy.get('[data-testid="details-moving-to-button"]').type('{esc}')
+      cy.get('[data-testid="details-title"]').should('not.contain.text', 'Update Selected')
+      // Send button
+      cy.get('[data-testid="category-budget-n00"]').click()
+      cy.get('[data-testid="details-move-save-button"]').focus()
+      cy.get('[data-testid="details-move-save-button"]').type('{esc}')
+      cy.get('[data-testid="details-title"]').should('not.contain.text', 'Update Selected')
+    })
   })
 
   context('Test delete / hide', () => {

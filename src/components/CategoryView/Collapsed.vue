@@ -1,8 +1,8 @@
 <template>
   <v-expansion-panels flat multiple :value="expanded">
     <v-expansion-panel
-      class="category-card background lighten-1 rounded-1 ma-0 pa-0 mb-2"
-      style="box-shadow: none;"
+      :class="`category-card ${background} rounded-1 ma-0 pa-0 mb-2 ${expansionPanelClass}`"
+      style="box-shadow: none"
     >
       <slot name="header"></slot>
       <v-expansion-panel-content class="pa-0 ma-0" color="transparent">
@@ -14,20 +14,29 @@
 
 <script>
 export default {
-  name: "Collapsed",
+  name: 'Collapsed',
   props: {
-    masterCategory: {
-      type: Object,
+    value: {
+      type: Boolean,
+      required: true
     },
+    background: {
+      type: String,
+      default: 'background lighten-1'
+    },
+    expansionPanelClass: {
+      type: String,
+      default: ''
+    }
   },
   computed: {
     expanded() {
-      if (this.masterCategory.collapsed) {
-        return [];
+      if (this.value) {
+        return []
       } else {
-        return [0];
+        return [0]
       }
-    },
-  },
-};
+    }
+  }
+}
 </script>
