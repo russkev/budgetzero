@@ -71,6 +71,7 @@
 
 <script>
 import { mapGetters, mapActions } from 'vuex'
+import { nextTick } from 'vue'
 import ButtonTransparent from '../Shared/ButtonTransparent.vue'
 import HoverButton from '../Shared/HoverButton.vue'
 import CancelSave from '../Shared/CancelSave.vue'
@@ -96,6 +97,11 @@ export default {
     isLanding: {
       type: Boolean,
       default: false
+    }
+  },
+  mounted() {
+    if (this.isLanding) {
+      this.enableEdit()
     }
   },
   computed: {

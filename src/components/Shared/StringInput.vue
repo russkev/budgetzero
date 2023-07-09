@@ -138,11 +138,27 @@ export default {
       default: false
     }
   },
+  watch: {
+    isEditing: {
+      handler: function (new_value) {
+        if (new_value) {
+          this.onClick()
+        }
+      }
+    },
+    id: {
+      handler: function (new_value, old_value) {
+        if (this.isEditing && new_value !== old_value) {
+          this.onClick()
+        }
+      }
+    }
+  },
   data() {
     return {
-      isSelected: false,
       height: '26px',
-      isHovering: false
+      isHovering: false,
+      prevIsEditing: false
     }
   },
   computed: {
@@ -177,9 +193,6 @@ export default {
         event.target.select()
         this.isSelected = true
       }
-    },
-    testChange(event) {
-      console.log('TEST CHANGE')
     }
   }
 }

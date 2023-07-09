@@ -20,6 +20,7 @@ const DEFAULT_MONTH_CATEGORIES_STATE = {
   editedCategoryBudgetLoading: false,
   editedCategoryNameId: '',
   editedCategoryNameLoading: false,
+  tablePageNumber: 1,
 
   selectedMonth: moment(new Date()).format('YYYY-MM'),
   selectedCategory: null,
@@ -63,6 +64,7 @@ export default {
       Vue.set(state, 'monthTransactions', transactions)
     },
     SET_SELECTED_CATEGORY(state, category) {
+      console.log('SET_SELECTED_CATEGORY', category)
       Vue.set(state, 'selectedCategory', category)
     },
     SET_SELECTED_CATEGORY_ATTRIBUTE(state, { attribute, value }) {
@@ -70,6 +72,10 @@ export default {
     },
     RESET_SELECTED_CATEGORY(state) {
       Vue.set(state, 'selectedCategory', null)
+      Vue.set(state, 'tablePageNumber', DEFAULT_MONTH_CATEGORIES_STATE.tablePageNumber)
+    },
+    SET_TABLE_PAGE_NUMBER(state, page) {
+      Vue.set(state, 'tablePageNumber', page)
     }
     // SET_SELECTED_MOVING_TO_CLICKED(state, value) {
     //   Vue.set(state.selectedCategory, 'isMovingTo', value)
@@ -92,6 +98,7 @@ export default {
       return moment(new Date()).format('YYYY-MM')
     },
     categoriesData: (state, getters, rootState, rootGetters) => {
+      let monthBalances = rootGetters.monthBalances
       const masterCategories = rootGetters.masterCategories
       return masterCategories.reduce((partial, master_category) => {
         const master_id = master_category._id.slice(-ID_LENGTH.category)
@@ -207,14 +214,22 @@ export default {
     },
     transactionHeaders: () => transactionHeaders,
     monthTransactions: (state) => state.monthTransactions,
-    selectedCategory: (state) => state.selectedCategory
+    selectedCategory: (state) => state.selectedCategory,
+    tablePageNumber: (state) => state.tablePageNumber
   },
   actions: {
     onCategoryBudgetChanged({ dispatch }, { category_id, event }) {
-      if (!event.target) {
+      // Check if event is a number
+      let value = 0
+      if (!isNaN(event)) {
+        value = event
+      } else if (event.target) {
+        value = event.target.value
+      } else {
         return
       }
-      let amount = parseInt(Math.round(parseFloat(event.target.value) * 100))
+
+      let amount = parseInt(Math.round(parseFloat(value) * 100))
       return dispatch('updateBudget', { category_id, amount: amount })
     },
     updateBudget({ commit, getters, dispatch, rootGetters }, { category_id, amount }) {
@@ -268,9 +283,13 @@ export default {
       return dispatch('syncSelectedCategory')
     },
     selectCategory({ commit, getters }, category) {
+      if (!category || !getters.selectedCategory || category._id !== getters.selectedCategory._id) {
+        commit('RESET_SELECTED_CATEGORY')
+      }
       const move_amount = Math.abs(category.balance)
       const is_moving_to = category.balance > 0
       let destination = ''
+      const previous_id = getters.selectedCategory ? getters.selectedCategory._id : ''
       const sortedData = getters.categoriesDataSortedByBalance
       if (sortedData.length > 0) {
         let index = 0
@@ -299,6 +318,7 @@ export default {
         return
       }
       const category_id = getters.selectedCategory._id
+      console.log('syncSelectedCategory', getters.categoriesDataById[category_id])
       dispatch('selectCategory', getters.categoriesDataById[category_id])
     },
     onCategoryNameChange({ getters, commit, dispatch, rootGetters }, event) {
@@ -525,6 +545,9 @@ export default {
     },
     onEditCategoryBudget({ commit }, id) {
       commit('SET_EDITED_CATEGORY_BUDGET_ID', id)
+    },
+    onPageNumberChanged({ commit }, page) {
+      commit('SET_TABLE_PAGE_NUMBER', page)
     }
   }
 }

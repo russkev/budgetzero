@@ -194,6 +194,7 @@ export default {
       Vue.set(state, 'categories', categories)
     },
     UPDATE_CATEGORY_BALANCES(state, { account, month, category_id, amount, doc }) {
+      console.log('UPDATE_CATEGORY_BALANCES', amount, doc)
       if (account && !account.onBudget) {
         return
       }
@@ -203,6 +204,7 @@ export default {
         amount: amount,
         doc: doc
       })
+      Vue.set(state.allCategoryBalances, month, {}) // Trigger reactive update
       Vue.set(state.allCategoryBalances, month, month_balances)
 
       // If month is not the latest month, all subsequent months need to have their carryover updated
@@ -216,6 +218,7 @@ export default {
           prev_balance = getCategoryBalance(state.allCategoryBalances, current_month, category_id)
         }
       })
+      console.log('Finished UPDATE_CATEGORY_BALANCES', state.allCategoryBalances)
     },
     RESET_CATEGORY_STATE(state) {
       Object.entries(DEFAULT_CATEGORY_STATE).forEach(([key, value]) => {

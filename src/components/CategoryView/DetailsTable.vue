@@ -9,6 +9,7 @@
       :items="transactions"
       :headers="transactionHeaders"
       :items-per-page="20"
+      :page.sync="pageNumber"
       :footer-props="{
         'items-per-page-options': [5, 10, 20, 50, 100, 200],
         'items-per-page-text': 'rows'
@@ -45,14 +46,14 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import { formatDate } from '../../helper'
 
 export default {
   name: 'DetailsTable',
   computed: {
     ...mapGetters(['intlCurrency']),
-    ...mapGetters('categoryMonth', ['transactionHeaders', 'monthTransactions', 'selectedCategory']),
+    ...mapGetters('categoryMonth', ['transactionHeaders', 'monthTransactions', 'selectedCategory', 'tablePageNumber']),
     transactions() {
       let balance = 0
       let monthTransactions = JSON.parse(JSON.stringify(this.monthTransactions))
@@ -69,10 +70,22 @@ export default {
         }
       }
       return result.reverse()
+    },
+    pageNumber: {
+      get() {
+        return this.tablePageNumber
+      },
+      set(value) {
+        this.onPageNumberChanged(value)
+      }
     }
   },
   methods: {
+    ...mapActions('categoryMonth', ['onPageNumberChanged']),
     formatDate: formatDate,
+    // onPagination(paginationData) {
+    //   console.log('onPagination', paginationData)
+    // },
     onEsc() {
       this.$emit('esc')
     }

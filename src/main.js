@@ -85,7 +85,7 @@ export var router = new VueRouter({
     {
       path: '/landing',
       component: LandingContainer,
-      meta: { requiresAuth: false },
+      meta: { requiresAuth: false, hideNav: true },
       children: [
         {
           path: '',

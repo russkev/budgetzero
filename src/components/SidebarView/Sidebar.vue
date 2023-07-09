@@ -1,5 +1,7 @@
 <template>
+  <!-- Don't show if route includes 'landing'-->
   <v-navigation-drawer
+    v-if="showNav"
     app
     class="background"
     :mini-variant.sync="mini"
@@ -166,6 +168,9 @@ export default {
       const is_less_than_breakpoint = this.$vuetify.breakpoint.mdAndDown
       this.mini = is_less_than_breakpoint
       return is_less_than_breakpoint
+    },
+    showNav() {
+      return !this.$route.matched[0].meta.hideNav
     },
     accountTotals() {
       return this.accounts.reduce(

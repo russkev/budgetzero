@@ -145,20 +145,11 @@ export default {
     }
   },
   methods: {
-    ...mapActions('categoryMonth', ['onCategoryOrderChanged', 'newCategory']),
+    ...mapActions('categoryMonth', ['onCategoryOrderChanged', 'newCategory', 'onEditCategoryName']),
     ...mapActions(['commitBulkDocsToPouchAndVuex']),
     onNewCategory(master_category) {
       this.newCategory(master_category).then((id) => {
-        const element_id = `category-name-input-${id}`
-
-        nextTick(() => {
-          const new_element = document.getElementById(element_id)
-          if (!new_element) {
-            return
-          }
-          new_element.focus()
-          new_element.select()
-        })
+        this.onEditCategoryName(id)
       })
     },
     updateDraggableCategories(categoriesData) {

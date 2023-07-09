@@ -18,6 +18,7 @@
               <v-text-field
                 solo
                 flat
+                autofocus
                 prepend-icon="mdi-file-document"
                 color="secondary lighten-2"
                 background-color="background lighten-3"

@@ -61,7 +61,7 @@
 
 <script>
 import { mapGetters, mapActions, mapMutations } from 'vuex'
-import { ID_LENGTH, NONE } from '../../constants'
+import { ID_LENGTH } from '../../constants'
 import { nextTick } from 'vue'
 
 export default {
@@ -121,11 +121,10 @@ export default {
   methods: {
     ...mapMutations('categoryMonth', ['SET_EDITED_CATEGORY_BUDGET_ID']),
     ...mapActions('categoryMonth', [
-      'onCategoryNameChange',
       'onCategoryBudgetChanged',
       'onEditCategoryName',
-      'onEditCategoryBudget',
-      'selectCategory'
+      'selectCategory',
+      'onEditCategoryBudget'
     ]),
 
     onCategoryBudgetEnter(category, event) {
@@ -172,7 +171,9 @@ export default {
       }
     },
     onCategoryDetailsClick() {
-      this.selectCategory(this.category)
+      this.selectCategory(this.category).then(() => {
+        this.onEditCategoryBudget(this.category._id)
+      })
     }
   }
 }
