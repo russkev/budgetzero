@@ -64,7 +64,6 @@ export default {
       Vue.set(state, 'monthTransactions', transactions)
     },
     SET_SELECTED_CATEGORY(state, category) {
-      console.log('SET_SELECTED_CATEGORY', category)
       Vue.set(state, 'selectedCategory', category)
     },
     SET_SELECTED_CATEGORY_ATTRIBUTE(state, { attribute, value }) {
@@ -318,7 +317,6 @@ export default {
         return
       }
       const category_id = getters.selectedCategory._id
-      console.log('syncSelectedCategory', getters.categoriesDataById[category_id])
       dispatch('selectCategory', getters.categoriesDataById[category_id])
     },
     onCategoryNameChange({ getters, commit, dispatch, rootGetters }, event) {

@@ -116,7 +116,6 @@ export default {
      * @param {doc} document The document to commit to pouchdb
      */
     commitDocToPouchAndVuex(context, { current, previous }) {
-      console.log('commitDocToPouchAndVuex', current, previous)
       if (!current && !previous) {
         console.warn(`commitDocToPouchAndVuex called with invalid 'current' and 'previous'`)
         return
