@@ -116,6 +116,7 @@ export default {
      * @param {doc} document The document to commit to pouchdb
      */
     commitDocToPouchAndVuex(context, { current, previous }) {
+      console.log('commitDocToPouchAndVuex', current, previous)
       if (!current && !previous) {
         console.warn(`commitDocToPouchAndVuex called with invalid 'current' and 'previous'`)
         return
@@ -176,6 +177,7 @@ export default {
             }
           })
         } else {
+          console.log('db.put(current)', current)
           return db.put(current)
         }
       } else {
@@ -356,6 +358,7 @@ export default {
       ])
         .then((results) => {
           month_category_balances = parseAllMonthCategories(results, getters)
+          console.log('month_category_balances', month_category_balances)
           dispatch('setMonthBudgetedBalances', month_category_balances)
         })
         .then(() => {
@@ -364,6 +367,7 @@ export default {
         .then((result) => {
           const t1 = performance.now()
           const balances = parseAllTransactions(result.rows, month_category_balances, getters, dispatch, commit)
+          console.log('balances', balances)
           logPerformanceTime('calculateAllValues', t1)
           // commit('SET_MONTH_BALANCES', balances.month)
           dispatch('setMonthIncomeExpenseBalances', balances.month)

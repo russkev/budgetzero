@@ -227,6 +227,7 @@ export default {
       Vue.set(state, 'monthBalances', monthBalances)
     },
     SET_MONTH_BALANCES_ATTRIBUTE(state, monthBalancesItem) {
+      console.log('SET_MONTH_BALANCES_ATTRIBUTE', monthBalancesItem)
       const existing = _.defaultsDeep(state.monthBalances[monthBalancesItem.month], DEFAULT_MONTH_BALANCE)
       Vue.set(state.monthBalances, monthBalancesItem.month, {
         income: _.get(monthBalancesItem, 'income', existing.income),
@@ -378,7 +379,8 @@ export default {
         name: name,
         sort: sort,
         hidden: false,
-        masterCategory: master_id
+        masterCategory: master_id,
+        note: ''
       }
     },
     reorderMasterCategories({ getters, dispatch, commit }, master_categories) {
@@ -699,7 +701,6 @@ const parseAllMonthCategories = (results, getters) => {
     const category_id = month_category._id.slice(-ID_LENGTH.category)
     const month = extractMonthCategoryMonth(month_category._id)
     // const master_id = getters.categoriesById[category_id]['masterCategory']
-
     month_category_balances[month] = updateSingleCategory(month_category_balances[month], category_id, {
       doc: month_category
     })
@@ -790,6 +791,10 @@ const updateSingleCategory = (existing_month_balances, category_id, { amount, ca
     } else {
       month_balances[category_id].income += amount
     }
+  }
+
+  if (doc && doc.note) {
+    month_balances[category_id].note = doc.note
   }
 
   month_balances[category_id].carryover += carryover_difference

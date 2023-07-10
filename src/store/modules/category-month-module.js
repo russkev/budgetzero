@@ -20,6 +20,7 @@ const DEFAULT_MONTH_CATEGORIES_STATE = {
   editedCategoryBudgetLoading: false,
   editedCategoryNameId: '',
   editedCategoryNameLoading: false,
+  editedCategoryNoteLoading: false,
   tablePageNumber: 1,
 
   selectedMonth: moment(new Date()).format('YYYY-MM'),
@@ -53,6 +54,9 @@ export default {
     },
     SET_EDITED_CATEGORY_NAME_LOADING(state, loading) {
       Vue.set(state, 'editedCategoryNameLoading', loading)
+    },
+    SET_EDITED_CATEGORY_NOTE_LOADING(state, loading) {
+      Vue.set(state, 'editedCategoryNoteLoading', loading)
     },
     CLEAR_EDITED_CATEGORY_NAME_ID(state) {
       Vue.set(state, 'editedCategoryNameId', DEFAULT_MONTH_CATEGORIES_STATE.editedCategoryNameId)
@@ -264,6 +268,29 @@ export default {
           commit('SET_EDITED_CATEGORY_BUDGET_LOADING', false)
         })
       commit('CLEAR_EDITED_CATEGORY_BUDGET_ID')
+    },
+    updateNote({ dispatch, commit, getters, rootGetters }, { category_id, note }) {
+      console.log('updateNote', category_id, note)
+      commit('SET_EDITED_CATEGORY_NOTE_LOADING', true)
+      if (typeof note !== 'string') {
+        console.warn(`Note value: ${note} is not a string`)
+        return
+      }
+      const month = getters.selectedMonth
+      const previous = _.get(rootGetters.allCategoryBalances, [month, category_id, 'doc'], null)
+      const current = {
+        ...previous,
+        note: note
+      }
+      dispatch('commitDocToPouchAndVuex', { current, previous }, { root: true })
+        .then(() => {
+          if (getters.selectedCategory && getters.selectedCategory._id === category_id) {
+            dispatch('syncSelectedCategory')
+          }
+        })
+        .finally(() => {
+          commit('SET_EDITED_CATEGORY_NOTE_LOADING', false)
+        })
     },
     async doBudgetMove({ getters, dispatch }) {
       const negative = getters.selectedCategory.isMovingTo ? -1 : 1

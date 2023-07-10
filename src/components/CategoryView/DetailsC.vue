@@ -41,6 +41,24 @@
           currency-left
         />
       </div>
+      <div class="text-h5">Note</div>
+      <div>
+        <v-hover v-slot="{ hover }">
+          <div :data-testid="`category-budget-note-${selectedCategory._id}`">
+            <v-textarea
+              v-model="note"
+              class="text-body-1 mb-2"
+              dense
+              flat
+              solo
+              hide-details
+              :background-color="hover ? 'background lighten-2' : 'transparent'"
+              @change="onNoteUpdate"
+              @keydown.ctrl.enter.exact.prevent="onNoteUpdate"
+            />
+          </div>
+        </v-hover>
+      </div>
       <div>Move</div>
       <div>
         <details-move />
@@ -100,9 +118,22 @@ export default {
         this.getMonthTransactions()
       }
     }
+    // allCategoryBalances: {
+    //   handler: function (current, previous) {
+    //     console.log('category updated', current)
+    //     // if (current !== previous) {
+    //     this.note = _.get(current, [this.thisMonth, this.selectedCategory._id, 'note'], '')
+    //     // }
+    //   }
+    // }
+  },
+  data() {
+    return {
+      localNote: ''
+    }
   },
   computed: {
-    ...mapGetters(['masterCategoriesById', 'categoriesById', 'categoryColors', 'categories']),
+    ...mapGetters(['masterCategoriesById', 'categoriesById', 'categoryColors', 'categories', 'allCategoryBalances']),
     ...mapGetters('categoryMonth', [
       'selectedCategory',
       'monthStats',
@@ -110,8 +141,17 @@ export default {
       'editedCategoryNameId',
       'editedCategoryBudgetLoading',
       'editedCategoryNameLoading',
-      'categoriesDataSortedByBalance'
-    ])
+      'categoriesDataSortedByBalance',
+      'thisMonth'
+    ]),
+    note: {
+      get() {
+        return _.get(this.allCategoryBalances, [this.selectedMonth, this.selectedCategory._id, 'note'], '')
+      },
+      set(value) {
+        this.localNote = value
+      }
+    }
   },
   methods: {
     ...mapActions(['fetchTransactionsForMonth']),
@@ -121,12 +161,22 @@ export default {
       'onCategoryBudgetChanged',
       'onEditCategoryName',
       'onEditCategoryBudget',
-      'onMovingToClicked',
-      'onMovingFromClicked'
+      'updateNote'
     ]),
     ...mapMutations('categoryMonth', ['RESET_SELECTED_CATEGORY']),
     onUnselectCategory() {
       this.RESET_SELECTED_CATEGORY()
+    },
+    onNoteUpdate(event) {
+      console.log('onNoteUpdate', event)
+      if (event.target) {
+        event.target.blur()
+        return
+      }
+      this.updateNote({
+        category_id: this.selectedCategory._id,
+        note: this.localNote
+      })
     },
     isEditingName() {
       if (this.selectedCategory._id.slice(ID_LENGTH.category) === NONE._id) {

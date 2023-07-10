@@ -122,6 +122,9 @@ const schema_category = {
     },
     hidden: {
       type: ['boolean', 'null']
+    },
+    note: {
+      type: ['string', 'null']
     }
   },
   required: ['_id', 'sort', 'masterCategory', 'name']
