@@ -53,6 +53,7 @@
               solo
               hide-details
               :background-color="hover ? 'background lighten-2' : 'transparent'"
+              :loading="editedCategoryNoteLoading"
               @change="onNoteUpdate"
               @keydown.ctrl.enter.exact.prevent="onNoteUpdate"
             />
@@ -118,14 +119,6 @@ export default {
         this.getMonthTransactions()
       }
     }
-    // allCategoryBalances: {
-    //   handler: function (current, previous) {
-    //     console.log('category updated', current)
-    //     // if (current !== previous) {
-    //     this.note = _.get(current, [this.thisMonth, this.selectedCategory._id, 'note'], '')
-    //     // }
-    //   }
-    // }
   },
   data() {
     return {
@@ -141,12 +134,14 @@ export default {
       'editedCategoryNameId',
       'editedCategoryBudgetLoading',
       'editedCategoryNameLoading',
+      'editedCategoryNoteLoading',
       'categoriesDataSortedByBalance',
       'thisMonth'
     ]),
     note: {
       get() {
-        return _.get(this.allCategoryBalances, [this.selectedMonth, this.selectedCategory._id, 'note'], '')
+        // return _.get(this.allCategoryBalances, [this.selectedMonth, this.selectedCategory._id, 'note'], '')
+        return _.get(this.selectedCategory, 'note', '')
       },
       set(value) {
         this.localNote = value
@@ -168,7 +163,6 @@ export default {
       this.RESET_SELECTED_CATEGORY()
     },
     onNoteUpdate(event) {
-      console.log('onNoteUpdate', event)
       if (event.target) {
         event.target.blur()
         return

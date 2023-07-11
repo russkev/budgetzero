@@ -73,7 +73,6 @@ export default {
       const budget_id = context.rootState.selectedBudgetId
       return fetchDocsByType(context, db, budget_id, ID_NAME.category, 'fetchCategories').then((result) => {
         if (result !== undefined) {
-          console.log('fetchCategories', result)
           context.commit('SET_CATEGORIES', result)
         }
         return result === undefined ? [] : result

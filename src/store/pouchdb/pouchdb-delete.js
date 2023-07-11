@@ -146,8 +146,6 @@ export default {
       const db = Vue.prototype.$pouch
       accountId = accountId.slice(-ID_LENGTH.account)
       const budgetId = getters.selectedBudgetId.slice(-ID_LENGTH.budget)
-      console.log('accountId', accountId)
-      console.log('start key', `b_${budgetId}${ID_NAME.transaction}`)
       return db
         .allDocs({
           include_docs: true,

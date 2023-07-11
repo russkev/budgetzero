@@ -28,7 +28,6 @@ export default {
         return this.selectedBudgetId
       },
       set(value) {
-        console.log('Setting budget', value)
         this.setSelectedBudgetID(value)
       }
     },

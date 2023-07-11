@@ -58,13 +58,6 @@ export default {
     create() {
       this.$emit('create', this.itemName)
       this.close()
-    },
-    handleKeyDown(event) {
-      console.log('keydown event', event)
-      if (event.ctrlKey && event.key === 'Enter') {
-        event.preventDefault()
-        this.create()
-      }
     }
   }
 }

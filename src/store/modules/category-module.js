@@ -227,7 +227,6 @@ export default {
       Vue.set(state, 'monthBalances', monthBalances)
     },
     SET_MONTH_BALANCES_ATTRIBUTE(state, monthBalancesItem) {
-      console.log('SET_MONTH_BALANCES_ATTRIBUTE', monthBalancesItem)
       const existing = _.defaultsDeep(state.monthBalances[monthBalancesItem.month], DEFAULT_MONTH_BALANCE)
       Vue.set(state.monthBalances, monthBalancesItem.month, {
         income: _.get(monthBalancesItem, 'income', existing.income),
@@ -747,6 +746,24 @@ const getCarryover = (current_balances, month, category_id) => {
   return getCategoryBalance(current_balances, prev_month, category_id)
 }
 
+const getNote = (current_balances, month, category_id) => {
+  let note = _.get(current_balances, [month, category_id, 'doc', 'note'], '')
+  if (note) {
+    return note
+  }
+  // const prev_month = prevUsedMonth(current_balances, month)
+  // if (!prev_month) {
+  //   return ''
+  // }
+  let prev_month = month
+  while (!note && prev_month) {
+    prev_month = prevUsedMonth(current_balances, prev_month)
+    note = _.get(current_balances, [prev_month, category_id, 'doc', 'note'], '')
+  }
+  return note ? note : ''
+  // return _.get(current_balances, [prev_month, category_id, 'doc', 'note'], '')
+}
+
 const getCategoryBalance = (current_balances, month, category_id, default_carryover = 0) => {
   return (
     _.get(current_balances, [month, category_id, 'doc', 'budget'], 0) +
@@ -830,6 +847,7 @@ export {
   getCategoryBalance,
   prevUsedMonth,
   getCarryover,
+  getNote,
   parseAllMonthCategories,
   updateMonthBalances
 }

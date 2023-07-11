@@ -83,9 +83,6 @@ export default {
   methods: {
     ...mapActions('categoryMonth', ['onPageNumberChanged']),
     formatDate: formatDate,
-    // onPagination(paginationData) {
-    //   console.log('onPagination', paginationData)
-    // },
     onEsc() {
       this.$emit('esc')
     }

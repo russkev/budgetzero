@@ -8,7 +8,7 @@ import {
   INCOME,
   DEFAULT_MASTER_CATEGORY_BALANCE
 } from '../../constants'
-import { getCarryover } from '@/store/modules/category-module'
+import { getCarryover, getNote } from '@/store/modules/category-module'
 import _ from 'lodash'
 import moment from 'moment'
 import { prevMonth, nextMonth } from '../../helper'
@@ -90,6 +90,7 @@ export default {
     editedCategoryBudgetLoading: (state) => state.editedCategoryBudgetLoading,
     editedCategoryNameId: (state) => state.editedCategoryNameId,
     editedCategoryNameLoading: (state) => state.editedCategoryNameLoading,
+    editedCategoryNoteLoading: (state) => state.editedCategoryNoteLoading,
     selectedMonth: (state) => state.selectedMonth,
     prevMonth: (state, getters) => {
       return prevMonth(getters.selectedMonth)
@@ -118,9 +119,7 @@ export default {
             0
           )
           const expense = _.get(rootGetters.allCategoryBalances, [getters.selectedMonth, category_id, 'expense'], 0)
-          // console.log('month', getters.selectedMonth)
-          // console.log('data', rootGetters.allCategoryBalances[getters.selectedMonth][category_id].expense)
-          // console.log('!!!expense', expense)
+          const note = getNote(rootGetters.allCategoryBalances, getters.selectedMonth, category_id)
           const income = _.get(rootGetters.allCategoryBalances, [getters.selectedMonth, category_id, 'income'], 0)
           const carryover = getCarryover(rootGetters.allCategoryBalances, getters.selectedMonth, category_id)
           const name = _.get(rootGetters.categoriesById, [category_id, 'name'], '')
@@ -138,7 +137,8 @@ export default {
             expense: expense,
             carryover: carryover,
             balance: balance,
-            sort: sort
+            sort: sort,
+            note: note
           }
           return result
         })
@@ -270,7 +270,6 @@ export default {
       commit('CLEAR_EDITED_CATEGORY_BUDGET_ID')
     },
     updateNote({ dispatch, commit, getters, rootGetters }, { category_id, note }) {
-      console.log('updateNote', category_id, note)
       commit('SET_EDITED_CATEGORY_NOTE_LOADING', true)
       if (typeof note !== 'string') {
         console.warn(`Note value: ${note} is not a string`)

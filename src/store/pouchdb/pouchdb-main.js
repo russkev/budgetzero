@@ -85,11 +85,6 @@ export default {
     },
 
     async validBulkDocs(context, bulk_docs) {
-      // const database_exists = await context.dispatch('databaseExists')
-      // if (!database_exists) {
-      //   await context.dispatch('createLocalPouchDB')
-      //   await context.dispatch('loadLocalBudget')
-      // }
       await context.dispatch('ensureDatabaseExists')
 
       return bulk_docs.reduce((partial, doc) => {
@@ -116,7 +111,6 @@ export default {
      * @param {doc} document The document to commit to pouchdb
      */
     commitDocToPouchAndVuex(context, { current, previous }) {
-      console.log('commitDocToPouchAndVuex', current, previous)
       if (!current && !previous) {
         console.warn(`commitDocToPouchAndVuex called with invalid 'current' and 'previous'`)
         return
@@ -177,7 +171,6 @@ export default {
             }
           })
         } else {
-          console.log('db.put(current)', current)
           return db.put(current)
         }
       } else {
@@ -358,7 +351,6 @@ export default {
       ])
         .then((results) => {
           month_category_balances = parseAllMonthCategories(results, getters)
-          console.log('month_category_balances', month_category_balances)
           dispatch('setMonthBudgetedBalances', month_category_balances)
         })
         .then(() => {
@@ -367,9 +359,7 @@ export default {
         .then((result) => {
           const t1 = performance.now()
           const balances = parseAllTransactions(result.rows, month_category_balances, getters, dispatch, commit)
-          console.log('balances', balances)
           logPerformanceTime('calculateAllValues', t1)
-          // commit('SET_MONTH_BALANCES', balances.month)
           dispatch('setMonthIncomeExpenseBalances', balances.month)
           commit('SET_ALL_ACCOUNT_BALANCES', balances.account)
           commit('SET_ALL_CATEGORY_BALANCES', balances.category)

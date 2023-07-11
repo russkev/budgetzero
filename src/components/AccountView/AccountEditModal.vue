@@ -258,14 +258,11 @@ export default {
       this.editedItem.name = name
     },
     onDeleteAccountTransactions() {
-      // this.deleteAccount(this.accountId)
       this.deleteAllAccountTransactions(this.accountId).finally(() => {
         this.close()
       })
     },
     onDeleteAccount() {
-      console.log('this.accountIsEmpty', this.accountIsEmpty)
-      // const account_id = this.accountId
       if (this.accountIsEmpty) {
         this.deleteAccount(this.accountId)
           .then(() => {
@@ -304,9 +301,6 @@ export default {
         .finally(() => {
           this.deleteLoading = false
         })
-    },
-    handleKeyDown(event) {
-      console.log('event', event)
     }
   }
 }
