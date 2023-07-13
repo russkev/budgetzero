@@ -1,10 +1,6 @@
 <template>
   <row-element-wrapper @click="onTransactionDetailsClick(item)" right :disabled="tableIsDisabled">
-    <span
-      :class="`my-auto ellipsis text-body-1 ${
-        tableIsDisabled ? 'text-disabled' : textColor + '--text text--lighten-3'
-      }`"
-    >
+    <span :class="`my-auto ellipsis text-body-1 ${tableIsDisabled ? 'text-disabled' : textColor}`">
       {{ value }}
     </span>
   </row-element-wrapper>
@@ -13,6 +9,7 @@
 <script>
 import { mapGetters, mapActions } from 'vuex'
 import RowElementWrapper from './RowElementWrapper.vue'
+import { valueColor } from '../../helper'
 
 export default {
   props: {
@@ -42,7 +39,7 @@ export default {
       }
     },
     textColor() {
-      return this.isOutflow ? 'error' : 'success'
+      return this.isOutflow ? valueColor(-1) : valueColor(1)
     }
   },
   methods: {

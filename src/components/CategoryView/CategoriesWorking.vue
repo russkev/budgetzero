@@ -24,6 +24,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { valueColor } from '../../helper'
 import { AMOUNT_RED, AMOUNT_GREEN } from '../../constants'
 
 export default {
@@ -61,32 +62,22 @@ export default {
     ...mapGetters(['intlCurrency']),
     ...mapGetters('categoryMonth', ['monthStats']),
     carryoverColor() {
-      return this.valueColor(this.lastMonth)
+      return valueColor(this.lastMonth)
     },
     incomeColor() {
-      return this.valueColor(this.income)
+      return valueColor(this.income)
     },
     spentColor() {
-      return this.valueColor(-this.spent)
+      return valueColor(-this.spent)
     },
     budgetedColor() {
-      return this.addBudgeted ? this.valueColor(this.budgeted) : this.valueColor(-this.budgeted)
+      return this.addBudgeted ? valueColor(this.budgeted) : valueColor(-this.budgeted)
     },
     balanceColor() {
-      return this.valueColor(this.available)
+      return valueColor(this.available)
     }
   },
-  methods: {
-    valueColor(value) {
-      if (value < 0) {
-        return AMOUNT_RED
-      } else if (value > 0) {
-        return AMOUNT_GREEN
-      } else {
-        return ''
-      }
-    }
-  }
+  methods: {}
 }
 </script>
 

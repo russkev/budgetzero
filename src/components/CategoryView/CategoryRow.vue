@@ -42,11 +42,11 @@
             <v-col
               :data-testid="`category-balance-${category._id}`"
               align="right"
-              :class="`pa-0 my-auto ${balanceColor(category)}`"
+              :class="`pa-0 my-auto`"
               v-if="!hideBalance"
             >
               <row-element-wrapper @click="onCategoryDetailsClick" class="justify-end ml-1">
-                {{ intlCurrency.format(category.balance / 100) }}
+                <span :class="valueColor(category.balance)">{{ intlCurrency.format(category.balance / 100) }}</span>
               </row-element-wrapper>
             </v-col>
           </v-row>
@@ -63,6 +63,7 @@
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { ID_LENGTH } from '../../constants'
 import { nextTick } from 'vue'
+import { valueColor } from '../../helper'
 
 export default {
   props: {
@@ -153,15 +154,16 @@ export default {
         })
       }
     },
-    balanceColor(category) {
-      if (category.balance < 0) {
-        return `error--text text--lighten-3`
-      } else if (category.balance > 0) {
-        return `success--text text--lighten-3`
-      } else {
-        return ''
-      }
-    },
+    // balanceColor(category) {
+    //   if (category.balance < 0) {
+    //     return `error--text text--lighten-3`
+    //   } else if (category.balance > 0) {
+    //     return `success--text text--lighten-3`
+    //   } else {
+    //     return ''
+    //   }
+    // },
+    valueColor,
     spentValue(category) {
       const amount = category.income - category.expense
       if (this.isIncome || amount == 0) {

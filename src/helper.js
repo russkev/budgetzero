@@ -1,5 +1,6 @@
 import { result } from 'lodash'
 import { ID_NAME, NONE } from './constants'
+import { AMOUNT_GREEN, AMOUNT_RED } from './constants'
 
 // Clean/sanitize amount input
 function sanitizeValueInput(value) {
@@ -204,6 +205,16 @@ function formatDate(date) {
   return `${weekday}, ${day} ${month}, ${year}`
 }
 
+function valueColor(value) {
+  if (value < 0) {
+    return AMOUNT_RED
+  } else if (value > 0) {
+    return AMOUNT_GREEN
+  } else {
+    return ''
+  }
+}
+
 export {
   sanitizeValueInput,
   randomInt,
@@ -220,5 +231,6 @@ export {
   hslStringToHex,
   hslToHex,
   hexToHsl,
-  formatDate
+  formatDate,
+  valueColor
 }

@@ -1,5 +1,5 @@
 <template>
-  <v-menu offset-y bottom>
+  <v-menu offset-y bottom @input="onMenuClose">
     <template #activator="{ on: menuOn }">
       <v-tooltip bottom class="pa-0" color="transparent" :open-delay="500">
         <template #activator="{ on: tooltipOn }">
@@ -138,6 +138,9 @@ export default {
         this.$emit('selected', id)
       }
       this.menu = false
+    },
+    onMenuClose() {
+      console.log('on menu close')
     }
   }
 }

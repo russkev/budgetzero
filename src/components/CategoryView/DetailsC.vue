@@ -32,11 +32,7 @@
           currency
           :is-editing="editedCategoryBudgetId == selectedCategory._id"
           @edit="onEditCategoryBudget(selectedCategory._id)"
-          @apply="
-            (event) => {
-              onCategoryBudgetChanged({ category_id: selectedCategory._id, event: event })
-            }
-          "
+          @apply="onBudgetValueApply"
           :loading="editedCategoryBudgetLoading"
           currency-left
         />
@@ -171,6 +167,9 @@ export default {
         category_id: this.selectedCategory._id,
         note: this.localNote
       })
+    },
+    onBudgetValueApply(event) {
+      this.onCategoryBudgetChanged({ category_id: this.selectedCategory._id, event: event })
     },
     isEditingName() {
       if (this.selectedCategory._id.slice(ID_LENGTH.category) === NONE._id) {

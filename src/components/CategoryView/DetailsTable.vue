@@ -33,7 +33,7 @@
           <td>
             {{ item.account }}
           </td>
-          <td>
+          <td :class="valueColor(item.amount)">
             {{ intlCurrency.format(item.amount / 100) }}
           </td>
           <td>
@@ -47,7 +47,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { formatDate } from '../../helper'
+import { formatDate, valueColor } from '../../helper'
 
 export default {
   name: 'DetailsTable',
@@ -85,7 +85,8 @@ export default {
     formatDate: formatDate,
     onEsc() {
       this.$emit('esc')
-    }
+    },
+    valueColor
   }
 }
 </script>

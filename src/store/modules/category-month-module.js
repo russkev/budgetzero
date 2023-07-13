@@ -149,7 +149,7 @@ export default {
     categoriesDataById: (state, getters) => {
       return Object.entries(getters.categoriesData).reduce((partial, [master_id, category_docs]) => {
         category_docs.forEach((category) => {
-          partial[category._id] = category
+          partial[category._id] = { master: master_id, ...category }
         })
         return partial
       }, {})
@@ -157,7 +157,7 @@ export default {
     categoriesDataSortedByBalance: (state, getters) => {
       return Object.values(getters.categoriesDataById)
         .filter((category) => {
-          if ([NONE._id, HIDDEN._id, INCOME._id].includes(category._id) || category.isIncome) return false
+          if ([NONE._id, HIDDEN._id, INCOME._id].includes(category.master) || category.isIncome) return false
           return true
         })
         .sort((a, b) => {
@@ -221,7 +221,7 @@ export default {
     tablePageNumber: (state) => state.tablePageNumber
   },
   actions: {
-    onCategoryBudgetChanged({ dispatch }, { category_id, event }) {
+    onCategoryBudgetChanged({ commit, dispatch, getters }, { category_id, event }) {
       // Check if event is a number
       let value = 0
       if (!isNaN(event)) {
@@ -233,6 +233,11 @@ export default {
       }
 
       let amount = parseInt(Math.round(parseFloat(value) * 100))
+      if (amount === getters.selectedCategory.budget) {
+        // No need to update
+        commit('CLEAR_EDITED_CATEGORY_BUDGET_ID')
+        return
+      }
       return dispatch('updateBudget', { category_id, amount: amount })
     },
     updateBudget({ commit, getters, dispatch, rootGetters }, { category_id, amount }) {
@@ -277,6 +282,9 @@ export default {
       }
       const month = getters.selectedMonth
       const previous = _.get(rootGetters.allCategoryBalances, [month, category_id, 'doc'], null)
+      if (previous.note === note) {
+        return
+      }
       const current = {
         ...previous,
         note: note
@@ -311,26 +319,53 @@ export default {
       if (!category || !getters.selectedCategory || category._id !== getters.selectedCategory._id) {
         commit('RESET_SELECTED_CATEGORY')
       }
-      const move_amount = Math.abs(category.balance)
+
+      let move_amount = 0
       const is_moving_to = category.balance > 0
-      let destination = ''
-      const previous_id = getters.selectedCategory ? getters.selectedCategory._id : ''
+      let destination = category._id
       const sortedData = getters.categoriesDataSortedByBalance
-      if (sortedData.length > 0) {
-        let index = 0
-        if (is_moving_to) {
-          index = sortedData.length - 1
-          if (sortedData[index]._id === category._id && sortedData.length > 1) {
-            index = sortedData.length - 2
-          }
-        } else {
-          index = 0
-          if (sortedData[0]._id === category._id && sortedData.length > 1) {
-            index = 1
-          }
-        }
-        destination = sortedData[index]._id
+
+      if (sortedData.length < 1) {
+        console.warn("Can't select move to category, categoriesDataSortedByBalance is empty")
       }
+
+      const selectLowestBalance = () => {
+        let move_to_data = sortedData[sortedData.length - 1]
+        if (move_to_data._id === category._id && sortedData.length > 1) {
+          move_to_data = sortedData[sortedData.length - 2]
+        }
+        return move_to_data
+      }
+
+      const selectHighestBalance = () => {
+        let move_to_data = sortedData[0]
+        if (move_to_data._id === category._id && sortedData.length > 1) {
+          move_to_data = sortedData[1]
+        }
+        return move_to_data
+      }
+
+      let move_to_data = selectLowestBalance()
+      if (is_moving_to) {
+        if (move_to_data.balance >= 0) {
+          move_to_data = selectHighestBalance()
+        }
+      } else {
+        move_to_data = selectHighestBalance()
+      }
+
+      destination = move_to_data._id
+
+      if (move_to_data.balance < 0 && category.balance > 0) {
+        move_amount = Math.min(-move_to_data.balance, category.balance)
+      } else if (move_to_data.balance < 0 && category.balance < 0) {
+        move_amount = Math.min(-move_to_data.balance, -category.balance)
+      } else if (move_to_data.balance > 0 && category.balance < 0) {
+        move_amount = Math.min(move_to_data.balance, -category.balance)
+      } else {
+        move_amount = category.balance
+      }
+
       commit('SET_SELECTED_CATEGORY', {
         ...category,
         moveAmount: move_amount,
@@ -354,9 +389,13 @@ export default {
       } else {
         return
       }
+
       commit('SET_EDITED_CATEGORY_NAME_LOADING', true)
       const doc = rootGetters.categoriesById[getters.editedCategoryNameId]
       commit('CLEAR_EDITED_CATEGORY_NAME_ID')
+      if (name === doc.name) {
+        return
+      }
       if (doc !== undefined) {
         dispatch(
           'commitDocToPouchAndVuex',

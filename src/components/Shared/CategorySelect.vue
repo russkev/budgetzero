@@ -100,8 +100,8 @@ export default {
       this.$emit('selected', categoryId)
     },
     onCategoryAdd(masterId) {
-      this.createCategory({ name: this.search, master_id: masterId }).then((category_id) => {
-        this.onCategorySelected(category_id)
+      this.createCategory({ name: this.search, master_id: masterId }).then((category) => {
+        this.onCategorySelected(category._id)
       })
     },
     listMasterCategoryName(masterId) {
