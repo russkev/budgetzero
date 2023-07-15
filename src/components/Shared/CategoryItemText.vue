@@ -1,15 +1,9 @@
 <template>
   <span class="category-element-container">
     <span>
-      <v-sheet
-        v-if="showSwatch"
-        width="3px"
-        height="15px"
-        :color="categoryColor"
-        class="mr-1"
-      />
+      <v-sheet v-if="showSwatch" width="3px" height="15px" :color="categoryColor" class="mr-1" />
       <slot>
-        {{  category.name }}
+        {{ category.name }}
       </slot>
     </span>
     <span v-if="showBalance" :class="`ml-2 ${currencyColor}`">
@@ -19,50 +13,47 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
-import { ID_LENGTH, NONE, HIDDEN, AMOUNT_RED, AMOUNT_GREEN } from "../../constants";
+import { mapActions, mapGetters } from 'vuex'
+import { ID_LENGTH, NONE, HIDDEN, AMOUNT_RED, AMOUNT_GREEN } from '../../constants'
 
 export default {
-  name: "CategoryItemText",
+  name: 'CategoryItemText',
   props: {
     category: {
       required: true,
-      type: Object,
+      type: Object
     },
     showBalance: {
       type: Boolean,
       required: false,
-      default: false,
+      default: false
     },
     showSwatch: {
       type: Boolean,
       required: false,
-      default: false,
-    },
+      default: false
+    }
   },
   computed: {
-    ...mapGetters(["categoryColors", "categoriesById", "masterCategoriesById", "intlCurrency"]),
-    ...mapGetters("categoryMonth", ["categoriesDataById"]),
+    ...mapGetters(['categoryColors', 'categoriesById', 'masterCategoriesById', 'intlCurrency']),
+    ...mapGetters('categoryMonth', ['categoriesDataById']),
     categoryColor() {
-      return this.categoryColors[this.category._id.slice(-ID_LENGTH.category)];
+      // return this.categoryColors[this.category._id.slice(-ID_LENGTH.category)]
+      return _.get(this.categoryColors, [this.category._id.slice(-ID_LENGTH.category), 'main'], 'transparent')
     },
     categoryBalance() {
-      return _.get(
-        this.categoriesDataById,
-        [this.category._id.slice(-ID_LENGTH.category), "balance"],
-        0
-      );
+      return _.get(this.categoriesDataById, [this.category._id.slice(-ID_LENGTH.category), 'balance'], 0)
     },
     currencyColor() {
       if (this.categoryBalance < 0) {
-        return AMOUNT_RED;
+        return AMOUNT_RED
       } else if (this.categoryBalance > 0) {
-        return AMOUNT_GREEN;
+        return AMOUNT_GREEN
       } else {
-        return "unset";
+        return 'unset'
       }
-    },
-  },
+    }
+  }
 }
 </script>
 
@@ -71,7 +62,7 @@ export default {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  width: 100%;
+  /* width: 100%; */
 }
 
 .category-element-container span {

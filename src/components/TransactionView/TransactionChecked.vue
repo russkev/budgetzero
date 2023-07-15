@@ -1,7 +1,6 @@
 <template>
   <v-hover v-slot="{ hover }">
     <div class="checkbox-container pl-0" style="height: 100%">
-      <v-sheet width="3px" min-width="3px" :color="leftColor" height="100%" class="row-checkbox ml-0 mr-2" />
       <v-icon v-if="isSelected" :size="size" @click="toggleSelected" color="primary" :disabled="tableIsDisabled">
         mdi-checkbox-marked
       </v-icon>
@@ -20,7 +19,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { isUncategorized } from '../../store/modules/transaction-module'
 
 export default {
   name: 'TransactionChecked',
@@ -39,14 +37,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('accountTransactions', ['selectedTransactions', 'isCreatingNewTransaction', 'tableIsDisabled']),
-    leftColor() {
-      if (isUncategorized(this.item)) {
-        return 'primary darken-1'
-      } else {
-        return 'transparent'
-      }
-    }
+    ...mapGetters('accountTransactions', ['selectedTransactions', 'isCreatingNewTransaction', 'tableIsDisabled'])
   },
   methods: {
     toggleSelected() {

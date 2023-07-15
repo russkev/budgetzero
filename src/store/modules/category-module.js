@@ -96,7 +96,13 @@ export default {
         let l_current = l_max
         categories.forEach((category) => {
           const category_id = category._id.slice(-ID_LENGTH.category)
-          const color = hslToHex(h, s * 100, l_current * 100)
+          const color = {
+            main: `hsl(${h}, ${s * 100}%, ${l_current * 100}%)`,
+            text: `hsl(${h}, ${s * 100}%, 90%)`,
+            background: `hsl(${h}, ${s * 50}%, ${l_current * 60}%)`
+          }
+
+          // const color = hslToHex(h, s * 100, l_current * 100)
           partial[category_id] = color
           l_current -= l_step
         })

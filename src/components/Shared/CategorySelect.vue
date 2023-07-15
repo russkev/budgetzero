@@ -10,10 +10,12 @@
           autofocus
           hide-details
           ref="search"
-          v-model="search"
+          :value="value"
+          @input="(event) => $emit('input', event)"
           background-color="background lighten-2"
           class="text-body-1"
         />
+        <!-- v-model="search" -->
       </v-col>
     </v-row>
     <v-list dense subheader color="background" data-testid="category-list">
@@ -42,7 +44,7 @@
             <v-list-item-title>
               <v-row class="pa-0 ma-0">
                 <v-sheet width="3px" height="15px" :color="masterCategoryColor(masterId)" class="mr-1" />
-                <v-col class="ma-0 pa-0"> Add '{{ search }}' to {{ listMasterCategoryName(masterId) }} </v-col>
+                <v-col class="ma-0 pa-0"> Add '{{ value }}' to {{ listMasterCategoryName(masterId) }} </v-col>
               </v-row>
             </v-list-item-title>
           </v-list-item-content>
@@ -67,19 +69,23 @@ export default {
     showBalance: {
       type: Boolean,
       default: false
+    },
+    value: {
+      type: String,
+      default: ''
     }
   },
-  data() {
-    return {
-      search: ''
-    }
-  },
+  // data() {
+  //   return {
+  //     search: ''
+  //   }
+  // },
   computed: {
-    ...mapGetters(['categoryColors', 'categoriesByMaster', 'masterCategoriesById', 'intlCurrency']),
+    ...mapGetters(['categoriesByMaster', 'masterCategoriesById', 'intlCurrency']),
     ...mapGetters('categoryMonth', ['categoriesDataById']),
 
     searchedMasterCategories() {
-      const search = this.search.toLowerCase()
+      const search = this.value.toLowerCase()
       return Object.entries(this.categoriesByMaster).reduce((partial, [masterId, categories]) => {
         if ([HIDDEN._id, 'undefined'].includes(masterId)) {
           return partial
@@ -100,7 +106,7 @@ export default {
       this.$emit('selected', categoryId)
     },
     onCategoryAdd(masterId) {
-      this.createCategory({ name: this.search, master_id: masterId }).then((category) => {
+      this.createCategory({ name: this.value, master_id: masterId }).then((category) => {
         this.onCategorySelected(category._id)
       })
     },
@@ -108,7 +114,7 @@ export default {
       return _.get(this.masterCategoriesById, [masterId, 'name'], 'Undefined')
     },
     showAddCategory(masterId) {
-      if (this.search.length < 1) {
+      if (this.value.length < 1) {
         return false
       }
       return ![NONE._id].includes(masterId)

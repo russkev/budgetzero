@@ -11,6 +11,7 @@
       single-expand
       dense
       fixed-header
+      disable-sort
       :options.sync="options"
       :server-items-length="numTransactionsTotal"
       :items-per-page="itemsPerPage"

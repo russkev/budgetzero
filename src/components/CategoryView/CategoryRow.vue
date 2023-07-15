@@ -11,11 +11,8 @@
           <v-icon v-if="hover && !freeze" small class="handle ma-auto"> mdi-drag-vertical </v-icon>
         </v-sheet>
         <v-sheet width="3px" class="mr-2 color-swatch-container" color="transparent">
-          <v-sheet
-            width="3px"
-            height="18px"
-            :color="categoryColors[category._id] === undefined ? 'transparent' : categoryColors[category._id]"
-          />
+          <v-sheet width="3px" height="18px" :color="categoryColor" />
+          <!-- :color="categoryColors[category._id] === undefined ? 'transparent' : categoryColors[category._id]" -->
         </v-sheet>
         <v-col class="pa-0 ma-0">
           <v-row class="ma-0 pa-0">
@@ -60,6 +57,7 @@
 </template>
 
 <script>
+import _ from 'lodash'
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import { ID_LENGTH } from '../../constants'
 import { nextTick } from 'vue'
@@ -116,6 +114,9 @@ export default {
       } else {
         return this.selectedCategory._id === this.category._id
       }
+    },
+    categoryColor() {
+      return _.get(this.categoryColors, [this.category._id.slice(-ID_LENGTH.category), 'main'], 'transparent')
     }
   },
 

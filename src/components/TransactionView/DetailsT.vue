@@ -166,8 +166,17 @@ export default {
     return {
       DEFAULT_TRANSACTION,
       categoryMenu: false,
-      importModalIsVisible: false
+      importModalIsVisible: false,
+      originalTransaction: null
       // importOfxIsOpen: false
+    }
+  },
+  watch: {
+    editedTransactionIndex: {
+      handler(value) {
+        this.originalTransaction = _.cloneDeep(this.editedTransaction)
+      },
+      deep: true
     }
   },
   computed: {
@@ -192,15 +201,15 @@ export default {
       }
     },
     borderRight() {
-      const item = this.transactions[this.editedTransactionIndex]
-      if (!item || !this.editedTransaction) {
+      // const item = this.transactions[this.editedTransactionIndex]
+      if (!this.originalTransaction || !this.editedTransaction) {
         return {}
       }
       const borderStyle = 'border-right-color: var(--v-warning-base)'
-      const result = Object.keys(item).reduce((partial, key) => {
-        const itemValue = item[key]
+      const result = Object.keys(DEFAULT_TRANSACTION).reduce((partial, key) => {
+        const originalValue = this.originalTransaction[key]
         const editedValue = this.editedTransaction[key]
-        if (itemValue !== editedValue) {
+        if ((editedValue && !originalValue) || originalValue !== editedValue) {
           partial[key] = borderStyle
         } else {
           partial[key] = ''
@@ -210,14 +219,14 @@ export default {
       if (result.category !== '') {
         return result
       }
-      if (typeof item.category !== typeof this.editedTransaction.category) {
+      if (typeof this.originalTransaction.category !== typeof this.editedTransaction.category) {
         result.category = borderStyle
-      } else if (Array.isArray(item.splits) && Array.isArray(this.editedTransaction.splits)) {
-        if (item.splits.length !== this.editedTransaction.splits.length) {
+      } else if (Array.isArray(this.editedTransaction.splits) && Array.isArray(this.editedTransaction.splits)) {
+        if (this.editedTransaction.splits.length !== this.editedTransaction.splits.length) {
           result.category = borderStyle
         } else {
-          for (let i = 0; i < item.splits.length; i++) {
-            for (let [key, value] of Object.entries(item.splits[i])) {
+          for (let i = 0; i < this.editedTransaction.splits.length; i++) {
+            for (let [key, value] of Object.entries(this.editedTransaction.splits[i])) {
               if (value !== this.editedTransaction.splits[i][key]) {
                 result.category = borderStyle
                 break
@@ -225,7 +234,7 @@ export default {
             }
           }
         }
-      } else if (item.category !== this.editedTransaction.category) {
+      } else if (this.originalTransaction.category !== this.editedTransaction.category) {
         result.category = borderStyle
       }
       return result

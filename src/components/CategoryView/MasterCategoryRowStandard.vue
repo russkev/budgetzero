@@ -105,7 +105,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['intlCurrency', 'colorSwatches', 'masterCategoriesById', 'masterCategories', 'categoryColors']),
+    ...mapGetters(['intlCurrency', 'colorSwatches', 'masterCategoriesById', 'masterCategories']),
     ...mapGetters('categoryMonth', ['editedMasterCategoryId', 'masterCategoriesStats']),
     data() {
       return 'data'

@@ -5,7 +5,7 @@
       Update Selected
       <v-icon @click="onUnselectCategory" class="ml-auto">mdi-close</v-icon>
     </v-card-title>
-    <v-divider v-if="selectedCategory" :style="`border-bottom: 2px solid ${categoryColors[selectedCategory._id]};`" />
+    <v-divider v-if="selectedCategory" :style="`border-bottom: 2px solid ${categoryColor};`" />
     <v-card-title v-else class="background lighten-1 pa-3" data-testid="details-title"> All Categories </v-card-title>
     <div v-if="selectedCategory" class="transaction-details-grid pa-2 pb-0" @keydown.esc.prevent="onUnselectCategory">
       <div class="text-h5">Name</div>
@@ -142,6 +142,9 @@ export default {
       set(value) {
         this.localNote = value
       }
+    },
+    categoryColor() {
+      return _.get(this.categoryColors, [this.selectedCategory._id, 'main'], 'transparent')
     }
   },
   methods: {

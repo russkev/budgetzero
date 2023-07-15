@@ -3,26 +3,27 @@
     <template #activator="{ on: menuOn }">
       <v-tooltip bottom class="pa-0" color="transparent" :open-delay="500">
         <template #activator="{ on: tooltipOn }">
-          <v-chip
+          <v-btn
+            id="category-menu-button"
             small
             label
-            class="category-chip simple-ellipsis pl-0"
-            v-on="{ ...tooltipOn, ...menuOn }"
-            :color="categoryBackgroundColor"
-            :disabled="disabled"
+            rounded
+            depressed
+            height="22"
+            class="simple-ellipsis"
+            :color="mainColor"
             :data-testid="buttonTestid"
-            :tabindex="0"
+            :disabled="disabled"
+            v-on="{ ...tooltipOn, ...menuOn }"
+            :style="`background-color: ${backgroundColor}; color: ${textColor};`"
           >
-            <v-sheet width="5px" min-width="5px" :color="selectedCategoryColor" height="100%" class="mr-2" />
             <category-item-text :category="selectedCategory" :show-balance="showBalance">
-              <div v-if="itemIsUncategorized" class="simple-ellipsis info--text text--lighten-1 font-weight-bold">
-                {{ selectedCategoryName }}
-              </div>
-              <div v-else class="simple-ellipsis">
+              <div :class="`simple-ellipsis ${itemIsUncategorized ? 'font-weight-bold' : ''}`">
                 {{ selectedCategoryName }}
               </div>
             </category-item-text>
-          </v-chip>
+            <v-icon right>mdi-menu-down</v-icon>
+          </v-btn>
         </template>
         <v-card v-if="!menu" flat outlined color="outline background" class="ma-0 px-4 py-1">
           <v-card-subtitle class="ma-0 pa-0"> Category: </v-card-subtitle>
@@ -36,11 +37,12 @@
         <div v-else></div>
       </v-tooltip>
     </template>
-    <category-select @selected="onSelected" :show-balance="showBalance" />
+    <category-select @selected="onSelected" :show-balance="showBalance" v-model="search" />
   </v-menu>
 </template>
 
 <script>
+import _ from 'lodash'
 import { mapGetters } from 'vuex'
 import { ID_LENGTH, NONE } from '../../constants'
 import CategorySelect from './CategorySelect.vue'
@@ -87,7 +89,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['categoryColors', 'categories', 'categoriesById', 'masterCategoriesById']),
+    ...mapGetters(['categoryColors', 'categories', 'categoriesById', 'masterCategoriesById', 'masterCategoriesById']),
     ...mapGetters('accountTransactions', ['selectedTransactions']),
     selectedCategory() {
       let result = this.categoriesById[this.categoryId]
@@ -96,13 +98,27 @@ export default {
       }
       return result
     },
-    selectedCategoryColor() {
-      const id = this.categoryId
-      const color = this.categoryColors[id]
-      if (color === undefined) {
+    textColor() {
+      if (this.itemIsUncategorized) {
         return NONE.hexColor
       }
-      return color
+      // const hsla = _.get(this.masterCategoriesById, [this.selectedCategory.masterCategory, 'color', 'hsla'], {
+      //   a: 1,
+      //   h: 0,
+      //   l: 1,
+      //   s: 0
+      // })
+      // return `hsl(${hsla.h}, ${hsla.s * 100}%, 90%)`
+      return _.get(this.categoryColors, [this.categoryId, 'text'], 'white')
+    },
+    mainColor() {
+      return _.get(this.categoryColors, [this.categoryId, 'main'], NONE.hexColor)
+    },
+    backgroundColor() {
+      if (this.itemIsUncategorized) {
+        return 'var(--v-secondary-lighten2)'
+      }
+      return _.get(this.categoryColors, [this.categoryId, 'background'], 'transparent')
     },
     selectedCategoryName() {
       if (this.selectedCategory === undefined) {
@@ -124,9 +140,7 @@ export default {
       }
       return masterCategory.name
     },
-    categoryBackgroundColor() {
-      return `${this.selectedCategoryColor}55`
-    },
+
     itemIsUncategorized() {
       return isUncategorized({ categoryId: this.categoryId, splits: this.splits })
     }
@@ -140,7 +154,9 @@ export default {
       this.menu = false
     },
     onMenuClose() {
-      console.log('on menu close')
+      setTimeout(() => {
+        this.search = ''
+      }, 500)
     }
   }
 }
@@ -159,6 +175,25 @@ export default {
 
 .category-chip,
 .v-chip__content {
+  width: 100%;
+}
+
+#category-menu-button {
+  max-width: min-content;
+  text-transform: none;
+  font-size: 0.83rem;
+  font-weight: 400;
+}
+
+#category-menu-button .v-btn__content {
+  width: 100%;
+}
+
+#category-menu-button .category-element-container {
+  overflow: hidden;
+}
+
+#category-menu-button .category-element-container span {
   width: 100%;
 }
 </style>

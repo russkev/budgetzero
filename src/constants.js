@@ -112,6 +112,7 @@ export const DEFAULT_TRANSACTION = {
   value: 0,
   date: '2000-01-01',
   memo: '',
+  note: '',
   reconciled: false,
   flag: '#ffffff',
   payee: null,

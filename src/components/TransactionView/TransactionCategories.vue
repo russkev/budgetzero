@@ -13,7 +13,7 @@
     />
   </div>
   <div v-else class="transaction-categories-container mr-2" :style="`grid-template-columns: ${templateColumns}`">
-    <template v-for="(split, index) in this.item.splits">
+    <template v-for="(split, index) in this.item.splits.slice(0, 2)">
       <category-menu
         :key="`category-${index}`"
         :category-id="split.category ? split.category : ''"
@@ -24,6 +24,7 @@
           }
         "
       />
+      <!-- <span v-if="index === 1 && item.splits.length > 2" class="text-body-2">...</span> -->
     </template>
   </div>
 </template>
