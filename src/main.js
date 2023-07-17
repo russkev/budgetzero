@@ -19,7 +19,6 @@ import VueRouter from 'vue-router' // prints 'idb'
 import store from './store'
 import Transactions from './components/TransactionView/Transactions.vue'
 
-import Accounts from './components/AccountView/Accounts.vue'
 import Categories from './components/CategoryView/Categories.vue'
 // import CreateBudget from './components/CreateBudget.vue'
 import NewBudget from './components/LandingView/NewBudget.vue'
@@ -117,11 +116,6 @@ export var router = new VueRouter({
     {
       path: '/manage',
       component: Manage,
-      meta: { requiresAuth: true }
-    },
-    {
-      path: '/accounts',
-      component: Accounts,
       meta: { requiresAuth: true }
     },
     {

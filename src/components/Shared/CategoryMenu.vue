@@ -183,6 +183,7 @@ export default {
   text-transform: none;
   font-size: 0.83rem;
   font-weight: 400;
+  letter-spacing: 0;
 }
 
 #category-menu-button .v-btn__content {

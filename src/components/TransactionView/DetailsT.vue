@@ -44,12 +44,14 @@
           icon="mdi-alpha-c-circle"
           label="Clear"
           @click="onClearSelected"
+          :disabled="tableIsDisabled"
         />
         <details-button
           data-testid="unclear-selected-button"
           icon="mdi-alpha-c-circle-outline"
           label="Unclear"
           @click="onUnclearSelected"
+          :disabled="tableIsDisabled"
         />
         <v-menu v-model="categoryMenu" :close-on-content-click="false">
           <template #activator="{ on, attrs }">
@@ -59,6 +61,7 @@
               label="Categorize"
               :on="on"
               :attrs="attrs"
+              :disabled="tableIsDisabled"
             />
           </template>
           <category-select @selected="onCategorySelected" />
@@ -70,6 +73,7 @@
               icon="mdi-delete"
               label="Delete"
               :on="on"
+              :disabled="tableIsDisabled"
             />
           </template>
         </delete-confirm>
@@ -78,6 +82,7 @@
           icon="mdi-close"
           label="Deselect All"
           @click="onDeselectAll"
+          :disabled="tableIsDisabled"
         />
       </template>
     </details-buttons>
@@ -88,7 +93,7 @@
           icon="mdi-plus"
           label="Create"
           @click="addTransaction"
-          :disabled="isExporting"
+          :disabled="isExporting || tableIsDisabled"
         />
         <details-button
           data-testid="import-transactions-button"
@@ -102,7 +107,7 @@
           icon="mdi-file-upload"
           label="Import CSV"
           @click.stop="onOpenImportCsv"
-          :disabled="isExporting"
+          :disabled="isExporting || tableIsDisabled"
         />
         <!-- <export-excel :data="[]" :fields="{}" worksheet="My Worksheet" name="transactions.xlsx"> -->
         <details-button
@@ -110,7 +115,7 @@
           icon="mdi-table-arrow-right"
           label="Export Excel"
           @click.stop="onExportExcel"
-          :loading="isExporting"
+          :loading="isExporting || tableIsDisabled"
         />
         <!-- </export-excel> -->
         <!-- @click.stop="importModalIsVisible = true" -->
@@ -190,7 +195,8 @@ export default {
       'editedTransactionIndex',
       'isCreatingNewTransaction',
       'importOfxIsOpen',
-      'importCsvIsOpen'
+      'importCsvIsOpen',
+      'tableIsDisabled'
     ]),
     transactionDate: {
       get() {

@@ -26,6 +26,7 @@
       />
       <!-- <span v-if="index === 1 && item.splits.length > 2" class="text-body-2">...</span> -->
     </template>
+    <span v-if="item.splits.length > 2" class="pt-0">...</span>
   </div>
 </template>
 
@@ -47,7 +48,10 @@ export default {
   computed: {
     ...mapGetters('accountTransactions', ['selectedTransactions', 'editedTransaction', 'tableIsDisabled']),
     templateColumns() {
-      return this.isSplit ? `repeat(${this.item.splits.length}, 1fr)` : '1fr'
+      if (this.isSplit) {
+        return `repeat(${Math.min(this.item.splits.length, 2)}, 1fr) min-content`
+      }
+      return '1fr'
     },
     isSplit() {
       return this.item.splits && this.item.splits.length > 1
@@ -90,5 +94,9 @@ export default {
   display: grid;
   grid-gap: 0.5rem;
   width: 150px;
+}
+
+.transaction-categories-container > span {
+  font-size: 1.4rem !important;
 }
 </style>
