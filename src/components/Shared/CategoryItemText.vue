@@ -32,6 +32,11 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    disabled: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   computed: {
@@ -45,7 +50,9 @@ export default {
       return _.get(this.categoriesDataById, [this.category._id.slice(-ID_LENGTH.category), 'balance'], 0)
     },
     currencyColor() {
-      if (this.categoryBalance < 0) {
+      if (this.disabled) {
+        return ''
+      } else if (this.categoryBalance < 0) {
         return AMOUNT_RED
       } else if (this.categoryBalance > 0) {
         return AMOUNT_GREEN

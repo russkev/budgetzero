@@ -37,7 +37,12 @@
         <div v-else></div>
       </v-tooltip>
     </template>
-    <category-select @selected="onSelected" :show-balance="showBalance" v-model="search" />
+    <category-select
+      @selected="onSelected"
+      :show-balance="showBalance"
+      v-model="search"
+      :disable-categories="disableCategories"
+    />
   </v-menu>
 </template>
 
@@ -80,6 +85,11 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    disableCategories: {
+      type: Array,
+      required: false,
+      default: () => []
     }
   },
   data() {

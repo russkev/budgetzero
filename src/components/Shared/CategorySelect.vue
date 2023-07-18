@@ -28,9 +28,15 @@
           v-for="category in categories"
           :key="`master-${category._id}`"
           @click="onCategorySelected(category._id)"
+          :disabled="isDisabled(category._id)"
         >
           <v-list-item-content :key="`category-${category._id}`">
-            <category-item-text :category="category" :show-balance="showBalance" show-swatch />
+            <category-item-text
+              :category="category"
+              :show-balance="showBalance"
+              show-swatch
+              :disabled="isDisabled(category._id)"
+            />
           </v-list-item-content>
         </v-list-item>
         <v-list-item
@@ -56,7 +62,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { ID_LENGTH, NONE, HIDDEN, AMOUNT_RED, AMOUNT_GREEN } from '../../constants'
+import { ID_LENGTH, NONE, HIDDEN } from '../../constants'
 import _ from 'lodash'
 import CategoryItemText from './CategoryItemText.vue'
 
@@ -73,13 +79,13 @@ export default {
     value: {
       type: String,
       default: ''
+    },
+    disableCategories: {
+      type: Array,
+      required: false,
+      default: () => []
     }
   },
-  // data() {
-  //   return {
-  //     search: ''
-  //   }
-  // },
   computed: {
     ...mapGetters(['categoriesByMaster', 'masterCategoriesById', 'intlCurrency']),
     ...mapGetters('categoryMonth', ['categoriesDataById']),
@@ -90,11 +96,15 @@ export default {
         if ([HIDDEN._id, 'undefined'].includes(masterId)) {
           return partial
         }
+        // let filteredCategories = categories.filter(
+        //   (category) => !this.disableCategories.includes(category._id.slice(-ID_LENGTH.category))
+        // )
+        let filteredCategories = categories
         if (search) {
-          const filteredCategories = categories.filter((category) => category.name.toLowerCase().includes(search))
+          filteredCategories = filteredCategories.filter((category) => category.name.toLowerCase().includes(search))
           partial[masterId] = filteredCategories
         } else {
-          partial[masterId] = categories
+          partial[masterId] = filteredCategories
         }
         return partial
       }, {})
@@ -121,6 +131,9 @@ export default {
     },
     masterCategoryColor(master_id) {
       return _.get(this, ['masterCategoriesById', master_id, 'color', 'hex'], 'transparent')
+    },
+    isDisabled(categoryId) {
+      return this.disableCategories.includes(categoryId.slice(-ID_LENGTH.category))
     }
   }
 }

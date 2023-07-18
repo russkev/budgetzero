@@ -131,6 +131,7 @@ export default {
         state.editedTransaction.splits.splice(index, 1)
       }
     },
+
     CLEAR_EDITED_TRANSACTION_SPLIT(state) {
       // Vue.set(state.editedTransaction, 'splits', [])
       while (state.editedTransaction.splits.length > 0) {
@@ -189,6 +190,12 @@ export default {
     },
     SET_IMPORT_CSV_IS_OPEN(state, is_open) {
       Vue.set(state, 'importCsvIsOpen', is_open)
+    },
+    RESET_ACCOUNT_TRANSACTIONS(state) {
+      console.log('RESET_ACCOUNT_TRANSACTIONS')
+      for (let key in DEFAULT_ACCOUNT_TRANSACTIONS_STATE) {
+        Vue.set(state, key, DEFAULT_ACCOUNT_TRANSACTIONS_STATE[key])
+      }
     }
   },
   actions: {

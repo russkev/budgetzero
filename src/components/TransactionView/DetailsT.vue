@@ -100,7 +100,7 @@
           icon="mdi-file-upload"
           label="Import OFX"
           @click.stop="onOpenImportOfx"
-          :disabled="isExporting"
+          :disabled="isExporting || tableIsDisabled"
         />
         <details-button
           data-testid="import-csv-transactions-button"
@@ -109,22 +109,14 @@
           @click.stop="onOpenImportCsv"
           :disabled="isExporting || tableIsDisabled"
         />
-        <!-- <export-excel :data="[]" :fields="{}" worksheet="My Worksheet" name="transactions.xlsx"> -->
         <details-button
           data-testid="export-excel-button"
           icon="mdi-table-arrow-right"
           label="Export Excel"
           @click.stop="onExportExcel"
-          :loading="isExporting || tableIsDisabled"
+          :loading="isExporting"
+          :disabled="tableIsDisabled"
         />
-        <!-- </export-excel> -->
-        <!-- @click.stop="importModalIsVisible = true" -->
-        <!-- <import-transactions
-            :visible="importModalIsVisible"
-            :account="accountId"
-            @close="onImportModalClose"
-            @apply="onImportModalApply"
-          /> -->
       </template>
     </details-buttons>
   </v-card>

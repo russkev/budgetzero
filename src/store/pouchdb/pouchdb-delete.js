@@ -13,12 +13,13 @@ export default {
         .then(() => {
           Vue.prototype.$pouch = null
 
+          commit('accountTransactions/RESET_ACCOUNT_TRANSACTIONS', { root: true })
           if (getters.syncState === SYNC_STATE.NOT_CONNECTED || getters.syncState === SYNC_STATE.ERROR) {
             /*
              * If not connected to remote, no budget will be available.
              * Reset budgets to trigger landing page load
              */
-            commit('RESET_BUDGETS')
+            commit('RESET_BUDGETS', { root: true })
           }
           // context.dispatch('resetAllCurrentBudgetData')
           dispatch('loadLocalBudget')

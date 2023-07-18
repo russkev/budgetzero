@@ -57,7 +57,7 @@
         </v-hover>
       </div>
       <div>Move</div>
-      <div>
+      <div id="details-move-container">
         <details-move />
       </div>
       <div class="text-h5">Working</div>
@@ -193,5 +193,14 @@ export default {
 
 .category-budget-input {
   max-width: 110px;
+}
+
+div#details-move-container {
+  overflow: auto;
+}
+
+div#details-move-container > div {
+  display: flex;
+  flex-direction: column;
 }
 </style>

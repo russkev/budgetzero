@@ -31,7 +31,12 @@
         </details-radio>
       </span>
     </span>
-    <category-menu :category-id="selectedCategory.moveDestination" show-balance @selected="onMoveDestinationChanged" />
+    <category-menu
+      :category-id="selectedCategory.moveDestination"
+      show-balance
+      @selected="onMoveDestinationChanged"
+      :disable-categories="[selectedCategory._id]"
+    />
     <div class="mt-2">
       <v-btn data-testid="details-move-save-button" elevation="0" text small block @click="doBudgetMove">Send</v-btn>
     </div>
