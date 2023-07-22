@@ -42,8 +42,8 @@
               :class="`pa-0 my-auto`"
               v-if="!hideBalance"
             >
-              <row-element-wrapper @click="onCategoryDetailsClick" class="justify-end ml-1">
-                <span :class="valueColor(category.balance)">{{ intlCurrency.format(category.balance / 100) }}</span>
+              <row-element-wrapper @click="onCategoryDetailsClick" :class="`justify-end ml-1 ${valueColor(category.balance)}`">
+                {{ intlCurrency.format(category.balance / 100) }}
               </row-element-wrapper>
             </v-col>
           </v-row>

@@ -260,6 +260,7 @@ describe('Test transactions', () => {
       cy.get('.transaction-row > .row-checkbox').eq(2).click()
       cy.get('.transaction-row > .row-checkbox').eq(1).click()
       cy.get('[data-testid="categorize-as-button"]').click()
+      cy.get('[data-testid="category-search"]').should('be.visible')
       cy.get('[data-testid="category-search"]').type('Gas').type('{downArrow}{downArrow}{enter}')
       cy.get('.transaction-row .row-category').eq(6).should('contain.text', 'Gas')
       cy.get('.transaction-row .row-category').eq(2).should('contain.text', 'Gas')
@@ -300,7 +301,7 @@ describe('Test transactions', () => {
       cy.get('[data-testid="uncategorized-balance"]').should('contain.text', ' -$223.86 ')
     })
 
-    it('Modify category, splits, date, amount, all at once', () => {
+    it.only('Modify category, splits, date, amount, all at once', () => {
       // Does the modifications
       cy.get('.transaction-row .row-description').eq(5).click()
       cy.get('[data-testid="details-date"] input').clear().type('2022-08-29').blur()

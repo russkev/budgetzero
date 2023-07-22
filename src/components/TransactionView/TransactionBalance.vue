@@ -1,8 +1,11 @@
 <template>
-  <row-element-wrapper @click="onTransactionDetailsClick(item)" class="text-right" right :disabled="tableIsDisabled">
-    <span :class="`my-auto ${tableIsDisabled ? 'text-disabled' : ''}`">
-      {{ intlCurrency.format((item.balance + initialBalance) / 100) }}
-    </span>
+  <row-element-wrapper
+    right
+    :class="`text-right my-auto ${tableIsDisabled ? 'text-disabled' : ''}`"
+    :disabled="tableIsDisabled"
+    @click="onTransactionDetailsClick(item)"
+  >
+    {{ intlCurrency.format((item.balance + initialBalance) / 100) }}
   </row-element-wrapper>
 </template>
 

@@ -17,24 +17,24 @@
           :is-editing="isEditingName(selectedCategory._id)"
           :value="selectedCategory.name"
           :loading="editedCategoryNameLoading"
-          @edit="onEditCategoryName(selectedCategory._id)"
           @apply="onCategoryNameChange"
+          @edit="onEditCategoryName(selectedCategory._id)"
         />
       </div>
 
       <div class="text-h5">Budgeted</div>
       <div>
         <string-input
+          currency
+          currency-left
           class="category-budget-input"
           :id="`category-budget-input-${selectedCategory._id}`"
           :data-testid="`category-budget-input-${selectedCategory._id}`"
           :value="selectedCategory.budgetDisplay"
-          currency
           :is-editing="editedCategoryBudgetId == selectedCategory._id"
-          @edit="onEditCategoryBudget(selectedCategory._id)"
-          @apply="onBudgetValueApply"
           :loading="editedCategoryBudgetLoading"
-          currency-left
+          @apply="onBudgetValueApply"
+          @edit="onEditCategoryBudget(selectedCategory._id)"
         />
       </div>
       <div class="text-h5">Note</div>

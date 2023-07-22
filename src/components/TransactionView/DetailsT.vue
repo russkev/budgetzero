@@ -53,7 +53,7 @@
           @click="onUnclearSelected"
           :disabled="tableIsDisabled"
         />
-        <v-menu v-model="categoryMenu" :close-on-content-click="false">
+        <v-menu v-model="categoryMenu" :close-on-content-click="false" @input="onCategoryMenuClose">
           <template #activator="{ on, attrs }">
             <details-button
               data-testid="categorize-as-button"
@@ -64,7 +64,7 @@
               :disabled="tableIsDisabled"
             />
           </template>
-          <category-select @selected="onCategorySelected" />
+          <category-select @selected="onCategorySelected" v-model="categorySearch" />
         </v-menu>
         <delete-confirm @confirm="deleteSelectedTransactions">
           <template #activator="{ on }">
@@ -172,7 +172,8 @@ export default {
       DEFAULT_TRANSACTION,
       categoryMenu: false,
       importModalIsVisible: false,
-      originalTransaction: null
+      originalTransaction: null,
+      categorySearch: ''
       // importOfxIsOpen: false
     }
   },
@@ -334,6 +335,11 @@ export default {
       } else {
         this.onSave()
       }
+    },
+    onCategoryMenuClose() {
+      setTimeout(() => {
+        this.categorySearch = ''
+      }, 500)
     }
   }
 }
