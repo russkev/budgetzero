@@ -301,7 +301,7 @@ describe('Test transactions', () => {
       cy.get('[data-testid="uncategorized-balance"]').should('contain.text', ' -$223.86 ')
     })
 
-    it.only('Modify category, splits, date, amount, all at once', () => {
+    it('Modify category, splits, date, amount, all at once', () => {
       // Does the modifications
       cy.get('.transaction-row .row-description').eq(5).click()
       cy.get('[data-testid="details-date"] input').clear().type('2022-08-29').blur()
