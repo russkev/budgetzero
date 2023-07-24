@@ -260,6 +260,7 @@ describe('Test transactions', () => {
       cy.get('.transaction-row > .row-checkbox').eq(2).click()
       cy.get('.transaction-row > .row-checkbox').eq(1).click()
       cy.get('[data-testid="categorize-as-button"]').click()
+      cy.get('[data-testid="category-search"]').should('be.visible')
       cy.get('[data-testid="category-search"]').type('Gas').type('{downArrow}{downArrow}{enter}')
       cy.get('.transaction-row .row-category').eq(6).should('contain.text', 'Gas')
       cy.get('.transaction-row .row-category').eq(2).should('contain.text', 'Gas')
@@ -424,6 +425,12 @@ describe('Test transactions', () => {
       // cy.initPath('transactions/7kW')
       cy.initPath('categories/2022-08')
       cy.get('[data-testid="transactions-page-7kW"]').click()
+    })
+
+    it.only('Test inline category update', () => {
+      cy.get('[data-testid="category-menu-B6hK-40KYvWB"]').click()
+      cy.get('[data-testid="category-search"]').should('be.focused').type('Savings')
+      // cy.get('[data-testid="category-search"]').click().type('Savings')
     })
 
     it('Test transaction category update', () => {

@@ -8,8 +8,9 @@
     <category-menu
       :category-id="item.category ? item.category : ''"
       :splits="item.splits"
-      @selected="onCategorySelected"
       :disabled="isDisabled"
+      :button-testid="`category-menu-${item._id.slice(-ID_LENGTH.transaction)}`"
+      @selected="onCategorySelected"
     />
   </div>
   <div v-else class="transaction-categories-container mr-2" :style="`grid-template-columns: ${templateColumns}`">
@@ -18,6 +19,7 @@
         :key="`category-${index}`"
         :category-id="split.category ? split.category : ''"
         :disabled="isDisabled"
+        :button-testid="`category-menu-${item._id.slice(-ID_LENGTH.transaction)}_${index}`"
         @selected="
           (categoryId) => {
             onSplitCategorySelected(index, categoryId)
@@ -31,6 +33,7 @@
 </template>
 
 <script>
+import { ID_LENGTH } from '../../constants'
 import { mapActions, mapGetters } from 'vuex'
 import CategoryMenu from '../Shared/CategoryMenu.vue'
 
@@ -42,6 +45,11 @@ export default {
     highlighted: {
       type: Boolean,
       default: false
+    }
+  },
+  data() {
+    return {
+      ID_LENGTH
     }
   },
   components: { CategoryMenu },

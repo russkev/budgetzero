@@ -101,7 +101,6 @@ describe('Initial experience', () => {
       cy.get('[data-testid="sync-budget-button"]').click()
 
       // Input cloud server address
-      cy.get('[data-testid="edit-cloud-button"]').click()
       cy.get('[data-testid="cloud-sync-url"]').type(Cypress.env('CYPRESS_CLOUD_ADDRESS'))
       cy.get('[data-testid="save-edit-button"]').click()
 
@@ -163,13 +162,12 @@ describe('Initial experience', () => {
       cy.get('[data-testid="delete-confirm-button"]').click()
 
       cy.get('[data-testid="sync-budget-button"]').click()
-      cy.get('[data-testid="edit-cloud-button"]').click()
       cy.get('[data-testid="cloud-sync-url"]').type('TestAddress').type('{enter}')
       cy.get('[data-testid="cloud-sync-url"]').should('have.attr', 'readonly')
       cy.get('[data-testid="cloud-sync-url"]').should('have.value', 'TestAddress')
     })
 
-    it('Checks that esc key goes back to main landing page', () => {
+    it.only('Checks that esc key goes back to main landing page', () => {
       cy.initPathEmpty('landing')
 
       /* ------- Name Field ------- */
@@ -197,14 +195,14 @@ describe('Initial experience', () => {
 
       /* ------- Cloud Sync Address ------- */
       cy.get('[data-testid="sync-budget-button"]').click()
-      cy.get('[data-testid="edit-cloud-button"]').click()
       cy.get('[data-testid="cloud-sync-url"]').type('{esc}')
       cy.get('[data-testid="cloud-sync-url"]').should('have.attr', 'readonly')
       cy.get('[data-testid="landing-back-button"]').click()
 
       /* ------- Cloud Edit Button ------- */
       cy.get('[data-testid="sync-budget-button"]').click()
-      cy.get('[data-testid="edit-cloud-button"]').focus().type('{esc}')
+      cy.get('[data-testid="cloud-sync-url"]').focus().type('{esc}')
+      cy.get('[data-testid="edit-cloud-button"]').type('{esc}')
       cy.get('[data-testid="landing-title"]').should('contain.text', 'No budget loaded')
 
       /* ------- Cloud Clear Button ------- */
