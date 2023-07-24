@@ -427,6 +427,12 @@ describe('Test transactions', () => {
       cy.get('[data-testid="transactions-page-7kW"]').click()
     })
 
+    it.only('Test inline category update', () => {
+      cy.get('[data-testid="category-menu-B6hK-40KYvWB"]').click()
+      cy.get('[data-testid="category-search"]').should('be.focused').type('Savings')
+      // cy.get('[data-testid="category-search"]').click().type('Savings')
+    })
+
     it('Test transaction category update', () => {
       // Change category from Groceries to Vacation',
       cy.get('.transaction-row .row-category').eq(3).click()
