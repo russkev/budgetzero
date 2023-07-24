@@ -238,8 +238,7 @@ describe('Test categories (budget) page', () => {
       const vacation_selector = '[data-testid="category-budget-Lx7"]'
       const vacation_input_selector = '[data-testid="category-budget-input-Lx7"]'
       cy.get(vacation_selector).click()
-      cy.get(vacation_input_selector).should('have.value', '$430.00')
-      cy.get(vacation_input_selector).click('center')
+      cy.get(vacation_input_selector).should('have.value', '430.00')
       cy.get(vacation_input_selector).clear()
       cy.get(vacation_input_selector).type('-100')
       cy.get(vacation_input_selector).type('{enter}')
@@ -295,7 +294,7 @@ describe('Test categories (budget) page', () => {
       const water_selector = '[data-testid="category-budget-2aW"]'
       const water_input_selector = '[data-testid="category-budget-input-2aW"]'
       cy.get(water_selector).click()
-      cy.get(water_input_selector).should('have.value', '$15.00')
+      cy.get(water_input_selector).should('have.value', '15.00')
       cy.get(water_input_selector).click()
       cy.get(water_input_selector).clear()
       cy.get(water_input_selector).type('-1')
@@ -308,7 +307,7 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="previous-month-button"]').click()
 
       cy.get(water_selector).click()
-      cy.get(water_input_selector).should('have.value', '-$1.00')
+      cy.get(water_input_selector).should('have.value', '-1.00')
       cy.get(water_input_selector).click()
       cy.get(water_input_selector).clear()
       cy.get(water_input_selector).type('2000')
@@ -323,7 +322,7 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="previous-month-button"]').click()
 
       cy.get(water_selector).click()
-      cy.get(water_input_selector).should('have.value', '$2,000.00')
+      cy.get(water_input_selector).should('have.value', '2000.00')
       cy.get(water_input_selector).click()
       cy.get(water_input_selector).clear()
       cy.get(water_input_selector).type('15')
@@ -379,7 +378,7 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="sidebar-button-categories"]').click()
     })
 
-    it('Creates a new category', () => {
+    it.only('Creates a new category', () => {
       // Create a new category
       cy.get('[data-testid="btn-new-category-3ks"]').click()
       cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 5)

@@ -201,12 +201,13 @@ describe('Initial experience', () => {
 
       /* ------- Cloud Edit Button ------- */
       cy.get('[data-testid="sync-budget-button"]').click()
-      cy.get('[data-testid="cloud-sync-url"]').focus().type('{esc}')
-      cy.get('[data-testid="edit-cloud-button"]').type('{esc}')
+      cy.get('[data-testid="cloud-sync-url"]').type('{esc}')
+      cy.get('[data-testid="edit-cloud-button"]').focus().type('{esc}')
       cy.get('[data-testid="landing-title"]').should('contain.text', 'No budget loaded')
 
       /* ------- Cloud Clear Button ------- */
       cy.get('[data-testid="sync-budget-button"]').click()
+      cy.get('[data-testid="cloud-sync-url"]').type('{esc}')
       cy.get('[data-testid="clear-cloud-button"]').focus().type('{esc}')
       cy.get('[data-testid="landing-title"]').should('contain.text', 'No budget loaded')
     })
