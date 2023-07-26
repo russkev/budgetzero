@@ -163,7 +163,10 @@ export default {
       }
       this.menu = false
     },
-    onMenuClose() {
+    onMenuClose(isOpen) {
+      if (isOpen) {
+        return
+      }
       setTimeout(() => {
         this.search = ''
       }, 500)

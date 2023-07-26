@@ -39,7 +39,7 @@
             <v-col
               :data-testid="`category-balance-${category._id}`"
               align="right"
-              :class="`pa-0 my-auto`"
+              :class="`category-balance pa-0 my-auto`"
               v-if="!hideBalance"
             >
               <row-element-wrapper

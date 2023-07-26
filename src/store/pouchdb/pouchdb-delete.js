@@ -25,7 +25,7 @@ export default {
           dispatch('loadLocalBudget')
         })
         .catch(function (err) {
-          console.log(`Error deleting database: ${err}`)
+          console.error(`Error deleting database: ${err}`)
         })
     },
 

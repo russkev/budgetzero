@@ -16,7 +16,7 @@
       <v-list-item-icon class="mr-4">
         <v-icon large> $custom </v-icon>
       </v-list-item-icon>
-      <v-list-item-title>
+      <v-list-item-title data-testid="nav-icon-text">
         <zero-text-only />
       </v-list-item-title>
     </v-list-item>

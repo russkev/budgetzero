@@ -394,6 +394,7 @@ export default {
       const doc = rootGetters.categoriesById[getters.editedCategoryNameId]
       commit('CLEAR_EDITED_CATEGORY_NAME_ID')
       if (name === doc.name) {
+        commit('SET_EDITED_CATEGORY_NAME_LOADING', false)
         return
       }
       if (doc !== undefined) {

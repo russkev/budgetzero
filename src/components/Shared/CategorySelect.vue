@@ -11,7 +11,7 @@
           hide-details
           ref="search"
           :value="value"
-          @input="(event) => $emit('input', event)"
+          @input="onSearchUpdate"
           background-color="background lighten-2"
           class="text-body-1"
         />
@@ -134,6 +134,9 @@ export default {
     },
     isDisabled(categoryId) {
       return this.disableCategories.includes(categoryId.slice(-ID_LENGTH.category))
+    },
+    onSearchUpdate(event) {
+      this.$emit('input', event)
     }
   }
 }

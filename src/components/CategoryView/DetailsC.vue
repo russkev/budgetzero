@@ -43,11 +43,12 @@
           <div :data-testid="`category-budget-note-${selectedCategory._id}`">
             <v-textarea
               v-model="note"
-              class="text-body-1 mb-2"
+              class="category-budget-note text-body-1 mb-2"
               dense
               flat
               solo
               hide-details
+              :data-testid="`category-budget-note-${selectedCategory._id}`"
               :background-color="hover ? 'background lighten-2' : 'transparent'"
               :loading="editedCategoryNoteLoading"
               @change="onNoteUpdate"

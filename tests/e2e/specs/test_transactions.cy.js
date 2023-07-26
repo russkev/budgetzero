@@ -418,6 +418,36 @@ describe('Test transactions', () => {
       cy.get('.v-data-footer__pagination').should('contain.text', '1-5 of 22')
       cy.get('.transaction-row').should('have.length', 5)
     })
+
+    it('Test inline category update', () => {
+      // Using 'Enter' key
+      cy.get('[data-testid="category-menu-B6hK-40KYvWB"]').type('{enter}')
+      cy.get('.category-list-item').should('have.length', 8)
+      cy.get('.category-list-item').should('be.visible')
+      cy.get('[data-testid="category-search"]').should('be.focused').type('Car{downArrow}{downArrow}{enter}')
+
+      cy.get('.category-list-item').should('not.be.visible')
+      cy.get('[data-testid="category-menu-B6hK-40KYvWB"]').should('contain.text', 'Car')
+
+      // Using mouse click
+      cy.get('[data-testid="category-menu-B6hK-40KYvWB"]').click()
+      cy.get('.category-list-item').should('have.length', 9)
+      cy.get('.category-list-item').should('be.visible')
+      cy.get('[data-testid="category-search"]').should('be.focused').type('Pet')
+      cy.get('.category-list-item').eq(2).click()
+
+      cy.get('.category-list-item').should('not.be.visible')
+      cy.get('[data-testid="category-menu-B6hK-40KYvWB"]').should('contain.text', 'Pet')
+
+      // Check that text is cleared
+      cy.get('[data-testid="category-menu-B6hK-40KYvWB"]').click()
+      cy.get('[data-testid="category-search"]').should('not.have.value')
+      cy.get('[data-testid="category-search"]').type('test')
+      cy.get('#transactions-header').click()
+      cy.get('.category-list-item').should('not.be.visible')
+      cy.get('[data-testid="category-menu-B6hK-40KYvWB"]').click()
+      cy.get('[data-testid="category-search"]').should('not.have.value')
+    })
   })
 
   context('Test date related modifications', () => {
@@ -425,12 +455,6 @@ describe('Test transactions', () => {
       // cy.initPath('transactions/7kW')
       cy.initPath('categories/2022-08')
       cy.get('[data-testid="transactions-page-7kW"]').click()
-    })
-
-    it.only('Test inline category update', () => {
-      cy.get('[data-testid="category-menu-B6hK-40KYvWB"]').click()
-      cy.get('[data-testid="category-search"]').should('be.focused').type('Savings')
-      // cy.get('[data-testid="category-search"]').click().type('Savings')
     })
 
     it('Test transaction category update', () => {

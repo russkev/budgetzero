@@ -111,6 +111,16 @@ describe('Manage budgets', () => {
       // Check that original values are restored
       cy.get(vacation_input_selector).should('have.value', '$0.00')
     })
+    it('Checks that a new budget can be created after database deleted', () => {
+      // Delete the database
+      cy.get('[data-testid="delete-local-db-button"]').click()
+      cy.get('[data-testid="delete-confirm-button"]').click()
+      cy.get('[data-testid="create-new-budget-button"]').click()
+      cy.get('[data-testid="budget-name-field"]').type('Test Budget')
+      cy.get('[data-testid="create-budget-button"]').click()
+      // Ensure automatic redirect to manage page
+      cy.url().should('include', '/manage')
+    })
   })
   context('Test cloud backup and restore', () => {
     it('Checks connection to cloud server', () => {
