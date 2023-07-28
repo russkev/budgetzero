@@ -17,8 +17,8 @@ import { compareAscii } from '../../store/modules/id-module'
 const DEFAULT_MONTH_CATEGORIES_STATE = {
   editedMasterCategoryId: '',
   editedCategoryBudgetId: '',
-  editedCategoryBudgetLoading: false,
   editedCategoryNameId: '',
+  editedCategoryBudgetLoading: false,
   editedCategoryNameLoading: false,
   editedCategoryNoteLoading: false,
   tablePageNumber: 1,
@@ -282,13 +282,27 @@ export default {
       }
       const month = getters.selectedMonth
       const previous = _.get(rootGetters.allCategoryBalances, [month, category_id, 'doc'], null)
-      if (previous.note === note) {
+      if (previous && previous.note === note) {
         return
       }
-      const current = {
-        ...previous,
-        note: note
+      let current = {}
+      if (previous === null) {
+        current = {
+          ...DEFAULT_MONTH_CATEGORY,
+          _id: `b_${rootGetters.selectedBudgetId}${ID_NAME.monthCategory}${month}_${category_id}`,
+          note: note
+        }
+      } else {
+        current = {
+          ...previous,
+          note: note
+        }
       }
+
+      // const current = {
+      //   ...previous,
+      //   note: note
+      // }
       dispatch('commitDocToPouchAndVuex', { current, previous }, { root: true })
         .then(() => {
           if (getters.selectedCategory && getters.selectedCategory._id === category_id) {

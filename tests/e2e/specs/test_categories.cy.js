@@ -395,28 +395,32 @@ describe('Test categories (budget) page', () => {
       cy.get(name_input_selector).should('not.have.attr', 'readonly')
       cy.get(name_input_selector).should('have.focus')
       cy.get(name_input_selector).type('Internet')
+      cy.get(name_input_selector).should('be.enabled')
 
       // Check that value update works correctly
-      cy.get('.category-budget-input').eq(0).type('5{enter}')
-      cy.get(balance_selector).eq(5).should('have.text', ' $5.00 ')
-      cy.get(name_input_selector).should('have.value', 'Internet')
+      cy.get('.category-budget-input input').eq(0).focus()
       cy.get(name_selector).should('have.text', ' Internet ')
+      cy.get('.category-budget-input input').eq(0).type('5')
 
-      // Check that note update works correctly
-      cy.get('.category-budget-note textarea').type('This is a note').blur()
+      // // Check that note update works correctly
+      cy.get('.category-budget-note textarea').focus()
+      cy.get('.category-budget-input input').eq(0).should('have.value', '$5.00')
+      cy.get('.category-budget-note textarea').type('This is a note')
+      cy.get('.transaction-details-grid > :nth-child(9)').click()
+      cy.get('.category-budget-note textarea').should('have.value', 'This is a note')
       cy.get('[data-testid="category-name-:in"]').click()
-      cy.get('.category-budget-note').should('have.value', '')
+      cy.get('.category-budget-note textarea').should('have.value', '')
 
-      // // Create a new master category
-      // cy.get('.master-categories > div').should('have.length', 2)
-      // cy.get('[data-testid="btn-new-master-category"]').click()
-      // cy.get('.master-categories > div').should('have.length', 3)
-      // const name_input = () => cy.get('main').find('div.master-row').eq(4).find('input')
-      // name_input().should('not.have.attr', 'readonly')
-      // name_input().should('have.focus')
-      // name_input().type('Dividends').type('{enter}')
-      // name_input().should('have.value', 'Dividends')
-      // cy.get('.categories-container').eq(3).should('not.be.visible')
+      // Create a new master category
+      cy.get('.master-categories > div').should('have.length', 2)
+      cy.get('[data-testid="btn-new-master-category"]').click()
+      cy.get('.master-categories > div').should('have.length', 3)
+      const name_input = () => cy.get('main').find('div.master-row').eq(4).find('input')
+      name_input().should('not.have.attr', 'readonly')
+      name_input().should('have.focus')
+      name_input().type('Dividends').type('{enter}')
+      name_input().should('have.value', 'Dividends')
+      cy.get('.categories-container').eq(3).should('not.be.visible')
     })
 
     it('Tests that esc key works', () => {

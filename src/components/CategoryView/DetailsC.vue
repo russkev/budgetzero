@@ -16,10 +16,11 @@
           :data-testid="`category-name-input-${selectedCategory._id}`"
           :is-editing="isEditingName(selectedCategory._id)"
           :value="selectedCategory.name"
-          :loading="editedCategoryNameLoading"
+          :enabled="!loading"
           @apply="onCategoryNameChange"
           @edit="onEditCategoryName(selectedCategory._id)"
         />
+        <!-- :loading="editedCategoryNameLoading" -->
       </div>
 
       <div class="text-h5">Budgeted</div>
@@ -32,10 +33,11 @@
           :data-testid="`category-budget-input-${selectedCategory._id}`"
           :value="selectedCategory.budgetDisplay"
           :is-editing="editedCategoryBudgetId == selectedCategory._id"
-          :loading="editedCategoryBudgetLoading"
+          :enabled="!loading"
           @apply="onBudgetValueApply"
           @edit="onEditCategoryBudget(selectedCategory._id)"
         />
+        <!-- :loading="editedCategoryBudgetLoading" -->
       </div>
       <div class="text-h5">Note</div>
       <div>
@@ -48,12 +50,12 @@
               flat
               solo
               hide-details
-              :data-testid="`category-budget-note-${selectedCategory._id}`"
               :background-color="hover ? 'background lighten-2' : 'transparent'"
-              :loading="editedCategoryNoteLoading"
+              :enabled="!loading"
               @change="onNoteUpdate"
               @keydown.ctrl.enter.exact.prevent="onNoteUpdate"
             />
+            <!-- :loading="editedCategoryNoteLoading" -->
           </div>
         </v-hover>
       </div>
@@ -146,6 +148,9 @@ export default {
     },
     categoryColor() {
       return _.get(this.categoryColors, [this.selectedCategory._id, 'main'], 'transparent')
+    },
+    loading() {
+      return this.editedCategoryBudgetLoading || this.editedCategoryNameLoading || this.editedCategoryNoteLoading
     }
   },
   methods: {
