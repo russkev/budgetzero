@@ -298,11 +298,6 @@ export default {
           note: note
         }
       }
-
-      // const current = {
-      //   ...previous,
-      //   note: note
-      // }
       dispatch('commitDocToPouchAndVuex', { current, previous }, { root: true })
         .then(() => {
           if (getters.selectedCategory && getters.selectedCategory._id === category_id) {

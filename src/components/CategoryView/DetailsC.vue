@@ -20,7 +20,6 @@
           @apply="onCategoryNameChange"
           @edit="onEditCategoryName(selectedCategory._id)"
         />
-        <!-- :loading="editedCategoryNameLoading" -->
       </div>
 
       <div class="text-h5">Budgeted</div>
@@ -37,7 +36,6 @@
           @apply="onBudgetValueApply"
           @edit="onEditCategoryBudget(selectedCategory._id)"
         />
-        <!-- :loading="editedCategoryBudgetLoading" -->
       </div>
       <div class="text-h5">Note</div>
       <div>
@@ -55,7 +53,6 @@
               @change="onNoteUpdate"
               @keydown.ctrl.enter.exact.prevent="onNoteUpdate"
             />
-            <!-- :loading="editedCategoryNoteLoading" -->
           </div>
         </v-hover>
       </div>

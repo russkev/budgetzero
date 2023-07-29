@@ -167,7 +167,7 @@ describe('Initial experience', () => {
       cy.get('[data-testid="cloud-sync-url"]').should('have.value', 'TestAddress')
     })
 
-    it.only('Checks that esc key goes back to main landing page', () => {
+    it('Checks that esc key goes back to main landing page', () => {
       cy.initPathEmpty('landing')
 
       /* ------- Name Field ------- */
