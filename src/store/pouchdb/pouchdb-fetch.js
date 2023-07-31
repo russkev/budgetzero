@@ -204,11 +204,17 @@ export default {
           }
         })
     },
-    fetchPrecedingTransaction: async ({ getters }, { transaction, isDeleted }) => {
+    fetchPrecedingTransaction: async ({ getters }, { transaction }) => {
       const t1 = performance.now()
 
       const db = Vue.prototype.$pouch
-      // const budget_id = transaction._id.slice(2, 2 + ID_LENGTH.budget)
+      let isDeleted = false
+
+      // Check of transaction has been deleted
+      await db.get(transaction._id).catch((err) => {
+        isDeleted = true
+      })
+
       const budget_id = getters.selectedBudgetId
       const limit = isDeleted ? 1 : 2
       const transaction_id = transaction._id.slice(-ID_LENGTH.transaction)

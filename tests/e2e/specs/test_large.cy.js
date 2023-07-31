@@ -15,21 +15,24 @@ describe('Test large budget', () => {
       // cy.get('.heading').should('contain.text', '18 transactions')
       cy.get('[data-testid="import-ofx-transactions-button"]').click()
 
-      // // Ensure current account transaction totals are updated
-      // cy.get('[data-testid="transactions-page-q1F"]', { timeout: 100000 }).should('contain.text', '$253,194.32', {
-      //   timeout: 100000
-      // })
+      // Ensure current account transaction totals are updated
+      cy.get('[data-testid="transactions-page-q1F"]').should('contain.text', '$253,194.32', {
+        timeout: 100000
+      })
+      cy.get('[data-testid="create-transaction-button"]', { timeout: 100000 }).should('be.visible')
 
-      // // Check that buttons for no transactions selected disable when loading
-      // cy.get('.v-data-footer__icons-after').click()
-      // cy.get('[data-testid="create-transaction-button"]').should('be.disabled')
-      // cy.get('[data-testid="import-transactions-button"]').should('be.disabled')
-      // cy.get('[data-testid="import-csv-transactions-button"]').should('be.disabled')
-      // cy.get('[data-testid="export-excel-button"]').should('be.disabled')
+      // Check that buttons for no transactions selected disable when loading
+      cy.get('.v-data-footer__icons-after').click()
+      cy.get('[data-testid="create-transaction-button"]').should('be.disabled')
+      cy.get('[data-testid="import-transactions-button"]').should('be.disabled')
+      cy.get('[data-testid="import-csv-transactions-button"]').should('be.disabled')
+      cy.get('[data-testid="export-excel-button"]').should('be.disabled')
 
-      // // Check that multiple selected get deselected and buttons are disabled
-      // cy.get('.v-progress-linear__buffer').should('not.exist')
-      // cy.get('.transaction-row > .row-checkbox').eq(0).click()
+      // Check that multiple selected get deselected and buttons are disabled
+      cy.get('.v-progress-linear__buffer', { timeout: 20000 }).should('not.exist')
+      cy.get('[data-testid="create-transaction-button"]').should('not.be.disabled')
+
+      cy.get('.transaction-row > .row-checkbox').eq(0).click()
       // cy.get('.transaction-row > .row-checkbox').eq(1).click()
       // cy.get('.v-data-footer__icons-before').click()
       // cy.get('[data-testid="clear-selected-button"]').should('be.disabled')

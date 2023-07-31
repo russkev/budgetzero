@@ -6,6 +6,7 @@
     class="flex-sheet pa-1 ma-0"
     @keydown.enter.ctrl.exact.prevent="onCtrlEnter"
     @keydown.esc.prevent="onCancel"
+    data-testid="transaction-details"
   >
     <import-ofx v-if="importOfxIsOpen" @close="onCloseImportOfx" @apply="onApplyImportOfx" :account="accountId" />
     <import-csv v-else-if="importCsvIsOpen" @close="onCloseImportCsv" @apply="onCloseImportCsv" :account="accountId" />

@@ -258,36 +258,25 @@ export default {
       await dispatch('prepareEditedItem')
       const transaction = JSON.parse(JSON.stringify(getters.editedTransaction))
       commit('CLEAR_EDITED_TRANSACTION')
-      return (
-        dispatch(
-          'createOrUpdateTransaction',
-          {
-            current: transaction,
-            previous: previous
-          },
-          {
-            root: true
-          }
-        )
-          // .then(() => {
-          //   return dispatch(
-          //     'updateRunningBalance',
-          //     {
-          //       transaction: transaction,
-          //       isDeleted: false
-          //     },
-          //     {
-          //       root: true
-          //     }
-          //   )
-          // })
-          .then(() => {
-            return dispatch('getTransactions')
-          })
-          .catch((error) => {
-            console.log(error)
-          })
+      return dispatch(
+        'createOrUpdateTransaction',
+        {
+          current: transaction,
+          previous: previous
+        },
+        {
+          root: true
+        }
       )
+        .then(() => {
+          return dispatch('updateRunningBalance', { transaction }, { root: true })
+        })
+        .then(() => {
+          return dispatch('getTransactions')
+        })
+        .catch((error) => {
+          console.log(error)
+        })
     },
     cancel({ commit }) {
       commit('CLEAR_EDITED_TRANSACTION')
@@ -359,8 +348,7 @@ export default {
             return dispatch(
               'updateRunningBalance',
               {
-                transaction: oldest_document,
-                isDeleted: true
+                transaction: oldest_document
               },
               { root: true }
             )
@@ -375,7 +363,7 @@ export default {
     deleteTransaction({ commit, dispatch }, transaction) {
       const payload = { current: null, previous: transaction }
       dispatch('commitDocToPouchAndVuex', payload, { root: true }).then(() => {
-        dispatch('updateRunningBalance', { transaction: transaction, isDeleted: true }, { root: true }).then(() => {
+        dispatch('updateRunningBalance', { transaction: transaction }, { root: true }).then(() => {
           commit('CLEAR_SELECTED_TRANSACTIONS')
           dispatch('getTransactions')
         })
@@ -428,6 +416,7 @@ export default {
     onImportTransactions({ dispatch, rootGetters }, { transactions, account, csvInfo }) {
       const prev_account_document = rootGetters.accountsById[account]
       const current_account_document = { ...prev_account_document, csvInfo: csvInfo }
+      let oldest_transaction = { date: '9999-99-99' }
 
       const transaction_documents = transactions.reduce((partial, transaction) => {
         if (transaction.exists) {
@@ -453,6 +442,9 @@ export default {
             transaction.importId
           )}`
         }
+        if (compareAscii(transaction.date, oldest_transaction.date) < 0) {
+          oldest_transaction = current
+        }
         partial.push({ current, previous })
         return partial
       }, [])
@@ -463,6 +455,9 @@ export default {
       )
         .then(() => {
           return dispatch('commitBulkDocsToPouchAndVuex', transaction_documents, { root: true })
+        })
+        .then(() => {
+          return dispatch('updateRunningBalance', { transaction: oldest_transaction }, { root: true })
         })
         .then(() => {
           return dispatch('getTransactions')

@@ -244,7 +244,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['fetchAccountIsEmpty', 'deleteAllAccountTransactions', 'updateRunningBalance', 'deleteAccount']),
+    ...mapActions(['fetchAccountIsEmpty', 'deleteAllAccountTransactions', 'deleteAccount']),
     // ...mapActions('accountTransactions', ['deleteAccount']),
     onEditAccountName(event) {
       let name = ''

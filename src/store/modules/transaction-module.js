@@ -97,11 +97,9 @@ export default {
       return context.dispatch('commitDocToPouchAndVuex', { current, previous })
     },
 
-    updateRunningBalance(context, { transaction, isDeleted }) {
-      console.log('updateRunningBalance transaction', transaction)
-      console.log('updateRunningBalance isDeleted', isDeleted)
+    updateRunningBalance(context, { transaction }) {
       return context
-        .dispatch('fetchPrecedingTransaction', { transaction, isDeleted })
+        .dispatch('fetchPrecedingTransaction', { transaction })
         .then((result) => {
           const return_value = result === null ? transaction : result.doc
           return return_value

@@ -291,7 +291,6 @@ export default {
       commit('UPDATE_ACCOUNT_BALANCES', transaction_payload)
 
       dispatch('updateCategoryBalance', { current, previous })
-      dispatch('updateRunningBalance', { transaction: current ? current : previous, isDeleted: !Boolean(current) })
       return true
     },
 
