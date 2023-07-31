@@ -267,7 +267,6 @@ export default {
     ...mapActions('accountTransactions', [
       'addTransaction',
       'deleteSelectedTransactions',
-      'getTransactions',
       'setClearedSelectedTransactions',
       'categorizeSelectedTransactions',
       'save',
@@ -290,13 +289,6 @@ export default {
     onCategorySelected(categoryId) {
       this.categorizeSelectedTransactions({ categoryId })
       this.categoryMenu = false
-    },
-    onImportModalClose() {
-      this.importModalIsVisible = false
-    },
-    onImportModalApply() {
-      this.importModalIsVisible = false
-      this.getTransactions()
     },
     onCloseImportOfx() {
       this.SET_IMPORT_OFX_IS_OPEN(false)

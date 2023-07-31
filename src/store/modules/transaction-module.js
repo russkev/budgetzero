@@ -98,6 +98,8 @@ export default {
     },
 
     updateRunningBalance(context, { transaction, isDeleted }) {
+      console.log('updateRunningBalance transaction', transaction)
+      console.log('updateRunningBalance isDeleted', isDeleted)
       return context
         .dispatch('fetchPrecedingTransaction', { transaction, isDeleted })
         .then((result) => {

@@ -195,7 +195,7 @@ export default {
   },
   watch: {},
   methods: {
-    ...mapActions(['loadLocalBudget', 'commitBulkNewDocsToPouch']),
+    ...mapActions(['resetAndFetchAllDocsFromPouchDB', 'commitBulkNewDocsToPouch']),
     onFileChange() {
       this.readOFXfile(this.chosenFile)
     },
@@ -292,7 +292,7 @@ export default {
       })
 
       return this.doImport(import_promises).then(() => {
-        this.loadLocalBudget()
+        this.resetAndFetchAllDocsFromPouchDB()
       })
     },
     async importCSVTransactions() {
@@ -332,7 +332,7 @@ export default {
       })
 
       return this.doImport(import_promises).then(() => {
-        this.loadLocalBudget()
+        this.resetAndFetchAllDocsFromPouchDB()
       })
     },
     async doImport(import_promises) {

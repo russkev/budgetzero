@@ -59,7 +59,7 @@
         dark
         class="mb-3"
         small
-        @click="$store.dispatch('loadLocalBudget')"
+        @click="$store.dispatch('resetAndFetchAllDocsFromPouchDB')"
       >
         Refresh Database
       </v-btn>
@@ -136,7 +136,13 @@
             </v-btn>
 
             <br />
-            <v-btn color="grey darken-2" dark class="mb-2" small @click="$store.dispatch('loadLocalBudget')">
+            <v-btn
+              color="grey darken-2"
+              dark
+              class="mb-2"
+              small
+              @click="$store.dispatch('resetAndFetchAllDocsFromPouchDB')"
+            >
               Reload Budget
             </v-btn>
             <span class="pl-2">Reload Budget Root (for debugging purposes)</span>
@@ -253,7 +259,7 @@ export default {
             color: 'success'
           })
           this.mockTransactionsModalIsVisible = false
-          return this.$store.dispatch('loadLocalBudget')
+          return this.$store.dispatch('resetAndFetchAllDocsFromPouchDB')
         })
         .catch((error) => {
           this.$store.commit('SET_SNACKBAR_MESSAGE', {

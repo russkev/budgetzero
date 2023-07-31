@@ -184,5 +184,5 @@ const vm = new Vue({
 Vue.prototype.$vm = vm
 
 vm.$store.dispatch('createLocalPouchDB').then(() => {
-  vm.$store.dispatch('loadLocalBudget')
+  vm.$store.dispatch('resetAndFetchAllDocsFromPouchDB')
 })

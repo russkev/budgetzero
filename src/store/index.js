@@ -34,13 +34,12 @@ Vue.mixin({
     validateDate,
     validateMonth,
     calculateTransactionBalanceUpdate,
-    getCarryover,
+    getCarryover
   }
 })
 
 Vue.use(Vuex)
 
-  
 const storeData = {
   strict: import.meta.env.NODE_ENV !== 'production',
   modules: {
@@ -58,21 +57,21 @@ const storeData = {
     pouchdbExport,
     pouchdbFetch,
     pouchdbInit,
-    pouchdbRemote,
+    pouchdbRemote
   },
   state: {
     snackbarMessage: '',
     snackbarColor: '',
     snackbar: false,
     sync_state: '',
-    selectedBudgetId: null,
+    selectedBudgetId: null
   },
   getters: {
     snackbarMessage: (state) => state.snackbarMessage,
     snackbarColor: (state) => state.snackbarColor,
     sync_state: (state) => state.sync_state,
     snackbar: (state) => state.snackbar,
-    selectedBudgetId: (state) => state.selectedBudgetId,
+    selectedBudgetId: (state) => state.selectedBudgetId
   },
   mutations: {
     SET_STATUS_MESSAGE(state, message) {
@@ -90,7 +89,7 @@ const storeData = {
     UPDATE_SELECTED_BUDGET_ID(state, selected_budget_id) {
       state.selectedBudgetId = selected_budget_id
       localStorage.budgetID = selected_budget_id
-    },
+    }
   },
   actions: {
     setSnackBarBoolean(context, snackbar) {
@@ -100,7 +99,7 @@ const storeData = {
       if (this.selectedBudgetId !== budget_id) {
         context.commit('UPDATE_SELECTED_BUDGET_ID', budget_id)
         context.dispatch('updateBudgetAccessed', budget_id)
-        return context.dispatch('loadLocalBudget')
+        return context.dispatch('resetAndFetchAllDocsFromPouchDB')
       } else {
         return
       }

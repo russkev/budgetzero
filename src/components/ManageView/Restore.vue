@@ -65,7 +65,7 @@ export default {
   methods: {
     ...mapActions([
       'commitRestoreBulkDocsToPouch',
-      'loadLocalBudget',
+      'resetAndFetchAllDocsFromPouchDB',
       'restoreLocalPouchDB',
       'databaseExists',
       'deleteLocalDatabase'
@@ -94,7 +94,7 @@ export default {
       }
       await this.restoreLocalPouchDB(this.restoreFileParsed)
       this.reset()
-      await this.loadLocalBudget()
+      await this.resetAndFetchAllDocsFromPouchDB()
     },
     onCancel() {
       if (!this.isLanding) {

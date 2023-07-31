@@ -22,7 +22,7 @@ export default {
             commit('RESET_BUDGETS', { root: true })
           }
           // context.dispatch('resetAllCurrentBudgetData')
-          dispatch('loadLocalBudget')
+          dispatch('resetAndFetchAllDocsFromPouchDB')
         })
         .catch(function (err) {
           console.error(`Error deleting database: ${err}`)

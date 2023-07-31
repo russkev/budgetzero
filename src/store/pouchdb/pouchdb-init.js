@@ -115,7 +115,7 @@ export default {
         })
     },
     async createLocalPouchDB(context, restoreFiles) {
-      PouchDB.adapter('worker', WorkerPouch)
+      // PouchDB.adapter('worker', WorkerPouch)
       const db = new PouchDB(LOCAL_DB_NAME)
       Vue.prototype.$pouch = db
 

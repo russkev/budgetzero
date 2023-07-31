@@ -86,7 +86,7 @@ export default {
           return dispatch('commitDocToPouchAndVuex', { current: budget, previous: null })
         })
         .then(() => {
-          return dispatch('loadLocalBudget')
+          return dispatch('resetAndFetchAllDocsFromPouchDB')
         })
         .then(() => {
           return dispatch('initializeBudgetCategories', { masterCategories, categories })

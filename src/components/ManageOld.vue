@@ -1,9 +1,7 @@
 <template>
   <v-row class="px-3">
     <BaseDialogModalComponent v-model="manageBudgetsModalVisible">
-      <template #title>
-        Budgets
-      </template>
+      <template #title> Budgets </template>
       <template #body>
         <!-- <v-select
           v-model="selectedBudget"
@@ -13,27 +11,16 @@
           item-text="name"
           item-value="_id"
         /> -->
-        <v-select
-          :items="allBudgets"
-          v-model="selectedBudget"
-          item-text="name"
-          item-value="_id"
-        />
+        <v-select :items="allBudgets" v-model="selectedBudget" item-text="name" item-value="_id" />
       </template>
       <template #actions>
-        <v-btn color="grey" @click.stop="manageBudgetsModalVisible = false">
-          Cancel
-        </v-btn>
-        <v-btn color="accent" @click="loadSelectedBudget()">
-          Load Budget
-        </v-btn>
+        <v-btn color="grey" @click.stop="manageBudgetsModalVisible = false"> Cancel </v-btn>
+        <v-btn color="accent" @click="loadSelectedBudget()"> Load Budget </v-btn>
       </template>
     </BaseDialogModalComponent>
 
     <BaseDialogModalComponent v-model="dialog">
-      <template #title>
-        Manage Budget
-      </template>
+      <template #title> Manage Budget </template>
       <template #body>
         <v-container>
           <v-row>
@@ -50,12 +37,8 @@
 
       <template #actions>
         <v-spacer />
-        <v-btn color="blue darken-1" text @click="dialog = false">
-          Close
-        </v-btn>
-        <v-btn color="blue darken-1" text @click="saveBudget()">
-          Save
-        </v-btn>
+        <v-btn color="blue darken-1" text @click="dialog = false"> Close </v-btn>
+        <v-btn color="blue darken-1" text @click="saveBudget()"> Save </v-btn>
       </template>
     </BaseDialogModalComponent>
 
@@ -73,39 +56,25 @@
         <template #default>
           <thead>
             <tr>
-              <th class="text-left" width="50px">
-                Selected
-              </th>
-              <th class="text-left">
-                Date Created
-              </th>
-              <th class="text-left">
-                Name
-              </th>
-              <th class="text-left">
-                Currency
-              </th>
+              <th class="text-left" width="50px">Selected</th>
+              <th class="text-left">Date Created</th>
+              <th class="text-left">Name</th>
+              <th class="text-left">Currency</th>
               <th />
             </tr>
           </thead>
           <tbody>
             <tr v-for="budget in allBudgets" :key="budget._id">
               <td v-if="budget._id.slice(-ID_LENGTH.budget) == selectedBudgetId">
-                <v-icon color="accent">
-                  mdi-check-bold
-                </v-icon>
+                <v-icon color="accent"> mdi-check-bold </v-icon>
               </td>
               <td v-else />
               <td>{{ budget.created }}</td>
               <td>{{ budget.name }}</td>
               <td>{{ budget.currency }}</td>
               <td>
-                <v-icon icon dark class="" color="primary" @click="editItem(budget)">
-                  edit
-                </v-icon>
-                <v-icon icon dark class="ml-1" color="accent" @click="deleteItem(budget)">
-                  delete
-                </v-icon>
+                <v-icon icon dark class="" color="primary" @click="editItem(budget)"> edit </v-icon>
+                <v-icon icon dark class="ml-1" color="accent" @click="deleteItem(budget)"> delete </v-icon>
               </td>
             </tr>
           </tbody>
@@ -135,8 +104,8 @@ export default {
       currencies: [
         { value: 'AUD', text: '$' },
         { value: 'EUR', text: '€' },
-        { value: 'GBP', text: "£" },
-        { value: 'USD', text: '$' },
+        { value: 'GBP', text: '£' },
+        { value: 'USD', text: '$' }
       ]
     }
   },
@@ -144,7 +113,7 @@ export default {
     ...mapGetters(['allBudgets', 'payees', 'selectedBudgetId'])
   },
   watch: {
-    selectedBudgetId: function(newBudget, oldBudget) {
+    selectedBudgetId: function (newBudget, oldBudget) {
       this.selectedBudget = ID_NAME.budget + newBudget //Assign value from vuex to local var when loads/updates
     }
   },
@@ -161,17 +130,17 @@ export default {
         await this.$root.$confirm(
           'Delete Entire Budget?',
           'Are you sure you want to delete this Budget? It will permanently delete all transactions, categories, and budget amounts and replicate deletion to any remote sync servers.',
-          { cancelBtnColor: 'grey', agreeBtnColor: 'accent', agreeBtnText: 'Delete Entire Budget'}
+          { cancelBtnColor: 'grey', agreeBtnColor: 'accent', agreeBtnText: 'Delete Entire Budget' }
         )
       ) {
         const budget_id = budget_document._id.slice(-ID_LENGTH.budget)
 
-        const delete_result = await this.$store.dispatch('deleteEntireBudget', {...budget_document})
+        const delete_result = await this.$store.dispatch('deleteEntireBudget', { ...budget_document })
         if (delete_result && budget_id === this.selectedBudgetId) {
-          return this.$store.dispatch('loadLocalBudget')
+          return this.$store.dispatch('resetAndFetchAllDocsFromPouchDB')
         } else {
           return this.$store.dispatch('fetchAllBudgets')
-        }        
+        }
       } else {
         // cancel
       }
@@ -182,7 +151,7 @@ export default {
     },
     saveBudget() {
       this.dialog = false
-      this.$store.dispatch('commitDocToPouchAndVuex', {current: this.item, previous: null})
+      this.$store.dispatch('commitDocToPouchAndVuex', { current: this.item, previous: null })
     }
   }
 }

@@ -79,7 +79,7 @@ export default {
       const databaseExists = await dispatch('databaseExists')
       if (!databaseExists) {
         await dispatch('createLocalPouchDB')
-        await dispatch('loadLocalBudget')
+        await dispatch('resetAndFetchAllDocsFromPouchDB')
       }
       return
     },
@@ -290,7 +290,8 @@ export default {
       const transaction_payload = this._vm.calculateTransactionBalanceUpdate(current, previous, account)
       commit('UPDATE_ACCOUNT_BALANCES', transaction_payload)
 
-      await dispatch('updateCategoryBalance', { current, previous })
+      dispatch('updateCategoryBalance', { current, previous })
+      dispatch('updateRunningBalance', { transaction: current ? current : previous, isDeleted: !Boolean(current) })
       return true
     },
 
@@ -300,7 +301,7 @@ export default {
       context.commit('RESET_PAYEES_STATE')
     },
 
-    async loadLocalBudget({ commit, dispatch }) {
+    async resetAndFetchAllDocsFromPouchDB({ commit, dispatch }) {
       commit('SET_LOADING_FULLSCREEN', true)
       try {
         await dispatch('resetAllCurrentBudgetData')

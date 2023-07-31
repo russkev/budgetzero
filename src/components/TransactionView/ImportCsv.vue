@@ -233,7 +233,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['loadLocalBudget']),
+    ...mapActions(['resetAndFetchAllDocsFromPouchDB']),
     ...mapActions('accountTransactions', ['onImportTransactions']),
     updateTableData() {
       /**
@@ -369,7 +369,7 @@ export default {
       })
         .then(() => {
           this.updateDefaultCsvInfo(this.accountsById[this.account]['csvInfo'])
-          return this.loadLocalBudget()
+          return this.resetAndFetchAllDocsFromPouchDB()
         })
         .finally(() => {
           this.$emit('apply')

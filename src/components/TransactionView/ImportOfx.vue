@@ -12,7 +12,7 @@
       prepend-icon="mdi-file-upload"
       class="mx-2 mt-3 text-body-1"
       accept=".ofx"
-      style="flex: 0;"
+      style="flex: 0"
       v-model="chosenFile"
       @change="onFileChange"
       :error-messages="fileErrorMessage"
@@ -78,79 +78,73 @@
 </template>
 
 <script>
-import { mapGetters, mapActions } from "vuex";
-import {
-  getAccountId,
-  getAccountType,
-  getAccountBankId,
-  getAccountTransactions,
-  getDate,
-} from "../../ofxParse";
-import CancelSave from "../Shared/CancelSave.vue";
-import { formatDate } from "../../helper";
-import ofx from "node-ofx-parser";
-import ImportTable from "./ImportTable.vue";
+import { mapGetters, mapActions } from 'vuex'
+import { getAccountId, getAccountType, getAccountBankId, getAccountTransactions, getDate } from '../../ofxParse'
+import CancelSave from '../Shared/CancelSave.vue'
+import { formatDate } from '../../helper'
+import ofx from 'node-ofx-parser'
+import ImportTable from './ImportTable.vue'
 
 export default {
-  name: "ImportOfx",
+  name: 'ImportOfx',
   components: {
     CancelSave,
-    ImportTable,
+    ImportTable
   },
   props: {
     account: {
       type: String,
-      required: true,
-    },
+      required: true
+    }
   },
   data() {
     return {
       selectedOfxTransactions: [],
       accountsForImport: [],
       chosenFile: null,
-      readOfxError: "",
+      readOfxError: '',
       isLoading: false,
       importCount: {
         imported: 0,
-        skipped: 0,
-      },
-    };
+        skipped: 0
+      }
+    }
   },
   computed: {
-    ...mapGetters(["importTransactionHeaders", "intlCurrency", "selectedBudgetId"]),
-    ...mapGetters("accountTransactions", ["importIds"]),
+    ...mapGetters(['importTransactionHeaders', 'intlCurrency', 'selectedBudgetId']),
+    ...mapGetters('accountTransactions', ['importIds']),
     fileErrorMessage() {
       if (this.chosenFile && this.accountsForImport.length < 1 && !this.isLoading) {
-        return ["Error reading file"];
+        return ['Error reading file']
       } else {
-        return [];
+        return []
       }
     },
     parsedOfxTransactions() {
-      this.importCount.imported = 0;
-      this.importCount.skipped = 0;
+      this.importCount.imported = 0
+      this.importCount.skipped = 0
       return this.selectedOfxTransactions.map((transaction) => {
         const import_id =
           `${this.account}` +
           `-${transaction.FITID}` +
           `-${transaction.DTPOSTED}` +
           `-${transaction.MEMO.substring(0, 10)}` +
-          `-${transaction.TRNAMT}`;
-        const exists = import_id in this.importIds;
+          `-${transaction.TRNAMT}`
+        const exists = import_id in this.importIds
         if (exists) {
-          this.importCount.skipped++;
+          this.importCount.skipped++
         } else {
-          this.importCount.imported++;
+          this.importCount.imported++
         }
         return {
           date: this.getDate(transaction.DTPOSTED),
           amount: transaction.TRNAMT,
           memo: transaction.MEMO,
           exists: exists,
-          importId: import_id,
-        };
-      });
-    },
+          importId: import_id
+        }
+      })
+    }
     // forTableOfxTransactions() {
     //   const result = this.parsedOfxTransactions.map((transaction) => {
     //     return {
@@ -165,115 +159,100 @@ export default {
     // }
   },
   methods: {
-    ...mapActions(["commitBulkDocsToPouchOnly", "loadLocalBudget"]),
-    ...mapActions("accountTransactions", ["getTransactions", "onImportTransactions"]),
+    ...mapActions(['commitBulkDocsToPouchOnly', 'resetAndFetchAllDocsFromPouchDB']),
+    ...mapActions('accountTransactions', ['onImportTransactions']),
     getDate: getDate,
     onFileChange() {
-      this.isLoading = true;
-      this.readOFXfile(this.chosenFile);
+      this.isLoading = true
+      this.readOFXfile(this.chosenFile)
     },
     formatDate: formatDate,
     readOFXfile(file) {
-      const reader = new FileReader();
-      this.accountsForImport = [];
-      this.selectedOfxTransactions = [];
+      const reader = new FileReader()
+      this.accountsForImport = []
+      this.selectedOfxTransactions = []
 
       reader.onload = (event) => {
-        const parsed_ofx = ofx.parse(event.target.result);
-        const potentialBankAccounts = _.get(parsed_ofx, "OFX.BANKMSGSRSV1.STMTTRNRS", []);
-        const potentialCreditAccounts = _.get(parsed_ofx, "OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS", []);
-        var creditAccountsForImport = [];
-        var bankAccountsForImport = [];
+        const parsed_ofx = ofx.parse(event.target.result)
+        const potentialBankAccounts = _.get(parsed_ofx, 'OFX.BANKMSGSRSV1.STMTTRNRS', [])
+        const potentialCreditAccounts = _.get(parsed_ofx, 'OFX.CREDITCARDMSGSRSV1.CCSTMTTRNRS', [])
+        var creditAccountsForImport = []
+        var bankAccountsForImport = []
 
         if (Array.isArray(potentialBankAccounts)) {
-          bankAccountsForImport = potentialBankAccounts;
+          bankAccountsForImport = potentialBankAccounts
         } else {
-          bankAccountsForImport.push(potentialBankAccounts);
+          bankAccountsForImport.push(potentialBankAccounts)
         }
 
         bankAccountsForImport = bankAccountsForImport.map((acct) => {
-          let standardAcct = {};
-          standardAcct.id = getAccountId(acct);
-          standardAcct.type = getAccountType(acct);
-          standardAcct.bankid = getAccountBankId(acct);
-          standardAcct.transactions = getAccountTransactions(acct);
-          return standardAcct;
-        });
+          let standardAcct = {}
+          standardAcct.id = getAccountId(acct)
+          standardAcct.type = getAccountType(acct)
+          standardAcct.bankid = getAccountBankId(acct)
+          standardAcct.transactions = getAccountTransactions(acct)
+          return standardAcct
+        })
 
         if (Array.isArray(potentialCreditAccounts)) {
-          creditAccountsForImport = potentialCreditAccounts;
+          creditAccountsForImport = potentialCreditAccounts
         } else {
-          creditAccountsForImport.push(potentialCreditAccounts);
+          creditAccountsForImport.push(potentialCreditAccounts)
         }
 
         creditAccountsForImport = creditAccountsForImport.map((acct) => {
-          let standardAcct = {};
-          standardAcct.id = acct.CCSTMTRS.CCACCTFROM.ACCTID;
-          standardAcct.type = "CREDIT";
-          standardAcct.bankid = acct.CCSTMTRS.CCACCTFROM.ACCTID;
-          standardAcct.transactions = acct.CCSTMTRS.BANKTRANLIST.STMTTRN;
-          return standardAcct;
-        });
-        this.accountsForImport = this.accountsForImport.concat(
-          bankAccountsForImport,
-          creditAccountsForImport
-        );
+          let standardAcct = {}
+          standardAcct.id = acct.CCSTMTRS.CCACCTFROM.ACCTID
+          standardAcct.type = 'CREDIT'
+          standardAcct.bankid = acct.CCSTMTRS.CCACCTFROM.ACCTID
+          standardAcct.transactions = acct.CCSTMTRS.BANKTRANLIST.STMTTRN
+          return standardAcct
+        })
+        this.accountsForImport = this.accountsForImport.concat(bankAccountsForImport, creditAccountsForImport)
         if (this.accountsForImport.length > 0 && this.accountsForImport[0]) {
-          this.selectedOfxTransactions = this.accountsForImport[0].transactions;
+          this.selectedOfxTransactions = this.accountsForImport[0].transactions
           if (!Array.isArray(this.selectedOfxTransactions)) {
-            this.selectedOfxTransactions = [];
+            this.selectedOfxTransactions = []
           }
         }
-        this.isLoading = false;
-      };
+        this.isLoading = false
+      }
       reader.onerror = (error) => {
-        this.readOfxError = error;
-        this.isLoading = false;
-      };
+        this.readOfxError = error
+        this.isLoading = false
+      }
       if (file) {
-        reader.readAsText(file);
+        reader.readAsText(file)
       } else {
-        this.readOfxError = "No file selected";
-        this.isLoading = false;
+        this.readOfxError = 'No file selected'
+        this.isLoading = false
       }
     },
     onCancel() {
-      this.resetData();
-      this.$emit("close");
-    },
-    async doImport(importPromises) {
-      const import_promise_result = await Promise.all(importPromises);
-      const transactions_list_to_import = import_promise_result.filter((transaction) => {
-        return transaction !== null;
-      });
-      try {
-        await this.commitBulkNewDocsToPouch(transactions_list_to_import);
-      } finally {
-        this.$emit("apply");
-        this.resetData();
-      }
+      this.resetData()
+      this.$emit('close')
     },
     onSave() {
       return this.onImportTransactions({
         transactions: this.parsedOfxTransactions,
-        account: this.account,
+        account: this.account
       })
         .then(() => {
-          return this.loadLocalBudget();
+          // return this.resetAndFetchAllDocsFromPouchDB()
         })
         .finally(() => {
-          this.$emit("apply");
-          this.resetData();
-        });
+          this.$emit('apply')
+          this.resetData()
+        })
     },
     resetData() {
-      this.selectedOfxTransactions = [];
-      this.chosenFile = null;
+      this.selectedOfxTransactions = []
+      this.chosenFile = null
       this.importCount = {
         imported: 0,
-        skipped: 0,
-      };
-    },
-  },
-};
+        skipped: 0
+      }
+    }
+  }
+}
 </script>

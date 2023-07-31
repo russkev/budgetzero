@@ -64,7 +64,7 @@ export default {
           })
           // this.mockTransactionsModalIsVisible = false
           this.$emit('input', false)
-          return this.$store.dispatch('loadLocalBudget')
+          return this.$store.dispatch('resetAndFetchAllDocsFromPouchDB')
         })
         .catch((error) => {
           this.SET_SNACKBAR_MESSAGE({

@@ -258,33 +258,36 @@ export default {
       await dispatch('prepareEditedItem')
       const transaction = JSON.parse(JSON.stringify(getters.editedTransaction))
       commit('CLEAR_EDITED_TRANSACTION')
-      return dispatch(
-        'createOrUpdateTransaction',
-        {
-          current: transaction,
-          previous: previous
-        },
-        {
-          root: true
-        }
-      ).then(() => {
-        return dispatch(
-          'updateRunningBalance',
+      return (
+        dispatch(
+          'createOrUpdateTransaction',
           {
-            transaction: transaction,
-            isDeleted: false
+            current: transaction,
+            previous: previous
           },
           {
             root: true
           }
         )
+          // .then(() => {
+          //   return dispatch(
+          //     'updateRunningBalance',
+          //     {
+          //       transaction: transaction,
+          //       isDeleted: false
+          //     },
+          //     {
+          //       root: true
+          //     }
+          //   )
+          // })
           .then(() => {
             return dispatch('getTransactions')
           })
           .catch((error) => {
             console.log(error)
           })
-      })
+      )
     },
     cancel({ commit }) {
       commit('CLEAR_EDITED_TRANSACTION')
@@ -457,9 +460,13 @@ export default {
         'commitDocToPouchAndVuex',
         { current: current_account_document, previous: prev_account_document },
         { root: true }
-      ).then(() => {
-        return dispatch('commitBulkDocsToPouchAndVuex', transaction_documents, { root: true })
-      })
+      )
+        .then(() => {
+          return dispatch('commitBulkDocsToPouchAndVuex', transaction_documents, { root: true })
+        })
+        .then(() => {
+          return dispatch('getTransactions')
+        })
     }
   }
 }
