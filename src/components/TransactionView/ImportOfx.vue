@@ -22,48 +22,6 @@
         <div class="text-body-1">Upload OFX file</div>
       </template>
     </v-file-input>
-    <!-- <v-sheet class="flex-table-container ma-0 pa-0" color="transparent">
-      <v-data-table
-        fixed-header
-        class="transactions-table import-preview-table flex-table-main background lighten-1"
-        disable-sort
-        dense
-        group-desc
-        sort-by="date"
-        group-by="date"
-        :items="parsedOfxTransactions"
-        :items-per-page="200"
-        :headers="importTransactionHeaders"
-        :header-props="{
-          'disable-sort': true
-        }"
-        :footer-props="{
-          'items-per-page-options': [5, 10, 20, 50, 100, 200],
-          'items-per-page-text': 'rows'
-        }"
-        :loading="isLoading"
-      >
-        <template #header.memo>
-          <div class="text-h5">Memo</div>
-        </template>
-        <template #header.amount>
-          <div class="text-h5">Amount</div>
-        </template>
-        <template #group.header="{ items }">
-          <td colspan="20" class="date-row background">
-            {{ formatDate(getDate(items[0].date)) }}
-          </td>
-        </template>
-        <template #item.memo="{ item }">
-          <div :class="`import-preview-memo ml-3 ellipsis ${item.exists ? existsColor : ''}`">{{ item.memo }}</div>
-        </template>
-        <template #item.amount="{ item }">
-          <div :class="`import-preview-amount ${item.exists ? existsColor : ''}`">
-            {{ intlCurrency.format(item.amount) }}
-          </div>
-        </template>
-      </v-data-table>
-    </v-sheet> -->
     <import-table :table-items="parsedOfxTransactions" :is-loading="isLoading" />
     <div class="save-cancel-container pa-2">
       <cancel-save
@@ -145,18 +103,6 @@ export default {
         }
       })
     }
-    // forTableOfxTransactions() {
-    //   const result = this.parsedOfxTransactions.map((transaction) => {
-    //     return {
-    //       date: this.formatDate(getDate(transaction.date)),
-    //       amount: this.intlCurrency.format(transaction.amount),
-    //       memo: transaction.memo,
-    //       exists: transaction.exists
-    //     }
-    //   })
-    //   console.log('forTableOfxTransactions', result)
-    //   return result
-    // }
   },
   methods: {
     ...mapActions(['commitBulkDocsToPouchOnly', 'resetAndFetchAllDocsFromPouchDB']),

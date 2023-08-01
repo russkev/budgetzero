@@ -413,7 +413,8 @@ export default {
         dispatch('editTransaction', item)
       }
     },
-    onImportTransactions({ dispatch, rootGetters }, { transactions, account, csvInfo }) {
+    onImportTransactions({ dispatch, rootGetters, commit }, { transactions, account, csvInfo }) {
+      commit('SET_IS_LOADING', true)
       const prev_account_document = rootGetters.accountsById[account]
       const current_account_document = { ...prev_account_document, csvInfo: csvInfo }
       let oldest_transaction = { date: '9999-99-99' }
@@ -461,6 +462,9 @@ export default {
         })
         .then(() => {
           return dispatch('getTransactions')
+        })
+        .finally(() => {
+          commit('SET_IS_LOADING', false)
         })
     }
   }

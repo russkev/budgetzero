@@ -516,7 +516,7 @@ describe('Test transactions', () => {
       cy.get('[data-testid="working-income"]').should('have.text', '$3,886.79')
     })
 
-    it.only('Test delete transactions', () => {
+    it('Test delete transactions', () => {
       // Deletes last transaction
       cy.get('.transaction-row .row-delete').eq(6).click()
       cy.get('[data-testid="delete-confirm-button"]').click()

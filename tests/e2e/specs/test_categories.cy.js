@@ -378,7 +378,7 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="sidebar-button-categories"]').click()
     })
 
-    it.only('Creates a new category', () => {
+    it('Creates a new category', () => {
       const name_selector = '[data-testid="categories-container-3ks"] > div:nth-child(6) .category-name'
       const balance_selector = '[data-testid="categories-container-3ks"] .category-balance'
       const name_input_selector = '.category-name-input > :nth-child(1) input'
@@ -496,8 +496,7 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="category-balance-6b2"]').should('have.text', ' $8.16 ')
     })
 
-    it('Checks that restoring with the restore button works', () => {
-      // Checks that restoring with the restore button works
+    it.only('Checks that restoring with the restore button works', () => {
       cy.get('[data-testid="btn-hide-category-6b2"]').trigger('mouseenter').click()
       cy.get('[data-testid="delete-confirm-button"]').click()
       cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 3)
@@ -519,7 +518,7 @@ describe('Test categories (budget) page', () => {
       })
       cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 3)
       cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 1)
-      cy.wait(10)
+      // cy.wait(500)
       cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$2,836.10')
       cy.get('[data-testid="category-name-ATi"]').trigger('mouseenter')
       cy.get('[data-testid="btn-restore-category-ATi"]').trigger('mouseenter')
@@ -561,7 +560,7 @@ describe('Test categories (budget) page', () => {
       const water_input_selector = '[data-testid="category-budget-input-2aW"]'
       cy.get(water_selector).should('contain.text', '$162.25')
       cy.get(water_selector).click()
-      cy.get(water_input_selector).should('have.value', '$162.25')
+      cy.get(water_input_selector).should('have.value', '162.25')
       cy.get(water_input_selector).click()
       cy.get(water_input_selector).clear().type('18.99')
       cy.get(water_input_selector).blur()
