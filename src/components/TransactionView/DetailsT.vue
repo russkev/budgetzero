@@ -321,7 +321,10 @@ export default {
         this.onSave()
       }
     },
-    onCategoryMenuClose() {
+    onCategoryMenuClose(isOpen) {
+      if (isOpen) {
+        return
+      }
       setTimeout(() => {
         this.categorySearch = ''
       }, 500)

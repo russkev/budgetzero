@@ -247,7 +247,9 @@ export default {
           console.error(error)
         })
         .finally(() => {
-          commit('SET_IS_LOADING', false)
+          nextTick(() => {
+            commit('SET_IS_LOADING', false)
+          })
         })
     },
     updateAccountOptions({ commit, getters, rootGetters }, updatedOptions) {
@@ -336,6 +338,7 @@ export default {
       if (getters.selectedTransactions.length < 1) {
         return
       }
+      commit('SET_IS_LOADING', true)
       dispatch('deleteBulkDocumentsFromPouchAndVuex', getters.selectedTransactions, { root: true })
         .then(() => {
           let oldest_document = { date: '9999-99-99' }
@@ -359,15 +362,24 @@ export default {
           commit('CLEAR_SELECTED_TRANSACTIONS')
           dispatch('getTransactions')
         })
+        .finally(() => {
+          commit('SET_IS_LOADING', false)
+        })
     },
     deleteTransaction({ commit, dispatch }, transaction) {
+      commit('SET_IS_LOADING', true)
       const payload = { current: null, previous: transaction }
-      dispatch('commitDocToPouchAndVuex', payload, { root: true }).then(() => {
-        dispatch('updateRunningBalance', { transaction: transaction }, { root: true }).then(() => {
-          commit('CLEAR_SELECTED_TRANSACTIONS')
-          dispatch('getTransactions')
+      dispatch('commitDocToPouchAndVuex', payload, { root: true })
+        .then(() => {
+          return dispatch('updateRunningBalance', { transaction: transaction }, { root: true })
         })
-      })
+        .then(() => {
+          commit('CLEAR_SELECTED_TRANSACTIONS')
+          return dispatch('getTransactions')
+        })
+        .finally(() => {
+          return commit('SET_IS_LOADING', false)
+        })
     },
     setClearedSelectedTransactions({ getters, dispatch, commit }, { cleared_value }) {
       if (getters.selectedTransactions.length < 1) {

@@ -40,8 +40,8 @@
     <category-select
       @selected="onSelected"
       :show-balance="showBalance"
-      v-model="search"
       :disable-categories="disableCategories"
+      v-model="search"
     />
   </v-menu>
 </template>

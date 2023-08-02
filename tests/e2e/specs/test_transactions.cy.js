@@ -261,8 +261,9 @@ describe('Test transactions', () => {
       cy.get('.transaction-row > .row-checkbox').eq(1).click()
       cy.get('[data-testid="categorize-as-button"]').click()
       cy.get('[data-testid="category-search"]').should('be.visible')
-      cy.get('[data-testid="category-search"]').type('Gas').type('{downArrow}{downArrow}')
-      cy.get('[data-testid="category-search"]').type('{enter}')
+      cy.get('[data-testid="category-search"]').type('Gas')
+      cy.get('[data-testid="category-search"]').should('contain.value', 'Gas')
+      cy.get('[data-testid="category-search"]').type('{downArrow}{downArrow}{enter}')
       cy.get('[data-testid="category-list"]').should('not.be.visible')
       cy.get('[data-testid="category-search"]').should('not.be.visible')
       cy.get('.v-progress-linear__buffer').should('not.exist')
@@ -345,7 +346,7 @@ describe('Test transactions', () => {
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $804.95 ')
     })
 
-    it.only('Test that pagination works correctly', () => {
+    it('Test that pagination works correctly', () => {
       // Check pagination works for delete
       // Check that pagination shows the correct number
       cy.get('.v-data-footer__pagination').should('contain.text', '1-7 of 7')
@@ -378,6 +379,8 @@ describe('Test transactions', () => {
       cy.get('.transaction-row .row-description').eq(0).click()
       cy.get('[data-testid="delete-transaction-button"]').click()
       cy.get('[data-testid="delete-confirm-button"]').click()
+      cy.get('[data-testid="create-transaction-button"]').should('be.visible')
+      cy.get('[data-testid="create-transaction-button"]').should('not.be.disabled')
 
       // Check that pagination shows the correct number
       cy.get('[data-testid="transactions-table"] .v-data-footer__pagination').should('contain.text', '21-24 of 24')
