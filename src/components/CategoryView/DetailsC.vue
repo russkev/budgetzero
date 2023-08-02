@@ -16,7 +16,7 @@
           :data-testid="`category-name-input-${selectedCategory._id}`"
           :is-editing="isEditingName(selectedCategory._id)"
           :value="selectedCategory.name"
-          :enabled="!loading"
+          :disabled="loading"
           @apply="onCategoryNameChange"
           @edit="onEditCategoryName(selectedCategory._id)"
         />
@@ -32,7 +32,7 @@
           :data-testid="`category-budget-input-${selectedCategory._id}`"
           :value="selectedCategory.budgetDisplay"
           :is-editing="editedCategoryBudgetId == selectedCategory._id"
-          :enabled="!loading"
+          :disabled="loading"
           @apply="onBudgetValueApply"
           @edit="onEditCategoryBudget(selectedCategory._id)"
         />
@@ -48,11 +48,12 @@
               flat
               solo
               hide-details
+              :disabled="loading"
               :background-color="hover ? 'background lighten-2' : 'transparent'"
-              :enabled="!loading"
               @change="onNoteUpdate"
               @keydown.ctrl.enter.exact.prevent="onNoteUpdate"
             />
+            <!-- :disabled="loading" -->
           </div>
         </v-hover>
       </div>
@@ -128,9 +129,9 @@ export default {
       'monthStats',
       'editedCategoryBudgetId',
       'editedCategoryNameId',
-      'editedCategoryBudgetLoading',
-      'editedCategoryNameLoading',
-      'editedCategoryNoteLoading',
+      'categoryLoading',
+      'categoryLoading',
+      'categoryLoading',
       'categoriesDataSortedByBalance',
       'thisMonth'
     ]),
@@ -147,7 +148,7 @@ export default {
       return _.get(this.categoryColors, [this.selectedCategory._id, 'main'], 'transparent')
     },
     loading() {
-      return this.editedCategoryBudgetLoading || this.editedCategoryNameLoading || this.editedCategoryNoteLoading
+      return this.categoryLoading || this.categoryLoading || this.categoryLoading
     }
   },
   methods: {

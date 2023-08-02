@@ -18,10 +18,8 @@ const DEFAULT_MONTH_CATEGORIES_STATE = {
   editedMasterCategoryId: '',
   editedCategoryBudgetId: '',
   editedCategoryNameId: '',
-  editedCategoryBudgetLoading: false,
-  editedCategoryNameLoading: false,
-  editedCategoryNoteLoading: false,
   tablePageNumber: 1,
+  loading: false,
 
   selectedMonth: moment(new Date()).format('YYYY-MM'),
   selectedCategory: null,
@@ -46,17 +44,11 @@ export default {
     CLEAR_EDITED_CATEGORY_BUDGET_ID(state) {
       Vue.set(state, 'editedCategoryBudgetId', DEFAULT_MONTH_CATEGORIES_STATE.editedCategoryBudgetId)
     },
-    SET_EDITED_CATEGORY_BUDGET_LOADING(state, loading) {
-      Vue.set(state, 'editedCategoryBudgetLoading', loading)
+    SET_CATEGORY_LOADING(state, loading) {
+      Vue.set(state, 'loading', loading)
     },
     SET_EDITED_CATEGORY_NAME_ID(state, id) {
       Vue.set(state, 'editedCategoryNameId', id)
-    },
-    SET_EDITED_CATEGORY_NAME_LOADING(state, loading) {
-      Vue.set(state, 'editedCategoryNameLoading', loading)
-    },
-    SET_EDITED_CATEGORY_NOTE_LOADING(state, loading) {
-      Vue.set(state, 'editedCategoryNoteLoading', loading)
     },
     CLEAR_EDITED_CATEGORY_NAME_ID(state) {
       Vue.set(state, 'editedCategoryNameId', DEFAULT_MONTH_CATEGORIES_STATE.editedCategoryNameId)
@@ -87,10 +79,8 @@ export default {
   getters: {
     editedMasterCategoryId: (state) => state.editedMasterCategoryId,
     editedCategoryBudgetId: (state) => state.editedCategoryBudgetId,
-    editedCategoryBudgetLoading: (state) => state.editedCategoryBudgetLoading,
+    categoryLoading: (state) => state.loading,
     editedCategoryNameId: (state) => state.editedCategoryNameId,
-    editedCategoryNameLoading: (state) => state.editedCategoryNameLoading,
-    editedCategoryNoteLoading: (state) => state.editedCategoryNoteLoading,
     selectedMonth: (state) => state.selectedMonth,
     prevMonth: (state, getters) => {
       return prevMonth(getters.selectedMonth)
@@ -241,7 +231,7 @@ export default {
       return dispatch('updateBudget', { category_id, amount: amount })
     },
     updateBudget({ commit, getters, dispatch, rootGetters }, { category_id, amount }) {
-      commit('SET_EDITED_CATEGORY_BUDGET_LOADING', true)
+      commit('SET_CATEGORY_LOADING', true)
       if (isNaN(amount)) {
         console.warn(`Budget value: ${amount} is NaN`)
         return
@@ -270,12 +260,12 @@ export default {
           }
         })
         .finally(() => {
-          commit('SET_EDITED_CATEGORY_BUDGET_LOADING', false)
+          commit('SET_CATEGORY_LOADING', false)
         })
       commit('CLEAR_EDITED_CATEGORY_BUDGET_ID')
     },
     updateNote({ dispatch, commit, getters, rootGetters }, { category_id, note }) {
-      commit('SET_EDITED_CATEGORY_NOTE_LOADING', true)
+      commit('SET_CATEGORY_LOADING', true)
       if (typeof note !== 'string') {
         console.warn(`Note value: ${note} is not a string`)
         return
@@ -305,10 +295,11 @@ export default {
           }
         })
         .finally(() => {
-          commit('SET_EDITED_CATEGORY_NOTE_LOADING', false)
+          commit('SET_CATEGORY_LOADING', false)
         })
     },
-    async doBudgetMove({ getters, dispatch }) {
+    async doBudgetMove({ getters, dispatch, commit }) {
+      commit('SET_CATEGORY_LOADING', true)
       const negative = getters.selectedCategory.isMovingTo ? -1 : 1
       const selectedBudget = getters.selectedCategory.budget
       const destinationBudget = getters.categoriesDataById[getters.selectedCategory.moveDestination].budget
@@ -322,7 +313,8 @@ export default {
           amount: destinationBudget - negative * getters.selectedCategory.moveAmount
         })
       ])
-      return dispatch('syncSelectedCategory')
+      await dispatch('syncSelectedCategory')
+      return commit('SET_CATEGORY_LOADING', false)
     },
     selectCategory({ commit, getters }, category) {
       if (!category || !getters.selectedCategory || category._id !== getters.selectedCategory._id) {
@@ -399,11 +391,11 @@ export default {
         return
       }
 
-      commit('SET_EDITED_CATEGORY_NAME_LOADING', true)
+      commit('SET_CATEGORY_LOADING', true)
       const doc = rootGetters.categoriesById[getters.editedCategoryNameId]
       commit('CLEAR_EDITED_CATEGORY_NAME_ID')
       if (name === doc.name) {
-        commit('SET_EDITED_CATEGORY_NAME_LOADING', false)
+        commit('SET_CATEGORY_LOADING', false)
         return
       }
       if (doc !== undefined) {
@@ -419,7 +411,7 @@ export default {
             dispatch('syncSelectedCategory')
           })
           .finally(() => {
-            commit('SET_EDITED_CATEGORY_NAME_LOADING', false)
+            commit('SET_CATEGORY_LOADING', false)
           })
       }
     },
@@ -444,7 +436,7 @@ export default {
       } else {
         return
       }
-      commit('SET_EDITED_CATEGORY_NAME_LOADING', true)
+      commit('SET_CATEGORY_LOADING', true)
       const doc = rootGetters.masterCategoriesById[getters.editedMasterCategoryId]
       commit('CLEAR_EDITED_MASTER_CATEGORY_ID')
       if (doc !== undefined) {
@@ -460,32 +452,10 @@ export default {
             dispatch('syncSelectedCategory')
           })
           .finally(() => {
-            commit('SET_EDITED_CATEGORY_NAME_LOADING', false)
+            commit('SET_CATEGORY_LOADING', false)
           })
       }
     },
-    // onMasterCategoryNameChange({ dispatch, commit, getters, rootGetters }, event) {
-    //   let name = ''
-    //   if (typeof event === 'string' || event instanceof String) {
-    //     name = event
-    //   } else if (event.target) {
-    //     name = event.target.value
-    //   } else {
-    //     return
-    //   }
-    //   const doc = rootGetters.masterCategoriesById[getters.editedMasterCategoryId]
-    //   commit('CLEAR_EDITED_MASTER_CATEGORY_ID')
-    //   if (doc !== undefined) {
-    //     dispatch(
-    //       'commitDocToPouchAndVuex',
-    //       {
-    //         current: { ...doc, name: name },
-    //         previous: doc
-    //       },
-    //       { root: true }
-    //     )
-    //   }
-    // },
     getMonthTransactions({ commit, dispatch, getters, rootGetters }) {
       if (rootGetters.accounts.length < 1 || !rootGetters.selectedBudgetId) {
         return
@@ -534,31 +504,39 @@ export default {
       })
     },
     newMasterCategory({ commit, dispatch, rootGetters }) {
+      commit('SET_CATEGORY_LOADING', true)
       const index = rootGetters.masterCategories.length
-      return dispatch(
-        'createMasterCategory',
-        { name: 'Name', is_income: false, sort: index - 0.5 },
-        { root: true }
-      ).then((id) => {
-        commit('SET_EDITED_MASTER_CATEGORY_ID', id)
-        return id
-      })
+      return dispatch('createMasterCategory', { name: 'Name', is_income: false, sort: index - 0.5 }, { root: true })
+        .then((id) => {
+          commit('SET_EDITED_MASTER_CATEGORY_ID', id)
+          return id
+        })
+        .finally(() => {
+          commit('SET_CATEGORY_LOADING', false)
+        })
     },
     newCategory({ commit, dispatch, getters }, master_category) {
-      return dispatch('createCategory', { name: 'Name', master_id: master_category._id }, { root: true }).then(
-        (new_category) => {
+      commit('SET_CATEGORY_LOADING', true)
+      return dispatch('createCategory', { name: 'Name', master_id: master_category._id }, { root: true })
+        .then((new_category) => {
           const id = new_category._id.slice(-ID_LENGTH.category)
           commit('SET_EDITED_CATEGORY_NAME_ID', id)
           dispatch('selectCategory', getters.categoriesDataById[id])
           return id
-        }
-      )
+        })
+        .finally(() => {
+          commit('SET_CATEGORY_LOADING', false)
+        })
     },
-    onDeleteMasterCategory({ dispatch }, master_category) {
-      dispatch('deleteMasterCategory', master_category._id, { root: true })
+    onDeleteMasterCategory({ dispatch, commit }, master_category) {
+      commit('SET_CATEGORY_LOADING', true)
+      dispatch('deleteMasterCategory', master_category._id, { root: true }).finally(() => {
+        commit('SET_CATEGORY_LOADING', false)
+      })
     },
 
-    onHideCategory({ dispatch, rootGetters }, category_id) {
+    onHideCategory({ dispatch, rootGetters, commit }, category_id) {
+      commit('SET_CATEGORY_LOADING', true)
       const doc = rootGetters.categoriesById[category_id]
       if (doc !== undefined) {
         dispatch(
@@ -568,10 +546,13 @@ export default {
             previous: doc
           },
           { root: true }
-        )
+        ).finally(() => {
+          commit('SET_CATEGORY_LOADING', false)
+        })
       }
     },
-    onUnhideCategory({ dispatch, rootGetters }, category_id) {
+    onUnhideCategory({ commit, dispatch, rootGetters }, category_id) {
+      commit('SET_CATEGORY_LOADING', true)
       const doc = rootGetters.categoriesById[category_id]
       if (doc === undefined) {
         return
@@ -605,7 +586,9 @@ export default {
           previous: doc
         },
         { root: true }
-      )
+      ).finally(() => {
+        commit('SET_CATEGORY_LOADING', false)
+      })
     },
     onCategoryOrderChanged({ dispatch }, event) {
       dispatch('reorderCategory', event, { root: true })

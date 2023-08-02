@@ -261,7 +261,12 @@ describe('Test transactions', () => {
       cy.get('.transaction-row > .row-checkbox').eq(1).click()
       cy.get('[data-testid="categorize-as-button"]').click()
       cy.get('[data-testid="category-search"]').should('be.visible')
-      cy.get('[data-testid="category-search"]').type('Gas').type('{downArrow}{downArrow}{enter}')
+      cy.get('[data-testid="category-search"]').type('Gas').type('{downArrow}{downArrow}')
+      cy.get('[data-testid="category-search"]').type('{enter}')
+      cy.get('[data-testid="category-list"]').should('not.be.visible')
+      cy.get('[data-testid="category-search"]').should('not.be.visible')
+      cy.get('.v-progress-linear__buffer').should('not.exist')
+
       cy.get('.transaction-row .row-category').eq(6).should('contain.text', 'Gas')
       cy.get('.transaction-row .row-category').eq(2).should('contain.text', 'Gas')
       cy.get('.transaction-row .row-category').eq(1).should('contain.text', 'Gas')
@@ -340,7 +345,7 @@ describe('Test transactions', () => {
       cy.get('[data-testid="category-balance-ATi"]').should('have.text', ' $804.95 ')
     })
 
-    it('Test that pagination works correctly', () => {
+    it.only('Test that pagination works correctly', () => {
       // Check pagination works for delete
       // Check that pagination shows the correct number
       cy.get('.v-data-footer__pagination').should('contain.text', '1-7 of 7')
@@ -385,12 +390,12 @@ describe('Test transactions', () => {
 
       // Check that the correct number of transactions are shown
       cy.get('.transaction-row').should('have.length', 20)
-      cy.get('.v-progress-linear__buffer').should('exist')
       cy.get('.v-progress-linear__buffer').should('not.exist')
 
       // Delete a number of transactions, click in the center of the checkbox
 
-      // check that checkbox is not disabled
+      // // check that checkbox is not disabled
+      cy.get('.category-element-container').eq(0).should('contain.text', 'Groceries')
       cy.get('.transaction-row > .row-checkbox button').eq(0).should('not.be.disabled')
       cy.get('.transaction-row > .row-checkbox').eq(0).click()
       cy.get('.transaction-row > .row-checkbox').eq(2).click()

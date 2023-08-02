@@ -11,6 +11,7 @@
         :hover="hover"
         icon="mdi-eye-off-outline"
         :on="on"
+        :disabled="categoryLoading"
       />
     </template>
   </delete-confirm>
@@ -22,11 +23,12 @@
     active-color="unhide_text"
     active-background-color="unhide"
     @click="onUnhideCategory(category._id)"
+    :disabled="categoryLoading"
   />
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 import DeleteConfirm from '../Shared/DeleteConfirm.vue'
 import HoverButton from '../Shared/HoverButton.vue'
 import { HIDDEN, NONE } from '../../constants'
@@ -52,6 +54,7 @@ export default {
     }
   },
   computed: {
+    ...mapGetters('categoryMonth', ['categoryLoading']),
     isStandard() {
       return ![HIDDEN._id, NONE._id].includes(this.masterCategory._id)
     }

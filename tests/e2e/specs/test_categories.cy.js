@@ -403,10 +403,12 @@ describe('Test categories (budget) page', () => {
       cy.get('.category-budget-input input').eq(0).type('5')
 
       // // Check that note update works correctly
+      cy.get('.category-budget-note textarea').should('not.be.disabled')
       cy.get('.category-budget-note textarea').focus()
       cy.get('.category-budget-input input').eq(0).should('have.value', '$5.00')
       cy.get('.category-budget-note textarea').type('This is a note')
       cy.get('.transaction-details-grid > :nth-child(9)').click()
+      cy.get('.category-budget-note textarea').should('not.be.disabled')
       cy.get('.category-budget-note textarea').should('have.value', 'This is a note')
       cy.get('[data-testid="category-name-:in"]').click()
       cy.get('.category-budget-note textarea').should('have.value', '')
@@ -496,7 +498,7 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="category-balance-6b2"]').should('have.text', ' $8.16 ')
     })
 
-    it.only('Checks that restoring with the restore button works', () => {
+    it('Checks that restoring with the restore button works', () => {
       cy.get('[data-testid="btn-hide-category-6b2"]').trigger('mouseenter').click()
       cy.get('[data-testid="delete-confirm-button"]').click()
       cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 3)
@@ -518,7 +520,7 @@ describe('Test categories (budget) page', () => {
       })
       cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 3)
       cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 1)
-      // cy.wait(500)
+      cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', '$209.25')
       cy.get('[data-testid="transactions-page-7kW"]').should('contain.text', '$2,836.10')
       cy.get('[data-testid="category-name-ATi"]').trigger('mouseenter')
       cy.get('[data-testid="btn-restore-category-ATi"]').trigger('mouseenter')
@@ -526,10 +528,10 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="categories-container-3ks"] > div:nth-child(4)', { timeout: 10000 })
       cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 0)
       cy.get('[data-testid="categories-container-3ks"] [data-testid="category-name-ATi"]').should('have.length', 1)
+      cy.get('[data-testid="master-category-balance-3ks"]').should('contain.text', '$1,015.20')
 
       // Check that deleting a master category and then restoring works
       cy.get('[data-testid="btn-delete-master-category-ggJ"]').trigger('mouseenter').click()
-      cy.wait(500)
       cy.get('[data-testid="delete-confirm-button"]').click({ waitForAnimations: false, force: true })
       cy.get('[data-testid="categories-container-ggJ"]').should('not.exist')
       cy.get('[data-testid="categories-container-\\:\\:0"]').children().should('have.length', 1)

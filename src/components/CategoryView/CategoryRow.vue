@@ -8,7 +8,7 @@
           class="row-side-widget"
           :data-testid="`drag-category-${category._id}`"
         >
-          <v-icon v-if="hover && !freeze" small class="handle ma-auto"> mdi-drag-vertical </v-icon>
+          <v-icon v-if="hover && !freeze && !categoryLoading" small class="handle ma-auto"> mdi-drag-vertical </v-icon>
         </v-sheet>
         <v-sheet width="3px" class="mr-2 color-swatch-container" color="transparent">
           <v-sheet width="3px" height="18px" :color="categoryColor" />
@@ -107,7 +107,12 @@ export default {
   },
   computed: {
     ...mapGetters(['intlCurrency', 'categoryColors', 'categories', 'categoriesByMaster', 'masterCategories']),
-    ...mapGetters('categoryMonth', ['editedCategoryBudgetId', 'editedCategoryNameId', 'selectedCategory']),
+    ...mapGetters('categoryMonth', [
+      'editedCategoryBudgetId',
+      'editedCategoryNameId',
+      'selectedCategory',
+      'categoryLoading'
+    ]),
     negativeMultiplier() {
       return this.isIncome ? 1 : -1
     },
