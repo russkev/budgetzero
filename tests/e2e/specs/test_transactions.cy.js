@@ -88,6 +88,8 @@ describe('Test transactions', () => {
       // Update existing transaction value
       cy.get('.transaction-row .row-description').eq(4).click()
       cy.get('[data-testid="details-value"]').click()
+      cy.get('[data-testid="details-value"]').type('word').blur()
+      cy.get('[data-testid="details-value"]').should('have.value', '$0.00')
       cy.get('[data-testid="details-value"]').type('5.00').type('{enter}')
       cy.get('[data-testid="details-inflow-button"]').click().type('{ctrl+enter}')
       cy.get('.transaction-details-grid').should('not.exist')

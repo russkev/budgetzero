@@ -232,13 +232,24 @@ export default {
     },
     updateBudget({ commit, getters, dispatch, rootGetters }, { category_id, amount }) {
       commit('SET_CATEGORY_LOADING', true)
-      if (isNaN(amount)) {
-        console.warn(`Budget value: ${amount} is NaN`)
-        return
-      }
+      // if (isNaN(amount)) {
+      //   console.warn(`Budget value: ${amount} is NaN`)
+      //   amount = 0
+      //   // commit('SET_CATEGORY_LOADING', false)
+
+      //   // return
+      // }
       const month = getters.selectedMonth
       let current = null
       const previous = _.get(rootGetters.allCategoryBalances, [month, category_id, 'doc'], null)
+
+      if (isNaN(amount)) {
+        if (previous === null) {
+          amount = 0
+        } else {
+          amount = previous.budget
+        }
+      }
 
       if (previous === null) {
         current = {
