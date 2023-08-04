@@ -46,11 +46,10 @@
         :placeholder="placeholder"
         :rules="rules"
         @change="onApply"
-        @keyup.enter="onEnterPressed"
         @blur="onApply"
+        @keyup.enter="onEnterPressed"
         @click="onEditedClicked"
       />
-      <!-- @input="onApply" -->
     </div>
   </div>
   <!-- Read only and editing -->
@@ -158,7 +157,8 @@ export default {
     return {
       height: '26px',
       isHovering: false,
-      prevIsEditing: false
+      prevIsEditing: false,
+      applyClicked: false
     }
   },
   computed: {
@@ -173,8 +173,15 @@ export default {
   },
   methods: {
     onApply(event) {
+      if (this.applyClicked) {
+        return
+      }
       this.$emit('apply', event)
       this.isSelected = false
+      this.applyClicked = true
+      setTimeout(() => {
+        this.applyClicked = false
+      }, 500)
     },
     onClick() {
       this.$emit('edit')

@@ -264,7 +264,7 @@ export default {
         }
       }
 
-      dispatch('updateMonthCategory', { current, previous }, { root: true })
+      return dispatch('updateMonthCategory', { current, previous }, { root: true })
         .then(() => {
           if (getters.selectedCategory && getters.selectedCategory._id === category_id) {
             dispatch('syncSelectedCategory')
@@ -272,8 +272,8 @@ export default {
         })
         .finally(() => {
           commit('SET_CATEGORY_LOADING', false)
+          commit('CLEAR_EDITED_CATEGORY_BUDGET_ID')
         })
-      commit('CLEAR_EDITED_CATEGORY_BUDGET_ID')
     },
     updateNote({ dispatch, commit, getters, rootGetters }, { category_id, note }) {
       commit('SET_CATEGORY_LOADING', true)
@@ -309,23 +309,40 @@ export default {
           commit('SET_CATEGORY_LOADING', false)
         })
     },
-    async doBudgetMove({ getters, dispatch, commit }) {
+    async doBudgetMove({ getters, dispatch, commit, rootGetters }) {
       commit('SET_CATEGORY_LOADING', true)
       const negative = getters.selectedCategory.isMovingTo ? -1 : 1
       const selectedBudget = getters.selectedCategory.budget
       const destinationBudget = getters.categoriesDataById[getters.selectedCategory.moveDestination].budget
-      await Promise.all([
-        dispatch('updateBudget', {
-          category_id: getters.selectedCategory._id,
-          amount: selectedBudget + negative * getters.selectedCategory.moveAmount
-        }),
-        dispatch('updateBudget', {
-          category_id: getters.selectedCategory.moveDestination,
-          amount: destinationBudget - negative * getters.selectedCategory.moveAmount
-        })
-      ])
-      await dispatch('syncSelectedCategory')
-      return commit('SET_CATEGORY_LOADING', false)
+      try {
+        // await dispatch('updateBudget', {
+        //   category_id: getters.selectedCategory._id,
+        //   amount: selectedBudget + negative * getters.selectedCategory.moveAmount
+        // }),
+        //   await dispatch('updateBudget', {
+        //     category_id: getters.selectedCategory.moveDestination,
+        //     amount: destinationBudget - negative * getters.selectedCategory.moveAmount
+        //   })
+        await Promise.all([
+          dispatch('updateBudget', {
+            category_id: getters.selectedCategory._id,
+            amount: selectedBudget + negative * getters.selectedCategory.moveAmount
+          }),
+          dispatch('updateBudget', {
+            category_id: getters.selectedCategory.moveDestination,
+            amount: destinationBudget - negative * getters.selectedCategory.moveAmount
+          })
+        ])
+      } catch (error) {
+        console.error(error)
+      } finally {
+        commit('SET_CATEGORY_LOADING', false)
+        return await dispatch('syncSelectedCategory')
+      }
+      // setTimeout(() => {
+      //   console.log('Finished updating budgets', getters.categoriesDataById['n00'])
+      // }, 1000)
+      // await dispatch('selectCategory', getters.categoriesDataById[getters.selectedCategory._id])
     },
     selectCategory({ commit, getters }, category) {
       if (!category || !getters.selectedCategory || category._id !== getters.selectedCategory._id) {

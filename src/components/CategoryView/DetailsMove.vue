@@ -78,10 +78,6 @@ export default {
 
       this.isEditingValue = false
       this.onSelectedMoveAmountChanged(parseInt(event.target.value * 100))
-    },
-    onBudgetMoveClicked() {
-      this.$emit('budgetMoveClicked')
-      onBudgetMove()
     }
   }
 }
