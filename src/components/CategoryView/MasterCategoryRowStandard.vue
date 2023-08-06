@@ -13,14 +13,14 @@
       <master-category-color :color="masterCategoryColor" @updated="onColorChange" />
     </template>
     <template #title>
-      <category-grid-input
+      <string-input
         background-color="background lighten-1"
         :id="`master-category-name-input-${masterCategory._id}`"
         :data-testid="`master-category-name-input-${masterCategory._id}`"
         :is-editing="editedMasterCategoryId == masterCategory._id"
         :value="masterCategory.name"
         @edit="onEditMasterCategoryName(masterCategory._id)"
-        @apply="onMasterCategoryNameChange"
+        @input="onMasterCategoryNameChange"
         text="h4"
       />
     </template>
@@ -73,7 +73,8 @@ import { mapGetters, mapActions, mapMutations } from 'vuex'
 import HeaderRow from './HeaderRow.vue'
 import MasterCategoryColor from './MasterCategoryColor.vue'
 import MasterCategoryDelete from './MasterCategoryDelete.vue'
-import CategoryGridInput from './CategoryGridInput.vue'
+// import CategoryGridInput from './CategoryGridInput.vue'
+import StringInput from '../Shared/StringInput.vue'
 import { NONE, AMOUNT_RED, AMOUNT_GREEN } from '../../constants'
 import _ from 'lodash'
 
@@ -96,7 +97,7 @@ export default {
     HeaderRow,
     MasterCategoryColor,
     MasterCategoryDelete,
-    CategoryGridInput
+    StringInput
   },
   data() {
     return {
@@ -148,8 +149,7 @@ export default {
       'onDeleteMasterCategory',
       'onMasterCategoryNameChange',
       'onEditMasterCategoryName',
-      'newMasterCategory',
-      'newCategory'
+      'newMasterCategory'
     ]),
     onColorChange(color) {
       this.updateMasterColor({ masterId: this.masterCategory._id, colorObject: color })

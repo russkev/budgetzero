@@ -85,13 +85,7 @@ export default {
   },
   methods: {
     ...mapActions(['toggleMasterCategoryCollapsed']),
-    ...mapActions('categoryMonth', [
-      'onDeleteMasterCategory',
-      'onMasterCategoryNameChange',
-      'onEditMasterCategoryName',
-      'newMasterCategory',
-      'newCategory'
-    ])
+    ...mapActions('categoryMonth', ['onDeleteMasterCategory', 'onEditMasterCategoryName', 'newMasterCategory'])
   }
 }
 </script>

@@ -1,80 +1,27 @@
 <template>
-  <div v-if="!readonly" @blur="onApply">
-    <div v-if="!isEditing">
-      <v-hover v-slot="{ hover }">
-        <!-- Not read only and not editing -->
-        <v-text-field
-          :class="`ma-0 pa-0 text-${text}`"
-          dense
-          flat
-          solo
-          :hide-details="!showDetails"
-          readonly
-          :id="id"
-          :data-testid="dataTestid"
-          :value="currency ? intlCurrency.format(value) : value"
-          @focus="onClick"
-          :reverse="currency && !currencyLeft"
-          :background-color="hover ? activeBackgroundColor : 'transparent'"
-          :height="height"
-          :loading="loading"
-          :disabled="loading"
-          :placeholder="placeholder"
-          :rules="rules"
-        />
-      </v-hover>
-    </div>
-    <!-- Not read only and editing -->
-    <div v-else>
-      <v-text-field
-        :hide-details="!showDetails"
-        dark
-        dense
-        flat
-        solo
-        autofocus
-        :class="`ma-0 pa-0 text-${text}`"
-        :id="id"
-        :data-testid="dataTestid"
-        :value="value"
-        :suffix="currency ? '$' : ''"
-        :reverse="currency"
-        :height="height"
-        :background-color="activeBackgroundColor"
-        :loading="loading"
-        :disabled="loading"
-        :placeholder="placeholder"
-        :rules="rules"
-        @change="onApply"
-        @blur="onApply"
-        @keyup.enter="onEnterPressed"
-        @click="onEditedClicked"
-      />
-    </div>
-  </div>
-  <!-- Read only and editing -->
-  <div v-else>
-    <div>
-      <v-text-field
-        :class="`ma-0 pa-0 text-${text}`"
-        dense
-        flat
-        solo
-        :hide-details="!showDetails"
-        readonly
-        :id="id"
-        :data-testid="dataTestid"
-        :value="currency ? intlCurrency.format(value) : value"
-        :reverse="currency || !currencyLeft"
-        background-color="transparent"
-        :height="height"
-        :loading="loading"
-        :disabled="loading"
-        :placeholder="placeholder"
-        :rules="rules"
-      />
-    </div>
-  </div>
+  <v-text-field
+    dark
+    dense
+    flat
+    solo
+    :hide-details="!showDetails"
+    :class="`ma-0 pa-0 text-${text}`"
+    :id="id"
+    :data-testid="dataTestid"
+    :value="isEditing || !currency ? value : intlCurrency.format(value)"
+    :suffix="currency && isEditing ? '$' : ''"
+    :height="height"
+    :background-color="isEditing ? activeBackgroundColor : 'transparent'"
+    :disabled="loading || disabled"
+    :placeholder="placeholder"
+    :rules="rules"
+    :reverse="(currency && isEditing) || (currency && !currencyLeft)"
+    @focus="onFocus"
+    @change="onApply"
+    @blur="onBlur"
+    @keyup.enter="onEnterPressed"
+  />
+  <!-- :reverse="currency && !currencyLeft && isEditing" -->
 </template>
 
 <script>
@@ -82,7 +29,7 @@ import { mapGetters } from 'vuex'
 import { nextTick } from 'vue'
 
 export default {
-  emits: ['apply', 'edit', 'enter'],
+  emits: ['input', 'edit'],
   props: {
     isEditing: {
       type: Boolean,
@@ -120,6 +67,10 @@ export default {
       type: Boolean,
       default: false
     },
+    disabled: {
+      type: Boolean,
+      default: false
+    },
     activeBackgroundColor: {
       type: String,
       default: 'background lighten-2'
@@ -137,18 +88,29 @@ export default {
       default: false
     }
   },
+  mounted() {
+    console.log('onMounted', this.isEditing, this.id)
+    if (this.isEditing) {
+      this.onFocus()
+    }
+  },
   watch: {
     isEditing: {
-      handler: function (new_value) {
-        if (new_value) {
-          this.onClick()
+      handler: function (new_value, old_value) {
+        console.log('isEditing changed', new_value, old_value)
+        if (new_value && !old_value) {
+          this.isFocused = false
+          this.onFocus()
         }
       }
     },
     id: {
       handler: function (new_value, old_value) {
+        console.log('id handler')
         if (this.isEditing && new_value !== old_value) {
-          this.onClick()
+          console.log('id changed', new_value, old_value)
+          this.isFocused = false
+          this.onFocus()
         }
       }
     }
@@ -157,8 +119,9 @@ export default {
     return {
       height: '26px',
       isHovering: false,
+      isFocused: false,
       prevIsEditing: false,
-      applyClicked: false
+      applyClickedDebounce: false
     }
   },
   computed: {
@@ -172,34 +135,92 @@ export default {
     }
   },
   methods: {
+    onBlur(event) {
+      this.onApply(event.target.value)
+    },
     onApply(event) {
-      if (this.applyClicked) {
+      this.isFocused = false
+      if (this.applyClickedDebounce || !this.isEditing) {
         return
       }
-      this.$emit('apply', event)
-      this.isSelected = false
-      this.applyClicked = true
+      if (typeof event !== 'string' && !(event instanceof String)) {
+        console.warn('StringInput: onApply called with non-string event', event)
+        return
+      }
+      this.$emit('input', event)
+      this.applyClickedDebounce = true
       setTimeout(() => {
-        this.applyClicked = false
-      }, 500)
+        this.applyClickedDebounce = false
+      }, 10)
     },
-    onClick() {
+    onFocus(event) {
+      console.log('onFocus')
+      if (this.isEditing && this.isFocused) {
+        return
+      }
       this.$emit('edit')
       nextTick(() => {
+        console.log('selecting')
+        console.log(document.getElementById(this.id))
         document.getElementById(this.id).select()
-        this.isSelected = true
+        this.isFocused = true
       })
+
+      // if (this.isFocused) {
+      //   return
+      // } else {
+      //   // if (!this.isEditing) {
+      //   //   this.$emit('edit')
+      //   // }
+      //   this.isFocused = true
+      //   nextTick(() => {
+      //     const element = document.getElementById(this.id)
+      //     if (element) {
+      //       element.select()
+      //     }
+      //   })
+      // }
+
+      // const element = document.getElementById(this.id)
+      // // console.log('id', this.id)
+      // if (!element) {
+      //   if (event && event.target) {
+      //     element = event.target
+      //   } else {
+      //     return
+      //   }
+      // }
+      // if (this.isEditing) {
+      //   this.isFocused = true
+      //   element.select()
+      // }
+
+      // // // console.log('Element', element)
+      // // // console.log('isEditing', this.isEditing)
+      // // // if (!this.isEditing) {
+      // // //   if (document.activeElement === element) {
+      // // //     element.blur()
+      // // //     this.isFocused = false
+      // // //   }
+      // // //   return
+      // // // }
+      // // // console.log('a')
+      // // // if (this.isFocused && document.activeElement === element) {
+      // // //   return
+      // // // }
+      // // if (this.isFocused) {
+      // //   return
+      // // }
+      // // // console.log('b')
+      // // this.isFocused = true
+      // // this.$emit('edit')
+      // // nextTick(() => {
+      // //   // console.log('Selecting element')
+      // //   element.select()
+      // // })
     },
     onEnterPressed(event) {
-      this.$emit('enter', event)
-      this.onApply(event)
-      this.isSelected = true
-    },
-    onEditedClicked(event) {
-      if (!this.isSelected) {
-        event.target.select()
-        this.isSelected = true
-      }
+      this.onApply(event.target.value)
     }
   }
 }

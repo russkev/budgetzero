@@ -14,10 +14,10 @@
           class="category-name-input"
           :id="`category-name-input-${selectedCategory._id}`"
           :data-testid="`category-name-input-${selectedCategory._id}`"
-          :is-editing="isEditingName(selectedCategory._id)"
           :value="selectedCategory.name"
+          :is-editing="isEditingName"
           :disabled="loading"
-          @apply="onCategoryNameChange"
+          @input="onCategoryNameChange"
           @edit="onEditCategoryName(selectedCategory._id)"
         />
       </div>
@@ -33,7 +33,7 @@
           :value="selectedCategory.budgetDisplay"
           :is-editing="editedCategoryBudgetId == selectedCategory._id"
           :disabled="loading"
-          @apply="onBudgetValueApply"
+          @input="onBudgetValueApply"
           @edit="onEditCategoryBudget(selectedCategory._id)"
         />
       </div>
@@ -52,6 +52,7 @@
               :background-color="hover ? 'background lighten-2' : 'transparent'"
               @change="onNoteUpdate"
               @keydown.ctrl.enter.exact.prevent="onNoteUpdate"
+              @blur="onNoteBlur"
             />
             <!-- :disabled="loading" -->
           </div>
@@ -119,7 +120,8 @@ export default {
   },
   data() {
     return {
-      localNote: ''
+      localNote: '',
+      noteApplyClicked: false
     }
   },
   computed: {
@@ -149,6 +151,15 @@ export default {
     },
     loading() {
       return this.categoryLoading || this.categoryLoading || this.categoryLoading
+    },
+    isEditingName() {
+      console.log('isEditingName', this.selectedCategory._id, this.editedCategoryNameId)
+      if (this.selectedCategory._id.slice(ID_LENGTH.category) === NONE._id) {
+        return false
+      } else {
+        console.log(this.selectedCategory._id === this.editedCategoryNameId)
+        return this.selectedCategory._id === this.editedCategoryNameId
+      }
     }
   },
   methods: {
@@ -165,7 +176,11 @@ export default {
     onUnselectCategory() {
       this.RESET_SELECTED_CATEGORY()
     },
+    onNoteBlur(event) {
+      console.log('onNoteBlur', event)
+    },
     onNoteUpdate(event) {
+      console.log('onNoteUpdate', event)
       if (event.target) {
         event.target.blur()
         return
@@ -175,15 +190,8 @@ export default {
         note: this.localNote
       })
     },
-    onBudgetValueApply(event) {
-      this.onCategoryBudgetChanged({ category_id: this.selectedCategory._id, event: event })
-    },
-    isEditingName() {
-      if (this.selectedCategory._id.slice(ID_LENGTH.category) === NONE._id) {
-        return false
-      } else {
-        return this.selectedCategory._id === this.editedCategoryNameId
-      }
+    onBudgetValueApply(value) {
+      this.onCategoryBudgetChanged({ category_id: this.selectedCategory._id, value })
     }
   }
 }

@@ -1,18 +1,18 @@
 <template>
   <v-card flat color="background lighten-2" class="pa-2">
     <span class="category-radio-group mb-2">
-      <string-input
+      <!-- <string-input
         class="category-budget-input"
         :id="`category-move-input-${selectedCategory._id}`"
         :data-testid="`category-move-input-${selectedCategory._id}`"
         :value="(selectedCategory.moveAmount / 100).toString()"
         :is-editing="isEditingValue"
-        @edit="isEditingValue = true"
-        @apply="onMoveAmountApply"
         active-background-color="background lighten-3"
         currency
         currency-left
-      />
+        @edit="isEditingValue = true"
+        @input="onMoveAmountApply"
+      /> -->
       <span>
         <details-radio
           :selected="selectedCategory.isMovingTo"
@@ -47,6 +47,7 @@
 import DetailsRadio from '../Shared/DetailsRadio.vue'
 import CategoryMenu from '../Shared/CategoryMenu.vue'
 import StringInput from '../Shared/StringInput.vue'
+import _ from 'lodash'
 import { mapGetters, mapActions } from 'vuex'
 
 export default {
@@ -73,11 +74,9 @@ export default {
       'doBudgetMove',
       'syncSelectedCategory'
     ]),
-    onMoveAmountApply(event) {
-      if (!event.target) return
-
+    onMoveAmountApply(value) {
       this.isEditingValue = false
-      this.onSelectedMoveAmountChanged(parseInt(event.target.value * 100))
+      this.onSelectedMoveAmountChanged(parseInt(value * 100))
     }
   }
 }

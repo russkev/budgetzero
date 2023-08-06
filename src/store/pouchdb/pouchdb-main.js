@@ -120,7 +120,7 @@ export default {
         return context
           .dispatch('commitDocToPouch', { current, previous, doc_type, is_multiple: false })
           .then((result) => {
-            if (result.ok) {
+            if (result && result.ok) {
               if (current) {
                 current._rev = result.rev
               }
@@ -155,26 +155,38 @@ export default {
             _id: `b_${context.getters.selectedBudgetId}${ID_NAME.transaction}${transaction_id}`
           }
           delete for_db_current._rev
-          return db.bulkDocs([for_db_current, for_db_previous]).then((results) => {
-            const all_successful = results.reduce((partial, result) => {
-              if (!result.ok) {
-                return false
+          return db
+            .bulkDocs([for_db_current, for_db_previous])
+            .then((results) => {
+              const all_successful = results.reduce((partial, result) => {
+                if (!result.ok) {
+                  return false
+                } else {
+                  return partial
+                }
+              }, true)
+              if (all_successful) {
+                // Return first result because it is the one with the correct _rev
+                return results[0]
               } else {
-                return partial
+                Promise.reject(`Pouch update failed`)
               }
-            }, true)
-            if (all_successful) {
-              // Return first result because it is the one with the correct _rev
-              return results[0]
-            } else {
-              Promise.reject(`Pouch update failed`)
-            }
-          })
+            })
+            .catch((error) => {
+              console.error('Unable to commit doc to pouchdb', for_db_current)
+              console.error(error)
+            })
         } else {
-          return db.put(current)
+          return db.put(current).catch((error) => {
+            console.error('Unable to commit doc to pouchdb', current)
+            console.error(error)
+          })
         }
       } else {
-        return db.remove(previous)
+        return db.remove(previous).catch((error) => {
+          console.error('Unable to remove doc form pouchdb', previous)
+          console.error(error)
+        })
       }
     },
 
@@ -259,8 +271,12 @@ export default {
 
     async commitDocToDb(context, { current, previous }) {
       const db = this._vm.$pouch
-      const result = current ? db.put(current) : db.remove(previous)
-      return result
+      try {
+        const result = current ? db.put(current) : db.remove(previous)
+        return result
+      } catch (error) {
+        console.error(error)
+      }
     },
 
     async commitTransactionToVuex({ getters, dispatch, commit }, { current, previous, is_multiple }) {

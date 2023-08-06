@@ -211,17 +211,7 @@ export default {
     tablePageNumber: (state) => state.tablePageNumber
   },
   actions: {
-    onCategoryBudgetChanged({ commit, dispatch, getters }, { category_id, event }) {
-      // Check if event is a number
-      let value = 0
-      if (!isNaN(event)) {
-        value = event
-      } else if (event.target) {
-        value = event.target.value
-      } else {
-        return
-      }
-
+    onCategoryBudgetChanged({ commit, dispatch, getters }, { category_id, value }) {
       let amount = parseInt(Math.round(parseFloat(value) * 100))
       if (amount === getters.selectedCategory.budget) {
         // No need to update
@@ -232,13 +222,6 @@ export default {
     },
     updateBudget({ commit, getters, dispatch, rootGetters }, { category_id, amount }) {
       commit('SET_CATEGORY_LOADING', true)
-      // if (isNaN(amount)) {
-      //   console.warn(`Budget value: ${amount} is NaN`)
-      //   amount = 0
-      //   // commit('SET_CATEGORY_LOADING', false)
-
-      //   // return
-      // }
       const month = getters.selectedMonth
       let current = null
       const previous = _.get(rootGetters.allCategoryBalances, [month, category_id, 'doc'], null)
@@ -315,14 +298,6 @@ export default {
       const selectedBudget = getters.selectedCategory.budget
       const destinationBudget = getters.categoriesDataById[getters.selectedCategory.moveDestination].budget
       try {
-        // await dispatch('updateBudget', {
-        //   category_id: getters.selectedCategory._id,
-        //   amount: selectedBudget + negative * getters.selectedCategory.moveAmount
-        // }),
-        //   await dispatch('updateBudget', {
-        //     category_id: getters.selectedCategory.moveDestination,
-        //     amount: destinationBudget - negative * getters.selectedCategory.moveAmount
-        //   })
         await Promise.all([
           dispatch('updateBudget', {
             category_id: getters.selectedCategory._id,
@@ -339,10 +314,6 @@ export default {
         commit('SET_CATEGORY_LOADING', false)
         return await dispatch('syncSelectedCategory')
       }
-      // setTimeout(() => {
-      //   console.log('Finished updating budgets', getters.categoriesDataById['n00'])
-      // }, 1000)
-      // await dispatch('selectCategory', getters.categoriesDataById[getters.selectedCategory._id])
     },
     selectCategory({ commit, getters }, category) {
       if (!category || !getters.selectedCategory || category._id !== getters.selectedCategory._id) {
@@ -409,39 +380,28 @@ export default {
       const category_id = getters.selectedCategory._id
       dispatch('selectCategory', getters.categoriesDataById[category_id])
     },
-    onCategoryNameChange({ getters, commit, dispatch, rootGetters }, event) {
-      let name = ''
-      if (typeof event === 'string' || event instanceof String) {
-        name = event
-      } else if (event.target) {
-        name = event.target.value
-      } else {
-        return
-      }
-
+    onCategoryNameChange({ getters, commit, dispatch, rootGetters }, name) {
       commit('SET_CATEGORY_LOADING', true)
       const doc = rootGetters.categoriesById[getters.editedCategoryNameId]
       commit('CLEAR_EDITED_CATEGORY_NAME_ID')
-      if (name === doc.name) {
+      if (doc === undefined || name === doc.name) {
         commit('SET_CATEGORY_LOADING', false)
         return
       }
-      if (doc !== undefined) {
-        dispatch(
-          'commitDocToPouchAndVuex',
-          {
-            current: { ...doc, name: name },
-            previous: doc
-          },
-          { root: true }
-        )
-          .then(() => {
-            dispatch('syncSelectedCategory')
-          })
-          .finally(() => {
-            commit('SET_CATEGORY_LOADING', false)
-          })
-      }
+      dispatch(
+        'commitDocToPouchAndVuex',
+        {
+          current: { ...doc, name: name },
+          previous: doc
+        },
+        { root: true }
+      )
+        .then(() => {
+          dispatch('syncSelectedCategory')
+        })
+        .finally(() => {
+          commit('SET_CATEGORY_LOADING', false)
+        })
     },
     onMovingToClicked({ commit }) {
       commit('SET_SELECTED_CATEGORY_ATTRIBUTE', { attribute: 'isMovingTo', value: true })
@@ -453,22 +413,20 @@ export default {
       commit('SET_SELECTED_CATEGORY_ATTRIBUTE', { attribute: 'moveDestination', value: new_destination })
     },
     onSelectedMoveAmountChanged({ commit }, new_amount) {
-      commit('SET_SELECTED_CATEGORY_ATTRIBUTE', { attribute: 'moveAmount', value: new_amount })
-    },
-    onMasterCategoryNameChange({ getters, commit, dispatch, rootGetters }, event) {
-      let name = ''
-      if (typeof event === 'string' || event instanceof String) {
-        name = event
-      } else if (event.target) {
-        name = event.target.value
-      } else {
+      if (isNaN(new_amount)) {
         return
       }
+      commit('SET_SELECTED_CATEGORY_ATTRIBUTE', { attribute: 'moveAmount', value: new_amount })
+    },
+    onMasterCategoryNameChange({ getters, commit, dispatch, rootGetters }, name) {
       commit('SET_CATEGORY_LOADING', true)
       const doc = rootGetters.masterCategoriesById[getters.editedMasterCategoryId]
+      if (doc.name === name) {
+        return commit('SET_CATEGORY_LOADING', false)
+      }
       commit('CLEAR_EDITED_MASTER_CATEGORY_ID')
       if (doc !== undefined) {
-        dispatch(
+        return dispatch(
           'commitDocToPouchAndVuex',
           {
             current: { ...doc, name: name },
@@ -477,12 +435,14 @@ export default {
           { root: true }
         )
           .then(() => {
-            dispatch('syncSelectedCategory')
+            return dispatch('syncSelectedCategory')
           })
           .finally(() => {
-            commit('SET_CATEGORY_LOADING', false)
+            return commit('SET_CATEGORY_LOADING', false)
           })
       }
+      dispatch('syncSelectedCategory')
+      return commit('SET_CATEGORY_LOADING', false)
     },
     getMonthTransactions({ commit, dispatch, getters, rootGetters }) {
       if (rootGetters.accounts.length < 1 || !rootGetters.selectedBudgetId) {

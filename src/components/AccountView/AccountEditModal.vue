@@ -23,7 +23,7 @@
                 show-details
                 :rules="nameRules"
                 :value="editedItem.name"
-                @apply="onEditAccountName"
+                @input="onEditAccountName"
               />
             </div>
             <div class="text-h5">Initial Balance</div>

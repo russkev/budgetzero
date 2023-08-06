@@ -130,12 +130,7 @@ export default {
 
   methods: {
     ...mapMutations('categoryMonth', ['SET_EDITED_CATEGORY_BUDGET_ID']),
-    ...mapActions('categoryMonth', [
-      'onCategoryBudgetChanged',
-      'onEditCategoryName',
-      'selectCategory',
-      'onEditCategoryBudget'
-    ]),
+    ...mapActions('categoryMonth', ['onEditCategoryName', 'selectCategory', 'onEditCategoryBudget']),
 
     onCategoryBudgetEnter(category, event) {
       document.activeElement.blur()
