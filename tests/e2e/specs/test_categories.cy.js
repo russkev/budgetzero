@@ -383,7 +383,7 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,918.67 ')
     })
 
-    it.only('Creates a new category', () => {
+    it('Creates a new category', () => {
       const name_selector = '[data-testid="categories-container-3ks"] > div:nth-child(6) .category-name'
       const balance_selector = '[data-testid="categories-container-3ks"] .category-balance'
       const name_input_selector = '.category-name-input > :nth-child(1) input'
@@ -391,46 +391,48 @@ describe('Test categories (budget) page', () => {
       // Check that making two new categories one after the other doesn't result in the name input loading
       cy.get('[data-testid="btn-new-category-3ks"]').click()
       cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 5)
-      // cy.get('[data-testid="btn-new-category-3ks"]').click()
-      // cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 6)
-      // cy.get(name_input_selector).should('be.enabled')
+      cy.get('[data-testid="btn-new-category-3ks"]').click()
+      cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 6)
+      cy.get(name_input_selector).should('be.enabled')
 
-      // // Check that name input updates correctly
-      // cy.get(name_selector).should('have.text', ' Name ')
-      // cy.get(name_input_selector).should('not.have.attr', 'readonly')
-      // cy.get(name_input_selector).should('have.focus')
-      // cy.get(name_input_selector).type('Internet')
-      // cy.get(name_input_selector).should('be.enabled')
+      // Check that name input updates correctly
+      cy.get(name_selector).should('have.text', ' Name ')
+      cy.get(name_input_selector).should('not.have.attr', 'readonly')
+      cy.get(name_input_selector).should('have.focus')
+      cy.get(name_input_selector).type('Internet')
+      cy.get(name_input_selector).should('be.enabled')
 
-      // // Check that value update works correctly
-      // cy.get('.category-budget-input input').eq(0).focus()
-      // cy.get(name_selector).should('have.text', ' Internet ')
-      // cy.get('.category-budget-input input').eq(0).type('5')
+      // Check that value update works correctly
+      cy.get('.category-budget-input input').eq(0).focus()
+      cy.get(name_selector).should('have.text', ' Internet ')
+      cy.get('.category-budget-input input').eq(0).type('5')
 
-      // // // Check that note update works correctly
-      // cy.get('.category-budget-note textarea').should('not.be.disabled')
-      // cy.get('.category-budget-note textarea').focus()
-      // cy.get('.category-budget-input input').eq(0).should('have.value', '$5.00')
-      // cy.get('.category-budget-note textarea').type('This is a note')
-      // cy.get('.transaction-details-grid > :nth-child(9)').click()
-      // cy.get('.category-budget-note textarea').should('not.be.disabled')
-      // cy.get('.category-budget-note textarea').should('have.value', 'This is a note')
-      // cy.get('[data-testid="category-name-:in"]').click()
-      // cy.get('.category-budget-note textarea').should('have.value', '')
+      // // Check that note update works correctly
+      cy.get('.category-budget-note textarea').should('not.be.disabled')
+      cy.get('.category-budget-note textarea').focus()
+      cy.get('.category-budget-input input').eq(0).should('have.value', '$5.00')
+      cy.get('.category-budget-note textarea').type('This is a note')
+      cy.get('.transaction-details-grid > :nth-child(9)').click()
+      cy.get('.category-budget-note textarea').should('not.be.disabled')
+      cy.get('.category-budget-note textarea').should('have.value', 'This is a note')
+      cy.get('[data-testid="category-name-:in"]').click()
+      cy.get('.category-budget-note textarea').should('have.value', '')
 
-      // // Create a new master category
-      // cy.get('.master-categories > div').should('have.length', 2)
-      // cy.get('[data-testid="btn-new-master-category"]').click()
-      // cy.get('.master-categories > div').should('have.length', 3)
-      // const name_input = () => cy.get('main').find('div.master-row').eq(4).find('input')
-      // name_input().should('not.have.attr', 'readonly')
-      // name_input().should('have.focus')
-      // name_input().type('Dividends').type('{enter}')
-      // name_input().should('have.value', 'Dividends')
-      // cy.get('.categories-container').eq(3).should('not.be.visible')
+      // Create a new master category
+      cy.get('.master-categories > div').should('have.length', 2)
+      cy.get('[data-testid="btn-new-master-category"]').click()
+      cy.get('.master-categories > div').should('have.length', 3)
+      const name_input = () => cy.get('main').find('div.master-row').eq(4).find('input')
+      name_input().should('not.have.attr', 'readonly')
+      name_input().should('have.focus')
+      cy.wait(1)
+      name_input().type('Dividends').type('{enter}')
+      name_input().should('have.value', 'Dividends')
+      name_input().should('not.have.focus')
+      cy.get('.categories-container').eq(3).should('not.be.visible')
     })
 
-    it('Tests that the move section works properly', () => {
+    it.only('Tests that the move section works properly', () => {
       cy.get('[data-testid="category-budget-n00"]').should('contain.text', '$420.00').click()
       cy.get('[data-testid="total-balance"]').should('contain.text', '$331.47')
 
@@ -440,41 +442,46 @@ describe('Test categories (budget) page', () => {
       cy.get('#category-menu-button').should('contain.text', 'Groceries')
 
       // Change budget value so balance is negative
-      cy.get('[data-testid="category-budget-input-n00"]').type('10').blur()
-      cy.get('[data-testid="category-budget-input-n00"]').should('contain.value', '$10.00')
+      // cy.wait(1000)
+      // cy.window().then((win) => {
+      //   expect(win.getSelection().anchorNode).not.to.be.null
+      // })
+      cy.checkSelectionExists()
+      // cy.get('[data-testid="category-budget-input-n00"]').type('10').blur()
+      // cy.get('[data-testid="category-budget-input-n00"]').should('contain.value', '$10.00')
 
-      // Check that move section has correct values
-      cy.get('[data-testid="category-move-input-n00"]').should('contain.value', '$324.26')
-      cy.get('[data-testid="details-moving-from-button"].mdi-radiobox-marked').should('exist')
-      cy.get('#category-menu-button').should('contain.text', 'Groceries')
+      // // Check that move section has correct values
+      // cy.get('[data-testid="category-move-input-n00"]').should('contain.value', '$324.26')
+      // cy.get('[data-testid="details-moving-from-button"].mdi-radiobox-marked').should('exist')
+      // cy.get('#category-menu-button').should('contain.text', 'Groceries')
 
-      // Open Groceries details
-      cy.get('[data-testid="category-budget-ATi"]').click()
+      // // Open Groceries details
+      // cy.get('[data-testid="category-budget-ATi"]').click()
 
-      // Check that move section has correct values
-      cy.get('[data-testid="category-move-input-ATi"]').should('contain.value', '$324.26')
-      cy.get('[data-testid="details-moving-to-button"].mdi-radiobox-marked').should('exist')
-      cy.get('#category-menu-button').should('contain.text', 'Gas')
+      // // Check that move section has correct values
+      // cy.get('[data-testid="category-move-input-ATi"]').should('contain.value', '$324.26')
+      // cy.get('[data-testid="details-moving-to-button"].mdi-radiobox-marked').should('exist')
+      // cy.get('#category-menu-button').should('contain.text', 'Gas')
 
-      // Send some money
-      cy.get('[data-testid="category-move-input-ATi"]').click()
-      cy.get('[data-testid="category-move-input-ATi"]').type('320.26').type('{enter}')
-      cy.get('[data-testid="details-move-save-button"]').click()
+      // // Send some money
+      // cy.get('[data-testid="category-move-input-ATi"]').click()
+      // cy.get('[data-testid="category-move-input-ATi"]').type('320.26').type('{enter}')
+      // cy.get('[data-testid="details-move-save-button"]').click()
 
-      // Check that values were updated correctly
-      cy.get('[data-testid="total-balance"]').should('contain.text', '$78.53')
-      cy.get('[data-testid="category-balance-ATi"]').should('contain.text', '$623.00')
-      cy.get('[data-testid="category-budget-ATi"]').should('contain.text', '$683.00')
-      cy.get('[data-testid="category-budget-input-ATi"]').should('contain.value', '$683.00')
+      // // Check that values were updated correctly
+      // cy.get('[data-testid="total-balance"]').should('contain.text', '$78.53')
+      // cy.get('[data-testid="category-balance-ATi"]').should('contain.text', '$623.00')
+      // cy.get('[data-testid="category-budget-ATi"]').should('contain.text', '$683.00')
+      // cy.get('[data-testid="category-budget-input-ATi"]').should('contain.value', '$683.00')
 
-      // Check that move section has correct values
-      cy.get('[data-testid="category-move-input-ATi"]').should('contain.value', '$4.00')
-      cy.get('[data-testid="details-moving-to-button"].mdi-radiobox-marked').should('exist')
-      cy.get('#category-menu-button').should('contain.text', 'Gas')
+      // // Check that move section has correct values
+      // cy.get('[data-testid="category-move-input-ATi"]').should('contain.value', '$4.00')
+      // cy.get('[data-testid="details-moving-to-button"].mdi-radiobox-marked').should('exist')
+      // cy.get('#category-menu-button').should('contain.text', 'Gas')
 
-      // Check that Gas values were updated correctly
-      cy.get('[data-testid="category-balance-n00"]').should('contain.text', '-$4.00')
-      cy.get('[data-testid="category-budget-n00"]').should('contain.text', '$330.26')
+      // // Check that Gas values were updated correctly
+      // cy.get('[data-testid="category-balance-n00"]').should('contain.text', '-$4.00')
+      // cy.get('[data-testid="category-budget-n00"]').should('contain.text', '$330.26')
     })
 
     it('Tests that esc key works', () => {

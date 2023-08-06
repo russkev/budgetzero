@@ -421,10 +421,10 @@ export default {
     onMasterCategoryNameChange({ getters, commit, dispatch, rootGetters }, name) {
       commit('SET_CATEGORY_LOADING', true)
       const doc = rootGetters.masterCategoriesById[getters.editedMasterCategoryId]
+      commit('CLEAR_EDITED_MASTER_CATEGORY_ID')
       if (doc.name === name) {
         return commit('SET_CATEGORY_LOADING', false)
       }
-      commit('CLEAR_EDITED_MASTER_CATEGORY_ID')
       if (doc !== undefined) {
         return dispatch(
           'commitDocToPouchAndVuex',

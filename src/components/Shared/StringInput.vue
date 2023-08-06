@@ -7,6 +7,7 @@
     :hide-details="!showDetails"
     :class="`ma-0 pa-0 text-${text}`"
     :id="id"
+    :ref="id"
     :data-testid="dataTestid"
     :value="isEditing || !currency ? value : intlCurrency.format(value)"
     :suffix="currency && isEditing ? '$' : ''"
@@ -21,12 +22,10 @@
     @blur="onBlur"
     @keyup.enter="onEnterPressed"
   />
-  <!-- :reverse="currency && !currencyLeft && isEditing" -->
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { nextTick } from 'vue'
 
 export default {
   emits: ['input', 'edit'],
@@ -89,7 +88,6 @@ export default {
     }
   },
   mounted() {
-    console.log('onMounted', this.isEditing, this.id)
     if (this.isEditing) {
       this.onFocus()
     }
@@ -97,7 +95,6 @@ export default {
   watch: {
     isEditing: {
       handler: function (new_value, old_value) {
-        console.log('isEditing changed', new_value, old_value)
         if (new_value && !old_value) {
           this.isFocused = false
           this.onFocus()
@@ -106,9 +103,7 @@ export default {
     },
     id: {
       handler: function (new_value, old_value) {
-        console.log('id handler')
         if (this.isEditing && new_value !== old_value) {
-          console.log('id changed', new_value, old_value)
           this.isFocused = false
           this.onFocus()
         }
@@ -136,6 +131,7 @@ export default {
   },
   methods: {
     onBlur(event) {
+      console.log('onBlur', event.target.value)
       this.onApply(event.target.value)
     },
     onApply(event) {
@@ -147,79 +143,34 @@ export default {
         console.warn('StringInput: onApply called with non-string event', event)
         return
       }
+      const element = document.getElementById(this.id)
+      if (element) {
+        element.blur()
+      }
+      console.log('onApply', event)
       this.$emit('input', event)
       this.applyClickedDebounce = true
       setTimeout(() => {
         this.applyClickedDebounce = false
       }, 10)
     },
-    onFocus(event) {
-      console.log('onFocus')
+    onFocus() {
+      console.log('onFocus', this.id, this.isEditing, this.isFocused)
       if (this.isEditing && this.isFocused) {
         return
       }
       this.$emit('edit')
-      nextTick(() => {
-        console.log('selecting')
-        console.log(document.getElementById(this.id))
-        document.getElementById(this.id).select()
+      setTimeout(() => {
+        const element = document.getElementById(this.id)
+        if (element) {
+          element.select()
+          console.log('SHOW SELECTINO', window.getSelection().toString())
+        }
         this.isFocused = true
-      })
-
-      // if (this.isFocused) {
-      //   return
-      // } else {
-      //   // if (!this.isEditing) {
-      //   //   this.$emit('edit')
-      //   // }
-      //   this.isFocused = true
-      //   nextTick(() => {
-      //     const element = document.getElementById(this.id)
-      //     if (element) {
-      //       element.select()
-      //     }
-      //   })
-      // }
-
-      // const element = document.getElementById(this.id)
-      // // console.log('id', this.id)
-      // if (!element) {
-      //   if (event && event.target) {
-      //     element = event.target
-      //   } else {
-      //     return
-      //   }
-      // }
-      // if (this.isEditing) {
-      //   this.isFocused = true
-      //   element.select()
-      // }
-
-      // // // console.log('Element', element)
-      // // // console.log('isEditing', this.isEditing)
-      // // // if (!this.isEditing) {
-      // // //   if (document.activeElement === element) {
-      // // //     element.blur()
-      // // //     this.isFocused = false
-      // // //   }
-      // // //   return
-      // // // }
-      // // // console.log('a')
-      // // // if (this.isFocused && document.activeElement === element) {
-      // // //   return
-      // // // }
-      // // if (this.isFocused) {
-      // //   return
-      // // }
-      // // // console.log('b')
-      // // this.isFocused = true
-      // // this.$emit('edit')
-      // // nextTick(() => {
-      // //   // console.log('Selecting element')
-      // //   element.select()
-      // // })
+      }, 0)
     },
     onEnterPressed(event) {
+      console.log('onEnterPressed', event.target.value)
       this.onApply(event.target.value)
     }
   }

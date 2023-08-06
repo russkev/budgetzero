@@ -1,7 +1,7 @@
 <template>
   <v-card flat color="background lighten-2" class="pa-2">
     <span class="category-radio-group mb-2">
-      <!-- <string-input
+      <string-input
         class="category-budget-input"
         :id="`category-move-input-${selectedCategory._id}`"
         :data-testid="`category-move-input-${selectedCategory._id}`"
@@ -12,7 +12,7 @@
         currency-left
         @edit="isEditingValue = true"
         @input="onMoveAmountApply"
-      /> -->
+      />
       <span>
         <details-radio
           :selected="selectedCategory.isMovingTo"
