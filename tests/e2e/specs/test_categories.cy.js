@@ -433,7 +433,7 @@ describe('Test categories (budget) page', () => {
       cy.get('.categories-container').eq(3).should('not.be.visible')
     })
 
-    it('Tests that the move section works properly', () => {
+    it.only('Tests that the move section works properly', () => {
       cy.get('[data-testid="category-budget-n00"]').should('contain.text', '$420.00').click()
       cy.checkSelectionExists()
       cy.get('[data-testid="total-balance"]').should('contain.text', '$331.47')
@@ -480,6 +480,24 @@ describe('Test categories (budget) page', () => {
       // Check that Gas values were updated correctly
       cy.get('[data-testid="category-balance-n00"]').should('contain.text', '-$4.00')
       cy.get('[data-testid="category-budget-n00"]').should('contain.text', '$330.26')
+
+      // Go to Gas category details
+      cy.get('[data-testid="category-budget-n00"]').click()
+
+      // Check that move section has correct values
+      cy.get('[data-testid="category-move-input-n00"]').should('contain.value', '$4.00')
+      cy.get('[data-testid="details-moving-from-button"].mdi-radiobox-marked').should('exist')
+      cy.get('#category-menu-button').should('contain.text', 'Groceries')
+
+      // Send some money
+      cy.get('[data-testid="category-move-input-n00"]').click()
+      cy.get('[data-testid="category-move-input-n00"]').type('6.00').type('{enter}')
+      cy.get('[data-testid="details-move-save-button"]').click()
+
+      // Check that move section has correct values
+      cy.get('[data-testid="category-move-input-n00"]').should('contain.value', '$2.00')
+      cy.get('[data-testid="details-moving-to-button"].mdi-radiobox-marked').should('exist')
+      cy.get('#category-menu-button').should('contain.text', 'Groceries')
     })
 
     it('Tests that esc key works', () => {

@@ -62,3 +62,9 @@ Run a specific test (add the `--record` if a record key environment variable was
 ```
 npx cypress run --spec tests\e2e\specs\test_begin.cy.js --browser firefox --record
 ```
+
+... or with manually inputting record key:
+
+```
+npx cypress run --spec tests\e2e\specs\test_begin.cy.js --browser firefox --record --key <record_key>
+```

@@ -93,7 +93,6 @@ export default {
 .category-radio-group > span {
   display: flex;
   flex-direction: row;
-  /* justify-content: space-between; */
   align-items: center;
   justify-content: end;
   width: 100%;

@@ -1,6 +1,5 @@
 <template>
   <v-card width="100%" flat color="background lighten-1" class="category-details-title flex-sheet ma-0 ml-2">
-    <!-- <v-card-title class="primary darken-3 pa-3">{{ title }}</v-card-title> -->
     <v-card-title v-if="selectedCategory" class="background lighten-2 pa-3" data-testid="details-title">
       Update Selected
       <v-icon @click="onUnselectCategory" class="ml-auto">mdi-close</v-icon>
@@ -54,7 +53,6 @@
               @keydown.ctrl.enter.exact.prevent="onNoteUpdate"
               @blur="onNoteBlur"
             />
-            <!-- :disabled="loading" -->
           </div>
         </v-hover>
       </div>
@@ -121,7 +119,8 @@ export default {
   data() {
     return {
       localNote: '',
-      noteApplyClicked: false
+      noteApplyClicked: false,
+      noteDebounce: false
     }
   },
   computed: {
@@ -139,7 +138,6 @@ export default {
     ]),
     note: {
       get() {
-        // return _.get(this.allCategoryBalances, [this.selectedMonth, this.selectedCategory._id, 'note'], '')
         return _.get(this.selectedCategory, 'note', '')
       },
       set(value) {
@@ -153,11 +151,9 @@ export default {
       return this.categoryLoading || this.categoryLoading || this.categoryLoading
     },
     isEditingName() {
-      console.log('isEditingName', this.selectedCategory._id, this.editedCategoryNameId)
       if (this.selectedCategory._id.slice(ID_LENGTH.category) === NONE._id) {
         return false
       } else {
-        console.log(this.selectedCategory._id === this.editedCategoryNameId)
         return this.selectedCategory._id === this.editedCategoryNameId
       }
     }
@@ -177,18 +173,24 @@ export default {
       this.RESET_SELECTED_CATEGORY()
     },
     onNoteBlur(event) {
-      console.log('onNoteBlur', event)
+      this.onNoteUpdate(event.target.value)
     },
     onNoteUpdate(event) {
-      console.log('onNoteUpdate', event)
-      if (event.target) {
-        event.target.blur()
+      if (this.noteDebounce) {
         return
       }
+      if (typeof event !== 'string' && !(event instanceof String)) {
+        console.warn('Note input: onApply called with non-string event', event)
+        return
+      }
+      this.noteDebounce = true
       this.updateNote({
         category_id: this.selectedCategory._id,
-        note: this.localNote
+        note: event
       })
+      setTimeout(() => {
+        this.noteDebounce = false
+      }, 10)
     },
     onBudgetValueApply(value) {
       this.onCategoryBudgetChanged({ category_id: this.selectedCategory._id, value })

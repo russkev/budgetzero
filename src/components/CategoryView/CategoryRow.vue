@@ -152,21 +152,11 @@ export default {
       const next_category_input = document.getElementById(next_budget_id)
       if (next_category_input) {
         this.SET_EDITED_CATEGORY_BUDGET_ID(next_category._id)
-        // next_category_input.focus();
         nextTick(() => {
           next_category_input.select()
         })
       }
     },
-    // balanceColor(category) {
-    //   if (category.balance < 0) {
-    //     return `error--text text--lighten-3`
-    //   } else if (category.balance > 0) {
-    //     return `success--text text--lighten-3`
-    //   } else {
-    //     return ''
-    //   }
-    // },
     valueColor,
     spentValue(category) {
       const amount = category.income - category.expense

@@ -352,7 +352,6 @@ export default {
         sort: sort_length
       })
       await context.dispatch('commitDocToPouchAndVuex', { current: category, previous: null })
-      // return category._id.slice(-ID_LENGTH.category)
       return category
     },
 
@@ -371,14 +370,10 @@ export default {
 
     categoryDocument: async (context, { name, master_id, sort, input_id }) => {
       const prefix = `b_${context.rootState.selectedBudgetId}${ID_NAME.category}`
-      // const id = await context.dispatch('generateUniqueShortId', { prefix: prefix })
       const id = input_id
         ? input_id.slice(-ID_LENGTH.category)
         : await context.dispatch('generateUniqueShortId', { prefix: prefix })
 
-      // if (!id) {
-      //   id = await context.dispatch('generateUniqueShortId', { prefix: prefix })
-      // }
       return {
         _id: `b_${context.rootState.selectedBudgetId}${ID_NAME.category}${id}`,
         name: name,

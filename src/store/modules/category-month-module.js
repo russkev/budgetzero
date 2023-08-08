@@ -72,9 +72,6 @@ export default {
     SET_TABLE_PAGE_NUMBER(state, page) {
       Vue.set(state, 'tablePageNumber', page)
     }
-    // SET_SELECTED_MOVING_TO_CLICKED(state, value) {
-    //   Vue.set(state.selectedCategory, 'isMovingTo', value)
-    // }
   },
   getters: {
     editedMasterCategoryId: (state) => state.editedMasterCategoryId,
@@ -262,11 +259,13 @@ export default {
       commit('SET_CATEGORY_LOADING', true)
       if (typeof note !== 'string') {
         console.warn(`Note value: ${note} is not a string`)
+        commit('SET_CATEGORY_LOADING', false)
         return
       }
       const month = getters.selectedMonth
       const previous = _.get(rootGetters.allCategoryBalances, [month, category_id, 'doc'], null)
       if (previous && previous.note === note) {
+        commit('SET_CATEGORY_LOADING', false)
         return
       }
       let current = {}
@@ -282,10 +281,10 @@ export default {
           note: note
         }
       }
-      dispatch('commitDocToPouchAndVuex', { current, previous }, { root: true })
+      return dispatch('commitDocToPouchAndVuex', { current, previous }, { root: true })
         .then(() => {
           if (getters.selectedCategory && getters.selectedCategory._id === category_id) {
-            dispatch('syncSelectedCategory')
+            return dispatch('syncSelectedCategory')
           }
         })
         .finally(() => {

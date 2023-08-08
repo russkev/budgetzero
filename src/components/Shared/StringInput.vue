@@ -131,7 +131,6 @@ export default {
   },
   methods: {
     onBlur(event) {
-      console.log('onBlur', event.target.value)
       this.onApply(event.target.value)
     },
     onApply(event) {
@@ -147,7 +146,6 @@ export default {
       if (element) {
         element.blur()
       }
-      console.log('onApply', event)
       this.$emit('input', event)
       this.applyClickedDebounce = true
       setTimeout(() => {
@@ -155,7 +153,6 @@ export default {
       }, 10)
     },
     onFocus() {
-      console.log('onFocus', this.id, this.isEditing, this.isFocused)
       if (this.isEditing && this.isFocused) {
         return
       }
@@ -164,13 +161,11 @@ export default {
         const element = document.getElementById(this.id)
         if (element) {
           element.select()
-          console.log('SHOW SELECTINO', window.getSelection().toString())
         }
         this.isFocused = true
       }, 0)
     },
     onEnterPressed(event) {
-      console.log('onEnterPressed', event.target.value)
       this.onApply(event.target.value)
     }
   }

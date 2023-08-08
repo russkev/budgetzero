@@ -72,7 +72,6 @@ Cypress.Commands.add('initPathEmpty', (path) => {
 Cypress.Commands.add('checkSelectionExists', () => {
   cy.wait(1)
   cy.window().then((win) => {
-    // console.log(win.getSelection().anchorNode.lastChild.value)
     expect(win.getSelection().anchorNode).to.not.be.null
   })
 })
