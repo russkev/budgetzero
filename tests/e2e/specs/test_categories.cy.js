@@ -238,7 +238,6 @@ describe('Test categories (budget) page', () => {
       const vacation_selector = '[data-testid="category-budget-Lx7"]'
       const vacation_input_selector = '[data-testid="category-budget-input-Lx7"]'
       cy.get(vacation_selector).click()
-      cy.checkSelectionExists()
       cy.get(vacation_input_selector).should('have.value', '430.00')
       cy.get(vacation_input_selector).clear()
       cy.get(vacation_input_selector).type('-100')
@@ -252,14 +251,13 @@ describe('Test categories (budget) page', () => {
     it('Checks that updating budget value and blurring works', () => {
       cy.get('[data-testid="category-budget-n00"]').should('have.text', ' $420.00 ')
       cy.get('[data-testid="category-budget-n00"]').click()
-      cy.checkSelectionExists()
       cy.get('[data-testid="category-budget-input-n00"]').click()
-      cy.get('[data-testid="category-budget-input-n00"]').type('word')
+      cy.get('[data-testid="category-budget-input-n00"]').clear().type('word')
       cy.get('[data-testid="category-budget-input-n00"]').blur()
       cy.get('.category-budget-note textarea').should('not.be.disabled')
       cy.get('[data-testid="category-budget-input-n00"]').should('have.value', '$420.00')
       cy.get('[data-testid="category-budget-input-n00"]').click()
-      cy.get('[data-testid="category-budget-input-n00"]').type('23.24')
+      cy.get('[data-testid="category-budget-input-n00"]').clear().type('23.24')
       cy.get('[data-testid="category-budget-input-n00"]').blur()
       cy.get('[data-testid="category-budget-input-n00"]').should('have.value', '$23.24')
       cy.get('[data-testid="category-budget-n00"]').should('have.text', ' $23.24 ')
@@ -302,7 +300,6 @@ describe('Test categories (budget) page', () => {
       const water_selector = '[data-testid="category-budget-2aW"]'
       const water_input_selector = '[data-testid="category-budget-input-2aW"]'
       cy.get(water_selector).click()
-      cy.checkSelectionExists()
       cy.get(water_input_selector).should('have.value', '15.00')
       cy.get(water_input_selector).click()
       cy.get(water_input_selector).clear()
@@ -391,10 +388,8 @@ describe('Test categories (budget) page', () => {
 
       // Check that making two new categories one after the other doesn't result in the name input loading
       cy.get('[data-testid="btn-new-category-3ks"]').click()
-      cy.checkSelectionExists()
       cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 5)
       cy.get('[data-testid="btn-new-category-3ks"]').click()
-      cy.checkSelectionExists()
       cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 6)
 
       // // Check that name input updates correctly
@@ -405,7 +400,7 @@ describe('Test categories (budget) page', () => {
       // Check that value update works correctly
       cy.get('.category-budget-input input').eq(0).focus()
       cy.get(name_selector).should('have.text', ' Internet ')
-      cy.get('.category-budget-input input').eq(0).type('5')
+      cy.get('.category-budget-input input').eq(0).clear().type('5')
 
       // Check that note update works correctly
       cy.get('.category-budget-note textarea').should('not.be.disabled')
@@ -421,21 +416,19 @@ describe('Test categories (budget) page', () => {
       // Create a new master category
       cy.get('.master-categories > div').should('have.length', 2)
       cy.get('[data-testid="btn-new-master-category"]').click()
-      cy.checkSelectionExists()
       cy.get('.master-categories > div').should('have.length', 3)
       const name_input = () => cy.get('main').find('div.master-row').eq(4).find('input')
       name_input().should('not.have.attr', 'readonly')
       name_input().should('have.focus')
       cy.wait(1)
-      name_input().type('Dividends').type('{enter}')
+      name_input().clear().type('Dividends').type('{enter}')
       name_input().should('have.value', 'Dividends')
       name_input().should('not.have.focus')
       cy.get('.categories-container').eq(3).should('not.be.visible')
     })
 
-    it.only('Tests that the move section works properly', () => {
+    it('Tests that the move section works properly', () => {
       cy.get('[data-testid="category-budget-n00"]').should('contain.text', '$420.00').click()
-      cy.checkSelectionExists()
       cy.get('[data-testid="total-balance"]').should('contain.text', '$331.47')
 
       // Check that move section has correct values
@@ -444,7 +437,7 @@ describe('Test categories (budget) page', () => {
       cy.get('#category-menu-button').should('contain.text', 'Groceries')
 
       // Change budget value so balance is negative
-      cy.get('[data-testid="category-budget-input-n00"]').type('10').blur()
+      cy.get('[data-testid="category-budget-input-n00"]').clear().type('10').blur()
       cy.get('[data-testid="category-budget-input-n00"]').should('contain.value', '$10.00')
 
       // Check that move section has correct values
@@ -454,7 +447,6 @@ describe('Test categories (budget) page', () => {
 
       // Open Groceries details
       cy.get('[data-testid="category-budget-ATi"]').click()
-      cy.checkSelectionExists()
 
       // Check that move section has correct values
       cy.get('[data-testid="category-move-input-ATi"]').should('contain.value', '$324.26')
@@ -463,7 +455,7 @@ describe('Test categories (budget) page', () => {
 
       // Send some money
       cy.get('[data-testid="category-move-input-ATi"]').click()
-      cy.get('[data-testid="category-move-input-ATi"]').type('320.26').type('{enter}')
+      cy.get('[data-testid="category-move-input-ATi"]').clear().type('320.26').type('{enter}')
       cy.get('[data-testid="details-move-save-button"]').click()
 
       // Check that values were updated correctly
@@ -491,7 +483,7 @@ describe('Test categories (budget) page', () => {
 
       // Send some money
       cy.get('[data-testid="category-move-input-n00"]').click()
-      cy.get('[data-testid="category-move-input-n00"]').type('6.00').type('{enter}')
+      cy.get('[data-testid="category-move-input-n00"]').clear().type('6.00').type('{enter}')
       cy.get('[data-testid="details-move-save-button"]').click()
 
       // Check that move section has correct values
