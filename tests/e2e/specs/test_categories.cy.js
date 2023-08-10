@@ -490,6 +490,15 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="category-move-input-n00"]').should('contain.value', '$2.00')
       cy.get('[data-testid="details-moving-to-button"].mdi-radiobox-marked').should('exist')
       cy.get('#category-menu-button').should('contain.text', 'Groceries')
+
+      // Hide the Water category
+      cy.get('[data-testid="btn-hide-category-2aW"]').click()
+      cy.get('[data-testid="delete-confirm-button"]').click()
+      cy.get('[data-testid="master-category-balance-::0"]').should('contain.text', '$15.00')
+
+      // Check that Water is not included in the list of options to move to
+      cy.get('#category-menu-button').click()
+      cy.get('[data-testid="category-list"]').should('not.contain.text', 'Water')
     })
 
     it('Tests that esc key works', () => {

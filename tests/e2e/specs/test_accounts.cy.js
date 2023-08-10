@@ -35,7 +35,7 @@ describe('Test accounts', () => {
     cy.get('[data-testid="btn-edit-account-ELC"]').click()
 
     // Give a starting balance
-    cy.get('[data-testid="account-initial-balance-input"]').type('1000').type('{ctrl+enter}')
+    cy.get('[data-testid="account-initial-balance-input"]').clear().type('1000').type('{ctrl+enter}')
 
     // Check that modal is closed
     cy.get('[data-testid="account-edit-modal"]').should('not.be.visible')
@@ -69,10 +69,10 @@ describe('Test accounts', () => {
     cy.get('[data-testid="btn-new-account-on-budget"]', { force: true }).click({ force: true })
 
     // Give a name
-    cy.get('[data-testid="account-name-input"]').filter(':visible').type('Emergency').blur()
+    cy.get('[data-testid="account-name-input"]').filter(':visible').clear().type('Emergency').blur()
 
     // Give a starting balance
-    cy.get('[data-testid="account-initial-balance-input"]').filter(':visible').type('-500').blur()
+    cy.get('[data-testid="account-initial-balance-input"]').filter(':visible').clear().type('-500').blur()
     cy.get('[data-testid="account-initial-balance-input"]').filter(':visible').should('have.value', '-$500.00')
 
     // Apply
@@ -231,7 +231,7 @@ describe('Test accounts', () => {
     cy.get('[data-testid="btn-edit-account-v6A"]').click()
 
     // Add a note and apply
-    cy.get('[data-testid="account-notes-field"]').type('This is a note').type('{ctrl+enter}')
+    cy.get('[data-testid="account-notes-field"]').clear().type('This is a note').type('{ctrl+enter}')
 
     // Check that modal is closed
     cy.get('[data-testid="account-edit-modal"]').should('not.be.visible')
@@ -245,7 +245,7 @@ describe('Test accounts', () => {
     cy.get('[data-testid="account-notes-field"]').should('have.value', 'This is a note')
 
     // Change note
-    cy.get('[data-testid="account-notes-field"]').type('Another note')
+    cy.get('[data-testid="account-notes-field"]').clear().type('Another note')
 
     // Cancel
     cy.get('[data-testid="btn-modal-cancel"]').filter(':visible').click()
