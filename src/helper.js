@@ -1,5 +1,4 @@
-import { result } from 'lodash'
-import { ID_NAME, NONE } from './constants'
+import { AMOUNT_BLACK, AMOUNT_GREEN_ON_LIGHT, AMOUNT_RED_ON_LIGHT, ID_NAME, NONE } from './constants'
 import { AMOUNT_GREEN, AMOUNT_RED } from './constants'
 
 // Clean/sanitize amount input
@@ -205,13 +204,13 @@ function formatDate(date) {
   return `${weekday}, ${day} ${month}, ${year}`
 }
 
-function valueColor(value) {
+function valueColor(value, onLight = false) {
   if (value < 0) {
-    return AMOUNT_RED
+    return onLight ? AMOUNT_RED_ON_LIGHT : AMOUNT_RED
   } else if (value > 0) {
-    return AMOUNT_GREEN
+    return onLight ? AMOUNT_GREEN_ON_LIGHT : AMOUNT_GREEN
   } else {
-    return ''
+    return onLight ? AMOUNT_BLACK : ''
   }
 }
 

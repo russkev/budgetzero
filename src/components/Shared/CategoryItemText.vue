@@ -13,8 +13,9 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
-import { ID_LENGTH, NONE, HIDDEN, AMOUNT_RED, AMOUNT_GREEN } from '../../constants'
+import { mapGetters } from 'vuex'
+import { ID_LENGTH } from '../../constants'
+import { valueColor } from '../../helper'
 
 export default {
   name: 'CategoryItemText',
@@ -37,28 +38,24 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    light: {
+      type: Boolean,
+      required: false,
+      default: false
     }
   },
   computed: {
     ...mapGetters(['categoryColors', 'categoriesById', 'masterCategoriesById', 'intlCurrency']),
     ...mapGetters('categoryMonth', ['categoriesDataById']),
     categoryColor() {
-      // return this.categoryColors[this.category._id.slice(-ID_LENGTH.category)]
       return _.get(this.categoryColors, [this.category._id.slice(-ID_LENGTH.category), 'main'], 'transparent')
     },
     categoryBalance() {
       return _.get(this.categoriesDataById, [this.category._id.slice(-ID_LENGTH.category), 'balance'], 0)
     },
     currencyColor() {
-      if (this.disabled) {
-        return ''
-      } else if (this.categoryBalance < 0) {
-        return AMOUNT_RED
-      } else if (this.categoryBalance > 0) {
-        return AMOUNT_GREEN
-      } else {
-        return 'unset'
-      }
+      return valueColor(this.categoryBalance, this.light)
     }
   }
 }

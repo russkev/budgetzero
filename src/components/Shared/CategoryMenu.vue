@@ -17,7 +17,11 @@
             v-on="{ ...tooltipOn, ...menuOn }"
             :style="`background-color: ${backgroundColor}; color: ${textColor};`"
           >
-            <category-item-text :category="selectedCategory" :show-balance="showBalance">
+            <category-item-text
+              :category="selectedCategory"
+              :show-balance="showBalance"
+              :light="selectedCategoryIsLight"
+            >
               <div :class="`simple-ellipsis ${itemIsUncategorized ? 'font-weight-bold' : ''}`">
                 {{ selectedCategoryName }}
               </div>
@@ -107,6 +111,9 @@ export default {
         result = NONE
       }
       return result
+    },
+    selectedCategoryIsLight() {
+      return this.selectedCategory._id == NONE._id
     },
     textColor() {
       if (this.itemIsUncategorized) {
