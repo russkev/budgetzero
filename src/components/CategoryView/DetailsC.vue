@@ -56,10 +56,6 @@
           </div>
         </v-hover>
       </div>
-      <div>Move</div>
-      <div id="details-move-container">
-        <details-move />
-      </div>
       <div class="text-h5">Working</div>
       <div>
         <categories-working
@@ -71,6 +67,10 @@
           add-budgeted
           include-spent
         />
+      </div>
+      <div class="text-h5">Move</div>
+      <div id="details-move-container">
+        <details-move />
       </div>
     </div>
     <div v-else class="transaction-details-grid pa-2 pb-0">

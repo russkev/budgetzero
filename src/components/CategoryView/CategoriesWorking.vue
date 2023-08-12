@@ -1,24 +1,24 @@
 <template>
-  <div class="header-balance-grid ml-5">
+  <div class="header-balance-grid ml-5 mb-3 text-body-2">
     <div></div>
-    <div :class="carryoverColor" data-testid="working-carryover">{{ intlCurrency.format(lastMonth / 100) }}</div>
     <div>Carryover</div>
+    <div :class="carryoverColor" data-testid="working-carryover">{{ intlCurrency.format(lastMonth / 100) }}</div>
     <div>+</div>
-    <div :class="incomeColor" data-testid="working-income">{{ intlCurrency.format(income / 100) }}</div>
     <div>Income</div>
+    <div :class="incomeColor" data-testid="working-income">{{ intlCurrency.format(income / 100) }}</div>
     <div v-if="includeSpent">-</div>
+    <div v-if="includeSpent">Spent</div>
     <div v-if="includeSpent" :class="spentColor" data-testid="working-spent">
       {{ intlCurrency.format(spent / 100) }}
     </div>
-    <div v-if="includeSpent">Spent</div>
     <div>{{ addBudgeted ? '+' : '-' }}</div>
-    <div :class="budgetedColor" data-testid="working-budgeted">{{ intlCurrency.format(budgeted / 100) }}</div>
     <div>Budgeted</div>
+    <div :class="budgetedColor" data-testid="working-budgeted">{{ intlCurrency.format(budgeted / 100) }}</div>
     <div class="font-weight-bold">=</div>
-    <div :class="`font-weight-medium text-h6 ${balanceColor}`" data-testid="working-available">
+    <div class="font-weight-medium">{{ addBudgeted ? 'Balance' : 'Available' }}</div>
+    <div :class="`font-weight-medium ${balanceColor}`" data-testid="working-available">
       {{ intlCurrency.format(available / 100) }}
     </div>
-    <div class="font-weight-medium text-h6">{{ addBudgeted ? 'Balance' : 'Available' }}</div>
   </div>
 </template>
 
@@ -96,7 +96,7 @@ div.header-balance-grid > :nth-child(3n + 2) {
 }
 
 div.header-balance-grid > :nth-child(3n) {
-  text-align: left;
+  text-align: right;
   margin-left: 15px;
 }
 </style>

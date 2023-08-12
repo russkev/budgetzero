@@ -24,7 +24,8 @@
     </v-file-input>
     <div style="height: 20px">
       <span v-if="budgetExists">
-        <strong style="color: red">Warning:</strong> All existing budgets will be overwritten by backup file
+        <strong class="error--text text--lighten-2">Warning:</strong> All existing budgets will be overwritten by backup
+        file
       </span>
     </div>
     <button-transparent
