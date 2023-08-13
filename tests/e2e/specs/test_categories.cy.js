@@ -381,7 +381,7 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,918.67 ')
     })
 
-    it('Creates a new category', () => {
+    it.only('Creates a new category', () => {
       const name_selector = '[data-testid="categories-container-3ks"] > div:nth-child(6) .category-name'
       const balance_selector = '[data-testid="categories-container-3ks"] .category-balance'
       const name_input_selector = '.category-name-input > :nth-child(1) input'
@@ -407,7 +407,7 @@ describe('Test categories (budget) page', () => {
       cy.get('.category-budget-note textarea').focus()
       cy.get('.category-budget-input input').eq(0).should('have.value', '$5.00')
       cy.get('.category-budget-note textarea').type('This is a note')
-      cy.get('.transaction-details-grid > :nth-child(9)').click()
+      cy.get('.transaction-details-grid > :nth-child(8)').click()
       cy.get('.category-budget-note textarea').should('not.be.disabled')
       cy.get('.category-budget-note textarea').should('have.value', 'This is a note')
       cy.get('[data-testid="category-name-:in"]').click()

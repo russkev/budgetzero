@@ -1,25 +1,26 @@
 <template>
   <v-card width="100%" flat color="background lighten-1" class="category-details-title flex-sheet ma-0 ml-2">
-    <v-card-title v-if="selectedCategory" class="background lighten-2 pa-3" data-testid="details-title">
-      Update Selected
+    <v-card-title v-if="selectedCategory" class="background lighten-1 pa-3" data-testid="details-title">
+      <string-input
+        class="category-name-input"
+        :id="`category-name-input-${selectedCategory._id}`"
+        :data-testid="`category-name-input-${selectedCategory._id}`"
+        :value="selectedCategory.name"
+        :is-editing="isEditingName"
+        :disabled="loading"
+        text="h4"
+        @input="onCategoryNameChange"
+        @edit="onEditCategoryName(selectedCategory._id)"
+      />
+      <!-- Update Selected -->
       <v-icon @click="onUnselectCategory" class="ml-auto">mdi-close</v-icon>
     </v-card-title>
     <v-divider v-if="selectedCategory" :style="`border-bottom: 2px solid ${categoryColor};`" />
     <v-card-title v-else class="background lighten-1 pa-3" data-testid="details-title"> All Categories </v-card-title>
     <div v-if="selectedCategory" class="transaction-details-grid pa-2 pb-0" @keydown.esc.prevent="onUnselectCategory">
-      <div class="text-h5">Name</div>
+      <!-- <div class="text-h5">Name</div>
       <div>
-        <string-input
-          class="category-name-input"
-          :id="`category-name-input-${selectedCategory._id}`"
-          :data-testid="`category-name-input-${selectedCategory._id}`"
-          :value="selectedCategory.name"
-          :is-editing="isEditingName"
-          :disabled="loading"
-          @input="onCategoryNameChange"
-          @edit="onEditCategoryName(selectedCategory._id)"
-        />
-      </div>
+      </div> -->
 
       <div class="text-h5">Budgeted</div>
       <div>
@@ -203,6 +204,10 @@ export default {
 .category-details-title {
   width: 100%;
   overflow-y: auto;
+}
+
+.category-details-title > div.v-card__title {
+  flex-wrap: inherit;
 }
 
 .category-budget-input {
