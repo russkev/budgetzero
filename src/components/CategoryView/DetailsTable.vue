@@ -90,3 +90,9 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+div.flex-table-container {
+  overflow: unset;
+}
+</style>
