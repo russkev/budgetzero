@@ -1,7 +1,7 @@
 <template>
   <div :data-testid="dataTestid" class="mt-3">
-    <h1 class="text-h2 secondary--text text--lighten-1">{{ title }}</h1>
-    <h2 class="text-h5 secondary--text text--lighten-2">{{ subtitle }}</h2>
+    <h1 class="text-h2 primary--text text--lighten-1">{{ title }}</h1>
+    <h2 class="text-h5 primary--text text--lighten-2">{{ subtitle }}</h2>
   </div>
 </template>
 

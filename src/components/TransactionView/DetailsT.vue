@@ -11,7 +11,10 @@
     <import-ofx v-if="importOfxIsOpen" @close="onCloseImportOfx" @apply="onApplyImportOfx" :account="accountId" />
     <import-csv v-else-if="importCsvIsOpen" @close="onCloseImportCsv" @apply="onCloseImportCsv" :account="accountId" />
     <template v-else-if="editedTransaction._id !== DEFAULT_TRANSACTION._id">
-      <v-card-title :class="`${titleColor} darken-3 pa-3`">{{ title }}</v-card-title>
+      <v-card-title :class="`${titleColor} darken-3 pa-3`">
+        {{ title }}
+        <v-icon class="ml-auto" @click="onCancel">mdi-close</v-icon>
+      </v-card-title>
       <div class="transaction-details-grid pa-2 pb-0" style="overflow-y: auto">
         <div class="text-h5" :style="borderRight['date']">Date</div>
         <details-date v-model="transactionDate" />
@@ -31,7 +34,7 @@
         <details-data :transaction="editedTransaction" />
       </div>
       <div class="save-cancel-container pa-2">
-        <cancel-save @cancel="onCancel" @save="onSave" />
+        <cancel-save @cancel="onCancel" @save="onSave" :highlighted="highlightSave" />
       </div>
     </template>
     <details-buttons
@@ -207,6 +210,9 @@ export default {
       }
       const borderStyle = 'border-right-color: var(--v-warning-base)'
       const result = Object.keys(DEFAULT_TRANSACTION).reduce((partial, key) => {
+        if (key == 'splits') {
+          return partial
+        }
         const originalValue = this.originalTransaction[key]
         const editedValue = this.editedTransaction[key]
         if ((editedValue && !originalValue) || originalValue !== editedValue) {
@@ -221,8 +227,8 @@ export default {
       }
       if (typeof this.originalTransaction.category !== typeof this.editedTransaction.category) {
         result.category = borderStyle
-      } else if (Array.isArray(this.editedTransaction.splits) && Array.isArray(this.editedTransaction.splits)) {
-        if (this.editedTransaction.splits.length !== this.editedTransaction.splits.length) {
+      } else if (Array.isArray(this.originalTransaction.splits) && Array.isArray(this.editedTransaction.splits)) {
+        if (this.originalTransaction.splits.length !== this.editedTransaction.splits.length) {
           result.category = borderStyle
         } else {
           for (let i = 0; i < this.editedTransaction.splits.length; i++) {
@@ -238,6 +244,9 @@ export default {
         result.category = borderStyle
       }
       return result
+    },
+    highlightSave() {
+      return Object.values(this.borderRight).some((value) => value !== '')
     },
     title() {
       if (this.isCreatingNewTransaction) {

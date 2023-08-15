@@ -7,8 +7,9 @@
       elevation="0"
       color="primary darken-3"
       class="ml-2"
-      @click="onSave"
       :disabled="saveDisabled"
+      :style="highlighted ? 'outline: 2px solid var(--v-warning-base)' : ''"
+      @click="onSave"
     >
       {{ saveText }}
     </v-btn>
@@ -36,6 +37,10 @@ export default {
       default: 'Save'
     },
     saveDisabled: {
+      type: Boolean,
+      default: false
+    },
+    highlighted: {
       type: Boolean,
       default: false
     }

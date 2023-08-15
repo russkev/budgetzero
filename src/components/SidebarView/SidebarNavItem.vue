@@ -11,7 +11,7 @@
       <div class="account-avatar-wrapper height-48">
         <sidebar-select-indicator :active="isHighlighted(active, hover)" />
         <v-list-item-icon>
-          <v-icon :color="isHighlighted(active, hover) ? 'secondary lighten-2' : ''">
+          <v-icon :color="isHighlighted(active, hover) ? 'primary lighten-2' : ''">
             {{ isHighlighted(active, hover) ? iconActive : icon }}
           </v-icon>
         </v-list-item-icon>

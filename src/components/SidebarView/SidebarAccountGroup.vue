@@ -9,14 +9,14 @@
         <template #prependIcon>
           <div class="d-flex" style="height: 100%">
             <sidebar-select-indicator :active="!isOpen && childIsSelected" />
-            <v-icon :color="isHighlighted(hover) ? 'secondary lighten-2' : ''" class="sidebar-group-icon">
+            <v-icon :color="isHighlighted(hover) ? 'primary lighten-2' : ''" class="sidebar-group-icon">
               {{ isHighlighted(hover) ? iconActive : icon }}
             </v-icon>
           </div>
         </template>
         <template v-slot:activator>
           <v-list-item-content class="pa-0">
-            <v-list-item-title :class="`text-h6 ${isHighlighted(hover) ? 'secondary--text text--lighten-2' : ''}`">
+            <v-list-item-title :class="`text-h6 ${isHighlighted(hover) ? 'primary--text text--lighten-2' : ''}`">
               {{ title }}
             </v-list-item-title>
             <v-list-item-subtitle>{{ accountTotal }}</v-list-item-subtitle>

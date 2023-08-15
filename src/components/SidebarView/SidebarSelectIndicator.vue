@@ -1,5 +1,5 @@
 <template>
-  <v-sheet width="3px" :color="active ? 'secondary lighten-2' : 'transparent'" />
+  <v-sheet width="3px" :color="active ? 'primary lighten-2' : 'transparent'" />
 </template>
 
 <script>

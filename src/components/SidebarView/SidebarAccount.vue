@@ -15,7 +15,7 @@
           <div class="account-avatar-wrapper">
             <sidebar-select-indicator :active="active" />
             <v-sheet width="20px" color="transparent" class="row-side-widget" :data-testid="`drag-account-${id}`">
-              <v-icon v-if="hover" color="secondary lighten-3" small class="handle ma-auto">mdi-drag-vertical</v-icon>
+              <v-icon v-if="hover" color="primary lighten-3" small class="handle ma-auto">mdi-drag-vertical</v-icon>
             </v-sheet>
             <v-list-item-avatar
               size="26"
@@ -45,8 +45,8 @@
             :data-testid="`btn-edit-account-${id}`"
             :hover="isHighlighted(false, hover)"
             icon="mdi-pencil"
-            active-color="secondary lighten-4"
-            inactive-color="secondary lighten-2"
+            active-color="primary lighten-4"
+            inactive-color="primary lighten-2"
             active-background-color="background lighten-4"
             @click="onEditAccount"
             :width="buttonWidth"
@@ -144,7 +144,7 @@ export default {
 
 .account-avatar-active {
   border: none;
-  background: var(--v-secondary-lighten2);
+  background: var(--v-primary-lighten2);
   color: var(--v-background-lighten2);
   font-size: 10px;
 }

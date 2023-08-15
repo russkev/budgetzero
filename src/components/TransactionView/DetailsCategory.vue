@@ -13,9 +13,9 @@
       tile
       @click="onSplitCategoryAdd"
       data-testid="add-split-button"
-      class="ml-2 mt-2 secondary--text text--lighten-2"
+      class="ml-2 mt-2 primary--text text--lighten-2"
     >
-      <v-icon color="secondary lighten-2">mdi-plus</v-icon>
+      <v-icon color="primary lighten-2">mdi-plus</v-icon>
       Add split category
     </v-card>
   </div>
@@ -42,9 +42,9 @@
         tile
         @click="onSplitCategoryAdd"
         data-testid="add-split-button"
-        class="splits-full-width ml-2 mt-2"
+        class="splits-full-width ml-2 mt-2 primary--text text--lighten-2"
       >
-        <v-icon>mdi-plus</v-icon>
+        <v-icon color="primary lighten-2">mdi-plus</v-icon>
         Add split category
       </v-card>
       <currency-input class="splits-full-width" :value="splitsSum" right disabled />

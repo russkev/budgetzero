@@ -298,7 +298,7 @@ export default {
 .sidebar-item:focus-within,
 .sidebar-group .v-list-group__header:hover,
 .sidebar-group .v-list-group__header:focus-within {
-  color: var(--v-secondary-lighten2) !important;
+  color: var(--v-primary-lighten2) !important;
   background-color: var(--v-background-lighten2) !important;
 }
 .sidebar-group .v-list-group__header {
@@ -312,7 +312,7 @@ export default {
 .active-sidebar-item,
 .sidebar-group-active .v-list-group__header,
 .sidebar-group-active .v-list-group__header {
-  color: var(--v-secondary-lighten2) !important;
+  color: var(--v-primary-lighten2) !important;
 }
 
 .v-list-item__icon {
