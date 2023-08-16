@@ -1,5 +1,5 @@
 <template>
-  <v-card flat color="background lighten-2" class="pa-2">
+  <v-card flat color="background lighten-2" class="pa-2 mb-2">
     <span class="category-radio-group mb-2">
       <string-input
         class="category-budget-input"

@@ -254,6 +254,41 @@ export default {
           return result.rows.length
         })
     },
+
+    fetchTransactionsWithCategoryExist: async ({ getters }, categoryId) => {
+      const t1 = performance.now()
+      const db = Vue.prototype.$pouch
+      const budget_id = getters.selectedBudgetId
+      const target_id = categoryId.slice(-ID_LENGTH.category)
+      if (!budget_id) {
+        return 0
+      }
+      return db
+        .allDocs({
+          include_docs: true,
+          startkey: `b_${budget_id}${ID_NAME.transaction}`,
+          endkey: `b_${budget_id}${ID_NAME.transaction}\ufff0`
+        })
+        .then((result) => {
+          logPerformanceTime('fetchTransactionsWithCategoryExist', t1)
+          if (!result.rows) {
+            return false
+          }
+          result.rows.forEach((row) => {
+            if (row.doc.category === target_id) {
+              return true
+            }
+            if (row.doc.splits && Array.isArray(row.doc.splits) && row.doc.splits.length > 0) {
+              forEach(row.doc.splits, (split) => {
+                if (split.category && split.category === target_id) {
+                  return true
+                }
+              })
+            }
+          })
+          return false
+        })
+    },
     /**
      *
      * @param {*} context

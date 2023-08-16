@@ -73,6 +73,18 @@
       <div id="details-move-container">
         <details-move />
       </div>
+      <div class="text-h5">Danger</div>
+      <div>
+        <delete-confirm>
+          <template #activator="{ on }">
+            <v-btn v-on="on" text width="min-content" color="error lighten-1" data-testid="delete-category-button">
+              <v-icon small left>mdi-delete</v-icon>
+              Delete
+            </v-btn>
+          </template>
+          <!-- TODO: Make this only enabled if allCategoryBalances is False -->
+        </delete-confirm>
+      </div>
     </div>
     <div v-else class="transaction-details-grid pa-2 pb-0">
       <div class="text-h5">Working</div>
@@ -100,6 +112,7 @@ import DetailsTable from './DetailsTable.vue'
 import { ID_LENGTH, NONE } from '../../constants'
 import StringInput from '../Shared/StringInput.vue'
 import DetailsMove from './DetailsMove.vue'
+import DeleteConfirm from '../Shared/DeleteConfirm.vue'
 
 export default {
   name: 'CategoryDetails',
@@ -108,7 +121,8 @@ export default {
     CurrencyInput,
     DetailsTable,
     StringInput,
-    DetailsMove
+    DetailsMove,
+    DeleteConfirm
   },
   watch: {
     masterCategoriesById: {
@@ -160,7 +174,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['fetchTransactionsForMonth']),
+    ...mapActions(['fetchTransactionsForMonth', 'fetchTransactionsWithCategoryExist']),
     ...mapActions('categoryMonth', [
       'getMonthTransactions',
       'onCategoryNameChange',
