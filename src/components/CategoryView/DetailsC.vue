@@ -77,7 +77,15 @@
       <div>
         <delete-confirm>
           <template #activator="{ on }">
-            <v-btn v-on="on" text width="min-content" color="error lighten-1" data-testid="delete-category-button">
+            <v-btn
+              v-on="on"
+              text
+              width="min-content"
+              color="error lighten-1"
+              data-testid="delete-category-button"
+              :disabled="deleteDisabled"
+              :loading="deleteLoading"
+            >
               <v-icon small left>mdi-delete</v-icon>
               Delete
             </v-btn>
@@ -129,13 +137,21 @@ export default {
       handler: function () {
         this.getMonthTransactions()
       }
+    },
+    selectedCategory: {
+      handler: function () {
+        this.getTransactionsWithCategoryExist()
+      }
     }
   },
   data() {
     return {
       localNote: '',
       noteApplyClicked: false,
-      noteDebounce: false
+      noteDebounce: false,
+      deleteLoading: false,
+      deleteDisabled: true,
+      deleteTaskId: 0
     }
   },
   computed: {
@@ -174,7 +190,7 @@ export default {
     }
   },
   methods: {
-    ...mapActions(['fetchTransactionsForMonth', 'fetchTransactionsWithCategoryExist']),
+    ...mapActions(['fetchTransactionsForMonth', 'fetchTransactionsWithCategoryExist', 'deleteCategory']),
     ...mapActions('categoryMonth', [
       'getMonthTransactions',
       'onCategoryNameChange',
@@ -209,6 +225,27 @@ export default {
     },
     onBudgetValueApply(value) {
       this.onCategoryBudgetChanged({ category_id: this.selectedCategory._id, value })
+    },
+    onDeleteCategory() {
+      deleteCategory(this.selectedCategory._id)
+      this.RESET_SELECTED_CATEGORY()
+    },
+    getTransactionsWithCategoryExist() {
+      this.deleteLoading = true
+      this.deleteDisabled = true
+      this.deleteTaskId += 1
+      const taskId = this.deleteTaskId
+      this.fetchTransactionsWithCategoryExist(this.selectedCategory._id)
+        .then((result) => {
+          if (!result && taskId === this.deleteTaskId) {
+            this.deleteDisabled = false
+          }
+        })
+        .finally(() => {
+          if (taskId === this.deleteTaskId) {
+            this.deleteLoading = false
+          }
+        })
     }
   }
 }

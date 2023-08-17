@@ -274,18 +274,21 @@ export default {
           if (!result.rows) {
             return false
           }
-          result.rows.forEach((row) => {
+          // result.rows.forEach((row) => {
+          for (const row of result.rows) {
+            // console.log('row', row)
             if (row.doc.category === target_id) {
               return true
             }
             if (row.doc.splits && Array.isArray(row.doc.splits) && row.doc.splits.length > 0) {
-              forEach(row.doc.splits, (split) => {
+              // row.doc.splits.forEach((split) => {
+              for (const split of row.doc.splits) {
                 if (split.category && split.category === target_id) {
                   return true
                 }
-              })
+              }
             }
-          })
+          }
           return false
         })
     },

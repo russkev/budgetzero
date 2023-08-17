@@ -441,6 +441,11 @@ export default {
         context.dispatch('commitDocToPouchAndVuex', { current: null, previous: master_category })
       }
     },
+    deleteCategory(context, category_id) {
+      const previous = context.getters.categoriesById[category_id.slice(-ID_LENGTH.category)]
+      const current = null
+      context.dispatch('commitDocToPouchAndVuex', { current, previous })
+    },
     setMasterCategoriesCollapsed({ getters, dispatch }, expanded_indices) {
       // Set hidden category
       if (expanded_indices.includes(getters.masterCategories.length)) {
