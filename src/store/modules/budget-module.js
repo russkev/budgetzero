@@ -168,7 +168,7 @@ export default {
           return false
         })
         .catch((error) => {
-          context.commit('API_FAILURE', error)
+          console.error('API_FAILURE', error)
         })
     },
 

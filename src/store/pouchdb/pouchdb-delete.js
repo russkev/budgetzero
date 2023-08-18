@@ -114,7 +114,7 @@ export default {
     deleteDocFromPouch: (context, document) => {
       const db = Vue.prototype.$pouch
       return db.remove(document).catch((err) => {
-        context.commit('API_FAILURE', err)
+        console.error('API_FAILURE', err)
       })
     },
 

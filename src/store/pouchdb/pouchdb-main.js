@@ -47,7 +47,7 @@ export default {
         }, [])
         context.dispatch('commitDocsToVuex', vuex_documents)
       } catch (error) {
-        return context.commit('API_FAILURE', error)
+        return console.error('API_FAILURE', error)
       }
     },
 
@@ -366,7 +366,7 @@ export default {
         dispatch('fetchMonthCategories')
       ])
         .then((results) => {
-          month_category_balances = parseAllMonthCategories(results, getters)
+          month_category_balances = parseAllMonthCategories(results[2], getters)
           dispatch('setMonthBudgetedBalances', month_category_balances)
         })
         .then(() => {

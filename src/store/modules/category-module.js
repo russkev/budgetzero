@@ -441,10 +441,23 @@ export default {
         context.dispatch('commitDocToPouchAndVuex', { current: null, previous: master_category })
       }
     },
-    deleteCategory(context, category_id) {
-      const previous = context.getters.categoriesById[category_id.slice(-ID_LENGTH.category)]
+    deleteCategory({ dispatch, getters }, category_id) {
+      category_id = category_id.slice(-ID_LENGTH.category)
+      const previous = getters.categoriesById[category_id]
       const current = null
-      context.dispatch('commitDocToPouchAndVuex', { current, previous })
+      dispatch('fetchMonthCategories')
+        .then((month_categories) => {
+          const delete_docs = month_categories.reduce((partial, month_category) => {
+            if (month_category._id.slice(-ID_LENGTH.category) === category_id) {
+              partial.push({ current: null, previous: month_category })
+            }
+            return partial
+          }, [])
+          return dispatch('commitBulkDocsToPouchAndVuex', delete_docs)
+        })
+        .then(() => {
+          return dispatch('commitDocToPouchAndVuex', { current, previous })
+        })
     },
     setMasterCategoriesCollapsed({ getters, dispatch }, expanded_indices) {
       // Set hidden category
@@ -698,10 +711,8 @@ export default {
   }
 }
 
-const parseAllMonthCategories = (results, getters) => {
+const parseAllMonthCategories = (month_categories, getters) => {
   let month_category_balances = {}
-  const month_categories = results[2]
-
   month_categories.map((month_category) => {
     const category_id = month_category._id.slice(-ID_LENGTH.category)
     const month = extractMonthCategoryMonth(month_category._id)

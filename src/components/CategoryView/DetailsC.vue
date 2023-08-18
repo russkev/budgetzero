@@ -75,7 +75,11 @@
       </div>
       <div class="text-h5">Danger</div>
       <div>
-        <delete-confirm>
+        <delete-confirm
+          @confirm="onDeleteCategory"
+          titleText="Delete Category"
+          bodyText="Are you sure you want to delete this category? (there are no associated transactions)"
+        >
           <template #activator="{ on }">
             <v-btn
               v-on="on"
@@ -227,10 +231,15 @@ export default {
       this.onCategoryBudgetChanged({ category_id: this.selectedCategory._id, value })
     },
     onDeleteCategory() {
-      deleteCategory(this.selectedCategory._id)
+      this.deleteCategory(this.selectedCategory._id).then(() => {
+        this.getMonthTransactions()
+      })
       this.RESET_SELECTED_CATEGORY()
     },
     getTransactionsWithCategoryExist() {
+      if (!this.selectedCategory) {
+        return
+      }
       this.deleteLoading = true
       this.deleteDisabled = true
       this.deleteTaskId += 1

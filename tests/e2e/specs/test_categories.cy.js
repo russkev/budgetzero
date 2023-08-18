@@ -381,7 +381,7 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="total-balance"]').should('contain.text', ' $1,918.67 ')
     })
 
-    it.only('Creates a new category', () => {
+    it('Creates a new category', () => {
       const name_selector = '[data-testid="categories-container-3ks"] > div:nth-child(6) .category-name'
       const balance_selector = '[data-testid="categories-container-3ks"] .category-balance'
       const name_input_selector = '.category-name-input > :nth-child(1) input'
@@ -526,12 +526,10 @@ describe('Test categories (budget) page', () => {
   })
 
   context('Test delete / hide', () => {
-    beforeEach(() => {
+    it('Checks that hide and delete work correctly', () => {
       cy.initPath('categories/2022-08')
       cy.get('[data-testid="btn-expand-::0"]').trigger('mouseenter').click()
-    })
 
-    it('Checks that hide and delete work correctly', () => {
       // Hide a category
       cy.get('.master-categories').should('have.length', 2)
       cy.get('[data-testid="btn-hide-category-Lx7"]').trigger('mouseenter').click()
@@ -574,7 +572,25 @@ describe('Test categories (budget) page', () => {
       cy.get('[data-testid="category-balance-6b2"]').should('have.text', ' $8.16 ')
     })
 
+    it('Checks that it is possible to delete an empty category', () => {
+      cy.initPath('categories/2022-06')
+      cy.get('[data-testid="btn-expand-::0"]').trigger('mouseenter').click()
+
+      cy.get('[data-testid="category-name-n00"]').click()
+      cy.get('[data-testid="category-name-6b2"]').click()
+      cy.get('[data-testid="delete-category-button"]').should('be.enabled')
+      cy.get('[data-testid="delete-category-button"]').click()
+      cy.get('[data-testid="delete-confirm-button"]').click()
+      cy.get('[data-testid="category-name-input-6b2"]').should('not.exist')
+
+      cy.get('[data-testid="next-month-button"]').click()
+      cy.get('[data-testid="total-balance"]').should('contain.text', '$281.47')
+    })
+
     it('Checks that restoring with the restore button works', () => {
+      cy.initPath('categories/2022-08')
+      cy.get('[data-testid="btn-expand-::0"]').trigger('mouseenter').click()
+
       cy.get('[data-testid="btn-hide-category-6b2"]').trigger('mouseenter').click()
       cy.get('[data-testid="delete-confirm-button"]').click()
       cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 3)
