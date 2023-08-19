@@ -576,15 +576,49 @@ describe('Test categories (budget) page', () => {
       cy.initPath('categories/2022-06')
       cy.get('[data-testid="btn-expand-::0"]').trigger('mouseenter').click()
 
+      // Check that clicking a category with transactions and then one without works
       cy.get('[data-testid="category-name-n00"]').click()
       cy.get('[data-testid="category-name-6b2"]').click()
       cy.get('[data-testid="delete-category-button"]').should('be.enabled')
+
+      // Delete a category
       cy.get('[data-testid="delete-category-button"]').click()
       cy.get('[data-testid="delete-confirm-button"]').click()
       cy.get('[data-testid="category-name-input-6b2"]').should('not.exist')
 
+      // Check that balance is updated correctly
       cy.get('[data-testid="next-month-button"]').click()
       cy.get('[data-testid="total-balance"]').should('contain.text', '$281.47')
+
+      // Create a new category and then delete it straight away
+      cy.get('[data-testid="btn-new-category-3ks"]').click()
+      cy.get('[data-testid="delete-category-button"]').click()
+      cy.get('[data-testid="delete-confirm-button"]').click()
+      cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 3)
+
+      // Check that delete gas category button is disabled
+      cy.get('[data-testid="category-name-n00"]').click()
+      cy.get('[data-testid="delete-category-button"]').should('not.be.enabled')
+
+      // Delete all gas related transactions
+      cy.get('[data-testid="transactions-page-7kW"]').click()
+      cy.get('.transaction-row > .row-checkbox').eq(4).click()
+      cy.get('.transaction-row > .row-checkbox').eq(6).click()
+      cy.get('[data-testid="delete-selected-transactions-button"]').click()
+      cy.get('[data-testid="delete-confirm-button"]').click()
+      cy.get('.transaction-row').should('have.length', 5)
+
+      // Check that delete gas category button is enabled
+      cy.get('[data-testid="sidebar-button-categories"]').click()
+      cy.get('[data-testid="category-name-n00"]').click()
+      cy.get('[data-testid="delete-category-button"]').should('be.enabled')
+
+      // Delete gas category
+      cy.get('[data-testid="delete-category-button"]').click()
+      cy.get('[data-testid="delete-confirm-button"]').click()
+      cy.get('[data-testid="category-name-input-n00"]').should('not.exist')
+      cy.get('[data-testid="categories-container-3ks"]').children().should('have.length', 2)
+      cy.get('[data-testid="total-balance"]').should('contain.text', '$138.53')
     })
 
     it('Checks that restoring with the restore button works', () => {

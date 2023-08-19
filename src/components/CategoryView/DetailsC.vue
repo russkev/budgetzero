@@ -87,7 +87,7 @@
               width="min-content"
               color="error lighten-1"
               data-testid="delete-category-button"
-              :disabled="deleteDisabled"
+              :disabled="deleteDisabled || !isDeletable"
               :loading="deleteLoading"
             >
               <v-icon small left>mdi-delete</v-icon>
@@ -121,7 +121,7 @@ import CategoriesWorking from './CategoriesWorking.vue'
 import { mapGetters, mapActions, mapMutations } from 'vuex'
 import CurrencyInput from '../Shared/CurrencyInput.vue'
 import DetailsTable from './DetailsTable.vue'
-import { ID_LENGTH, NONE } from '../../constants'
+import { ID_LENGTH, NONE, UNDELETABLE_IDS } from '../../constants'
 import StringInput from '../Shared/StringInput.vue'
 import DetailsMove from './DetailsMove.vue'
 import DeleteConfirm from '../Shared/DeleteConfirm.vue'
@@ -186,11 +186,14 @@ export default {
       return this.categoryLoading || this.categoryLoading || this.categoryLoading
     },
     isEditingName() {
-      if (this.selectedCategory._id.slice(ID_LENGTH.category) === NONE._id) {
+      if (this.selectedCategory._id === NONE._id) {
         return false
       } else {
         return this.selectedCategory._id === this.editedCategoryNameId
       }
+    },
+    isDeletable() {
+      return !UNDELETABLE_IDS.includes(this.selectedCategory._id)
     }
   },
   methods: {
@@ -237,7 +240,7 @@ export default {
       this.RESET_SELECTED_CATEGORY()
     },
     getTransactionsWithCategoryExist() {
-      if (!this.selectedCategory) {
+      if (!this.selectedCategory || !this.isDeletable) {
         return
       }
       this.deleteLoading = true
@@ -245,8 +248,8 @@ export default {
       this.deleteTaskId += 1
       const taskId = this.deleteTaskId
       this.fetchTransactionsWithCategoryExist(this.selectedCategory._id)
-        .then((result) => {
-          if (!result && taskId === this.deleteTaskId) {
+        .then((transactionsExist) => {
+          if (!transactionsExist && taskId === this.deleteTaskId) {
             this.deleteDisabled = false
           }
         })

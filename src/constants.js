@@ -104,6 +104,8 @@ export const INCOME = {
   collapsed: false
 }
 
+export const UNDELETABLE_IDS = [NONE._id, HIDDEN._id, INCOME._id]
+
 export const DEFAULT_TRANSACTION = {
   account: '',
   category: NONE._id,
