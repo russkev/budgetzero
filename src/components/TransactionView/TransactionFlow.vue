@@ -21,6 +21,10 @@ export default {
       type: Boolean,
       default: false,
       required: true
+    },
+    isBothDirections: {
+      type: Boolean,
+      default: false
     }
   },
   components: {
@@ -30,6 +34,11 @@ export default {
     ...mapGetters(['intlCurrency']),
     ...mapGetters('accountTransactions', ['tableIsDisabled']),
     value() {
+      if (this.isBothDirections) {
+        console.log('is')
+        return this.intlCurrency.format(this.item.value / 100)
+      }
+
       if (this.isOutflow && this.item.value < 0) {
         return this.intlCurrency.format(Math.abs(this.item.value / 100))
       } else if (!this.isOutflow && this.item.value >= 0) {
@@ -39,7 +48,11 @@ export default {
       }
     },
     textColor() {
-      return this.isOutflow ? valueColor(-1) : valueColor(1)
+      if (this.isBothDirections) {
+        return valueColor(this.item.value)
+      } else {
+        return this.isOutflow ? valueColor(-1) : valueColor(1)
+      }
     }
   },
   methods: {

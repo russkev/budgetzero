@@ -231,7 +231,9 @@ export default {
       }, 10)
     },
     onBudgetValueApply(value) {
-      this.onCategoryBudgetChanged({ category_id: this.selectedCategory._id, value })
+      if (this.selectedCategory) {
+        this.onCategoryBudgetChanged({ category_id: this.selectedCategory._id, value })
+      }
     },
     onDeleteCategory() {
       this.deleteCategory(this.selectedCategory._id).then(() => {

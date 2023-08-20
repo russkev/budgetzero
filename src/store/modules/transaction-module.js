@@ -17,7 +17,6 @@ export default {
     ...DEFAULT_TRANSACTION_STATE
   },
   getters: {
-    dataTableHeaders: () => dataTableHeaders,
     importTransactionHeaders: () => importTransactionHeaders,
     allImportIds: (state) => state.allImportIds
   },

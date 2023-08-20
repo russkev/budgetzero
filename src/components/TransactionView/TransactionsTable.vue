@@ -1,5 +1,5 @@
 <template>
-  <v-sheet class="flex-table-container ma-0 pa-0" color="transparent">
+  <v-sheet class="flex-table-container ma-0 pa-0" ref="tableWrapper" color="transparent">
     <v-data-table
       data-testid="transactions-table"
       v-model="selected"
@@ -47,29 +47,40 @@
       </template>
       <template #item="{ item, select, isSelected }">
         <tr :class="`transaction-row ${isHighlighted(item, isSelected) ? 'primary darken-4' : ''}`" :key="item._id">
-          <!-- <tr> -->
-          <!-- <td>{{ item.account }}</td> -->
+          <!-- Checkbox -->
           <td class="row-checkbox pa-0 ma-0">
             <transaction-checked :item="item" :is-selected="isSelected" @input="select($event)" />
           </td>
+          <!-- Cleared-->
           <td class="row-cleared pa-0">
             <transaction-cleared :item="item" :highlighted="isHighlighted(item, isSelected)" />
           </td>
-          <td v-if="account && account.onBudget" class="row-category pa-0">
+          <!-- Category-->
+          <td v-if="account && account.onBudget && !isCompact" class="row-category pa-0">
             <transaction-categories :item="item" :highlighted="isHighlighted(item, isSelected)" />
           </td>
-          <td class="row-description pa-0">
+          <!-- Description -->
+          <td v-if="account && account.onBudget && !isCompact" class="row-description pa-0">
             <transaction-description :item="item" />
           </td>
-          <td class="pr-0 row-outflow">
+          <td v-else class="row-description px-0 py-2">
+            <transaction-categories :item="item" :highlighted="isHighlighted(item, isSelected)" />
+            <transaction-description :item="item" />
+          </td>
+          <!-- Outflow -->
+          <td class="pr-0 row-outflow" v-if="!isCompact">
             <transaction-flow :item="item" :isOutflow="true" />
           </td>
+          <!-- Inflow -->
           <td class="pr-0 row-inflow">
-            <transaction-flow :item="item" :isOutflow="false" />
+            <transaction-flow v-if="!isCompact" :item="item" :isOutflow="false" />
+            <transaction-flow v-else :item="item" :isOutflow="false" :is-both-directions="true" />
           </td>
+          <!-- Balance -->
           <td class="pr-0 pl-2 row-balance">
             <transaction-balance :item="item" />
           </td>
+          <!-- Delete -->
           <td class="pa-0 ma-0">
             <transaction-delete :item="item" />
           </td>
@@ -100,6 +111,22 @@ export default {
     TransactionCategories,
     TransactionFlow,
     TransactionDelete
+  },
+  data() {
+    return {
+      sizeObserver: null,
+      isCompact: false
+    }
+  },
+  mounted() {
+    this.sizeObserver = new ResizeObserver(() => {
+      if (this.$refs.tableWrapper.$el.offsetWidth < 800) {
+        this.isCompact = true
+      } else {
+        this.isCompact = false
+      }
+    })
+    this.sizeObserver.observe(this.$refs.tableWrapper.$el)
   },
   computed: {
     ...mapGetters('accountTransactions', [
@@ -150,7 +177,11 @@ export default {
       if (!this.account) {
         return []
       }
-      return this.dataTableHeaders.filter((header) => this.account.onBudget || header.text !== 'Category')
+      if (this.isCompact) {
+        return this.dataTableHeaders.filter((header) => header.text !== 'Category' && header.text !== 'Outflow')
+      } else {
+        return this.dataTableHeaders.filter((header) => this.account.onBudget || header.text !== 'Category')
+      }
     }
   },
   watch: {
