@@ -1,6 +1,6 @@
 <template>
   <v-sheet
-    class="px-0 py-1 ma-0 transaction-row-sheet"
+    :class="`px-0 ${py} ma-0 transaction-row-sheet`"
     tile
     flat
     color="transparent"
@@ -24,10 +24,27 @@ export default {
     disabled: {
       type: Boolean,
       default: false
+    },
+    isTop: {
+      type: Boolean,
+      default: false
+    },
+    isBottom: {
+      type: Boolean,
+      default: false
     }
   },
   computed: {
-    ...mapGetters('accountTransactions', ['selectedTransactions'])
+    ...mapGetters('accountTransactions', ['selectedTransactions']),
+    py() {
+      if (this.isTop) {
+        return 'pt-1'
+      } else if (this.isBottom) {
+        return 'pb-1'
+      } else {
+        return 'py-1'
+      }
+    }
   },
   methods: {
     onClick() {

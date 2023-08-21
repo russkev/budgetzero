@@ -1,6 +1,9 @@
 <template>
-  <row-element-wrapper @click="onTransactionDetailsClick(item)" right :disabled="tableIsDisabled">
-    <span :class="`my-auto ellipsis text-body-1 ${tableIsDisabled ? 'text-disabled' : textColor}`">
+  <row-element-wrapper @click="onTransactionDetailsClick(item)" right :disabled="tableIsDisabled" :is-top="isTop">
+    <span
+      :class="`my-auto ellipsis text-body-1 ${tableIsDisabled ? 'text-disabled' : textColor}`"
+      :style="`${big ? 'font-size: 1.25rem !important;' : ''}`"
+    >
       {{ value }}
     </span>
   </row-element-wrapper>
@@ -23,6 +26,14 @@ export default {
       required: true
     },
     isBothDirections: {
+      type: Boolean,
+      default: false
+    },
+    isTop: {
+      type: Boolean,
+      default: false
+    },
+    big: {
       type: Boolean,
       default: false
     }

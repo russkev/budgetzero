@@ -3,6 +3,7 @@
     right
     :class="`text-right my-auto ${tableIsDisabled ? 'text-disabled' : ''}`"
     :disabled="tableIsDisabled"
+    :is-bottom="isBottom"
     @click="onTransactionDetailsClick(item)"
   >
     {{ intlCurrency.format((item.balance + initialBalance) / 100) }}
@@ -10,13 +11,17 @@
 </template>
 
 <script>
-import { mapGetters, mapActions, mapMutations } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import RowElementWrapper from './RowElementWrapper.vue'
 
 export default {
   props: {
     item: {
       type: Object
+    },
+    isBottom: {
+      type: Boolean,
+      default: false
     }
   },
   components: {

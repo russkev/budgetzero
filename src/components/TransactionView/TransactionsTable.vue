@@ -69,19 +69,22 @@
           </td>
           <!-- Outflow -->
           <td class="pr-0 row-outflow" v-if="!isCompact">
-            <transaction-flow :item="item" :isOutflow="true" />
+            <transaction-flow :item="item" :is-outflow="true" />
           </td>
           <!-- Inflow -->
-          <td class="pr-0 row-inflow">
-            <transaction-flow v-if="!isCompact" :item="item" :isOutflow="false" />
-            <transaction-flow v-else :item="item" :isOutflow="false" :is-both-directions="true" />
+          <td v-if="!isCompact" class="pr-0 row-inflow">
+            <transaction-flow :item="item" :is-outflow="false" />
+          </td>
+          <td v-else class="pr-0 row-inflow">
+            <transaction-flow :item="item" :isOutflow="false" :is-both-directions="true" is-top big />
+            <transaction-balance :item="item" is-bottom />
           </td>
           <!-- Balance -->
-          <td class="pr-0 pl-2 row-balance">
+          <td v-if="!isCompact" class="pr-0 pl-2 row-balance">
             <transaction-balance :item="item" />
           </td>
           <!-- Delete -->
-          <td class="pa-0 ma-0">
+          <td class="pa-0 ma-0" v-if="!isCompact">
             <transaction-delete :item="item" />
           </td>
         </tr>
@@ -178,7 +181,9 @@ export default {
         return []
       }
       if (this.isCompact) {
-        return this.dataTableHeaders.filter((header) => header.text !== 'Category' && header.text !== 'Outflow')
+        return this.dataTableHeaders.filter(
+          (header) => header.text !== 'Category' && header.text !== 'Outflow' && header.text !== 'Inflow'
+        )
       } else {
         return this.dataTableHeaders.filter((header) => this.account.onBudget || header.text !== 'Category')
       }
