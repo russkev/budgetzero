@@ -75,13 +75,13 @@
           <td v-if="!isCompact" class="pr-0 row-inflow">
             <transaction-flow :item="item" :is-outflow="false" />
           </td>
-          <td v-else class="pr-0 row-inflow">
-            <transaction-flow :item="item" :isOutflow="false" :is-both-directions="true" is-top big />
-            <transaction-balance :item="item" is-bottom />
-          </td>
           <!-- Balance -->
           <td v-if="!isCompact" class="pr-0 pl-2 row-balance">
             <transaction-balance :item="item" />
+          </td>
+          <td v-else class="pr-1 row-inflow">
+            <transaction-flow :item="item" :isOutflow="false" :is-both-directions="true" is-top big />
+            <transaction-balance :item="item" is-bottom />
           </td>
           <!-- Delete -->
           <td class="pa-0 ma-0" v-if="!isCompact">
@@ -181,9 +181,8 @@ export default {
         return []
       }
       if (this.isCompact) {
-        return this.dataTableHeaders.filter(
-          (header) => header.text !== 'Category' && header.text !== 'Outflow' && header.text !== 'Inflow'
-        )
+        const hiddenHeaders = ['Category', 'Outflow', 'Inflow']
+        return this.dataTableHeaders.filter((header) => !hiddenHeaders.includes(header.text)).slice(0, -1)
       } else {
         return this.dataTableHeaders.filter((header) => this.account.onBudget || header.text !== 'Category')
       }
@@ -286,5 +285,17 @@ tr.v-data-table__empty-wrapper td {
 
 .text-disabled {
   color: var(--v-background-lighten5);
+}
+
+.row-description {
+  width: 99%;
+}
+
+.row-description > div {
+  overflow: unset;
+}
+
+.transaction-row {
+  width: 100%;
 }
 </style>

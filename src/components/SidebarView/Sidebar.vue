@@ -9,8 +9,8 @@
     floating
     hide-overlay
     width="250"
-    :expand-on-hover="isLessThanBreakpoint"
     id="sidebar"
+    :expand-on-hover="isLessThanBreakpoint"
   >
     <v-list-item class="mt-2" r>
       <v-list-item-icon class="mr-4">
