@@ -264,6 +264,10 @@ tr.v-data-table__empty-wrapper td {
   transition: height 0s !important;
 }
 
+.flex-table-container table {
+  table-layout: fixed;
+}
+
 .transactions-table th {
   min-width: min-content !important;
   background: var(--v-background-base) !important;
