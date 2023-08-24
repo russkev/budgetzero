@@ -12,6 +12,7 @@
       dense
       fixed-header
       disable-sort
+      mobile-breakpoint="0"
       :options.sync="options"
       :server-items-length="numTransactionsTotal"
       :items-per-page="itemsPerPage"
@@ -26,8 +27,6 @@
       class="transactions-table flex-table-main background lighten-1"
       :loading="isLoading"
     >
-      <!-- group-desc -->
-      <!-- disable-sort -->
       <template #header.data-table-select="{ on, props }">
         <v-simple-checkbox
           :ripple="false"
@@ -266,6 +265,7 @@ tr.v-data-table__empty-wrapper td {
 
 .flex-table-container table {
   table-layout: fixed;
+  min-width: 320px;
 }
 
 .transactions-table th {
@@ -289,17 +289,5 @@ tr.v-data-table__empty-wrapper td {
 
 .text-disabled {
   color: var(--v-background-lighten5);
-}
-
-.row-description {
-  width: 99%;
-}
-
-.row-description > div {
-  overflow: unset;
-}
-
-.transaction-row {
-  width: 100%;
 }
 </style>
