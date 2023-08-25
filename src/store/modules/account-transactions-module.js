@@ -541,6 +541,7 @@ const dataTableHeaders = [
   },
   {
     text: '',
-    class: headerClass
+    class: headerClass,
+    width: '36px'
   }
 ]

@@ -89,6 +89,9 @@
         </tr>
       </template>
     </v-data-table>
+    <v-fab-transition>
+      <v-btn v-if="selected.length > 0" fab fixed bottom right color="primary"><v-icon>mdi-details</v-icon></v-btn>
+    </v-fab-transition>
   </v-sheet>
 </template>
 
