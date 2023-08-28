@@ -89,11 +89,6 @@
         </tr>
       </template>
     </v-data-table>
-    <v-fab-transition>
-      <v-btn v-if="selected.length > 0 && $vuetify.breakpoint.mobile" fab fixed bottom right color="primary">
-        <v-icon>mdi-details</v-icon>
-      </v-btn>
-    </v-fab-transition>
   </v-sheet>
 </template>
 
@@ -134,6 +129,9 @@ export default {
       }
     })
     this.sizeObserver.observe(this.$refs.tableWrapper.$el)
+  },
+  unmounted() {
+    this.sizeObserver.disconnect()
   },
   computed: {
     ...mapGetters('accountTransactions', [

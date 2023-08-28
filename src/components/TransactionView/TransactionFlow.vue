@@ -46,7 +46,6 @@ export default {
     ...mapGetters('accountTransactions', ['tableIsDisabled']),
     value() {
       if (this.isBothDirections) {
-        console.log('is')
         return this.intlCurrency.format(this.item.value / 100)
       }
 
