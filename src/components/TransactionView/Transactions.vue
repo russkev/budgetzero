@@ -7,16 +7,16 @@
           <v-col
             class="flex-sheet pa-1"
             :cols="isCompact ? 12 : 8"
-            :style="!isCompact || !show_details ? '' : 'display: none;'"
+            :style="!isCompact || !showDetails ? '' : 'display: none;'"
           >
             <transactions-table />
           </v-col>
-          <v-col :cols="isCompact ? 12 : 4" class="pa-0" :style="!isCompact || show_details ? '' : 'display: none;'">
+          <v-col :cols="isCompact ? 12 : 4" class="pa-0" :style="!isCompact || showDetails ? '' : 'display: none;'">
             <transaction-details />
           </v-col>
         </v-row>
         <v-btn v-if="isCompact" fab fixed bottom right color="primary darken" @click="toggleDetails">
-          <v-icon color="background">{{ show_details ? 'mdi-arrow-left' : 'mdi-arrow-right' }}</v-icon>
+          <v-icon color="background">{{ showDetails ? 'mdi-arrow-left' : 'mdi-arrow-right' }}</v-icon>
         </v-btn>
       </v-sheet>
     </v-container>
@@ -41,8 +41,7 @@ export default {
         { name: 'John', age: 3 },
         { name: 'Susan', age: 2 }
       ],
-      items_per_page: 3,
-      show_details: false
+      items_per_page: 3
     }
   },
   beforeRouteUpdate(to, from, next) {
@@ -62,17 +61,17 @@ export default {
     }
   },
   computed: {
-    ...mapGetters('accountTransactions', ['accountId']),
+    ...mapGetters('accountTransactions', ['accountId', 'showDetails']),
     ...mapGetters(['accountsById']),
     isCompact() {
       return this.$vuetify.breakpoint.mobile || this.$vuetify.breakpoint.smAndDown
     }
   },
   methods: {
-    ...mapMutations('accountTransactions', ['SET_ACCOUNT_ID']),
+    ...mapMutations('accountTransactions', ['SET_ACCOUNT_ID', 'SET_SHOW_DETAILS']),
     ...mapActions('accountTransactions', ['getTransactions']),
     toggleDetails() {
-      this.show_details = !this.show_details
+      this.SET_SHOW_DETAILS(!this.showDetails)
     }
   }
 }

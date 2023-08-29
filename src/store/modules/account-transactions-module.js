@@ -23,7 +23,8 @@ const DEFAULT_ACCOUNT_TRANSACTIONS_STATE = {
   isCreatingNewTransaction: false,
   isLoading: false,
   importOfxIsOpen: false,
-  importCsvIsOpen: false
+  importCsvIsOpen: false,
+  showDetails: false
 }
 
 export default {
@@ -65,7 +66,8 @@ export default {
     importCsvIsOpen: (state) => state.importCsvIsOpen,
     importIds: (state, getters, rootState, rootGetters) => {
       return _.get(rootGetters, ['allImportIds', getters.accountId], {})
-    }
+    },
+    showDetails: (state) => state.showDetails
   },
   mutations: {
     SET_ACCOUNT_ID(state, account_id) {
@@ -196,6 +198,9 @@ export default {
       for (let key in DEFAULT_ACCOUNT_TRANSACTIONS_STATE) {
         Vue.set(state, key, DEFAULT_ACCOUNT_TRANSACTIONS_STATE[key])
       }
+    },
+    SET_SHOW_DETAILS(state, show_details) {
+      Vue.set(state, 'showDetails', show_details)
     }
   },
   actions: {
