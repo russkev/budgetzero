@@ -421,6 +421,7 @@ export default {
       commit('SET_EDITED_TRANSACTION_SPLIT_VALUE', { index: splits.length - 1, value: remainder })
     },
     onTransactionDetailsClick({ getters, commit, dispatch }, item) {
+      commit('SET_SHOW_DETAILS', true)
       if (getters.selectedTransactions.length > 0) {
         commit('CLEAR_SELECTED_TRANSACTIONS')
         nextTick(() => {
