@@ -84,3 +84,12 @@ html {
   overflow: auto;
 }
 </style>
+
+<style lang="scss">
+.dialog-right-transition {
+  &-enter,
+  &-leave-to {
+    transform: translateX(100%);
+  }
+}
+</style>

@@ -19,7 +19,7 @@
               <transactions-table />
             </v-col>
           </v-row>
-          <v-dialog v-model="dialog" fullscreen :scrim="false" transition="dialog-bottom-transition">
+          <v-dialog v-model="dialog" fullscreen :scrim="false" transition="dialog-right-transition">
             <transaction-details />
           </v-dialog>
           <v-btn fab fixed bottom right color="primary darken" @click="toggleDetails">

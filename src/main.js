@@ -34,6 +34,8 @@ import pouchdb_live_find from 'pouchdb-live-find'
 import pouchdb_authentication from 'pouchdb-authentication'
 import pouchdb_erase from 'pouchdb-erase'
 import Fragment from 'vue-fragment'
+import { createSimpleTransition } from 'vuetify/lib/components/transitions/createTransition'
+
 // import excel from 'vue-excel-export'
 
 /**
@@ -71,6 +73,9 @@ Vue.use(VueRouter)
 Vue.use(Fragment.Plugin)
 Vue.use(VuePapaParse)
 // Vue.use(excel)
+
+const dialogRightTransition = createSimpleTransition('dialog-right-transition')
+Vue.component('my-transition', dialogRightTransition)
 
 // eslint-disable-next-line vars-on-top
 export var router = new VueRouter({
