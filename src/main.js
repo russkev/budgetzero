@@ -5,10 +5,6 @@ import PouchDB from 'pouchdb-browser'
 
 import Vue2Filters from 'vue2-filters'
 
-// css for vue-select
-import 'vue-select/dist/vue-select.css'
-import vSelect from 'vue-select'
-
 import vuetify from './plugins/vuetify'
 import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
@@ -68,7 +64,6 @@ PouchDB.plugin(pouchdb_authentication)
 PouchDB.plugin(pouchdb_erase)
 
 Vue.use(Vue2Filters)
-Vue.component('VSelect', vSelect)
 Vue.use(Vuelidate)
 
 Vue.config.productionTip = false
