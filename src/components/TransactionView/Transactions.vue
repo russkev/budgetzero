@@ -3,21 +3,29 @@
     <v-container fluid class="py-0">
       <v-sheet justify="center" class="mx-auto" color="transparent">
         <transactions-header :selected_account_id="accountId" />
-        <v-row class="ma-0 pa-0">
-          <v-col
-            class="flex-sheet pa-1"
-            :cols="isCompact ? 12 : 8"
-            :style="!isCompact || !showDetails ? '' : 'display: none;'"
-          >
-            <transactions-table />
-          </v-col>
-          <v-col :cols="isCompact ? 12 : 4" class="pa-0" :style="!isCompact || showDetails ? '' : 'display: none;'">
+        <div v-if="!isCompact">
+          <v-row class="ma-0 pa-0">
+            <v-col class="flex-sheet pa-1" :cols="8">
+              <transactions-table />
+            </v-col>
+            <v-col :cols="4" class="pa-0">
+              <transaction-details />
+            </v-col>
+          </v-row>
+        </div>
+        <div v-else>
+          <v-row class="ma-0 pa-0">
+            <v-col class="flex-sheet pa-1" :cols="12">
+              <transactions-table />
+            </v-col>
+          </v-row>
+          <v-dialog v-model="dialog" fullscreen :scrim="false" transition="dialog-bottom-transition">
             <transaction-details />
-          </v-col>
-        </v-row>
-        <v-btn v-if="isCompact" fab fixed bottom right color="primary darken" @click="toggleDetails">
-          <v-icon color="background">{{ showDetails ? 'mdi-arrow-left' : 'mdi-arrow-right' }}</v-icon>
-        </v-btn>
+          </v-dialog>
+          <v-btn fab fixed bottom right color="primary darken" @click="toggleDetails">
+            <v-icon color="background">{{ showDetails ? 'mdi-arrow-left' : 'mdi-arrow-right' }}</v-icon>
+          </v-btn>
+        </div>
       </v-sheet>
     </v-container>
   </div>
@@ -65,6 +73,14 @@ export default {
     ...mapGetters(['accountsById']),
     isCompact() {
       return this.$vuetify.breakpoint.mobile || this.$vuetify.breakpoint.smAndDown
+    },
+    dialog: {
+      get() {
+        return this.showDetails
+      },
+      set(value) {
+        this.SET_SHOW_DETAILS(value)
+      }
     }
   },
   methods: {
@@ -82,5 +98,9 @@ export default {
   height: calc(100vh - 70px);
   display: flex;
   flex-direction: column;
+}
+
+button.v-btn--fab {
+  z-index: 99999 !important;
 }
 </style>
