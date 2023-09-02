@@ -36,28 +36,6 @@ import pouchdb_erase from 'pouchdb-erase'
 import Fragment from 'vue-fragment'
 import { createSimpleTransition } from 'vuetify/lib/components/transitions/createTransition'
 
-// import excel from 'vue-excel-export'
-
-/**
- * Sweet Alert
- */
-import VueSweetalert2 from 'vue-sweetalert2'
-
-const options = {
-  confirmButtonColor: '#263238',
-  cancelButtonColor: '#ff7674'
-}
-
-Vue.use(VueSweetalert2, options)
-/** */
-
-/**
- * Treeview for debugger
- */
-import TreeView from 'vue-json-tree-view'
-Vue.use(TreeView)
-/** */
-
 Vue.use(VueMoment)
 
 PouchDB.plugin(pouchdb_find)
@@ -72,7 +50,6 @@ Vue.config.productionTip = false
 Vue.use(VueRouter)
 Vue.use(Fragment.Plugin)
 Vue.use(VuePapaParse)
-// Vue.use(excel)
 
 const dialogRightTransition = createSimpleTransition('dialog-right-transition')
 Vue.component('my-transition', dialogRightTransition)
