@@ -114,6 +114,7 @@ import SidebarAccount from './SidebarAccount.vue'
 import SidebarAccountGroup from './SidebarAccountGroup.vue'
 import SidebarList from './SidebarList.vue'
 import NewAccountButton from './NewAccountButton.vue'
+import _ from 'lodash'
 
 export default {
   name: 'Sidebar',
