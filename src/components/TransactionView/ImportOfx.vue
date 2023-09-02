@@ -6,7 +6,7 @@
       filled
       flat
       solo
-      color="secondary lighten-2"
+      color="primary lighten-2"
       background-color="background lighten-3"
       label="Upload OFX file"
       prepend-icon="mdi-file-upload"
@@ -42,6 +42,7 @@ import CancelSave from '../Shared/CancelSave.vue'
 import { formatDate } from '../../helper'
 import ofx from 'node-ofx-parser'
 import ImportTable from './ImportTable.vue'
+import _ from 'lodash'
 
 export default {
   name: 'ImportOfx',

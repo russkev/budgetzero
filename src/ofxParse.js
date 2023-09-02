@@ -1,3 +1,5 @@
+import _ from 'lodash'
+
 function getAccountId(ofx_object) {
   return getOfxData(ofx_object, ['STMTRS.BANKACCTFROM.ACCTID', 'TRNUID'], 1)
 }

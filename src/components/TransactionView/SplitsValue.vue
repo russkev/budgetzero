@@ -5,6 +5,7 @@
 <script>
 import { mapGetters, mapMutations } from 'vuex'
 import CurrencyInput from '../Shared/CurrencyInput.vue'
+import _ from 'lodash'
 
 export default {
   components: { CurrencyInput },

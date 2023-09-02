@@ -125,6 +125,7 @@ import { ID_LENGTH, NONE, UNDELETABLE_IDS } from '../../constants'
 import StringInput from '../Shared/StringInput.vue'
 import DetailsMove from './DetailsMove.vue'
 import DeleteConfirm from '../Shared/DeleteConfirm.vue'
+import _ from 'lodash'
 
 export default {
   name: 'CategoryDetails',

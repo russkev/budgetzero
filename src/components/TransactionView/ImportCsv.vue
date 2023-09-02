@@ -119,6 +119,7 @@ import ImportTable from './ImportTable.vue'
 import ImportCsvColumn from './ImportCsvColumn.vue'
 import moment from 'moment'
 import { DEFAULT_CSV_INFO } from '../../constants'
+import _ from 'lodash'
 
 const findHeader = (headers, candidates) => {
   const index = headers.findIndex((header) => candidates.includes(header.toLowerCase()))

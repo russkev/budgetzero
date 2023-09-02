@@ -20,7 +20,7 @@
                 flat
                 autofocus
                 prepend-icon="mdi-file-document"
-                color="secondary lighten-2"
+                color="primary lighten-2"
                 background-color="background lighten-3"
                 v-model="budgetName"
                 class="mx-2 text-body-1"

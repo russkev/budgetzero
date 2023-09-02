@@ -22,7 +22,7 @@
           <v-dialog v-model="dialog" fullscreen :scrim="false" transition="dialog-right-transition">
             <transaction-details />
           </v-dialog>
-          <v-btn fab fixed bottom right color="primary darken" @click="toggleDetails">
+          <v-btn fab fixed bottom right id="button-details-toggle" color="primary darken" @click="toggleDetails">
             <v-icon color="background">{{ showDetails ? 'mdi-arrow-left' : 'mdi-arrow-right' }}</v-icon>
           </v-btn>
         </div>
@@ -102,5 +102,10 @@ export default {
 
 button.v-btn--fab {
   z-index: 99999 !important;
+}
+
+#button-details-toggle {
+  bottom: 80px;
+  right: 50px;
 }
 </style>

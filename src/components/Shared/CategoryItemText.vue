@@ -16,6 +16,7 @@
 import { mapGetters } from 'vuex'
 import { ID_LENGTH } from '../../constants'
 import { valueColor } from '../../helper'
+import _ from 'lodash'
 
 export default {
   name: 'CategoryItemText',

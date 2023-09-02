@@ -144,6 +144,7 @@ import DeleteConfirm from '../Shared/DeleteConfirm.vue'
 import CancelSave from '../Shared/CancelSave.vue'
 import ImportOfx from './ImportOfx.vue'
 import ImportCsv from './ImportCsv.vue'
+import _ from 'lodash'
 
 export default {
   components: {

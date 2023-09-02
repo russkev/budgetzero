@@ -119,13 +119,6 @@ export default {
       if (this.itemIsUncategorized) {
         return NONE.hexColor
       }
-      // const hsla = _.get(this.masterCategoriesById, [this.selectedCategory.masterCategory, 'color', 'hsla'], {
-      //   a: 1,
-      //   h: 0,
-      //   l: 1,
-      //   s: 0
-      // })
-      // return `hsl(${hsla.h}, ${hsla.s * 100}%, 90%)`
       return _.get(this.categoryColors, [this.categoryId, 'text'], 'white')
     },
     mainColor() {
