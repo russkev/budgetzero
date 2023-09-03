@@ -1,40 +1,32 @@
 import Vue from 'vue'
 import App from './App.vue'
 
-import PouchDB from 'pouchdb-browser'
+import moment from 'moment'
+import Vuelidate from 'vuelidate'
+import VueRouter from 'vue-router' // prints 'idb'
+import VuePapaParse from 'vue-papa-parse'
+import VueMoment from 'vue-moment'
+import Fragment from 'vue-fragment'
 
-import Vue2Filters from 'vue2-filters'
+import PouchDB from 'pouchdb-browser'
+import pouchdb_find from 'pouchdb-find'
+import pouchdb_live_find from 'pouchdb-live-find'
+import pouchdb_authentication from 'pouchdb-authentication'
+import pouchdb_erase from 'pouchdb-erase'
 
 import vuetify from './plugins/vuetify'
-import 'material-design-icons-iconfont/dist/material-design-icons.css'
-
-import Vuelidate from 'vuelidate'
-
-import VueRouter from 'vue-router' // prints 'idb'
+import { createSimpleTransition } from 'vuetify/lib/components/transitions/createTransition'
 
 import store from './store'
 import Transactions from './components/TransactionView/Transactions.vue'
-
 import Categories from './components/CategoryView/Categories.vue'
-// import CreateBudget from './components/CreateBudget.vue'
 import NewBudget from './components/LandingView/NewBudget.vue'
 import Manage from './components/ManageView/Manage.vue'
-// import Reports from './components/Reports.vue'
-// import Landing from './components/LandingView/Landing.vue'
 import LandingContainer from './components/LandingView/LandingContainer.vue'
 import LandingRestore from './components/LandingView/LandingRestore.vue'
 import LandingNew from './components/LandingView/LandingNew.vue'
 import LandingStart from './components/LandingView/LandingStart.vue'
 import LandingCloudSync from './components/LandingView/LandingCloudSync.vue'
-import moment from 'moment'
-import VuePapaParse from 'vue-papa-parse'
-import VueMoment from 'vue-moment'
-import pouchdb_find from 'pouchdb-find'
-import pouchdb_live_find from 'pouchdb-live-find'
-import pouchdb_authentication from 'pouchdb-authentication'
-import pouchdb_erase from 'pouchdb-erase'
-import Fragment from 'vue-fragment'
-import { createSimpleTransition } from 'vuetify/lib/components/transitions/createTransition'
 
 Vue.use(VueMoment)
 
@@ -43,7 +35,6 @@ PouchDB.plugin(pouchdb_live_find)
 PouchDB.plugin(pouchdb_authentication)
 PouchDB.plugin(pouchdb_erase)
 
-Vue.use(Vue2Filters)
 Vue.use(Vuelidate)
 
 Vue.config.productionTip = false
