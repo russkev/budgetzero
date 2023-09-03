@@ -122,7 +122,7 @@ export default {
   },
   mounted() {
     this.sizeObserver = new ResizeObserver(() => {
-      if (this.$refs.tableWrapper.$el.offsetWidth < 800) {
+      if (this.$refs.tableWrapper && this.$refs.tableWrapper.$el.offsetWidth < 800) {
         this.isCompact = true
       } else {
         this.isCompact = false

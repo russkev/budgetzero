@@ -6,6 +6,7 @@
       fixed-header
       disable-sort
       class="transactions-table flex-table-main background lighten-1"
+      mobile-breakpoint="0"
       :items="transactions"
       :headers="transactionHeaders"
       :items-per-page="20"
@@ -94,5 +95,10 @@ export default {
 <style scoped>
 div.flex-table-container {
   overflow: unset;
+}
+</style>
+<style>
+table > thead > tr > th:first-child {
+  min-width: 100px !important;
 }
 </style>

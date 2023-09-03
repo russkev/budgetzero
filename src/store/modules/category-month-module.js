@@ -602,18 +602,26 @@ const transactionHeaders = [
   },
   {
     text: 'Memo',
-    value: 'memo'
+    value: 'memo',
+    width: '100%',
+    align: 'left'
   },
   {
     text: 'Account',
-    value: 'account'
+    value: 'account',
+    width: '120px',
+    align: 'left'
   },
   {
     text: 'Amount',
-    value: 'amount'
+    value: 'amount',
+    width: '100px',
+    align: 'right'
   },
   {
     text: 'Balance',
-    value: 'balance'
+    value: 'balance',
+    width: '100px',
+    align: 'right'
   }
 ]
