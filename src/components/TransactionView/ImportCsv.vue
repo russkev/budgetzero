@@ -287,15 +287,16 @@ export default {
       const row_offset = this.csvInfo.useHeaders ? 2 : 1
       this.tableData = this.parsedResults.data.map((row, index) => {
         const credit_raw = row[this.csvInfo.headerColumns.credit]
-        let credit = NONE
+        let credit_amount = 0
+        let credit_parsed = NONE
         if (Boolean(credit_raw)) {
           const credit_deFormatted = this.reverseFormatNumber(credit_raw, 'en-US')
-          credit = parseFloat(credit_deFormatted)
-          if (isNaN(credit)) {
-            credit = NONE
+          credit_parsed = parseFloat(credit_deFormatted)
+          if (isNaN(credit_parsed)) {
+            credit_parsed = NONE
           }
         }
-        if (credit === NONE) {
+        if (credit_parsed === NONE) {
           if (!credit_raw) {
             if (!this.csvInfo.useSeparateDebits && !credit_error_discovered) {
               this.creditError = `Credit is empty for row ${index + row_offset}, treating as 0`
@@ -310,21 +311,22 @@ export default {
               credit_error_discovered = true
             }
           }
-          credit = 0
+        } else {
+          credit_amount = credit_parsed
         }
 
-        let debit = 0
+        let debit_amount = 0
         if (this.csvInfo.useSeparateDebits) {
           const debit_raw = row[this.csvInfo.headerColumns.debit]
-          let debit = NONE
+          let debit_parsed = NONE
           if (Boolean(debit_raw)) {
             const debit_deFormatted = this.reverseFormatNumber(debit_raw, 'en-US')
-            debit = parseFloat(debit_deFormatted)
-            if (isNaN(debit)) {
-              debit = NONE
+            debit_parsed = parseFloat(debit_deFormatted)
+            if (isNaN(debit_parsed)) {
+              debit_parsed = NONE
             }
           }
-          if (debit === NONE) {
+          if (debit_parsed === NONE) {
             if (!debit_error_discovered) {
               if (!debit_raw && !credit_raw) {
                 this.debitError = `Both credit and debit are empty for row ${
@@ -339,9 +341,9 @@ export default {
               }
               debit_error_discovered = true
             }
-            debit = 0
+          } else {
+            debit_amount = Math.abs(debit_parsed)
           }
-          debit = Math.abs(debit)
         }
         const row_date = _.get(row, [this.csvInfo.headerColumns.date], '')
         let date = moment(row_date, this.csvInfo.dateFormat)
@@ -360,7 +362,7 @@ export default {
         let data = {
           date: date,
           memo: _.get(row, [this.csvInfo.headerColumns.memo], ''),
-          amount: credit - debit
+          amount: credit_amount - debit_amount
         }
 
         data.importId = `${this.account}-${data.date}-${data.memo.substring(0, 20)}-${data.amount}`
