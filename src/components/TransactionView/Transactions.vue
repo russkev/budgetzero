@@ -101,7 +101,7 @@ export default {
 }
 
 button.v-btn--fab {
-  z-index: 99999 !important;
+  z-index: 203 !important;
 }
 
 #button-details-toggle {

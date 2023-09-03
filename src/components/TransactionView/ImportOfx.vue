@@ -183,14 +183,10 @@ export default {
       return this.onImportTransactions({
         transactions: this.parsedOfxTransactions,
         account: this.account
+      }).finally(() => {
+        this.$emit('apply')
+        this.resetData()
       })
-        .then(() => {
-          // return this.resetAndFetchAllDocsFromPouchDB()
-        })
-        .finally(() => {
-          this.$emit('apply')
-          this.resetData()
-        })
     },
     resetData() {
       this.selectedOfxTransactions = []

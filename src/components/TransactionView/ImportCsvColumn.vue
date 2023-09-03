@@ -1,18 +1,33 @@
 <template>
   <div>
-    <!-- <div style="display: flex; flex-direction: row; align-items: center"> -->
     <div class="d-flex flex-row align-center">
       <v-menu offset-y :disabled="disabled">
         <template #activator="{ attrs, on }">
           <v-btn small text :disabled="disabled" v-bind="attrs" v-on="on" style="flex: 1">
-            <span style="font-size: 1rem"> {{ valueWithPreview }} </span><v-spacer /><v-icon>mdi-menu-down</v-icon>
+            <span style="font-size: 1rem"> {{ value }} </span><v-spacer /><v-icon>mdi-menu-down</v-icon>
           </v-btn>
         </template>
-        <v-list :data-testid="`import-csv-column-list-${name}`">
-          <v-list-item v-for="(header, index) in headerOptions" :key="header" link class="csv-column-item">
-            <v-list-item-title @click="$emit('input', header)">
-              {{ headerOptionPreviews.length >= index + 1 ? `${header} (${headerOptionPreviews[index]})` : header }}
-            </v-list-item-title>
+        <v-list dense color="background darken-2" :data-testid="`import-csv-column-list-${name}`">
+          <v-list-item-subtitle v-if="csvExample" class="px-4 py-1">
+            <span class="row-column-example-label"> Sample from file:&nbsp;</span>
+            <span class="row-column-item-example">{{ csvExample }}</span>
+          </v-list-item-subtitle>
+          <v-list-item
+            v-for="row of rows"
+            :key="row.data"
+            link
+            class="csv-column-item"
+            @click="$emit('input', row.data)"
+          >
+            <v-list-item-content>
+              <v-list-item-title>
+                {{ row.data }}
+              </v-list-item-title>
+              <v-list-item-subtitle>
+                {{ csvExample ? 'Example:&nbsp;' : 'Example from file:&nbsp;' }}
+                <span class="row-column-item-example">{{ row.example }}</span>
+              </v-list-item-subtitle>
+            </v-list-item-content>
           </v-list-item>
         </v-list>
       </v-menu>
@@ -47,18 +62,11 @@ export default {
       type: String | Number,
       required: true
     },
-    // label: {
-    //   type: String,
-    //   required: true
-    // },
-    headerOptions: {
+    rows: {
       type: Array,
       required: true
     },
-    headerOptionPreviews: {
-      type: Array,
-      default: () => []
-    },
+
     errorText: {
       type: String,
       default: ''
@@ -70,13 +78,15 @@ export default {
     name: {
       type: String,
       default: ''
+    },
+    csvExample: {
+      type: String,
+      default: ''
     }
   },
   computed: {
-    valueWithPreview() {
-      return this.headerOptionPreviews.length >= this.headerOptions.length && this.headerOptionPreviews.length > 0
-        ? `${this.value} (${this.headerOptionPreviews[this.headerOptions.indexOf(this.value)]})`
-        : this.value
+    parsedRows() {
+      return this.rows
     }
   }
 }
@@ -85,5 +95,12 @@ export default {
 <style scoped>
 .v-btn {
   text-transform: none;
+}
+
+.row-column-item-example {
+  color: var(--v-primary-base);
+}
+.row-column-example-label {
+  color: #ffffffb3;
 }
 </style>

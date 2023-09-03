@@ -39,42 +39,36 @@
       </div>
       <div class="text-h5">Date</div>
       <import-csv-column
-        :header-options="headerOptions"
-        :header-option-previews="headerOptionPreviews"
+        :rows="headerOptions"
         :value="csvInfo.headerColumns.date"
         @input="($event) => onHeaderChanged('date', $event)"
-        label="Date:"
         :disabled="tableData.length < 1"
         data-testid="date-column-select"
         name="date"
       />
       <div class="text-h5">Format</div>
       <import-csv-column
-        :header-options="dateFormatOptions"
-        label="Date Format:"
+        :rows="dateFormatOptions"
         v-model="csvInfo.dateFormat"
         @input="onDateFormatChange"
         :errorText="dateFormatError"
         :disabled="tableData.length < 1"
         data-testid="date-format-select"
         name="date-format"
+        :csv-example="sampleDateItem"
       />
       <div class="text-h5">Memo</div>
       <import-csv-column
-        :header-options="headerOptions"
-        :header-option-previews="headerOptionPreviews"
+        :rows="headerOptions"
         :value="csvInfo.headerColumns.memo"
         @input="($event) => onHeaderChanged('memo', $event)"
-        label="Memo:"
         :disabled="tableData.length < 1"
         data-testid="memo-column-select"
         name="memo"
       />
-      <div class="text-h5">Amount</div>
+      <div class="text-h5">{{ csvInfo.useSeparateDebits ? 'Credit' : 'Amount' }}</div>
       <import-csv-column
-        :header-options="headerOptions"
-        :header-option-previews="headerOptionPreviews"
-        :label="csvInfo.useSeparateDebits ? 'Credit:' : 'Amount:'"
+        :rows="headerOptions"
         :value="csvInfo.headerColumns.credit"
         @input="($event) => onHeaderChanged('credit', $event)"
         :error-text="creditError"
@@ -84,9 +78,7 @@
       />
       <div class="text-h5">Debit</div>
       <import-csv-column
-        :header-options="headerOptions"
-        :header-option-previews="headerOptionPreviews"
-        label="Debit:"
+        :rows="headerOptions"
         :value="csvInfo.headerColumns.debit"
         @input="($event) => onHeaderChanged('debit', $event)"
         :disabled="!csvInfo.useSeparateDebits || tableData.length < 1"
@@ -97,8 +89,6 @@
     </div>
 
     <import-table :table-items="tableData" :is-loading="false" />
-    <!-- :error-messages="fileErrorMessage"
-      :loading="isLoading" -->
     <div></div>
     <div class="save-cancel-container pa-2">
       <cancel-save
@@ -118,7 +108,7 @@ import CancelSave from '../Shared/CancelSave.vue'
 import ImportTable from './ImportTable.vue'
 import ImportCsvColumn from './ImportCsvColumn.vue'
 import moment from 'moment'
-import { DEFAULT_CSV_INFO } from '../../constants'
+import { DEFAULT_CSV_INFO, NONE } from '../../constants'
 import _ from 'lodash'
 
 const findHeader = (headers, candidates) => {
@@ -154,17 +144,6 @@ export default {
       creditError: '',
       debitError: '',
       dateFormatError: '',
-      dateFormatOptions: [
-        'D/M/YYYY',
-        'D-M-YYYY',
-        'D.M.YYYY',
-        'M/D/YYYY',
-        'M-D-YYYY',
-        'M.D.YYYY',
-        'YYYY/M/D',
-        'YYYY-M-D',
-        'YYYY.M.D'
-      ],
       tableData: [],
       initialData: null
     }
@@ -207,7 +186,9 @@ export default {
         return []
       }
       if (this.csvInfo.useHeaders) {
-        return Object.keys(this.parsedResults.data[0])
+        return Object.entries(this.parsedResults.data[0]).map(([data, example]) => {
+          return { data, example }
+        })
       } else {
         let result = []
         for (let i = 0; i < this.parsedResults.data[0].length; i++) {
@@ -216,26 +197,81 @@ export default {
         return result
       }
     },
-    headerOptionPreviews() {
-      if (
-        !this.parsedResults ||
-        !this.parsedResults.data ||
-        this.parsedResults.data.length < 1 ||
-        this.csvInfo.useHeaders
-      ) {
-        return []
-      } else {
-        let result = []
-        for (let i = 0; i < this.parsedResults.data[0].length; i++) {
-          result.push(this.parsedResults.data[0][i].slice(0, this.truncateLength))
-        }
-        return result
+    sampleDateItem() {
+      if (!this.parsedResults || !this.parsedResults.data) {
+        return ''
       }
+      return this.parsedResults.data[0][this.csvInfo.headerColumns.date]
+    },
+    dateFormatOptions() {
+      if (!this.parsedResults) {
+        return []
+      }
+      const raw_date = this.parsedResults.data[0][this.csvInfo.headerColumns.date]
+      if (!raw_date) {
+        return []
+      }
+      return this.findDateOptions(raw_date)
     }
   },
   methods: {
     ...mapActions(['resetAndFetchAllDocsFromPouchDB']),
     ...mapActions('accountTransactions', ['onImportTransactions']),
+    reverseFormatNumber(value, locale) {
+      // From https://gist.github.com/OliverJAsh/8eb1d4eb3ed455f86cc8756be499ba8e
+      const parts = new Intl.NumberFormat(locale).formatToParts(1111.11)
+      // Discover what the thousands separator is for locale
+      const group = parts.find((part) => part.type === 'group').value
+      // Discover what the decimal separator is for locale
+      const decimal = parts.find((part) => part.type === 'decimal').value
+      // Get rid of thousands separators
+      let reversed_value = value.replace(new RegExp('\\' + group, 'g'), '')
+      // Ensure the decimal separator is a period
+      reversed_value = reversed_value.replace(new RegExp('\\' + decimal, 'g'), '.')
+      // Strip all characters except digits and decimal point
+      return reversed_value.replace(/[^0-9.]/g, '')
+    },
+    findDateOptions(raw_date) {
+      // replace any special characters with a space
+      let date = raw_date.replace(/[^a-zA-Z0-9]/g, ' ')
+      const potential_month_formats = [
+        { char: 'M', example: '1' },
+        { char: 'Mo', example: '1st' },
+        { char: 'MM', example: '01' },
+        { char: 'MMM', example: 'Jan' },
+        { char: 'MMMM', example: 'January' }
+      ]
+      const potential_day_formats = [
+        { char: 'D', example: '2' },
+        { char: 'Do', example: '2nd' },
+        { char: 'DD', example: '02' }
+      ]
+      const potential_year_formats = [
+        { char: 'YY', example: '23' },
+        { char: 'YYYY', example: '2023' }
+      ]
+      let success_formats = []
+      for (const y of potential_year_formats) {
+        for (const m of potential_month_formats) {
+          for (const d of potential_day_formats) {
+            const orders = [
+              [y, m, d],
+              [d, m, y],
+              [m, d, y]
+            ]
+            for (const order of orders) {
+              const format = `${order[0].char} ${order[1].char} ${order[2].char}`
+              const parsed_date = moment(date, format, true)
+              if (parsed_date.isValid()) {
+                const example = `${order[0].example} ${order[1].example} ${order[2].example}`
+                success_formats.push({ data: format, example })
+              }
+            }
+          }
+        }
+      }
+      return success_formats
+    },
     updateTableData() {
       /**
        * Interpret the parsed csv file into a table
@@ -251,8 +287,15 @@ export default {
       const row_offset = this.csvInfo.useHeaders ? 2 : 1
       this.tableData = this.parsedResults.data.map((row, index) => {
         const credit_raw = row[this.csvInfo.headerColumns.credit]
-        let credit = parseFloat(row[this.csvInfo.headerColumns.credit])
-        if (isNaN(credit)) {
+        let credit = NONE
+        if (Boolean(credit_raw)) {
+          const credit_deFormatted = this.reverseFormatNumber(credit_raw, 'en-US')
+          credit = parseFloat(credit_deFormatted)
+          if (isNaN(credit)) {
+            credit = NONE
+          }
+        }
+        if (credit === NONE) {
           if (!credit_raw) {
             if (!this.csvInfo.useSeparateDebits && !credit_error_discovered) {
               this.creditError = `Credit is empty for row ${index + row_offset}, treating as 0`
@@ -260,7 +303,6 @@ export default {
             }
           } else {
             if (!credit_error_discovered) {
-              console.log("Couldn't parse credit", credit_raw)
               const credit_string = this.truncate(credit_raw, this.truncateLength)
               this.creditError = `Could not parse number (${credit_string}) for row ${
                 index + row_offset
@@ -274,8 +316,15 @@ export default {
         let debit = 0
         if (this.csvInfo.useSeparateDebits) {
           const debit_raw = row[this.csvInfo.headerColumns.debit]
-          debit = parseFloat(debit_raw)
-          if (isNaN(debit)) {
+          let debit = NONE
+          if (Boolean(debit_raw)) {
+            const debit_deFormatted = this.reverseFormatNumber(debit_raw, 'en-US')
+            debit = parseFloat(debit_deFormatted)
+            if (isNaN(debit)) {
+              debit = NONE
+            }
+          }
+          if (debit === NONE) {
             if (!debit_error_discovered) {
               if (!debit_raw && !credit_raw) {
                 this.debitError = `Both credit and debit are empty for row ${
@@ -303,7 +352,7 @@ export default {
               this.csvInfo.dateFormat
             }' for row ${index + row_offset}, please check the date format`
           }
-          date = row_date
+          date = '(Invalid Date)'
         } else {
           date = date.format('YYYY-MM-DD')
         }
@@ -369,8 +418,7 @@ export default {
         csvInfo: this.csvInfo
       })
         .then(() => {
-          this.updateDefaultCsvInfo(this.accountsById[this.account]['csvInfo'])
-          return this.resetAndFetchAllDocsFromPouchDB()
+          return this.updateDefaultCsvInfo(this.accountsById[this.account]['csvInfo'])
         })
         .finally(() => {
           this.$emit('apply')
