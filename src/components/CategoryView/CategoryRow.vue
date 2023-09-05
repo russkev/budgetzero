@@ -12,7 +12,6 @@
         </v-sheet>
         <v-sheet width="3px" class="mr-2 color-swatch-container" color="transparent">
           <v-sheet width="3px" height="18px" :color="categoryColor" />
-          <!-- :color="categoryColors[category._id] === undefined ? 'transparent' : categoryColors[category._id]" -->
         </v-sheet>
         <v-col class="pa-0 ma-0">
           <v-row class="ma-0 pa-0">
