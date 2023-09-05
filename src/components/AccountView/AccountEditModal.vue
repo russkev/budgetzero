@@ -220,15 +220,6 @@ export default {
       return this.accountTransactionCounts[this.accountId]
     }
   },
-  // beforeMount() {
-  //   this.fetchAccountIsEmpty(this.editedItem._id)
-  //     .then((isEmpty) => {
-  //       this.accountIsEmpty = isEmpty
-  //     })
-  //     .finally(() => {
-  //       this.deleteLoading = false
-  //     })
-  // },
   beforeMount() {
     if (this.value) {
       this.updateAccountIsEmpty()
