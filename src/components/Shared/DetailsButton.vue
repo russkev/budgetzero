@@ -10,6 +10,7 @@
     :to="to"
     :loading="loading"
     :disabled="disabled"
+    target="_blank"
   >
     <v-icon left :size="iconSize">
       {{ icon }}

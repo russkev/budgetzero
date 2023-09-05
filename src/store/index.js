@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { createStore } from 'vuex'
 import account from './modules/account-module'
 import budget from './modules/budget-module'
 import category from './modules/category-module'
@@ -38,7 +39,7 @@ Vue.mixin({
   }
 })
 
-Vue.use(Vuex)
+// Vue.use(Vuex)
 
 const storeData = {
   strict: import.meta.env.NODE_ENV !== 'production',
@@ -107,6 +108,8 @@ const storeData = {
   }
 }
 
-export default new Vuex.Store(storeData)
+// export default new Vuex.Store(storeData)
 
-export { storeData }
+// export { storeData }
+
+export default createStore(storeData)

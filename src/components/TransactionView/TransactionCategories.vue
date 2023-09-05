@@ -14,9 +14,8 @@
     />
   </div>
   <div v-else class="transaction-categories-container mr-2" :style="`grid-template-columns: ${templateColumns}`">
-    <template v-for="(split, index) in this.item.splits.slice(0, 2)">
+    <template v-for="(split, index) in this.item.splits.slice(0, 2)" :key="`category-${index}`">
       <category-menu
-        :key="`category-${index}`"
         :category-id="split.category ? split.category : ''"
         :disabled="isDisabled"
         :button-testid="`category-menu-${item._id.slice(-ID_LENGTH.transaction)}_${index}`"

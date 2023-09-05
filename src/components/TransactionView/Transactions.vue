@@ -19,7 +19,8 @@
               <transactions-table />
             </v-col>
           </v-row>
-          <v-dialog v-model="dialog" fullscreen :scrim="false" transition="dialog-right-transition">
+          <v-dialog v-model="dialog" fullscreen :scrim="false">
+            <!-- transition="dialog-right-transition" -->
             <transaction-details />
           </v-dialog>
           <v-btn fab fixed bottom right id="button-details-toggle" color="primary darken" @click="toggleDetails">
@@ -72,7 +73,8 @@ export default {
     ...mapGetters('accountTransactions', ['accountId', 'showDetails']),
     ...mapGetters(['accountsById']),
     isCompact() {
-      return this.$vuetify.breakpoint.mobile || this.$vuetify.breakpoint.smAndDown
+      // return this.$vuetify.breakpoint.mobile || this.$vuetify.breakpoint.smAndDown
+      return false
     },
     dialog: {
       get() {

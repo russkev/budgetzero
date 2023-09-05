@@ -1,8 +1,8 @@
 <template>
   <div class="secondary--text text--lighten-2">
-    <template v-for="data_item in data">
-      <div class="text-h6 mb-0 mt-3 pb-0" style="line-height: 1rem" :key="data_item.label">{{ data_item.label }}</div>
-      <span style="font-size: 10px" :key="data_item.value">{{ data_item.value }}</span>
+    <template v-for="data_item in data" :key="data_item.label">
+      <div class="text-h6 mb-0 mt-3 pb-0" style="line-height: 1rem">{{ data_item.label }}</div>
+      <span style="font-size: 10px">{{ data_item.value }}</span>
     </template>
   </div>
 </template>

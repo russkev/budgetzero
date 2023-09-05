@@ -1,10 +1,14 @@
 <template>
   <details-button :icon="icon" :label="label" @click="click" :width="width" class="mb-2" :to="to" />
-  <!-- <router-link :to="to">{{ label }}</router-link> -->
+  <!-- <v-btn :to="to" :width="width" class="mb-2" @click="click" data-testid="landing-button">
+    <v-icon left>{{ icon }}</v-icon>
+    {{ label }}
+  </v-btn> -->
 </template>
 
 <script>
-import DetailsButton from '../TransactionView/DetailsButtons.vue'
+import DetailsButton from '../Shared/DetailsButton.vue'
+// import DetailsButton from '../TransactionView/DetailsButtons.vue'
 
 export default {
   name: 'LandingButton',

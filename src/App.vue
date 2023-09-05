@@ -1,6 +1,6 @@
 <template>
   <v-app id="app">
-    <loading-full-screen :value="isLoadingFullscreen" />
+    <!-- <loading-full-screen :value="isLoadingFullscreen" />
     <confirm-dialog ref="confirm"></confirm-dialog>
     <sidebar />
     <v-main>
@@ -12,7 +12,11 @@
       <template #action="{ attrs }">
         <v-btn color="white" text v-bind="attrs" @click="snackbar = false"> Close </v-btn>
       </template>
-    </v-snackbar>
+    </v-snackbar> -->
+    <div>
+      HOME PAGE
+      <router-view class="animated" />
+    </div>
   </v-app>
 </template>
 
@@ -67,10 +71,10 @@ export default {
         this.$store.dispatch('setSnackBarBoolean', value)
       }
     }
-  },
-  mounted() {
-    this.$root.$confirm = this.$refs.confirm.open
   }
+  // mounted() {
+  //   this.$root.$confirm = this.$refs.confirm.open
+  // }
 }
 </script>
 

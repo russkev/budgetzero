@@ -1,25 +1,24 @@
 <template>
-  <div class="details-buttons-container">
+  <!-- <div class="details-buttons-container">
     <v-icon x-large class="pb-3">{{icon}}</v-icon>
     <span class="mb-5">{{ subtitle }}</span>
     <slot>
 
     </slot>
-  </div>
-
+  </div> -->
+  <div class="details-button-container">{{ subtitle }}</div>
 </template>
 
 <script>
-
 export default {
   props: {
     icon: {
       type: String,
-      default: "",
+      default: ''
     },
     subtitle: {
       type: String,
-      default: "",
+      default: ''
     }
   }
 }

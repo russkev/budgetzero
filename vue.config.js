@@ -11,14 +11,14 @@ module.exports = {
       },
       //Necessary for electron to render properly
       chainWebpackRendererProcess(config) {
-        config.plugin('define').tap(args => {
+        config.plugin('define').tap((args) => {
           delete args[0]['import.meta.env'].BASE_URL
           return args
         })
       }
     }
   },
-  transpileDependencies: ['vuetify'],
+  // transpileDependencies: ['vuetify'],
 
   configureWebpack: {
     devtool: 'source-map',

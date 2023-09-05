@@ -21,9 +21,8 @@
   </div>
   <div v-else>
     <div class="splits-grid">
-      <template v-for="(split, index) in splits">
+      <template v-for="(split, index) in splits" :key="`category-${index}`">
         <category-menu
-          :key="`category-${index}`"
           :category-id="split.category ? split.category : ''"
           @selected="
             (payload) => {
@@ -33,8 +32,8 @@
           :button-testid="`details-category-split-${index}`"
         />
         <!-- :item="split" -->
-        <splits-value :inputTestid="`split-${index}-value`" :index="index" :key="`amount-${index}`" />
-        <v-icon small :key="index" @click="onRemoveSplit(index)" class="mt-1"> mdi-close </v-icon>
+        <splits-value :inputTestid="`split-${index}-value`" :index="index" />
+        <v-icon small @click="onRemoveSplit(index)" class="mt-1"> mdi-close </v-icon>
       </template>
       <v-card
         color="transparent"

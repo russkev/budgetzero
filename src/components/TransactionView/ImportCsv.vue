@@ -288,15 +288,15 @@ export default {
       this.tableData = this.parsedResults.data.map((row, index) => {
         const credit_raw = row[this.csvInfo.headerColumns.credit]
         let credit_amount = 0
-        let credit_parsed = NONE
+        let credit_parsed = false
         if (Boolean(credit_raw)) {
           const credit_deFormatted = this.reverseFormatNumber(credit_raw, 'en-US')
           credit_parsed = parseFloat(credit_deFormatted)
           if (isNaN(credit_parsed)) {
-            credit_parsed = NONE
+            credit_parsed = false
           }
         }
-        if (credit_parsed === NONE) {
+        if (credit_parsed === false) {
           if (!credit_raw) {
             if (!this.csvInfo.useSeparateDebits && !credit_error_discovered) {
               this.creditError = `Credit is empty for row ${index + row_offset}, treating as 0`
@@ -318,15 +318,15 @@ export default {
         let debit_amount = 0
         if (this.csvInfo.useSeparateDebits) {
           const debit_raw = row[this.csvInfo.headerColumns.debit]
-          let debit_parsed = NONE
+          let debit_parsed = false
           if (Boolean(debit_raw)) {
             const debit_deFormatted = this.reverseFormatNumber(debit_raw, 'en-US')
             debit_parsed = parseFloat(debit_deFormatted)
             if (isNaN(debit_parsed)) {
-              debit_parsed = NONE
+              debit_parsed = false
             }
           }
-          if (debit_parsed === NONE) {
+          if (debit_parsed === false) {
             if (!debit_error_discovered) {
               if (!debit_raw && !credit_raw) {
                 this.debitError = `Both credit and debit are empty for row ${

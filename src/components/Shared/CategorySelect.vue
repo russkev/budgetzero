@@ -19,8 +19,8 @@
       </v-col>
     </v-row>
     <v-list dense subheader color="background" data-testid="category-list">
-      <template v-for="[masterId, categories] in Object.entries(searchedMasterCategories)">
-        <v-subheader class="master-category-list-item text-h5" v-bind:key="masterId">
+      <template v-for="[masterId, categories] in Object.entries(searchedMasterCategories)" v-bind:key="masterId">
+        <v-subheader class="master-category-list-item text-h5">
           {{ listMasterCategoryName(masterId) }}
         </v-subheader>
         <v-list-item

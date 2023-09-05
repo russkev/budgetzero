@@ -1,31 +1,41 @@
-<template>
-  <v-overlay opacity="1" z-index="9000" color="background" id="landing-page-overlay">
-    <v-container>
-      <div class="landing-page">
-        <v-icon icon dark color="primary" size="50">{{ icon }} </v-icon>
-        <div class="text-h4 mb-4" style="color: var(--v-primary-base)" data-testid="landing-title">{{ title }}</div>
-        <router-view></router-view>
-        <div style="width: 100%; display: flex; flex-direction: row" class="mt-3">
-          <landing-button
-            v-if="!isLandingPage"
-            label="Back"
-            icon="mdi-arrow-left"
-            :to="{ path: '/landing' }"
-            width="80px"
-            data-testid="landing-back-button"
-          />
-        </div>
+<!-- <template>
+  <v-container>
+    <div class="landing-page">
+      <v-icon icon dark color="primary" size="50">{{ icon }} </v-icon>
+      <div class="text-h4 mb-4" style="color: var(--v-primary-base)" data-testid="landing-title">{{ title }}</div>
+      <router-view class="animated"></router-view>
+      <div style="width: 100%; display: flex; flex-direction: row" class="mt-3">
+        <landing-button
+          v-if="!isLandingPage"
+          label="Back"
+          icon="mdi-arrow-left"
+          :to="{ path: '/landing' }"
+          width="80px"
+          data-testid="landing-back-button"
+        />
       </div>
+    </div>
+  </v-container>
+</template> -->
+
+<template>
+  <div>
+    <v-container>
+      Landing Container
+
+      <router-view></router-view>
     </v-container>
-  </v-overlay>
+  </div>
 </template>
 
 <script>
 import LandingButton from './LandingButton.vue'
+import LandingStart from './LandingStart.vue'
 
 export default {
   components: {
-    LandingButton
+    LandingButton,
+    LandingStart
   },
   data() {
     return {
@@ -52,13 +62,16 @@ export default {
   name: 'LandingContainer',
   computed: {
     title() {
-      return this.titleData[this.$route.name].title
+      return 'Title'
+      // return this.titleData[this.$route.name].title
     },
     icon() {
-      return this.titleData[this.$route.name].icon
+      // return this.titleData[this.$route.name].icon
+      return 'Icon'
     },
     isLandingPage() {
-      return this.$route.name === 'landing'
+      // return this.$route.name === 'landing'
+      return true
     }
   }
 }

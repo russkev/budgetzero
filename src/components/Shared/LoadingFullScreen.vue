@@ -3,7 +3,8 @@
     <v-container fluid fill-height>
       <v-layout align-center justify-center>
         <div style="position: relative" data-testid="full-screen-loading">
-          <v-icon large> $custom</v-icon>
+          <!-- <v-icon large> $custom</v-icon> -->
+          <v-icon large> mdi-emoticon-confused </v-icon>
           <v-progress-circular
             indeterminate
             color="#F86E9F"

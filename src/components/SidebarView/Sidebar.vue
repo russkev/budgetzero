@@ -14,7 +14,8 @@
   >
     <v-list-item class="mt-2" r>
       <v-list-item-icon class="mr-4">
-        <v-icon large> $custom </v-icon>
+        <!-- <v-icon large> $custom </v-icon> -->
+        <v-icon>mdi-emoticon-confused</v-icon>
       </v-list-item-icon>
       <v-list-item-title data-testid="nav-icon-text">
         <zero-text-only />
@@ -44,9 +45,8 @@
       :mini="mini"
     >
       <draggable handle=".handle" group="accounts" v-model="draggableOnBudget">
-        <template v-for="account in accountsOnBudget">
+        <template v-for="account in accountsOnBudget" :key="account._id">
           <sidebar-account
-            :key="account._id"
             :account="account"
             :focused-id="focusedId"
             :destination="{ path: `/transactions/${account._id.slice(-ID_LENGTH.account)}` }"
@@ -71,9 +71,8 @@
       :mini="mini"
     >
       <draggable handle=".handle" group="accounts" v-model="draggableOffBudget">
-        <template v-for="account in accountsOffBudget">
+        <template v-for="account in accountsOffBudget" :key="account._id">
           <sidebar-account
-            :key="account._id"
             :account="account"
             :focused-id="focusedId"
             :destination="{ path: `/transactions/${account._id.slice(-ID_LENGTH.account)}` }"
@@ -166,12 +165,17 @@ export default {
     ]),
     ...mapGetters('categoryMonth', ['selectedMonth']),
     isLessThanBreakpoint() {
-      const is_less_than_breakpoint = this.$vuetify.breakpoint.mdAndDown
+      // const is_less_than_breakpoint = this.$vuetify.breakpoint.mdAndDown
+      const is_less_than_breakpoint = false
+
       this.mini = is_less_than_breakpoint
       return is_less_than_breakpoint
     },
     showNav() {
-      return !this.$route.matched[0].meta.hideNav
+      if (this.$route.matched.length > 0) {
+        return !this.$route.matched[0].meta.hideNav
+      }
+      return false
     },
     accountTotals() {
       return this.accounts.reduce(
