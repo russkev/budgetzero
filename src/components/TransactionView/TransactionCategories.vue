@@ -4,7 +4,6 @@
     class="transaction-categories-container mr-2"
     :style="`grid-template-columns: ${templateColumns}`"
   >
-    <!-- :item="item" -->
     <category-menu
       :category-id="item.category ? item.category : ''"
       :splits="item.splits"
@@ -26,7 +25,6 @@
           }
         "
       />
-      <!-- <span v-if="index === 1 && item.splits.length > 2" class="text-body-2">...</span> -->
     </template>
     <span v-if="item.splits.length > 2" class="pt-0">...</span>
   </div>
@@ -65,7 +63,6 @@ export default {
       return this.item.splits && this.item.splits.length > 1
     },
     isDisabled() {
-      // return this.highlighted || this.selectedTransactions.length > 0;
       return this.editedTransaction._id === this.item._id || this.tableIsDisabled
     }
   },
