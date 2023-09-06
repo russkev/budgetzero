@@ -1,5 +1,6 @@
 <template>
   <v-btn
+    :to="to"
     text
     class="no-uppercase justify-start test-h5"
     :width="width"
@@ -7,10 +8,8 @@
     v-bind="attrs"
     @click="onClick"
     exact
-    :to="to"
     :loading="loading"
     :disabled="disabled"
-    target="_blank"
   >
     <v-icon left :size="iconSize">
       {{ icon }}
@@ -49,9 +48,9 @@ export default {
       default: 'default'
     },
     to: {
-      type: String | Object,
+      type: Object,
       required: false,
-      default: undefined
+      default: () => {}
     },
     disabled: {
       type: Boolean,

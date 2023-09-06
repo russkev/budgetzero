@@ -1,6 +1,9 @@
 import { createVuetify } from 'vuetify'
 import { hslStringToHex } from '../helper'
 import ZeroIcon from '../components/Icons/zero.vue'
+// import '../styles/variables.scss'
+import '../styles/fonts.scss'
+import 'vuetify/styles'
 
 const budgetZeroDark = {
   dark: true,

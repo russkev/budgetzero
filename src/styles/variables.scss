@@ -1,96 +1,103 @@
-@use 'sass:math';
+// @use 'sass:math';
 
-// @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;1,500;1,400;1,600&display=swap');
-// $material-dark: (
-//   'background': var(--v-background-base),
+// // @import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,400;0,500;0,600;1,500;1,400;1,600&display=swap');
+// // $material-dark: (
+// //   'background': var(--v-background-base),
+// // );
+
+// @font-face {
+//   font-family: 'Poppins';
+//   font-style: normal;
+//   font-weight: 300;
+//   src: url('@/assets/fonts/poppins/Poppins-Light.ttf');
+// }
+
+// @font-face {
+//   font-family: 'Poppins';
+//   font-style: italic;
+//   font-weight: 300;
+//   src: url('@/assets/fonts/poppins/Poppins-LightItalic.ttf');
+// }
+
+// @font-face {
+//   font-family: 'Poppins';
+//   font-style: normal;
+//   font-weight: 400;
+//   src: url('@/assets/fonts/poppins/Poppins-Regular.ttf');
+// }
+
+// @font-face {
+//   font-family: 'Poppins';
+//   font-style: italic;
+//   font-weight: 400;
+//   src: url('@/assets/fonts/poppins/Poppins-Italic.ttf');
+// }
+
+// @font-face {
+//   font-family: 'Poppins';
+//   font-style: normal;
+//   font-weight: 500;
+//   src: url('@/assets/fonts/poppins/Poppins-Medium.ttf');
+// }
+
+// @font-face {
+//   font-family: 'Poppins';
+//   font-style: italic;
+//   font-weight: 500;
+//   src: url('@/assets/fonts/poppins/Poppins-MediumItalic.ttf');
+// }
+
+// @font-face {
+//   font-family: 'Poppins';
+//   font-style: normal;
+//   font-weight: 600;
+//   src: url('@/assets/fonts/poppins/Poppins-SemiBold.ttf');
+// }
+
+// @font-face {
+//   font-family: 'Poppins';
+//   font-style: italic;
+//   font-weight: 600;
+//   src: url('@/assets/fonts/poppins/Poppins-SemiBoldItalic.ttf');
+// }
+
+// $body-font-family: 'Poppins', sans-serif;
+// $font-size-root: 12px;
+
+// // All variables here: https://vuetifyjs.com/en/api/vuetify/#sass
+// $headings: (
+//   'h2': (
+//     'size': 2rem,
+//     'weight': 800,
+//     'line-height': 2rem
+//   ),
+//   'h3': (
+//     'size': 2rem,
+//     'weight': 500,
+//     'line-height': 2rem
+//   ),
+//   'h4': (
+//     'size': 1.4rem,
+//     'weight': 600
+//   ),
+//   'h5': (
+//     'size': 0.9rem,
+//     'weight': 500
+//   ),
+//   'body-1': (
+//     'size': 1rem,
+//     'weight': 300
+//   ),
+//   'body-2': (
+//     'size': 0.85rem,
+//     'weight': 300
+//   )
 // );
 
-@font-face {
-  font-family: 'Poppins';
-  font-style: normal;
-  font-weight: 300;
-  // src: url("~@/assets/fonts/Poppins-Light.ttf");
-  src: url('@/assets/fonts/poppins/Poppins-Light.ttf');
-}
+$my-custom-font-family: 'Poppins', cursive;
+// $my-custom-font-family: sans-serif;
 
-@font-face {
-  font-family: 'Poppins';
-  font-style: italic;
-  font-weight: 300;
-  src: url('@/assets/fonts/poppins/Poppins-LightItalic.ttf');
-}
-
-@font-face {
-  font-family: 'Poppins';
-  font-style: normal;
-  font-weight: 400;
-  src: url('@/assets/fonts/poppins/Poppins-Regular.ttf');
-}
-
-@font-face {
-  font-family: 'Poppins';
-  font-style: italic;
-  font-weight: 400;
-  src: url('@/assets/fonts/poppins/Poppins-Italic.ttf');
-}
-
-@font-face {
-  font-family: 'Poppins';
-  font-style: normal;
-  font-weight: 500;
-  src: url('@/assets/fonts/poppins/Poppins-Medium.ttf');
-}
-
-@font-face {
-  font-family: 'Poppins';
-  font-style: italic;
-  font-weight: 500;
-  src: url('@/assets/fonts/poppins/Poppins-MediumItalic.ttf');
-}
-
-@font-face {
-  font-family: 'Poppins';
-  font-style: normal;
-  font-weight: 600;
-  src: url('@/assets/fonts/poppins/Poppins-SemiBold.ttf');
-}
-
-@font-face {
-  font-family: 'Poppins';
-  font-style: italic;
-  font-weight: 600;
-  src: url('@/assets/fonts/poppins/Poppins-SemiBoldItalic.ttf');
-}
-
-$body-font-family: 'Poppins', sans-serif;
-$font-size-root: 12px;
-
-// All variables here: https://vuetifyjs.com/en/api/vuetify/#sass
-$headings: (
-  'h2': (
-    'size': 2rem,
-    'weight': 800,
-    'line-height': 2rem
-  ),
-  'h3': (
-    'size': 2rem,
-    'weight': 500,
-    'line-height': 2rem
-  ),
-  'h4': (
-    'size': 1.4rem,
-    'weight': 600
-  ),
-  'h5': (
-    'size': 0.9rem,
-    'weight': 500
-  ),
-  'body-1': (
-    'size': 1rem,
-    'weight': 300
-  ),
-  'body-2': (
-    'size': 0.85rem,
-    'weight': 300
-  )
+@use 'vuetify/settings' with (
+  $body-font-family: $my-custom-font-family,
+  $font-size-root: 12px
 );

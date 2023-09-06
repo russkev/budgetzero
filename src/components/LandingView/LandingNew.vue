@@ -1,5 +1,6 @@
 <template>
-  <new-budget />
+  <!-- <new-budget /> -->
+  <div>NEW BUDGET</div>
 </template>
 
 <script>

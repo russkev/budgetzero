@@ -1,9 +1,5 @@
 <template>
   <details-button :icon="icon" :label="label" @click="click" :width="width" class="mb-2" :to="to" />
-  <!-- <v-btn :to="to" :width="width" class="mb-2" @click="click" data-testid="landing-button">
-    <v-icon left>{{ icon }}</v-icon>
-    {{ label }}
-  </v-btn> -->
 </template>
 
 <script>
@@ -25,8 +21,9 @@ export default {
       required: true
     },
     to: {
-      type: String | Object,
-      required: true
+      type: Object,
+      required: false,
+      default: () => {}
     },
     width: {
       type: String,

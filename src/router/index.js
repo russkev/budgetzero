@@ -121,6 +121,21 @@ const routes = [
       {
         path: '',
         component: LandingStart
+      },
+      {
+        name: 'LandingNew',
+        path: 'new',
+        component: LandingNew
+      },
+      {
+        name: 'LandingRestore',
+        path: 'restore',
+        component: LandingRestore
+      },
+      {
+        name: 'LandingCloudSync',
+        path: 'sync',
+        component: LandingCloudSync
       }
     ]
   },
