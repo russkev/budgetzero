@@ -1,5 +1,4 @@
 <template>
-  <!-- <v-list flat :class="mini ? 'ml-0 pl-0' : 'ml-3'" two-line> -->
   <v-list flat class="ml-0 pl-0">
     <slot></slot>
   </v-list>
