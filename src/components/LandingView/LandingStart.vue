@@ -48,6 +48,12 @@
       data-testid="sync-budget-button"
       :to="{ name: 'LandingCloudSync' }"
     />
+    <v-icon icon="mdi-account" size="200" color="red"></v-icon>
+    <v-icon icon="mdi-account" size="x-large"></v-icon>
+    <v-icon size="x-large">mdi-account</v-icon>
+    <v-icon size="large" icon="mdi-account" ></v-icon>
+    <v-btn size="x-large" color="#5865f2">x-large</v-btn>
+    <v-btn size="large">large</v-btn>
     <!-- to="/landing/sync" -->
   </div>
 </template>

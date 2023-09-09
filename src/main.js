@@ -18,16 +18,16 @@ import { registerPlugins } from './plugins'
 
 import store from './store'
 
-PouchDB.plugin(pouchdb_find)
-PouchDB.plugin(pouchdb_live_find)
-PouchDB.plugin(pouchdb_authentication)
-PouchDB.plugin(pouchdb_erase)
+// PouchDB.plugin(pouchdb_find)
+// PouchDB.plugin(pouchdb_live_find)
+// PouchDB.plugin(pouchdb_authentication)
+// PouchDB.plugin(pouchdb_erase)
 
-Vue.use(Vuelidate)
+// Vue.use(Vuelidate)
 
-Vue.config.productionTip = false
-// Vue.use(VueRouter)
-Vue.use(VuePapaParse)
+// Vue.config.productionTip = false
+// // Vue.use(VueRouter)
+// Vue.use(VuePapaParse)
 
 // const dialogRightTransition = createSimpleTransition('dialog-right-transition')
 // Vue.component('my-transition', dialogRightTransition)

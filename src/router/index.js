@@ -141,7 +141,7 @@ const routes = [
   },
   {
     path: '/',
-    component: LandingStart
+    component: LandingContainer
   }
 ]
 

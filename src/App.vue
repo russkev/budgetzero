@@ -1,5 +1,11 @@
 <template>
   <v-app id="app">
+    <v-icon icon="mdi-account" size="200" color="red"></v-icon>
+    <v-icon icon="mdi-account" size="x-large"></v-icon>
+    <v-icon size="x-large">mdi-account</v-icon>
+    <v-icon size="large" icon="mdi-account" ></v-icon>
+    <v-avatar color="surface-variant" size="40"></v-avatar>
+    <v-progress-circular model-value="20" :size="114"></v-progress-circular>
     <!-- <loading-full-screen :value="isLoadingFullscreen" />
     <confirm-dialog ref="confirm"></confirm-dialog>
     <sidebar />

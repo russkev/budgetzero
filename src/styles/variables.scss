@@ -97,7 +97,7 @@
 $my-custom-font-family: 'Poppins', cursive;
 // $my-custom-font-family: sans-serif;
 
-@use 'vuetify/settings' with (
-  $body-font-family: $my-custom-font-family,
-  $font-size-root: 12px
-);
+// @use 'vuetify/settings' with (
+//   $body-font-family: $my-custom-font-family,
+//   $font-size-root: 12px
+// );

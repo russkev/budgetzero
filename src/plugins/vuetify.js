@@ -2,8 +2,8 @@ import { createVuetify } from 'vuetify'
 import { hslStringToHex } from '../helper'
 import ZeroIcon from '../components/Icons/zero.vue'
 // import '../styles/variables.scss'
-import '../styles/fonts.scss'
-import 'vuetify/styles'
+// import '../styles/fonts.scss'
+// import 'vuetify/styles'
 
 const budgetZeroDark = {
   dark: true,
@@ -34,19 +34,29 @@ const budgetZeroDark = {
   unhide_text: '#77d274'
 }
 
+// export default createVuetify({
+//   theme: {
+//     themes: {
+//       light: {
+//         colors: {
+//           primary: '#1867C0',
+//           secondary: '#5CBBF6'
+//         }
+//       },
+//       budgetZeroDark
+//     },
+//     defaultTheme: 'budgetZeroDark'
+//   },
+//   icons: {
+//     values: {
+//       custom: {
+//         component: ZeroIcon
+//       }
+//     }
+//   }
+// })
+
 export default createVuetify({
-  theme: {
-    themes: {
-      light: {
-        colors: {
-          primary: '#1867C0',
-          secondary: '#5CBBF6'
-        }
-      },
-      budgetZeroDark
-    },
-    defaultTheme: 'budgetZeroDark'
-  },
   icons: {
     values: {
       custom: {

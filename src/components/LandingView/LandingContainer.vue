@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <v-container>
     <div class="landing-page">
       <v-icon icon dark color="primary" size="50">{{ icon }} </v-icon>
@@ -16,9 +16,9 @@
       </div>
     </div>
   </v-container>
-</template> -->
+</template>
 
-<template>
+<!-- <template>
   <div>
     <v-container>
       Landing Container
@@ -26,7 +26,7 @@
       <router-view></router-view>
     </v-container>
   </div>
-</template>
+</template> -->
 
 <script>
 import LandingButton from './LandingButton.vue'
