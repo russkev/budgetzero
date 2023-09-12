@@ -276,7 +276,6 @@ export default {
           }
           // result.rows.forEach((row) => {
           for (const row of result.rows) {
-            // console.log('row', row)
             if (row.doc.category === target_id) {
               return true
             }
